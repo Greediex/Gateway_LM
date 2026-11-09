@@ -1,0 +1,58 @@
+[
+  {
+    "id": "wifi-internet", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Thiết bị có Wi-Fi nhưng không vào được Internet",
+    "keywords": "laptop vẫn bắt được wifi nhưng không mở được trang web có mạng không truy cập được",
+    "text": "Xác định đúng thiết bị rồi đọc trạng thái kết nối và địa chỉ IPv4. Nếu thiết bị có IP, kiểm đường ra từ router. Phép đo tại router chỉ mô tả router. Cần phép đo từ thiết bị để xác nhận đường đi của thiết bị.",
+    "requires": ["wan-route"]
+  },
+  {
+    "id": "wan-route", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Kiểm tra link uplink và tuyến mặc định",
+    "keywords": "cổng wan mất tuyến default route gateway uplink",
+    "text": "Đọc trạng thái link và tuyến mặc định. Nếu link down hoặc tuyến vắng mặt, xử lý điều kiện đó trước phép thử tới IP ngoài. Phép thử IP thành công chỉ xác nhận đích IP đã đo.",
+    "requires": []
+  },
+  {
+    "id": "dns-scope", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Phân biệt DNS lỗi ở router và thiết bị",
+    "keywords": "resolver SERVFAIL REFUSED lỗi phân giải tên miền DNS",
+    "text": "Đối chiếu truy vấn DNS với phép thử IP. Để quy lỗi DNS phía thiết bị, cần xác nhận IP từ thiết bị còn tới được và so kết quả DNS của router và thiết bị trên cùng tên miền.",
+    "requires": ["wan-route"]
+  },
+  {
+    "id": "dhcp-lease", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Thiết bị không nhận được địa chỉ DHCP",
+    "keywords": "không được cấp IP chưa có IPv4 lease DHCP pool dải địa chỉ hết chỗ",
+    "text": "Định danh thiết bị rồi đọc lease. Khi chưa có lease, kiểm dung lượng pool và trạng thái dịch vụ DHCP để phân biệt pool cạn với dịch vụ dừng.",
+    "requires": []
+  },
+  {
+    "id": "qos-review", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Duyệt và hậu kiểm thay đổi QoS",
+    "keywords": "giới hạn băng thông ưu tiên video call qos rollback hậu kiểm",
+    "text": "Lập diff với version cấu hình và duyệt độc lập. Sau apply, kiểm chính sách hiệu lực và độ trễ của thiết bị đích lẫn thiết bị khác. Phục hồi nếu mẫu hậu kiểm không gắn với lần áp dụng.",
+    "requires": []
+  },
+  {
+    "id": "schedule-window", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Lịch chặn truy cập theo cửa sổ thời gian",
+    "keywords": "hẹn giờ chặn internet lịch truy cập đến hạn mất quyền thu hồi quyền",
+    "text": "Duyệt lịch trước khi chạy. Khi đến hạn, kiểm lại quyền của người yêu cầu, quyền người duyệt và định danh thiết bị. Lịch chỉ có hiệu lực trong cửa sổ đã duyệt.",
+    "requires": []
+  },
+  {
+    "id": "monitor-window", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Cảnh báo tải cao theo cửa sổ đo",
+    "keywords": "CPU RAM flash radio conntrack giám sát cửa sổ ngưỡng báo động",
+    "text": "Dùng ba mẫu cùng thiết bị, nguồn, phiên khởi động và cấu hình. Cảnh báo khi ngưỡng bị vượt liên tục. Đánh dấu dữ liệu thiếu, trễ hoặc sai thứ tự trước khi tổng hợp.",
+    "requires": []
+  },
+  {
+    "id": "lifecycle-preflight", "product": "gateway-lm-pilot", "firmware": "synthetic-replay-v1",
+    "title": "Kiểm tra artifact trước cập nhật model hoặc firmware",
+    "keywords": "OTA firmware chữ ký sha256 checksum preflight version rollback dung lượng",
+    "text": "Kiểm nền tảng, phiên bản mới, dung lượng và khả năng phục hồi. Xác minh chữ ký manifest qua verifier được tin cậy, rồi đối chiếu kích thước và digest artifact.",
+    "requires": []
+  }
+]

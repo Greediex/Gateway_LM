@@ -1,0 +1,18 @@
+[
+  {"id":"wifi-complaint","query":"Laptop An vẫn có Wi-Fi, sao không truy cập Internet?","primary":"wifi-internet","required":["wifi-internet","wan-route"]},
+  {"id":"wifi-ascii","query":"laptop bat wifi nhung khong mo duoc trang web","primary":"wifi-internet","required":["wifi-internet","wan-route"]},
+  {"id":"dns-router","query":"Resolver DNS trả về SERVFAIL","primary":"dns-scope","required":["dns-scope","wan-route"]},
+  {"id":"dns-client","query":"DNS REFUSED phân giải tên miền từ thiết bị","primary":"dns-scope","required":["dns-scope","wan-route"]},
+  {"id":"wan-uplink","query":"Cổng WAN uplink thiếu default route","primary":"wan-route","required":["wan-route"]},
+  {"id":"dhcp-address","query":"DHCP pool hết chỗ, laptop chưa có IP","primary":"dhcp-lease","required":["dhcp-lease"]},
+  {"id":"qos-review","query":"QoS giới hạn băng thông cần hậu kiểm và rollback","primary":"qos-review","required":["qos-review"]},
+  {"id":"access-window","query":"Hẹn giờ chặn Internet khi lịch truy cập đến hạn","primary":"schedule-window","required":["schedule-window"]},
+  {"id":"monitor-conntrack","query":"Cảnh báo giám sát conntrack theo cửa sổ ngưỡng","primary":"monitor-window","required":["monitor-window"]},
+  {"id":"verify-artifact","query":"Preflight OTA firmware checksum chữ ký","primary":"lifecycle-preflight","required":["lifecycle-preflight"]},
+  {"id":"acl-denied","query":"DNS SERVFAIL","deny_docs":true,"reason":"docs_read_denied"},
+  {"id":"unknown-product","query":"DNS SERVFAIL","product":"other-product","reason":"no_exact_firmware_profile"},
+  {"id":"unknown-firmware","query":"DNS SERVFAIL","firmware":"unknown-version","reason":"no_exact_firmware_profile"},
+  {"id":"off-topic","query":"chứng khoán trái phiếu cổ tức","reason":"no_matching_runbook"},
+  {"id":"tiny-budget","query":"DNS SERVFAIL","max_bytes":2,"reason":"context_budget"},
+  {"id":"cross-version-lure","query":"zebraorbital exactphrase","reason":"no_matching_runbook"}
+]

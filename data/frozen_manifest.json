@@ -1,0 +1,14 @@
+{
+  "version": "0.1.0",
+  "created_before_inference": true,
+  "cases": 72,
+  "dev": 24,
+  "test": 48,
+  "sha256": {
+    "registry.json": "5e87a3bce604616e6300e33dc342e3ad45ca18442cf8ca0ddc6a2b6faedfc861",
+    "cases.json": "723f6a5d52a6f23a1cb90788bba502c4f8200ea6769e88c43eff376c2c947b49"
+  },
+  "data_origin": "Hand-authored synthetic replay; not firmware captures",
+  "split_limit": "Shared templates, disjoint request paraphrases/target IDs. Not unseen fault families.",
+  "workflow_assignment": "Workflow IDs are provided to all arms, not predicted by the model."
+}
