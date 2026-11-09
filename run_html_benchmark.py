@@ -23,7 +23,7 @@ DEFAULT_CASES = ROOT / "benchmarks" / "html_workflows_v1.json"
 TARGET = "client-living-room"
 
 
-def internet(inputs, registry):
+def internet_replay(inputs):
     gateway = {
         "wan.status": {"link_up": True}, "wan.routes": {"default_route": True},
         "wan.probe": {"loss_pct": 0}, "dns.config": {"resolver": "192.168.50.1"},
@@ -42,12 +42,13 @@ def internet(inputs, registry):
         devices.append({"selector": "máy tính dự phòng", "aliases": ["máy tính phòng khách"],
                         "client_id": "client-other", "world": {}})
     caps = sorted((gateway.keys() | client.keys()) - set(inputs.get("disable", [])))
-    result = diagnose(
-        "Máy tính phòng khách vẫn có Wi-Fi nhưng không mở được trang web.",
-        {"world": gateway, "devices": devices, "capabilities": caps,
-         "permissions": inputs.get("permissions", ["network.read"])},
-        registry=registry,
-    )
+    return {"world": gateway, "devices": devices, "capabilities": caps,
+            "permissions": inputs.get("permissions", ["network.read"])}
+
+
+def internet(inputs, registry):
+    result = diagnose("Máy tính phòng khách vẫn có Wi-Fi nhưng không mở được trang web.",
+                      internet_replay(inputs), registry=registry)
     graph = result.get("graph", {})
     terminal = result["terminal"]
     by_id = {row["id"]: row for row in graph.get("evidence", [])}

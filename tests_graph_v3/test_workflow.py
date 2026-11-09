@@ -176,6 +176,45 @@ class TextWorkflowTests(unittest.TestCase):
                            ["clients.resolve", "wifi.station", "client.ipv4"])
         self.assertEqual(result["graph"]["calls"], 3)
 
+    def test_dynamic_probe_falls_back_after_wan_timeout(self):
+        replay = self.replay()
+        replay["capabilities"].append("client.probe")
+        replay["world"]["wan.probe"]["_status"] = "TIMEOUT"
+        replay["devices"][0]["world"]["client.probe"]["loss_pct"] = 80
+        advisor = Mock()
+        result = self.run_request(replay=replay, dynamic=True, advisor=advisor)
+        self.assert_result(result, "FINISH", "client_path_loss",
+                           ["clients.resolve", "wifi.station", "client.ipv4", "wan.status",
+                            "wan.routes", "wan.probe", "client.probe"])
+        self.assertEqual(result["case_status"], "PARTIAL")
+        self.assertFalse(result["graph"]["policy_steps"][0]["wan_verified"])
+        self.assertEqual(result["graph"]["policy_steps"][0]["selected"], "client.probe")
+        advisor.assert_not_called()
+
+    def test_dynamic_only_offers_candidates_within_call_budget(self):
+        replay = self.replay()
+        replay["capabilities"].append("client.probe")
+        advisor = Mock()
+        result = self.run_request(replay=replay, dynamic=True, max_calls=7, advisor=advisor)
+        self.assert_result(result, "INCOMPLETE", "client_ip_reachable",
+                           ["clients.resolve", "wifi.station", "client.ipv4", "wan.status",
+                            "wan.routes", "wan.probe", "client.probe"])
+        self.assertEqual(result["graph"]["policy_steps"][0]["rejected"]["dns.probe"],
+                         "insufficient_call_budget")
+        advisor.assert_not_called()
+
+    def test_dynamic_rejects_advisor_choice_outside_compiled_goals(self):
+        replay = self.replay()
+        replay["capabilities"].append("client.probe")
+        replay["devices"][0]["world"]["client.probe"]["loss_pct"] = 80
+        advisor = Mock(return_value="dns.apply")
+        result = self.run_request(replay=replay, dynamic=True, advisor=advisor)
+        self.assert_result(result, "FINISH", "client_path_loss",
+                           ["clients.resolve", "wifi.station", "client.ipv4", "wan.status",
+                            "wan.routes", "wan.probe", "client.probe"])
+        advisor.assert_called_once()
+        self.assertFalse(result["graph"]["advice"][0]["accepted"])
+
     def test_dns_fault_requires_reachable_external_ip(self):
         replay = self.replay()
         replay["world"]["dns.probe"]["rcode"] = "SERVFAIL"

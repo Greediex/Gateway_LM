@@ -9,6 +9,7 @@ import unicodedata
 from .core import ROOT, PlanError, Registry, read_json, support
 from .graph_v3.graphs import GraphRegistry
 from .graph_v3.context import retrieve_context
+from .graph_v3.dynamic_policy import run_client_probes
 from .graph_v3.orchestrator import run_plan
 from .graph_v3.runner import GraphRunner
 from .graph_v3.state import CaseState
@@ -139,15 +140,17 @@ class Diagnostic:
         self.advice = []
         self.stages = []
         self.retrievals = []
+        self.policy_steps = []
 
-    def observe(self, port, reason):
+    def observe(self, port, reason, *, plan=None):
         stage = {"goal": port, "reason": reason, "after_call": self.runner.calls}
         self.stages.append(stage)
         fact = self.state.fact(port)
         if fact is None:
             try:
-                revision = self.runner.plans[-1].revision + 1 if self.runner.plans else 1
-                plan = self.runner.compiler().compile([port], self.state, revision=revision)
+                if plan is None:
+                    revision = self.runner.plans[-1].revision + 1 if self.runner.plans else 1
+                    plan = self.runner.compiler().compile([port], self.state, revision=revision)
                 self.retrievals.extend(run_plan(self.runner, plan, [port], method=self.method))
             except PlanError as exc:
                 stage["error"] = str(exc)
@@ -155,17 +158,18 @@ class Diagnostic:
         stage["evidence_id"] = fact["id"] if fact else None
         return fact["value"] if fact else {}
 
-    def order_probes(self, goals):
+    def order_probes(self, goals, *, prechecked=False):
         if self.advisor is None or self.runner.calls >= self.runner.max_calls:
             return goals
         eligible = []
         for goal in goals:
             if self.state.fact(goal):
                 continue
-            try:
-                self.runner.compiler().compile([goal], self.state)
-            except PlanError:
-                continue
+            if not prechecked:
+                try:
+                    self.runner.compiler().compile([goal], self.state)
+                except PlanError:
+                    continue
             eligible.append(goal)
         if len(eligible) < 2:
             return goals
@@ -261,7 +265,7 @@ def system_workflow(diag):
                       "system_storage_full", "no_fault_observed")
 
 
-def internet_workflow(diag):
+def internet_workflow(diag, *, dynamic=False):
     wifi = diag.observe("wifi.station", "check_client_association_and_signal")
     if diag.state.fact("client.identity") is None:
         return diag.unresolved_client()
@@ -281,6 +285,8 @@ def internet_workflow(diag):
     wan_fault = wan(diag)
     if wan_fault:
         return wan_fault
+    if dynamic:
+        return run_client_probes(diag)
     wan_proof = diag.state.fact("wan.probe")
     if not wan_proof or wan_proof["value"]["loss_pct"] != 0:
         return None
@@ -314,7 +320,8 @@ WORKFLOWS = {"WF-018": wan_workflow, "WF-023": dns_workflow, "WF-024": dhcp_work
              "WF-039": system_workflow, "WF-INTERNET": internet_workflow}
 
 
-def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advisor=None, context_bytes=None):
+def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advisor=None,
+             context_bytes=None, dynamic=False):
     """Run from request text and trusted replay inventory, with no fixture verdict as input."""
     text = normalize(request)
     workflow = route(text)
@@ -351,8 +358,16 @@ def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advi
     if context_bytes is not None:
         result["skill_context"] = retrieve_context(registry, diag.state, request,
                                                    registry.goal_ports[workflow], max_bytes=context_bytes, method=method)
-    terminal = WORKFLOWS[workflow](diag) or verdict("INCOMPLETE", "insufficient_evidence")
-    return finish({**result, "target": target, "graph": diag.trace()}, terminal)
+    if dynamic and workflow == "WF-INTERNET":
+        terminal = internet_workflow(diag, dynamic=True)
+        result["decision_source"] = "dynamic_client_policy"
+    else:
+        terminal = WORKFLOWS[workflow](diag)
+    trace = diag.trace()
+    if result["decision_source"] == "dynamic_client_policy":
+        trace["policy_steps"] = diag.policy_steps
+    return finish({**result, "target": target, "graph": trace},
+                  terminal or verdict("INCOMPLETE", "insufficient_evidence"))
 
 
 def replay_from_fixture(fixture, registry):
@@ -383,6 +398,7 @@ def main():
     parser.add_argument("--guide", action="store_true", help="Attach local runbooks for this replay profile")
     parser.add_argument("--context-bytes", type=int, help="Include compiler-checked skill bundles in the trace")
     parser.add_argument("--trace", action="store_true", help="Print the structured decision and graph")
+    parser.add_argument("--dynamic", action="store_true", help="Use evidence-driven client probe selection")
     args = parser.parse_args()
     fixture = next((c for c in read_json(ROOT / "data/cases.json") if c["id"] == args.fixture), None)
     if fixture is None:
@@ -399,7 +415,8 @@ def main():
         except ValueError as exc:
             parser.error(str(exc))
     result = diagnose(args.request, replay_from_fixture(fixture, registry),
-                      registry=registry, method=args.method, advisor=advisor, context_bytes=args.context_bytes)
+                      registry=registry, method=args.method, advisor=advisor, context_bytes=args.context_bytes,
+                      dynamic=args.dynamic)
     if args.guide:
         guide = RunbookIndex(DEFAULT_CATALOG).retrieve(args.request, product=REPLAY_PRODUCT,
                                                       firmware=REPLAY_FIRMWARE, permissions={"docs.read"})
