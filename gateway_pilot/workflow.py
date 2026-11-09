@@ -9,7 +9,7 @@ import unicodedata
 from .core import ROOT, PlanError, Registry, read_json, support
 from .graph_v3.graphs import GraphRegistry
 from .graph_v3.context import retrieve_context
-from .graph_v3.dynamic_policy import run_client_probes
+from .graph_v3.dynamic_policy import DiagnosticPolicy
 from .graph_v3.orchestrator import run_plan
 from .graph_v3.runner import GraphRunner
 from .graph_v3.state import CaseState
@@ -83,6 +83,7 @@ MESSAGES = {
     "wan_no_route": "Cổng WAN đã lên nhưng router thiếu tuyến mặc định.",
     "wan_packet_loss": "Phép thử IP từ router ghi nhận mất gói cao.",
     "gateway_dns_failure": "Router tới được IP đã thử nhưng truy vấn qua DNS của router thất bại.",
+    "gateway_ip_reachable_dns_unverified": "Router tới được IP đã thử. Chưa xác minh được DNS của router.",
     "wifi_weak_signal": "Router đo được tín hiệu Wi-Fi yếu của thiết bị.",
     "dhcp_pool_exhausted": "Thiết bị chưa có lease và dải địa chỉ DHCP đã hết chỗ.",
     "dhcp_service_down": "Thiết bị chưa có lease và dịch vụ DHCP đang dừng.",
@@ -97,7 +98,7 @@ HTML_WORKFLOW_IDS = {"WF-INTERNET": "WF-018", "WF-023": "WF-023",
                      "WF-024": "WF-024", "WF-039": "WF-039"}
 ROUTER_FAULTS = {"wan_link_down", "wan_no_route", "wan_packet_loss", "gateway_dns_failure"}
 PARTIAL_OBSERVATIONS = {"client_path_unverified", "client_ip_reachable", "client_path_loss",
-                        "client_no_lease"}
+                        "client_no_lease", "gateway_ip_reachable_dns_unverified"}
 
 
 def workflow_registry():
@@ -123,7 +124,9 @@ def finish(result, terminal):
         status = "NEEDS_INPUT"
     elif diagnosis in {"unsafe_change_denied", "read_permission_denied"}:
         status = "BLOCKED"
-    elif diagnosis in PARTIAL_OBSERVATIONS or (result["workflow"] == "WF-INTERNET" and diagnosis in ROUTER_FAULTS):
+    elif (diagnosis in PARTIAL_OBSERVATIONS
+          or (result["workflow"] == "WF-INTERNET" and diagnosis in ROUTER_FAULTS)
+          or (result["workflow"] == "WF-023" and diagnosis in ROUTER_FAULTS - {"gateway_dns_failure"})):
         status = "PARTIAL"
     else:
         status = "RESOLVED" if action == "FINISH" else "INCONCLUSIVE"
@@ -142,20 +145,29 @@ class Diagnostic:
         self.retrievals = []
         self.policy_steps = []
 
-    def observe(self, port, reason, *, plan=None):
-        stage = {"goal": port, "reason": reason, "after_call": self.runner.calls}
+    def observe_stage(self, goals, reason, *, plan=None):
+        stage = {"goal": goals[0], "reason": reason, "after_call": self.runner.calls}
+        if len(goals) > 1:
+            stage["goals"] = list(goals)
         self.stages.append(stage)
-        fact = self.state.fact(port)
-        if fact is None:
+        if any(self.state.fact(port) is None for port in goals):
             try:
                 if plan is None:
                     revision = self.runner.plans[-1].revision + 1 if self.runner.plans else 1
-                    plan = self.runner.compiler().compile([port], self.state, revision=revision)
-                self.retrievals.extend(run_plan(self.runner, plan, [port], method=self.method))
+                    plan = self.runner.compiler().compile(goals, self.state, revision=revision)
+                self.retrievals.extend(run_plan(self.runner, plan, goals, method=self.method))
             except PlanError as exc:
                 stage["error"] = str(exc)
-            fact = self.state.fact(port)
-        stage["evidence_id"] = fact["id"] if fact else None
+        facts = {port: self.state.fact(port) for port in goals}
+        if len(goals) > 1:
+            stage["evidence_ids"] = {port: fact["id"] for port, fact in facts.items() if fact}
+        else:
+            fact = facts[goals[0]]
+            stage["evidence_id"] = fact["id"] if fact else None
+        return facts
+
+    def observe(self, port, reason):
+        fact = self.observe_stage((port,), reason)[port]
         return fact["value"] if fact else {}
 
     def order_probes(self, goals, *, prechecked=False):
@@ -265,7 +277,7 @@ def system_workflow(diag):
                       "system_storage_full", "no_fault_observed")
 
 
-def internet_workflow(diag, *, dynamic=False):
+def internet_workflow(diag):
     wifi = diag.observe("wifi.station", "check_client_association_and_signal")
     if diag.state.fact("client.identity") is None:
         return diag.unresolved_client()
@@ -285,8 +297,6 @@ def internet_workflow(diag, *, dynamic=False):
     wan_fault = wan(diag)
     if wan_fault:
         return wan_fault
-    if dynamic:
-        return run_client_probes(diag)
     wan_proof = diag.state.fact("wan.probe")
     if not wan_proof or wan_proof["value"]["loss_pct"] != 0:
         return None
@@ -321,7 +331,7 @@ WORKFLOWS = {"WF-018": wan_workflow, "WF-023": dns_workflow, "WF-024": dhcp_work
 
 
 def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advisor=None,
-             context_bytes=None, dynamic=False):
+             context_bytes=None, dynamic=True):
     """Run from request text and trusted replay inventory, with no fixture verdict as input."""
     text = normalize(request)
     workflow = route(text)
@@ -358,13 +368,13 @@ def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advi
     if context_bytes is not None:
         result["skill_context"] = retrieve_context(registry, diag.state, request,
                                                    registry.goal_ports[workflow], max_bytes=context_bytes, method=method)
-    if dynamic and workflow == "WF-INTERNET":
-        terminal = internet_workflow(diag, dynamic=True)
-        result["decision_source"] = "dynamic_client_policy"
+    if dynamic:
+        terminal = DiagnosticPolicy(diag).run()
+        result["decision_source"] = "dynamic_policy"
     else:
         terminal = WORKFLOWS[workflow](diag)
     trace = diag.trace()
-    if result["decision_source"] == "dynamic_client_policy":
+    if dynamic:
         trace["policy_steps"] = diag.policy_steps
     return finish({**result, "target": target, "graph": trace},
                   terminal or verdict("INCOMPLETE", "insufficient_evidence"))
@@ -398,7 +408,10 @@ def main():
     parser.add_argument("--guide", action="store_true", help="Attach local runbooks for this replay profile")
     parser.add_argument("--context-bytes", type=int, help="Include compiler-checked skill bundles in the trace")
     parser.add_argument("--trace", action="store_true", help="Print the structured decision and graph")
-    parser.add_argument("--dynamic", action="store_true", help="Use evidence-driven client probe selection")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--dynamic", dest="dynamic", action="store_true", help="Use the evidence-driven policy (default)")
+    mode.add_argument("--core", dest="dynamic", action="store_false", help="Use the original Core workflow for comparison")
+    parser.set_defaults(dynamic=True)
     args = parser.parse_args()
     fixture = next((c for c in read_json(ROOT / "data/cases.json") if c["id"] == args.fixture), None)
     if fixture is None:

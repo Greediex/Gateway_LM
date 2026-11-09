@@ -46,7 +46,7 @@ def run_suite(output, advisor=None):
     differences = []
     with (output / "core.jsonl").open("x", encoding="utf-8") as stream:
         for case in cases:
-            row = diagnose(case["request"], replay_from_fixture(case, registry), registry=registry)
+            row = diagnose(case["request"], replay_from_fixture(case, registry), registry=registry, dynamic=False)
             actual = {key: row["terminal"][key] for key in ("action", "diagnosis")}
             route_match = row["workflow"] == case["workflow"]
             verdict_match = actual == case["gold"]
@@ -69,9 +69,9 @@ def run_suite(output, advisor=None):
                 replay["world"]["dns.probe"] = {**replay["world"]["dns.probe"],
                                                 "rcode": "SERVFAIL" if dns_fault else "NOERROR"}
                 replay["devices"][0]["world"]["client.probe"] = {"loss_pct": 0 if dns_fault else 80}
-                baseline = diagnose(request, replay, registry=registry)
+                baseline = diagnose(request, replay, registry=registry, dynamic=False)
                 started = perf_counter()
-                row = diagnose(request, replay, registry=registry, advisor=advisor)
+                row = diagnose(request, replay, registry=registry, advisor=advisor, dynamic=False)
                 wall_s = perf_counter() - started
                 events = row.get("graph", {}).get("advice", [])
                 selected = events[0]["selected"] if events and events[0]["accepted"] else None

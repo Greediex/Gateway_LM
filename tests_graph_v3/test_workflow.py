@@ -18,6 +18,7 @@ class TextWorkflowTests(unittest.TestCase):
         return replay_from_fixture(copy.deepcopy(self.fixtures[case_id]), self.registry)
 
     def run_request(self, request=None, replay=None, **options):
+        options.setdefault("dynamic", False)
         return diagnose(request or self.request, self.replay() if replay is None else replay,
                         registry=self.registry, **options)
 
@@ -187,8 +188,9 @@ class TextWorkflowTests(unittest.TestCase):
                            ["clients.resolve", "wifi.station", "client.ipv4", "wan.status",
                             "wan.routes", "wan.probe", "client.probe"])
         self.assertEqual(result["case_status"], "PARTIAL")
-        self.assertFalse(result["graph"]["policy_steps"][0]["wan_verified"])
-        self.assertEqual(result["graph"]["policy_steps"][0]["selected"], "client.probe")
+        stage = result["graph"]["policy_steps"][-1]
+        self.assertFalse(stage["wan_verified"])
+        self.assertEqual(stage["selected"], "client.probe")
         advisor.assert_not_called()
 
     def test_dynamic_only_offers_candidates_within_call_budget(self):
@@ -199,7 +201,7 @@ class TextWorkflowTests(unittest.TestCase):
         self.assert_result(result, "INCOMPLETE", "client_ip_reachable",
                            ["clients.resolve", "wifi.station", "client.ipv4", "wan.status",
                             "wan.routes", "wan.probe", "client.probe"])
-        self.assertEqual(result["graph"]["policy_steps"][0]["rejected"]["dns.probe"],
+        self.assertEqual(result["graph"]["policy_steps"][-1]["rejected"]["dns.probe"],
                          "insufficient_call_budget")
         advisor.assert_not_called()
 
@@ -222,6 +224,46 @@ class TextWorkflowTests(unittest.TestCase):
         result = self.run_request("Kiểm tra DNS của router.", replay)
         self.assert_result(result, "INCOMPLETE", "insufficient_evidence",
                            ["dns.config", "dns.probe", "wan.status"])
+
+    def test_default_wan_policy_groups_route_and_probe_and_honors_guard(self):
+        for route_ok, diagnosis in ((True, "no_fault_observed"), (False, "wan_no_route")):
+            with self.subTest(route_ok=route_ok):
+                replay = self.replay()
+                replay["world"]["wan.routes"]["default_route"] = route_ok
+                result = diagnose("Kiểm tra WAN của router.", replay, registry=self.registry)
+                calls = ["wan.status", "wan.routes"] + (["wan.probe"] if route_ok else [])
+                self.assert_result(result, "FINISH", diagnosis, calls)
+                self.assertEqual(result["decision_source"], "dynamic_policy")
+                self.assertEqual(result["graph"]["plans"][1]["goals"], ("wan.routes", "wan.probe"))
+
+    def test_dynamic_dns_timeout_keeps_verified_wan_result_partial(self):
+        replay = self.replay()
+        replay["world"]["dns.probe"]["_status"] = "TIMEOUT"
+        result = self.run_request("Kiểm tra DNS của router.", replay, dynamic=True)
+        self.assert_result(result, "INCOMPLETE", "gateway_ip_reachable_dns_unverified",
+                           ["dns.config", "dns.probe", "wan.status", "wan.routes", "wan.probe"])
+        self.assertEqual(result["case_status"], "PARTIAL")
+
+    def test_dynamic_dhcp_uses_service_when_pool_is_unavailable(self):
+        replay = self.replay()
+        replay["devices"][0]["world"]["dhcp.leases"]["lease_valid"] = False
+        replay["world"]["dhcp.service"]["running"] = False
+        replay["capabilities"].remove("dhcp.pool")
+        result = self.run_request("Laptop An chưa được cấp IP.", replay, dynamic=True)
+        self.assert_result(result, "FINISH", "dhcp_service_down",
+                           ["clients.resolve", "dhcp.leases", "dhcp.service"])
+        self.assertIn("dhcp.pool", result["graph"]["policy_steps"][-1]["rejected"])
+
+    def test_dynamic_system_uses_verified_resources_and_rejects_stale_data(self):
+        for age, action, diagnosis in ((0, "FINISH", "system_cpu_load"),
+                                       (300, "INCOMPLETE", "insufficient_evidence")):
+            with self.subTest(age=age):
+                replay = self.replay()
+                replay["world"]["system.resources"] = {"available_ram_pct": 35, "cpu_pct": 98,
+                                                       "storage_used_pct": 20, "_age_s": age}
+                result = self.run_request("Kiểm tra CPU của router.", replay, dynamic=True)
+                self.assert_result(result, action, diagnosis, ["system.resources"])
+                self.assertEqual(result["graph"]["policy_steps"][0]["selected"], "system.resources")
 
     def test_routing_ignores_fixture_workflow_gold_and_private_world(self):
         fixture = copy.deepcopy(self.fixtures["GLM-21-0"])

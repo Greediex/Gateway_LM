@@ -11,6 +11,10 @@ from run_html_benchmark import TARGET, internet_replay
 
 
 REQUEST = "Máy tính phòng khách vẫn có Wi-Fi nhưng không mở được trang web."
+WAN_REQUEST = "Kiểm tra WAN của router."
+DNS_REQUEST = "Kiểm tra DNS của router."
+DHCP_REQUEST = "Máy tính phòng khách chưa có IP."
+SYSTEM_REQUEST = "Kiểm tra CPU và RAM của router."
 LOSS = {"client.probe": {"loss_pct": 80}}
 CASES = (
     ("client_dns", {"client": {"client.dns": {"rcode": "REFUSED"}}},
@@ -31,6 +35,39 @@ CASES = (
     ("no_client_adapter", {"disable": ["client.probe", "client.dns"]},
      "client_path_unverified", ("dns.probe", "wan.probe"), False),
 )
+
+EXTRA_CASES = (
+    (WAN_REQUEST, "wan_healthy", {}, "no_fault_observed", ("wan.status", "wan.routes", "wan.probe"), False),
+    (WAN_REQUEST, "wan_route_missing", {"wan.routes": {"default_route": False}},
+     "wan_no_route", ("wan.status", "wan.routes"), False),
+    (WAN_REQUEST, "wan_adapter_timeout", {"wan.probe": {"_status": "TIMEOUT"}},
+     "insufficient_evidence", (), True),
+    (DNS_REQUEST, "gateway_dns_servfail", {"dns.probe": {"rcode": "SERVFAIL"}},
+     "gateway_dns_failure", ("dns.probe", "wan.probe"), False),
+    (DNS_REQUEST, "gateway_dns_timeout", {"dns.probe": {"_status": "TIMEOUT"}},
+     "gateway_ip_reachable_dns_unverified", ("wan.probe",), True),
+    (DHCP_REQUEST, "dhcp_pool_empty", {"dhcp.pool": {"free_addresses": 0}},
+     "dhcp_pool_exhausted", ("dhcp.leases", "dhcp.pool"), False),
+    (DHCP_REQUEST, "dhcp_pool_timeout", {"dhcp.pool": {"_status": "TIMEOUT"}, "dhcp.service": {"running": False}},
+     "dhcp_service_down", ("dhcp.leases", "dhcp.service"), True),
+    (SYSTEM_REQUEST, "system_cpu_high", {"system.resources": {"cpu_pct": 97}},
+     "system_cpu_load", ("system.resources",), False),
+    (SYSTEM_REQUEST, "system_resources_stale", {"system.resources": {"_age_s": 300}},
+     "insufficient_evidence", (), True),
+)
+
+
+def workflow_replay(overrides):
+    replay = internet_replay({"permissions": ["network.read", "system.read"]})
+    world = replay["world"]
+    world.update({"dhcp.pool": {"free_addresses": 3}, "dhcp.service": {"running": True},
+                  "system.resources": {"available_ram_pct": 40, "cpu_pct": 20, "storage_used_pct": 30}})
+    device = replay["devices"][0]["world"]
+    device["dhcp.leases"] = {"lease_valid": False}
+    replay["capabilities"] = sorted(world.keys() | device.keys())
+    for tool, data in overrides.items():
+        world[tool].update(data)
+    return replay
 
 
 def score(result, registry, expected, ports):
@@ -53,9 +90,10 @@ def score(result, registry, expected, ports):
     read_only = all(registry.functions[fid].risk == "READ" for fid in calls)
     first_failure = next((i for i, e in enumerate(graph["events"])
                           if e.get("state") in {"FAILED", "INCONCLUSIVE"}), None)
-    return {"diagnosis": terminal["diagnosis"], "pass": terminal["diagnosis"] == expected
+    return {"diagnosis": terminal["diagnosis"], "case_status": result["case_status"],
+            "pass": terminal["diagnosis"] == expected
             and evidence_ok and order_ok and read_only, "evidence_ok": evidence_ok,
-            "dependency_order_ok": order_ok, "read_only": read_only, "calls": calls,
+            "dependency_order_ok": order_ok, "read_only": read_only, "calls": calls, "plans": len(graph["plans"]),
             "calls_after_first_failure": (len(calls) - first_failure - 1 if first_failure is not None else None),
             "model_calls": len(graph["advice"]),
             "accepted_model_calls": sum(event["accepted"] for event in graph["advice"])}
@@ -69,14 +107,20 @@ def benchmark(advisor=None):
         arms.append(("dynamic_with_advisor", True, advisor))
     for name, dynamic, probe_advisor in arms:
         rows = []
-        for case_id, inputs, diagnosis, ports, injected in CASES:
-            result = diagnose(REQUEST, internet_replay(inputs), registry=registry, dynamic=dynamic,
+        inputs_by_case = [(REQUEST, name, internet_replay(inputs), diagnosis, ports, injected)
+                          for name, inputs, diagnosis, ports, injected in CASES]
+        inputs_by_case += [(request, name, workflow_replay(inputs), diagnosis, ports, injected)
+                           for request, name, inputs, diagnosis, ports, injected in EXTRA_CASES]
+        for request, case_id, replay, diagnosis, ports, injected in inputs_by_case:
+            result = diagnose(request, replay, registry=registry, dynamic=dynamic,
                               advisor=probe_advisor)
-            rows.append({"case": case_id, "injected": injected, **score(result, registry, diagnosis, ports)})
+            rows.append({"case": case_id, "workflow": result["workflow"], "injected": injected,
+                         **score(result, registry, diagnosis, ports)})
         report[name] = {"passed": sum(row["pass"] for row in rows), "total": len(rows),
-                        "recovered": sum(row["pass"] for row in rows if row["injected"]),
-                        "injected_total": sum(row["injected"] for row in rows),
+                        "fault_cases_passed": sum(row["pass"] for row in rows if row["injected"]),
+                        "fault_cases_total": sum(row["injected"] for row in rows),
                         "tool_calls": sum(len(row["calls"]) for row in rows),
+                        "plans": sum(row["plans"] for row in rows),
                         "model_calls": sum(row["model_calls"] for row in rows),
                         "accepted_model_calls": sum(row["accepted_model_calls"] for row in rows), "cases": rows}
     return report
@@ -96,7 +140,7 @@ def main():
         json.dump(report, output, indent=2, ensure_ascii=False)
     for name, row in report.items():
         print(f'{name}: {row["passed"]}/{row["total"]} passed, '
-              f'{row["recovered"]}/{row["injected_total"]} recovered, '
+              f'{row["fault_cases_passed"]}/{row["fault_cases_total"]} fault cases passed, '
               f'{row["tool_calls"]} tool calls, {row["model_calls"]} model calls')
     return int(report["dynamic"]["passed"] != report["dynamic"]["total"])
 

@@ -1,79 +1,172 @@
-"""Evidence-driven probe policy for a client Internet diagnosis."""
+"""Choose bounded evidence goals for the read-only diagnostic workflows."""
+
+from dataclasses import dataclass
 
 from ..core import PlanError
 
 
-def probe_candidates(runner, goals):
-    """Return only goals with a compiler-checked plan for this session."""
-    revision = runner.plans[-1].revision + 1 if runner.plans else 1
-    candidates, rejected = {}, {}
-    for goal in goals:
-        try:
-            plan = runner.compiler().compile([goal], runner.state, revision=revision)
-        except PlanError as exc:
-            rejected[goal] = str(exc)
-            continue
-        if len(plan.nodes) > runner.max_calls - runner.calls:
-            rejected[goal] = "insufficient_call_budget"
-        else:
-            candidates[goal] = plan
-    return candidates, rejected
+@dataclass(frozen=True)
+class Stage:
+    reason: str
+    goals: tuple[str, ...]
+
+    @property
+    def label(self):
+        return "+".join(self.goals)
 
 
-def run_client_probes(diag):
-    """Choose the next evidence goal when the previous stage has settled."""
-    attempted = set()
+class DiagnosticPolicy:
+    def __init__(self, diag):
+        self.diag = diag
+        self.attempted = set()
+        self.rejected = set()
 
-    def value(port, key):
-        fact = diag.state.fact(port)
-        return fact["value"].get(key) if fact else None
+    def value(self, port, field):
+        fact = self.diag.state.fact(port)
+        return fact["value"].get(field) if fact else None
 
-    while True:
-        wan_ok = (value("wan.status", "link_up") is True
-                  and value("wan.routes", "default_route") is True
-                  and value("wan.probe", "loss_pct") == 0)
-        client_loss = value("client.probe", "loss_pct")
-        dns_code = value("dns.probe", "rcode")
-        if wan_ok and (fault := diag.proof("gateway_dns_failure")):
+    def choices(self, *stages):
+        return tuple(stage for stage in stages if stage.goals not in self.rejected and all(
+            goal not in self.attempted and self.diag.state.fact(goal) is None for goal in stage.goals))
+
+    def wan_healthy(self):
+        return (self.value("wan.status", "link_up") is True
+                and self.value("wan.routes", "default_route") is True
+                and self.value("wan.probe", "loss_pct") == 0)
+
+    def wan(self):
+        proof = self.diag.proof("wan_link_down", "wan_no_route")
+        if proof:
+            return proof
+        if self.value("wan.status", "link_up") is not True:
+            return self.choices(Stage("check_physical_link", ("wan.status",)))
+        if self.value("wan.routes", "default_route") is None:
+            return self.choices(
+                Stage("link_up_check_route_then_probe", ("wan.routes", "wan.probe")),
+                Stage("check_route_without_probe", ("wan.routes",)),
+            )
+        return self.diag.proof("wan_packet_loss") or self.choices(
+            Stage("route_exists_probe_external_ip", ("wan.probe",)))
+
+    def gateway_wan(self):
+        return self.wan() or self.diag.proof("no_fault_observed")
+
+    def gateway_dns(self):
+        stage = self.choices(Stage("check_configured_resolver", ("dns.probe",)))
+        if stage:
+            return stage
+        wan = self.wan()
+        if wan:
+            return wan
+        if not self.wan_healthy():
+            return None
+        if self.diag.state.fact("dns.probe") is None:
+            return self.diag.observed("INCOMPLETE", "gateway_ip_reachable_dns_unverified", "wan.probe")
+        return self.diag.proof("gateway_dns_failure", "no_fault_observed")
+
+    def dhcp(self, *, check_health):
+        valid = self.value("dhcp.leases", "lease_valid")
+        if valid is None:
+            choices = self.choices(Stage("check_lease_for_selected_device", ("dhcp.leases",)))
+            if choices:
+                return choices
+            return self.diag.unresolved_client() if self.diag.state.fact("client.identity") is None else None
+        pool = Stage("check_available_addresses", ("dhcp.pool",))
+        service = Stage("check_dhcp_service", ("dhcp.service",))
+        if valid:
+            if check_health:
+                return self.diag.proof("no_fault_observed") or self.choices(
+                    Stage("verify_pool_and_service", ("dhcp.pool", "dhcp.service")), pool, service)
+            return None
+        return (self.diag.proof("dhcp_pool_exhausted", "dhcp_service_down")
+                or self.choices(pool, service) or self.diag.proof("client_no_lease"))
+
+    def system_health(self):
+        return (self.diag.proof("system_memory_pressure", "system_cpu_load", "system_storage_full", "no_fault_observed")
+                or self.choices(Stage("measure_cpu_memory_storage", ("system.resources",))))
+
+    def client_internet(self):
+        associated = self.value("wifi.station", "associated")
+        if associated is None:
+            return (self.choices(Stage("check_client_association_and_signal", ("wifi.station",)))
+                    or (self.diag.unresolved_client() if self.diag.state.fact("client.identity") is None else None))
+        if associated is False:
+            return self.diag.observed("FINISH", "client_not_associated", "wifi.station")
+        weak = self.diag.proof("wifi_weak_signal")
+        if weak:
+            return weak
+        configured = self.value("client.ipv4", "configured")
+        if configured is None:
+            return self.choices(Stage("check_client_address", ("client.ipv4",)))
+        if configured is False:
+            return self.dhcp(check_health=False) or self.diag.observed(
+                "FINISH", "client_ipv4_unconfigured", "wifi.station", "client.ipv4")
+        if not self.value("client.ipv4", "address"):
+            return None
+        return self.wan() or self.client_probes()
+
+    def client_probes(self):
+        wan_ok = self.wan_healthy()
+        client_loss = self.value("client.probe", "loss_pct")
+        dns_code = self.value("dns.probe", "rcode")
+        if wan_ok and (fault := self.diag.proof("gateway_dns_failure")):
             return fault
         if client_loss is not None and client_loss >= 50:
-            return diag.observed("FINISH", "client_path_loss", "client.probe")
+            return self.diag.observed("FINISH", "client_path_loss", "client.probe")
 
-        reasons = {}
-        if client_loss is None:
-            reasons["client.probe"] = ("verify_ip_path_from_client" if wan_ok
-                                       else "wan_unverified_measure_client_path")
-        if wan_ok and dns_code is None:
-            reasons["dns.probe"] = "external_ip_reachable_check_gateway_dns"
-        query = value("dns.probe", "query")
+        stages = [Stage("verify_ip_path_from_client" if wan_ok else "wan_unverified_measure_client_path",
+                        ("client.probe",))]
+        if wan_ok:
+            stages.append(Stage("external_ip_reachable_check_gateway_dns", ("dns.probe",)))
+        query = self.value("dns.probe", "query")
         if client_loss == 0 and dns_code == "NOERROR" and query and query.rstrip("."):
-            client_query = value("client.dns", "query")
-            if client_query and client_query.rstrip(".").casefold() == query.rstrip(".").casefold():
-                if value("client.dns", "rcode") in {"SERVFAIL", "TIMEOUT", "REFUSED"}:
-                    return diag.observed("FINISH", "client_dns_failure", "client.dns", "client.probe", "dns.probe")
-            if value("client.dns", "rcode") is None:
-                reasons["client.dns"] = "compare_dns_from_client_and_router"
+            client_query = self.value("client.dns", "query")
+            if (client_query and client_query.rstrip(".").casefold() == query.rstrip(".").casefold()
+                    and self.value("client.dns", "rcode") in {"SERVFAIL", "TIMEOUT", "REFUSED"}):
+                return self.diag.observed("FINISH", "client_dns_failure", "client.dns", "client.probe", "dns.probe")
+            stages.append(Stage("compare_dns_from_client_and_router", ("client.dns",)))
+        choices = self.choices(*stages)
+        if choices:
+            return choices
+        if client_loss == 0:
+            return self.diag.observed("INCOMPLETE", "client_ip_reachable", "client.probe")
+        if wan_ok and dns_code == "NOERROR" and client_loss is None:
+            return self.diag.observed("INCOMPLETE", "client_path_unverified", "dns.probe", "wan.probe")
+        return None
 
-        if diag.runner.calls >= diag.runner.max_calls:
-            break
-        pending = tuple(goal for goal in reasons if goal not in attempted)
-        if not pending:
-            break
-        candidates, rejected = probe_candidates(diag.runner, pending)
-        attempted.update(rejected)
-        event = {"after_call": diag.runner.calls, "wan_verified": wan_ok,
-                 "candidates": {goal: plan.topological() for goal, plan in candidates.items()},
-                 "rejected": rejected, "selected": None}
-        diag.policy_steps.append(event)
-        if not candidates:
-            break
-        goal = diag.order_probes(tuple(candidates), prechecked=True)[0]
-        event.update(selected=goal, reason=reasons[goal])
-        attempted.add(goal)
-        diag.observe(goal, reasons[goal], plan=candidates[goal])
-
-    if value("client.probe", "loss_pct") == 0:
-        return diag.observed("INCOMPLETE", "client_ip_reachable", "client.probe")
-    if wan_ok and dns_code == "NOERROR" and value("client.probe", "loss_pct") is None:
-        return diag.observed("INCOMPLETE", "client_path_unverified", "dns.probe", "wan.probe")
-    return None
+    def run(self):
+        decide = {"WF-018": self.gateway_wan, "WF-023": self.gateway_dns,
+                  "WF-024": lambda: self.dhcp(check_health=True), "WF-039": self.system_health,
+                  "WF-INTERNET": self.client_internet}[self.diag.case["workflow"]]
+        runner = self.diag.runner
+        while True:
+            decision = decide()
+            if not isinstance(decision, tuple):
+                return decision
+            if not decision:
+                return None
+            revision = runner.plans[-1].revision + 1 if runner.plans else 1
+            candidates, rejected = {}, {}
+            for stage in decision:
+                try:
+                    plan = runner.compiler().compile(stage.goals, runner.state, revision=revision)
+                    if len(plan.nodes) > runner.max_calls - runner.calls:
+                        raise PlanError("insufficient_call_budget")
+                except PlanError as exc:
+                    rejected[stage.label] = str(exc)
+                    self.rejected.add(stage.goals)
+                else:
+                    candidates[stage] = plan
+            event = {"after_call": runner.calls, "wan_verified": self.wan_healthy(),
+                     "candidates": {stage.label: plan.topological() for stage, plan in candidates.items()},
+                     "rejected": rejected, "selected": None}
+            self.diag.policy_steps.append(event)
+            if not candidates:
+                continue
+            stage = next(iter(candidates))
+            if {item.goals for item in candidates} == {("client.probe",), ("dns.probe",)}:
+                ordered = self.diag.order_probes(tuple(item.label for item in candidates), prechecked=True)
+                stage = next(item for item in candidates if item.label == ordered[0])
+            event.update(selected=stage.label, goals=list(stage.goals), reason=stage.reason)
+            self.attempted.update(stage.goals)
+            self.diag.observe_stage(stage.goals, stage.reason, plan=candidates[stage])
