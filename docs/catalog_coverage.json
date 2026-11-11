@@ -1,0 +1,2911 @@
+{
+  "kind": "Static contract-based catalog coverage; no model calls or gold fault labels",
+  "mean_goal_function_coverage": {
+    "flat": 1.0,
+    "retrieval": 0.7939236111111111,
+    "graph": 1.0
+  },
+  "rows": [
+    {
+      "case_id": "GLM-01-1",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-01-1",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-01-1",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-01-2",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-01-2",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe",
+        "system.resources"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-01-2",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe",
+        "system.resources"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-1",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-1",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-1",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-2",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-2",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-02-2",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-1",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-1",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.probe",
+        "wan.status",
+        "dhcp.leases",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-1",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.probe",
+        "wan.status",
+        "dhcp.leases",
+        "wan.routes",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-2",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-2",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-03-2",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-1",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-1",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "wan.routes",
+        "wan.status",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-1",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "wan.routes",
+        "wan.status",
+        "wan.probe",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-2",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-2",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-04-2",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-05-1",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-05-1",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "dhcp.leases",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 0.3333333333333333
+    },
+    {
+      "case_id": "GLM-05-1",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.status",
+        "dhcp.leases",
+        "client.ipv4",
+        "wan.routes",
+        "wan.probe",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-05-2",
+      "workflow": "WF-018",
+      "arm": "flat",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-05-2",
+      "workflow": "WF-018",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-05-2",
+      "workflow": "WF-018",
+      "arm": "graph",
+      "required_read_functions": [
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "wan.routes",
+        "wan.status",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-06-1",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-06-1",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-06-1",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "dhcp.leases",
+        "wan.probe",
+        "clients.resolve",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-06-2",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-06-2",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-06-2",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-07-1",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-07-1",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-07-1",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-07-2",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-07-2",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-07-2",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-08-1",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-08-1",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-08-1",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "dhcp.leases",
+        "wan.probe",
+        "clients.resolve",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-08-2",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-08-2",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-08-2",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-09-1",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-09-1",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "wan.probe"
+      ],
+      "function_goal_coverage": 0.6
+    },
+    {
+      "case_id": "GLM-09-1",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-09-2",
+      "workflow": "WF-023",
+      "arm": "flat",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-09-2",
+      "workflow": "WF-023",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 0.4
+    },
+    {
+      "case_id": "GLM-09-2",
+      "workflow": "WF-023",
+      "arm": "graph",
+      "required_read_functions": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "clients.resolve",
+        "wan.probe",
+        "wan.status",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-10-1",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-10-1",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "clients.resolve",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 0.75
+    },
+    {
+      "case_id": "GLM-10-1",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "clients.resolve",
+        "dhcp.service",
+        "dhcp.pool"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-10-2",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-10-2",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-10-2",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-11-1",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-11-1",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.pool",
+        "client.ipv4",
+        "dhcp.service",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 0.75
+    },
+    {
+      "case_id": "GLM-11-1",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.pool",
+        "client.ipv4",
+        "dhcp.service",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-11-2",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-11-2",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.pool",
+        "dhcp.service",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-11-2",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.pool",
+        "dhcp.service",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-1",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-1",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-1",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-2",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-2",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.service",
+        "dhcp.pool",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-12-2",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.service",
+        "dhcp.pool",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-13-1",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-13-1",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dns.config"
+      ],
+      "function_goal_coverage": 0.5
+    },
+    {
+      "case_id": "GLM-13-1",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dns.config",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-13-2",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-13-2",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-13-2",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-1",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-1",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-1",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "dhcp.service",
+        "dhcp.pool",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-2",
+      "workflow": "WF-024",
+      "arm": "flat",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-2",
+      "workflow": "WF-024",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "clients.resolve",
+        "dhcp.service",
+        "dhcp.pool"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-14-2",
+      "workflow": "WF-024",
+      "arm": "graph",
+      "required_read_functions": [
+        "clients.resolve",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "clients.resolve",
+        "dhcp.service",
+        "dhcp.pool"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "wifi.station"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "wifi.station",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-15-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "client.ipv4",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-16-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-17-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-17-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "client.ipv4",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 0.0
+    },
+    {
+      "case_id": "GLM-17-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "dhcp.leases",
+        "client.ipv4",
+        "clients.resolve",
+        "system.resources"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-17-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-17-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-17-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "wan.probe",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "wan.probe",
+        "client.ipv4",
+        "wan.status",
+        "wan.routes",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-18-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-19-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "client.ipv4",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-20-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.resources",
+        "system.logs",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-21-1",
+      "workflow": "WF-INTERNET",
+      "arm": "flat",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-21-1",
+      "workflow": "WF-INTERNET",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "dhcp.leases",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 0.25
+    },
+    {
+      "case_id": "GLM-21-1",
+      "workflow": "WF-INTERNET",
+      "arm": "graph",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "dhcp.leases",
+        "clients.resolve",
+        "client.ipv4",
+        "wan.probe",
+        "dns.probe",
+        "wan.status",
+        "wan.routes",
+        "dns.config"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-21-2",
+      "workflow": "WF-INTERNET",
+      "arm": "flat",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-21-2",
+      "workflow": "WF-INTERNET",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "clients.resolve",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 0.375
+    },
+    {
+      "case_id": "GLM-21-2",
+      "workflow": "WF-INTERNET",
+      "arm": "graph",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "clients.resolve",
+        "wan.routes",
+        "client.ipv4",
+        "wan.probe",
+        "dns.probe",
+        "wan.status",
+        "dns.config"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-22-1",
+      "workflow": "WF-INTERNET",
+      "arm": "flat",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-22-1",
+      "workflow": "WF-INTERNET",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "wan.status",
+        "dns.probe",
+        "dhcp.leases"
+      ],
+      "function_goal_coverage": 0.375
+    },
+    {
+      "case_id": "GLM-22-1",
+      "workflow": "WF-INTERNET",
+      "arm": "graph",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "wan.status",
+        "dns.probe",
+        "dhcp.leases",
+        "clients.resolve",
+        "client.ipv4",
+        "wan.probe",
+        "dns.config",
+        "wan.routes"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-22-2",
+      "workflow": "WF-INTERNET",
+      "arm": "flat",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-22-2",
+      "workflow": "WF-INTERNET",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "clients.resolve",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 0.375
+    },
+    {
+      "case_id": "GLM-22-2",
+      "workflow": "WF-INTERNET",
+      "arm": "graph",
+      "required_read_functions": [
+        "client.ipv4",
+        "clients.resolve",
+        "dns.config",
+        "dns.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status",
+        "wifi.station"
+      ],
+      "exposed": [
+        "wifi.station",
+        "clients.resolve",
+        "client.ipv4",
+        "wan.probe",
+        "dns.probe",
+        "wan.status",
+        "wan.routes",
+        "dns.config"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-23-1",
+      "workflow": "WF-WRITE",
+      "arm": "flat",
+      "required_read_functions": [],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-23-1",
+      "workflow": "WF-WRITE",
+      "arm": "retrieval",
+      "required_read_functions": [],
+      "exposed": [
+        "dns.config",
+        "dns.probe"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-23-1",
+      "workflow": "WF-WRITE",
+      "arm": "graph",
+      "required_read_functions": [],
+      "exposed": [
+        "dns.config",
+        "dns.probe"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-23-2",
+      "workflow": "WF-WRITE",
+      "arm": "flat",
+      "required_read_functions": [],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-23-2",
+      "workflow": "WF-WRITE",
+      "arm": "retrieval",
+      "required_read_functions": [],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-23-2",
+      "workflow": "WF-WRITE",
+      "arm": "graph",
+      "required_read_functions": [],
+      "exposed": [
+        "dns.probe",
+        "dns.config",
+        "system.resources"
+      ],
+      "function_goal_coverage": 1
+    },
+    {
+      "case_id": "GLM-24-1",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-24-1",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.pool",
+        "client.ipv4"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-24-1",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.pool",
+        "client.ipv4",
+        "clients.resolve"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-24-2",
+      "workflow": "WF-039",
+      "arm": "flat",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "clients.resolve",
+        "client.ipv4",
+        "wifi.station",
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "dns.config",
+        "dns.probe",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service",
+        "system.resources",
+        "system.logs"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-24-2",
+      "workflow": "WF-039",
+      "arm": "retrieval",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    },
+    {
+      "case_id": "GLM-24-2",
+      "workflow": "WF-039",
+      "arm": "graph",
+      "required_read_functions": [
+        "system.resources"
+      ],
+      "exposed": [
+        "system.logs",
+        "system.resources",
+        "dhcp.service"
+      ],
+      "function_goal_coverage": 1.0
+    }
+  ]
+}

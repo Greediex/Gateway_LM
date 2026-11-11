@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0",
+  "calibration_split": "benchmarks/router_dev_v0.json (dev, not holdout)",
+  "tau_low": 0.35,
+  "tau_high": 0.55,
+  "min_margin": 0.08,
+  "rule_min_margin": 0.02,
+  "multi_min_score": 0.40,
+  "unsupported_min_score": 0.60,
+  "explicit_catalog_min_score": 0.35,
+  "explicit_subject_min_idf": 4.0,
+  "candidate_count": 3
+}

@@ -1,0 +1,336 @@
+{
+ "case_status": "RESOLVED",
+ "claims": {
+  "no_fault_observed.WF-039": {
+   "diagnosis": "no_fault_observed",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "HEALTHY",
+   "value": "FALSE"
+  },
+  "system_cpu_load": {
+   "diagnosis": "system_cpu_load",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "system_memory_pressure": {
+   "diagnosis": "system_memory_pressure",
+   "evidence": [
+    "e1"
+   ],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "TRUE"
+  },
+  "system_storage_full": {
+   "diagnosis": "system_storage_full",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  }
+ },
+ "contract_0": [
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 0,
+     "latency_ms": 1.0,
+     "nodes": 1
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "READY_TO_COMPILE",
+   "function_candidates": [
+    "system.resources"
+   ],
+   "missing_inputs": [],
+   "plan_revision": 1,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có thiếu RAM không? missing system.resources",
+   "rejected": [],
+   "selected_skills": [
+    "SK02",
+    "SK03",
+    "SK08",
+    "SK09"
+   ],
+   "skill_context": {
+    "system.resources": "SK08"
+   },
+   "skill_graph_version": 1
+  }
+ ],
+ "contract_a": [
+  {
+   "case_id": "golden-system_memory_pressure",
+   "edges": [
+    {
+     "from": "src",
+     "to": "system.resources#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "system.resources#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "system.resources"
+     ],
+     "function_id": "system.resources",
+     "node_id": "system.resources#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK08",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-system_memory_pressure/plan/1",
+   "revision": 1
+  }
+ ],
+ "contract_b": [
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "system.resources#1",
+   "observations": [
+    {
+     "evidence_id": "e1",
+     "kind": "system.resources",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  }
+ ],
+ "contract_c": {
+  "case_id": "golden-system_memory_pressure",
+  "concluded_claim": "system_memory_pressure",
+  "decision": "RESOLVED",
+  "facts": {
+   "client_dns_works": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_identified": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_internet_reachable": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_ip_configured": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_lease_valid": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_wifi_associated": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_cpu_ok": {
+    "evidence": [
+     "e1"
+    ],
+    "value": "TRUE"
+   },
+   "router_default_route": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dhcp_pool_available": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dhcp_running": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dns_works": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_memory_ok": {
+    "evidence": [
+     "e1"
+    ],
+    "value": "FALSE"
+   },
+   "router_storage_ok": {
+    "evidence": [
+     "e1"
+    ],
+    "value": "TRUE"
+   },
+   "router_wan_link": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_wan_reachable": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   }
+  },
+  "outstanding_questions": [],
+  "state_revision": 1
+ },
+ "events": [
+  {
+   "node": "system.resources#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 1,
+   "state": "SUCCEEDED"
+  }
+ ],
+ "golden_id": "system_memory_pressure",
+ "input": {
+  "capabilities": [
+   "clients.resolve",
+   "client.ipv4",
+   "wifi.station",
+   "wan.status",
+   "wan.routes",
+   "wan.probe",
+   "dns.config",
+   "dns.probe",
+   "dhcp.leases",
+   "dhcp.pool",
+   "dhcp.service",
+   "system.resources",
+   "system.logs",
+   "dns.apply",
+   "qos.apply"
+  ],
+  "devices": [],
+  "fixture": "GLM-15-0",
+  "gateway_functions": [
+   "dhcp.pool",
+   "dhcp.service",
+   "dns.config",
+   "dns.probe",
+   "system.logs",
+   "system.resources",
+   "wan.probe",
+   "wan.routes",
+   "wan.status"
+  ],
+  "request": "Router có thiếu RAM không?",
+  "workflow": "WF-039"
+ },
+ "note": "synthetic replay; not a router measurement",
+ "verdict": {
+  "action": "FINISH",
+  "diagnosis": "system_memory_pressure",
+  "evidence_ids": [
+   "e1"
+  ]
+ }
+}

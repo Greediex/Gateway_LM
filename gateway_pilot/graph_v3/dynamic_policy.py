@@ -134,13 +134,16 @@ class DiagnosticPolicy:
             return self.diag.observed("INCOMPLETE", "client_path_unverified", "dns.probe", "wan.probe")
         return None
 
-    def run(self):
+    def decide(self):
         decide = {"WF-018": self.gateway_wan, "WF-023": self.gateway_dns,
                   "WF-024": lambda: self.dhcp(check_health=True), "WF-039": self.system_health,
                   "WF-INTERNET": self.client_internet}[self.diag.case["workflow"]]
+        return decide()
+
+    def select_stage(self, choose_stage=None):
         runner = self.diag.runner
         while True:
-            decision = decide()
+            decision = self.decide()
             if not isinstance(decision, tuple):
                 return decision
             if not decision:
@@ -164,9 +167,19 @@ class DiagnosticPolicy:
             if not candidates:
                 continue
             stage = next(iter(candidates))
-            if {item.goals for item in candidates} == {("client.probe",), ("dns.probe",)}:
+            if choose_stage is not None:
+                stage = choose_stage(candidates, event)
+            elif {item.goals for item in candidates} == {("client.probe",), ("dns.probe",)}:
                 ordered = self.diag.order_probes(tuple(item.label for item in candidates), prechecked=True)
                 stage = next(item for item in candidates if item.label == ordered[0])
             event.update(selected=stage.label, goals=list(stage.goals), reason=stage.reason)
-            self.attempted.update(stage.goals)
-            self.diag.observe_stage(stage.goals, stage.reason, plan=candidates[stage])
+            return stage, candidates[stage]
+
+    def execute_stage(self, stage, plan):
+        self.attempted.update(stage.goals)
+        return self.diag.observe_stage(stage.goals, stage.reason, plan=plan)
+
+    def run(self):
+        while isinstance(selection := self.select_stage(), tuple):
+            self.execute_stage(*selection)
+        return selection

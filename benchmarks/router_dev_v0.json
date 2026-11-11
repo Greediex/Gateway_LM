@@ -1,0 +1,538 @@
+{
+  "version": "0.1.0",
+  "split": "dev",
+  "note": "Tập dev để chọn ngưỡng C2, không phải holdout; câu viết riêng, không chép symptoms. 15 câu đầu chép từ review C1 theo brief C2.",
+  "cases": [
+    {
+      "message": "iPad của con tôi báo đã kết nối nhưng youtube cứ quay vòng",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-INTERNET",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "dien thoai bat duoc wifi ma zalo khong gui duoc tin",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-INTERNET",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "my tablet shows connected yet nothing loads",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-INTERNET",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "nhà tôi rớt mạng suốt từ sáng",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "cáp quang có bị đứt không",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "is the uplink from the ISP down",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "gõ google.com thì báo không tìm thấy máy chủ",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-023",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "vao web bang ten khong duoc ma ping 8.8.8.8 van duoc",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-023",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "sites fail to open by name",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-023",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "máy mới cắm vào không nhận được địa chỉ",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-024",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "thiet bi bao dang lay dia chi ip roi dung im",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-024",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "device stuck obtaining address",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-024",
+      "action": "ASK_USER",
+      "source": "C1_review"
+    },
+    {
+      "message": "cục phát wifi nóng và chạy ì ạch",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-039",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "modem co bi treo do het bo nho khong",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-039",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "is the box running out of memory",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-039",
+      "action": "RUN",
+      "source": "C1_review"
+    },
+    {
+      "message": "Xin chào!",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "cam on ban nhe",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Hello there",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Chào buổi sáng",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Thanks a lot",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Tạm biệt nhé",
+      "turn_type": "SMALLTALK",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Bạn làm được gì?",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "ban ho tro nhung viec nao",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "What can you check for me?",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Có đo được tốc độ không?",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Can you diagnose my router?",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Liệt kê các chức năng bạn có",
+      "turn_type": "CAPABILITY",
+      "action": "ANSWER"
+    },
+    {
+      "message": "DNS là gì?",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "cach doi kenh Wi-Fi",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "What is DHCP used for?",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Làm sao để hiểu chỉ số RSSI?",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "How to read a default route?",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "TTL nghĩa là gì trong DNS?",
+      "turn_type": "KNOWLEDGE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "WAN đang lên không?",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-018",
+      "action": "RUN"
+    },
+    {
+      "message": "router con bao nhieu RAM",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-039",
+      "action": "RUN"
+    },
+    {
+      "message": "Is WAN up?",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-018",
+      "action": "RUN"
+    },
+    {
+      "message": "DNS đang dùng máy chủ nào?",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-023",
+      "action": "RUN"
+    },
+    {
+      "message": "Show current CPU usage",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-039",
+      "action": "RUN"
+    },
+    {
+      "message": "Dải DHCP còn bao nhiêu địa chỉ?",
+      "turn_type": "LOOKUP",
+      "workflow": "WF-024",
+      "action": "RUN"
+    },
+    {
+      "message": "mạng lag khi họp online trên laptop An",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN"
+    },
+    {
+      "message": "WAN uplink nha toi mat goi lien tuc",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN"
+    },
+    {
+      "message": "Router CPU is overloaded during calls",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-039",
+      "action": "RUN"
+    },
+    {
+      "message": "DNS hay WAN làm mạng lỗi?",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-018",
+      "action": "RUN"
+    },
+    {
+      "message": "PON ONT báo LOS, kiểm tra công suất quang",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-077",
+      "action": "UNSUPPORTED"
+    },
+    {
+      "message": "Laptop An khong nhan duoc IP tu DHCP",
+      "turn_type": "DIAGNOSE",
+      "workflow": "WF-024",
+      "action": "RUN",
+      "inventory": [
+        {
+          "selector": "laptop-an"
+        }
+      ]
+    },
+    {
+      "message": "Đổi DNS sang 8.8.8.8",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "hay cap nhat firmware cho router",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "Please change the wireless channel",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "Áp dụng cấu hình mới ngay",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "Set DNS to 1.1.1.1",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "Cài đặt lại địa chỉ IP",
+      "turn_type": "CHANGE",
+      "action": "REFUSE"
+    },
+    {
+      "message": "Laptop An",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER",
+      "inventory": [
+        {
+          "selector": "laptop-an"
+        }
+      ]
+    },
+    {
+      "message": "con no thi sao",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER"
+    },
+    {
+      "message": "What about it?",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER"
+    },
+    {
+      "message": "Máy trong phòng khách",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER",
+      "session": {
+        "pending_question": "Thiết bị nào?"
+      }
+    },
+    {
+      "message": "that device",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER"
+    },
+    {
+      "message": "còn điện thoại thì sao",
+      "turn_type": "FOLLOW_UP",
+      "action": "ASK_USER"
+    },
+    {
+      "message": "Viết một bài thơ về mùa thu",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "hom nay troi co mua khong",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Who won the football match?",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Tính giúp tôi giá vé máy bay",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Give me a recipe for pasta",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "Kể chuyện cổ tích cho bé",
+      "turn_type": "OUT_OF_SCOPE",
+      "action": "ANSWER"
+    },
+    {
+      "message": "laptop-an vẫn hiện cột sóng đầy mà facebook không load nổi",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-INTERNET"
+    },
+    {
+      "message": "laptop-an connected to wireless but pages time out",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-INTERNET"
+    },
+    {
+      "message": "sao laptop-an bat wifi roi ma khong len mang",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-INTERNET"
+    },
+    {
+      "message": "đường truyền nhà mình chập chờn cả buổi tối",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-018"
+    },
+    {
+      "message": "internet keeps cutting out for everyone in the house",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-018"
+    },
+    {
+      "message": "ca nha deu khong vao duoc mang",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-018"
+    },
+    {
+      "message": "mở trang bằng tên thì lỗi nhưng gõ số IP thì vào được",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-023"
+    },
+    {
+      "message": "browser says server address could not be found",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-023"
+    },
+    {
+      "message": "router khong dich duoc ten trang web",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-023"
+    },
+    {
+      "message": "laptop-an cứ báo đang lấy địa chỉ rồi rớt",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-024"
+    },
+    {
+      "message": "laptop-an never gets an address from the router",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-024"
+    },
+    {
+      "message": "router chạy rất ì, có phải hết RAM không",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-039"
+    },
+    {
+      "message": "is the gateway overloaded right now",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-039"
+    },
+    {
+      "message": "thiet bi phat wifi hay bi do, kiem tra tai cpu",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "WF-039"
+    },
+    {
+      "message": "tín hiệu quang ONT báo đỏ LOS",
+      "turn_type": "DIAGNOSE",
+      "source": "review_c2",
+      "action": "UNSUPPORTED",
+      "workflow": "WF-077"
+    },
+    {
+      "message": "cổng WAN đang lên hay xuống",
+      "turn_type": "LOOKUP",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "wan.status"
+    },
+    {
+      "message": "router còn bao nhiêu RAM trống",
+      "turn_type": "LOOKUP",
+      "source": "review_c2",
+      "action": "RUN",
+      "workflow": "system.resources"
+    },
+    {
+      "message": "DHCP là gì",
+      "turn_type": "KNOWLEDGE",
+      "source": "review_c2",
+      "action": "ANSWER"
+    },
+    {
+      "message": "how to change the wifi channel",
+      "turn_type": "KNOWLEDGE",
+      "source": "review_c2",
+      "action": "ANSWER"
+    },
+    {
+      "message": "bạn làm được những gì",
+      "turn_type": "CAPABILITY",
+      "source": "review_c2",
+      "action": "ANSWER"
+    },
+    {
+      "message": "đổi DNS sang 8.8.8.8",
+      "turn_type": "CHANGE",
+      "source": "review_c2",
+      "action": "REFUSE"
+    },
+    {
+      "message": "chào bạn",
+      "turn_type": "SMALLTALK",
+      "source": "review_c2",
+      "action": "ANSWER"
+    },
+    {
+      "message": "thời tiết Hà Nội hôm nay thế nào",
+      "turn_type": "OUT_OF_SCOPE",
+      "source": "review_c2",
+      "action": "ANSWER"
+    },
+    {
+      "message": "viết giúp tôi một bài thơ",
+      "turn_type": "OUT_OF_SCOPE",
+      "source": "review_c2",
+      "action": "ANSWER"
+    }
+  ]
+}

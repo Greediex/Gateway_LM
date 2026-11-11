@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM Contract C",
+  "description": "Evidence layer -> planner. Only declared, scoped facts over verified evidence; no hypotheses.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "case_id",
+    "state_revision",
+    "facts",
+    "outstanding_questions",
+    "decision"
+  ],
+  "properties": {
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facts": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(router|client)_[a-z_]+$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "value",
+          "evidence"
+        ],
+        "properties": {
+          "value": {
+            "enum": [
+              "TRUE",
+              "FALSE",
+              "UNKNOWN"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "outstanding_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "decision": {
+      "enum": [
+        "CONTINUE",
+        "CONTINUE_OR_REQUEST_CLIENT_PROBE",
+        "RESOLVED",
+        "PARTIAL",
+        "INCONCLUSIVE",
+        "BLOCKED",
+        "NEEDS_INPUT"
+      ]
+    },
+    "concluded_claim": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

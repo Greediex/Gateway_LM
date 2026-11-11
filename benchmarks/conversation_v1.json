@@ -1,0 +1,3187 @@
+{
+ "version": "1.0.0",
+ "environment": "GLM-21-1 adapter world + devices laptop-an, my-phone",
+ "note": "Thresholds may be calibrated on dev only; holdout is run once.",
+ "items": [
+  {
+   "id": "CV-dev-000",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "mạng nhà tôi mất kết nối ra ngoài từ trưa",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-001",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "internet nha toi bi dut lien tuc",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-002",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "the internet connection drops every few minutes",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-003",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "họp zoom bị đứng hình liên tục cả nhà",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-004",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "duong truyen cap quang nha minh co van de khong",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-005",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "is my ISP link down right now",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-006",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "gõ tên trang web thì không vào được nhưng gõ IP thì được",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-007",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "khong phan giai duoc ten mien tren router",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-008",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "websites will not load by name only by address",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-009",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "trình duyệt báo không tìm thấy địa chỉ máy chủ",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-010",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dns cua modem co hoat dong khong",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-011",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "name resolution keeps failing on the gateway",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-012",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an không nhận được địa chỉ IP",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-013",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an bao dang lay dia chi ip mai khong xong",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-014",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an is stuck acquiring an address",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-015",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "máy mới cắm dây không lấy được IP",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-016",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "my-phone khong duoc cap phat dia chi",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-017",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "a new device cannot get an address from dhcp",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-018",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "router chạy rất chậm, có phải đầy bộ nhớ không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-019",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "modem nong va treo lien tuc",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-020",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "is the router running out of ram",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-021",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cục phát wifi ì ạch, CPU có cao không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-022",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "bo nho luu tru cua router co day khong",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-023",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "gateway feels overloaded today",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-024",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an có wifi nhưng không vào được trang nào",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-025",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an bat duoc wifi ma khong len mang",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-026",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an shows full wifi bars but nothing loads",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-027",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "điện thoại của tôi có sóng wifi mà không lướt web được",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-028",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "my-phone ket noi wifi roi nhung khong vao mang",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-029",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "my laptop says connected but the browser times out",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-030",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "wan chập chờn và router có quá tải không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018",
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-031",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dns loi va laptop-an khong lay duoc ip",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023",
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-032",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "đèn LOS trên ONT nhấp nháy đỏ",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-033",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "vpn ve cong ty khong ket noi duoc",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-034",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "set up a guest wifi schedule for the kids",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-035",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cổng WAN đang lên hay xuống",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.status",
+     "required_functions": [
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-036",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "router con bao nhieu ram trong",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "system.resources",
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-037",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "what dns server is the router using",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dns.config",
+     "required_functions": [
+      "dns.config"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-038",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dải DHCP còn bao nhiêu địa chỉ trống",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dhcp.pool",
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.pool"
+     ],
+     "expected_status": "INCONCLUSIVE"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-039",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "is the default route present",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.routes",
+     "required_functions": [
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-040",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dich vu dhcp co dang chay khong",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dhcp.service",
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.service"
+     ],
+     "expected_status": "INCONCLUSIVE"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-041",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cpu của router đang dùng bao nhiêu phần trăm",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "system.resources",
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-042",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "is the wan link up",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.status",
+     "required_functions": [
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-043",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "DHCP là gì",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-044",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dns hoat dong nhu the nao",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-045",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "what is a default route",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-046",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cách kiểm tra máy có nhận IP không",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-047",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "lam sao de biet wifi bi nhieu",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-048",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "how to read a dhcp lease",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-049",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "mất gói nghĩa là gì",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-050",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "bạn làm được những gì",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-051",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "ban ho tro kiem tra gi",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-052",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "what can you do",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-053",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "bạn có đo được tốc độ mạng không",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-054",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "ban giup duoc gi cho mang nha toi",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-055",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "what can you check on my router",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-056",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "bạn hỗ trợ những gì",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-057",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "bạn kiểm tra được những gì cho router",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-058",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "đổi mật khẩu wifi thành abc12345",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-059",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "doi dns sang 1.1.1.1",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-060",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "set the wifi channel to 11",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-061",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cập nhật firmware cho router",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-062",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "apply a qos profile for gaming",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-063",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "thay doi dai dhcp",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-064",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "please change the admin password",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-065",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "chào bạn",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-066",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cam on nhe",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-067",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "hello there",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-068",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "cảm ơn bạn",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-069",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "thanks a lot",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-070",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "tam biet",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-071",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "hi",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-072",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "hôm nay ăn gì ngon",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-073",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "viet giup toi mot bai tho",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-074",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "who won the football match yesterday",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-075",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "giá bitcoin hôm nay",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-076",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "dich cau nay sang tieng nhat",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-077",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "recommend a good movie",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-078",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "lịch thi đấu bóng đá tuần này",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-000",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an hiện wifi nhưng không mở được trang nào",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-001",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "mang nha minh cham rua tu chieu",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-002",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "the whole house lost internet an hour ago",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-003",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "mất kết nối internet toàn bộ",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-004",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "truy cập bằng địa chỉ IP được nhưng tên miền thì không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-005",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "dns has stopped resolving",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-006",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an bi 169.254 khong co ip",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-007",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "new phone cannot get an ip",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-008",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "modem nóng ran và hay khởi động lại",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-009",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cpu cua router cao bat thuong",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-010",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "đèn PON nhấp nháy đỏ",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-011",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "vpn tới công ty không kết nối được",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-012",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "DNS router đang dùng là gì",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dns.config",
+     "required_functions": [
+      "dns.config"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-013",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "WAN có IP chưa",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.status",
+     "required_functions": [
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-014",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "how much memory is free on the router",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "system.resources",
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-015",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "NAT là gì",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-016",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "làm sao để đặt mật khẩu wifi mạnh",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-017",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "bạn hỗ trợ những gì nữa",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-018",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "có đo được tốc độ mạng không",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-019",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "đặt lại mật khẩu wifi thành 12345678",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-020",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "please restart the router",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-021",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cảm ơn nhé",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-022",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "giá vàng hôm nay bao nhiêu",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-023",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "kể chuyện cười đi",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-024",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "công thức nấu phở bò",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-025",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "wifi yếu và router có quá tải không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET",
+      "WF-039"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "system.resources",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-026",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "nhà mình rớt mạng liên tục từ tối qua",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-027",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "khong vao duoc mang ca nha",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-028",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "our broadband keeps disconnecting",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-029",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "đường truyền internet có vấn đề gì không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018"
+     ],
+     "required_functions": [
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-030",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "ping 8.8.8.8 duoc nhung vao google.com khong duoc",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-031",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "pages fail with server not found but ip works",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-032",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "router có dịch được tên miền không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-033",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an không có địa chỉ IPv4",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-034",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "my-phone never receives an ip lease",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-035",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "thiet bi moi khong nhan duoc dia chi",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-036",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "ram router sắp hết chưa",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-037",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "the router reboots itself and feels sluggish",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-038",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "bộ nhớ router có đầy không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-039"
+     ],
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-039",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an vào wifi được mà youtube không chạy",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-040",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "my-phone has wifi but apps say no connection",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-041",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "may cua toi co wifi ma khong len mang",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-042",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an connected but every site times out",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-043",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "mạng lag và dns có lỗi không",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-018",
+      "WF-023"
+     ],
+     "required_functions": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-044",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "tín hiệu quang yếu, công suất thu thấp",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-045",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "hẹn giờ tắt wifi buổi tối",
+     "turn_type": "DIAGNOSE",
+     "action": "UNSUPPORTED",
+     "workflows": [],
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-046",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "default route có tồn tại không",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.routes",
+     "required_functions": [
+      "wan.routes",
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-047",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "dhcp pool con bao nhieu dia chi",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dhcp.pool",
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.pool"
+     ],
+     "expected_status": "INCONCLUSIVE"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-048",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "is the dhcp service running",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dhcp.service",
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.service"
+     ],
+     "expected_status": "INCONCLUSIVE"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-049",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cổng wan có liên kết không",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "wan.status",
+     "required_functions": [
+      "wan.status"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-050",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "ram trống của router bao nhiêu",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "system.resources",
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-051",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "router dang dung dns nao",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "dns.config",
+     "required_functions": [
+      "dns.config"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-052",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "what is dhcp",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-053",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cách đổi kênh wifi",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-054",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "tuyến mặc định là gì",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-055",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "how to tell if dns is the problem",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-056",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "lease dhcp nghia la gi",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-057",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "vì sao wifi đầy vạch mà không vào mạng là gì",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-058",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "làm sao để kiểm tra cáp mạng",
+     "turn_type": "KNOWLEDGE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-059",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "bạn giúp được gì",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-060",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "what checks do you support",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-061",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "ban lam duoc nhung gi",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-062",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "bạn có kiểm tra wifi không",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-063",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "help me with what you can do",
+     "turn_type": "CAPABILITY",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-064",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "đổi tên wifi thành NhaMinh",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-065",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "set dns to 8.8.4.4",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-066",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cai dat lai router ve mac dinh",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-067",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "update the router firmware",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-068",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "thay mật khẩu quản trị",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-069",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "apply parental control",
+     "turn_type": "CHANGE",
+     "action": "REFUSE",
+     "required_functions": [],
+     "expected_status": "BLOCKED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-070",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "xin chào",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-071",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "thank you",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-072",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "chao buoi sang",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-073",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "bye",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-074",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cảm ơn bạn nhé",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-075",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "hello",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-076",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "thời tiết ngày mai thế nào",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-077",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "viết email xin nghỉ phép",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-078",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "what is the capital of france",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-079",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "kể một câu chuyện cổ tích",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-080",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "tỷ giá đô la hôm nay",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-081",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "goi y mon an toi nay",
+     "turn_type": "OUT_OF_SCOPE",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-00",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "máy tôi có wifi mà không vào mạng",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "laptop-an",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-01",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an có wifi mà không vào được mạng",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    },
+    {
+     "message": "còn my-phone thì sao",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-02",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "thiết bị không nhận IP",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "my-phone",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-03",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "my device has wifi but no internet",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "my-phone",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-04",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "laptop-an không nhận được IP",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    },
+    {
+     "message": "what about my-phone",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-05",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "chào bạn",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    },
+    {
+     "message": "laptop-an có wifi mà không vào được mạng",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-06",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "may cua toi khong vao duoc mang du co wifi",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "laptop-an",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-07",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "my-phone có wifi nhưng không vào mạng",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    },
+    {
+     "message": "còn laptop-an thì sao",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-08",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "a device cannot get an ip",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "laptop-an",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-09",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an không có IP",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    },
+    {
+     "message": "con my-phone thi sao",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-10",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "điện thoại không vào được mạng dù có wifi",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "my-phone",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-11",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "cảm ơn",
+     "turn_type": "SMALLTALK",
+     "action": "ANSWER",
+     "required_functions": [],
+     "expected_status": null
+    },
+    {
+     "message": "router còn bao nhiêu RAM",
+     "turn_type": "LOOKUP",
+     "action": "RUN",
+     "lookup_port": "system.resources",
+     "required_functions": [
+      "system.resources"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-dev-conv-12",
+   "split": "dev",
+   "turns": [
+    {
+     "message": "thiết bị của tôi không vào được mạng",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "laptop-an",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    },
+    {
+     "message": "còn my-phone thì sao",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-13",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "my device cannot get an ip",
+     "turn_type": "DIAGNOSE",
+     "action": "ASK_USER",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [],
+     "expected_status": "NEEDS_INPUT"
+    },
+    {
+     "message": "my-phone",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    },
+    {
+     "message": "what about laptop-an",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-024"
+     ],
+     "required_functions": [
+      "clients.resolve",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+     ],
+     "expected_status": "RESOLVED"
+    }
+   ]
+  },
+  {
+   "id": "CV-holdout-conv-14",
+   "split": "holdout",
+   "turns": [
+    {
+     "message": "laptop-an vào wifi được mà không lướt web",
+     "turn_type": "DIAGNOSE",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    },
+    {
+     "message": "còn my-phone thì sao",
+     "turn_type": "FOLLOW_UP",
+     "action": "RUN",
+     "workflows": [
+      "WF-INTERNET"
+     ],
+     "required_functions": [
+      "client.ipv4",
+      "clients.resolve",
+      "dns.config",
+      "dns.probe",
+      "wan.probe",
+      "wan.routes",
+      "wan.status",
+      "wifi.station"
+     ],
+     "expected_status": "PARTIAL"
+    }
+   ]
+  }
+ ]
+}

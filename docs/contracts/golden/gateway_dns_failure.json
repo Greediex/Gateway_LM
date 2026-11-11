@@ -1,0 +1,1409 @@
+{
+ "case_status": "RESOLVED",
+ "claims": {
+  "gateway_dns_failure": {
+   "diagnosis": "gateway_dns_failure",
+   "evidence": [
+    "e2",
+    "e5"
+   ],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "TRUE"
+  },
+  "gateway_ip_reachable_dns_unverified": {
+   "diagnosis": "gateway_ip_reachable_dns_unverified",
+   "evidence": [
+    "e5"
+   ],
+   "scope": "gateway",
+   "severity": "OBSERVATION",
+   "value": "TRUE"
+  },
+  "no_fault_observed.WF-023": {
+   "diagnosis": "no_fault_observed",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "HEALTHY",
+   "value": "FALSE"
+  },
+  "wan_link_down": {
+   "diagnosis": "wan_link_down",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wan_no_route": {
+   "diagnosis": "wan_no_route",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wan_packet_loss": {
+   "diagnosis": "wan_packet_loss",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  }
+ },
+ "contract_0": [
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 5.0,
+     "nodes": 5
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "EXPAND_PREREQUISITES",
+   "function_candidates": [
+    "dns.probe",
+    "dns.config",
+    "wan.routes",
+    "wan.status"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    },
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    }
+   ],
+   "plan_revision": 1,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có phân giải tên miền được không? missing dns.config dns.probe wan.probe",
+   "rejected": [
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "dns.config": "SK05",
+    "dns.probe": "SK05",
+    "wan.routes": "SK04",
+    "wan.status": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 4.0,
+     "nodes": 4
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "EXPAND_PREREQUISITES",
+   "function_candidates": [
+    "dns.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    }
+   ],
+   "plan_revision": 2,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có phân giải tên miền được không? missing dns.probe wan.probe facts dns.config {'resolver': '192.168.1.1'}",
+   "rejected": [
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK01",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "dns.probe": "SK05",
+    "wan.routes": "SK04",
+    "wan.status": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 3.0,
+     "nodes": 3
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "EXPAND_PREREQUISITES",
+   "function_candidates": [
+    "wan.routes",
+    "wan.status"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    }
+   ],
+   "plan_revision": 3,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có phân giải tên miền được không? missing wan.probe facts dns.config {'resolver': '192.168.1.1'} dns.probe {'rcode': 'SERVFAIL'}",
+   "rejected": [
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "wan.routes": "SK04",
+    "wan.status": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 1,
+     "latency_ms": 2.0,
+     "nodes": 2
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "EXPAND_PREREQUISITES",
+   "function_candidates": [
+    "wan.routes"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    }
+   ],
+   "plan_revision": 4,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có phân giải tên miền được không? missing wan.probe facts wan.status {'link_up': True, 'interface': 'wan'} dns.config {'resolver': '192.168.1.1'} dns.probe {'rcode': 'SERVFAIL'}",
+   "rejected": [
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "wan.routes": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 0,
+     "latency_ms": 1.0,
+     "nodes": 1
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "READY_TO_COMPILE",
+   "function_candidates": [
+    "wan.probe"
+   ],
+   "missing_inputs": [],
+   "plan_revision": 5,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Router có phân giải tên miền được không? missing wan.probe facts wan.status {'link_up': True, 'interface': 'wan'} wan.routes {'default_route': True, 'interface': 'wan'} dns.config {'resolver': '192.168.1.1'} dns.probe {'rcode': 'SERVFAIL'}",
+   "rejected": [],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05",
+    "SK08",
+    "SK09"
+   ],
+   "skill_context": {
+    "wan.probe": "SK04"
+   },
+   "skill_graph_version": 1
+  }
+ ],
+ "contract_a": [
+  {
+   "case_id": "golden-gateway_dns_failure",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-gateway_dns_failure/plan/1",
+   "revision": 1
+  },
+  {
+   "case_id": "golden-gateway_dns_failure",
+   "edges": [
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "dns.probe#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "dns.config",
+       "ref": "e1"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "evidence",
+       "port": "dns.config",
+       "ref": "e1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-gateway_dns_failure/plan/2",
+   "revision": 2
+  },
+  {
+   "case_id": "golden-gateway_dns_failure",
+   "edges": [
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-gateway_dns_failure/plan/3",
+   "revision": 3
+  },
+  {
+   "case_id": "golden-gateway_dns_failure",
+   "edges": [
+    {
+     "from": "src",
+     "to": "wan.routes#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-gateway_dns_failure/plan/4",
+   "revision": 4
+  },
+  {
+   "case_id": "golden-gateway_dns_failure",
+   "edges": [
+    {
+     "from": "src",
+     "to": "wan.probe#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "wan.routes",
+       "ref": "e4"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.routes": {
+       "kind": "evidence",
+       "port": "wan.routes",
+       "ref": "e4"
+      }
+     },
+     "effects": [
+      "wan.probe"
+     ],
+     "function_id": "wan.probe",
+     "node_id": "wan.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.routes",
+      "wan.routes.default_route eq True"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-gateway_dns_failure/plan/5",
+   "revision": 5
+  }
+ ],
+ "contract_b": [
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "dns.config#1",
+   "observations": [
+    {
+     "evidence_id": "e1",
+     "kind": "dns.config",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "dns.probe#1",
+   "observations": [
+    {
+     "evidence_id": "e2",
+     "kind": "dns.probe",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.status#1",
+   "observations": [
+    {
+     "evidence_id": "e3",
+     "kind": "wan.status",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.routes#1",
+   "observations": [
+    {
+     "evidence_id": "e4",
+     "kind": "wan.routes",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.probe#1",
+   "observations": [
+    {
+     "evidence_id": "e5",
+     "kind": "wan.probe",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  }
+ ],
+ "contract_c": {
+  "case_id": "golden-gateway_dns_failure",
+  "concluded_claim": "gateway_dns_failure",
+  "decision": "RESOLVED",
+  "facts": {
+   "client_dns_works": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_identified": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_internet_reachable": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_ip_configured": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_lease_valid": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_wifi_associated": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_cpu_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_default_route": {
+    "evidence": [
+     "e4"
+    ],
+    "value": "TRUE"
+   },
+   "router_dhcp_pool_available": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dhcp_running": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dns_works": {
+    "evidence": [
+     "e2"
+    ],
+    "value": "FALSE"
+   },
+   "router_memory_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_storage_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_wan_link": {
+    "evidence": [
+     "e3"
+    ],
+    "value": "TRUE"
+   },
+   "router_wan_reachable": {
+    "evidence": [
+     "e5"
+    ],
+    "value": "TRUE"
+   }
+  },
+  "outstanding_questions": [],
+  "state_revision": 4
+ },
+ "events": [
+  {
+   "node": "dns.config#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 1,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "dns.probe#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 2,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.status#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 3,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.routes#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 4,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.probe#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 5,
+   "state": "SUCCEEDED"
+  }
+ ],
+ "golden_id": "gateway_dns_failure",
+ "input": {
+  "capabilities": [
+   "clients.resolve",
+   "client.ipv4",
+   "wifi.station",
+   "wan.status",
+   "wan.routes",
+   "wan.probe",
+   "dns.config",
+   "dns.probe",
+   "dhcp.leases",
+   "dhcp.pool",
+   "dhcp.service",
+   "system.resources",
+   "system.logs",
+   "dns.apply",
+   "qos.apply"
+  ],
+  "devices": [],
+  "fixture": "GLM-06-0",
+  "gateway_functions": [
+   "dhcp.pool",
+   "dhcp.service",
+   "dns.config",
+   "dns.probe",
+   "system.logs",
+   "system.resources",
+   "wan.probe",
+   "wan.routes",
+   "wan.status"
+  ],
+  "request": "Router có phân giải tên miền được không?",
+  "workflow": "WF-023"
+ },
+ "note": "synthetic replay; not a router measurement",
+ "verdict": {
+  "action": "FINISH",
+  "diagnosis": "gateway_dns_failure",
+  "evidence_ids": [
+   "e2",
+   "e5"
+  ]
+ }
+}

@@ -1,0 +1,1357 @@
+{
+  "version": "0.1.0",
+  "source": "runs/html_catalog_rag_v1/catalog.json",
+  "source_sha256": "823a47d5ef3c1b2f7b93f48e3694353f0ea7c961e0ed231355f4d7711914d99c",
+  "requirements": [
+    {
+      "requirement_id": "F001",
+      "title": "Nhận diện các thiết bị đang online",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F002",
+      "title": "Tra cứu theo tên thiết bị/MAC/IP đã được ánh xạ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F003",
+      "title": "Lịch sử thiết bị xuất hiện/rời mạng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F004",
+      "title": "Thống kê số thiết bị theo băng tần/BSS",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F005",
+      "title": "Phát hiện thiết bị mới xuất hiện trong LAN",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F006",
+      "title": "Đối chiếu IP–MAC–hostname–interface",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F007",
+      "title": "Phân loại thiết bị IoT/điện thoại/PC (nếu có dấu hiệu)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F008",
+      "title": "Đo lưu lượng và chất lượng mạng từng thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F009",
+      "title": "Phát hiện đổi danh tính MAC/hostname bất thường",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F010",
+      "title": "Đề xuất phân đoạn hoặc kiểm soát thiết bị không tin cậy",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F011",
+      "title": "Đọc trạng thái radio/BSS/SSID/band/channel",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F012",
+      "title": "Đánh giá RSSI và tốc độ PHY của station",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F013",
+      "title": "Đánh giá channel utilization trong cửa sổ đo",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F014",
+      "title": "Đánh giá tx retry và retransmission theo station",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F015",
+      "title": "Phát hiện giảm MCS/PHY rate bất thường",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F016",
+      "title": "Phân biệt phủ sóng yếu với tranh chấp airtime",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F017",
+      "title": "Chẩn đoán mất kết nối lặp lại/reassociation",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F018",
+      "title": "Chẩn đoán lỗi authentication/association",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F019",
+      "title": "Chẩn đoán lỗi WPA/EAPOL handshake",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F020",
+      "title": "Phát hiện đứt quãng sau khi chuyển kênh",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F021",
+      "title": "Phân tích beacon/DFS/radar-event khi driver cung cấp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F022",
+      "title": "Phát hiện hidden-node/neighbor contention (giả thuyết)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F023",
+      "title": "Phân tích mất cân bằng tải 2.4/5/6 GHz",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F024",
+      "title": "Đề xuất thay channel/width dựa trên phép đo",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F025",
+      "title": "Đề xuất band steering cho station",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F026",
+      "title": "Điều khiển channel/width sau phê duyệt và rollback",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F027",
+      "title": "Đề xuất roaming/mesh handoff (nếu hỗ trợ)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F028",
+      "title": "Đánh giá ping/RTT/loss tới đích định nghĩa",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F029",
+      "title": "Xác định mạng chậm do radio hay uplink",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F030",
+      "title": "Phát hiện độ trễ tăng khi tải cao (bufferbloat)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F031",
+      "title": "Thống kê gaming session trên firmware hỗ trợ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F032",
+      "title": "Phân tích nguyên nhân lag khi chơi game",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F033",
+      "title": "Phân tích nghẽn video/voice conferencing",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F034",
+      "title": "Đo jitter trong cửa sổ chủ động có giới hạn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F035",
+      "title": "Đánh giá throughput per-client và saturation",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F036",
+      "title": "So sánh chất lượng trước và sau chỉnh QoS",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F037",
+      "title": "Phát hiện ứng dụng bất thường sử dụng băng thông",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F038",
+      "title": "Dự đoán xu hướng suy giảm QoE trong ngắn hạn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F039",
+      "title": "Xuất báo cáo chất lượng Wi‑Fi theo khoảng thời gian",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F040",
+      "title": "Đọc WAN up/down, IP, gateway, DNS assigned",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F041",
+      "title": "Chẩn đoán cáp/ONT/uplink không nhận link",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F042",
+      "title": "Phân biệt LAN tốt nhưng WAN bị mất kết nối",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F043",
+      "title": "Phân biệt lỗi default route với lỗi resolver",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F044",
+      "title": "Đánh giá packet loss/RTT tới nhiều hop",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F045",
+      "title": "Phân tích routing bất thường và metric",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F046",
+      "title": "Phát hiện WAN flap theo thời gian",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F047",
+      "title": "Chẩn đoán lỗi PPPoE/IPoE nếu firmware có sự kiện",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F048",
+      "title": "Phát hiện MTU/fragmentation nếu có phép đo an toàn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F049",
+      "title": "Đọc trạng thái mwan3 và health tracking",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F050",
+      "title": "Xác minh failover qua tình huống có kiểm soát",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F051",
+      "title": "Đề xuất chỉnh route/failover policy",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F052",
+      "title": "Thay đổi route/multi-WAN sau phê duyệt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F053",
+      "title": "Dự báo sự cố uplink từ chuỗi flap/loss",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F054",
+      "title": "Đọc DNS resolver, upstream và cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F055",
+      "title": "Phân biệt DNS lỗi với Internet mất kết nối",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F056",
+      "title": "Phân tích DNS timeout/SERVFAIL/NXDOMAIN theo phạm vi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F057",
+      "title": "Phân tích độ trễ DNS trong cửa sổ đo",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F058",
+      "title": "Phát hiện DNS upstream không ổn định theo thời gian",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F059",
+      "title": "Kiểm tra DNS cache nếu API cung cấp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F060",
+      "title": "Đọc DHCP leases và phạm vi DHCP pool",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F061",
+      "title": "Chẩn đoán thiết bị kết nối Wi‑Fi nhưng không lấy IP",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F062",
+      "title": "Chẩn đoán DHCP pool exhaustion",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F063",
+      "title": "Phân tích chuỗi DISCOVER–OFFER–REQUEST–ACK",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F064",
+      "title": "Phát hiện DHCP duplicate IP/conflict từ sự kiện",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F065",
+      "title": "Chẩn đoán DHCP server service stopped",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F066",
+      "title": "Gợi ý thay DNS upstream cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F067",
+      "title": "Thay DNS/DHCP cấu hình sau phê duyệt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F068",
+      "title": "Đọc các phiên ứng dụng nếu DPI/firmware hỗ trợ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F069",
+      "title": "Phân tích lưu lượng bất thường theo thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F070",
+      "title": "Đọc queue/HTB/TBF/qdisc counters",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F071",
+      "title": "Phân tích queue drops/backlog và bottleneck",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F072",
+      "title": "Kiểm tra chính sách rate-limit đang áp dụng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F073",
+      "title": "Kiểm tra chính sách ưu tiên đang áp dụng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F074",
+      "title": "Phân loại lưu lượng realtime/bulk dựa vào metadata",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F075",
+      "title": "Đề xuất giới hạn băng thông cho client",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F076",
+      "title": "Áp dụng giới hạn băng thông theo thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F077",
+      "title": "Áp dụng ưu tiên game/video call theo chính sách",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F078",
+      "title": "Đề xuất chính sách SQM/AQM nếu firmware có",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F079",
+      "title": "Đánh giá tác động của QoS trước/sau thay đổi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F080",
+      "title": "Đọc firewall/NAT/conntrack hiện có",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F081",
+      "title": "Phát hiện thay đổi rule ngoài dự kiến",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F082",
+      "title": "Phân tích kết nối lạ / đột biến số phiên",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F083",
+      "title": "Phát hiện quét cổng nội bộ từ flow metadata có sẵn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F084",
+      "title": "Đánh giá DNS domain bất thường từ log hợp pháp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F085",
+      "title": "Phát hiện client lạ truy cập mạng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F086",
+      "title": "Cảnh báo cấu hình Wi‑Fi yếu hoặc WPS bật",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F087",
+      "title": "Đề xuất cô lập thiết bị nghi ngờ (không thực thi mặc định)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F088",
+      "title": "Chặn mạng thiết bị theo yêu cầu được ủy quyền",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F089",
+      "title": "Khôi phục kết nối thiết bị bị chặn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F090",
+      "title": "Chặn/khôi phục nhóm ứng dụng theo chính sách",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F091",
+      "title": "Giám sát thay đổi quyền truy cập do Agent",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F092",
+      "title": "Cơ chế quarantine chuyên biệt khi firmware cấp contract",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F093",
+      "title": "Đọc CPU, RAM, load, disk và temperature",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F094",
+      "title": "Phân tích tăng đột ngột CPU/load",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F095",
+      "title": "Phân tích memory pressure, OOM và swap",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F096",
+      "title": "Cảnh báo thiếu dung lượng flash/log",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F097",
+      "title": "Phân tích lỗi filesystem/mount/read-only",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F098",
+      "title": "Theo dõi reboot và crash-loop",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F099",
+      "title": "Phân tích tiến trình/dịch vụ mất phản hồi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F100",
+      "title": "Kiểm tra trạng thái firmware/build/version",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F101",
+      "title": "Đánh giá khác biệt cấu hình so với baseline",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F102",
+      "title": "Gợi ý phương án rollback cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F103",
+      "title": "Restart dịch vụ sau xác nhận và precheck",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F104",
+      "title": "Theo dõi nhiệt độ cao và thermal throttling",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F105",
+      "title": "Theo dõi watchdog/kernel panic/driver reset",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F106",
+      "title": "Xác minh trạng thái sau firmware update",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F107",
+      "title": "Kiểm tra tiến trình Qwen/C++ agent hoạt động",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F108",
+      "title": "Đọc RAM, DMA-BUF và peak memory của AI runtime",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F109",
+      "title": "Giám sát QNN context load/prefill/decode lỗi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F110",
+      "title": "Phân biệt lỗi tool schema với lỗi reasoning",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F111",
+      "title": "Theo dõi TTFT, TPS, p50/p95 và context use",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F112",
+      "title": "Phát hiện token truncation / malformed finish",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F113",
+      "title": "Phát hiện tool-call loop/duplicate action",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F114",
+      "title": "Phát hiện tràn ngân sách bước/token",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F115",
+      "title": "Đánh giá ảnh hưởng inference lên RTT và Wi‑Fi QoE",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F116",
+      "title": "Đánh giá phân bổ CPU/NPU với STT chung tài nguyên",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F117",
+      "title": "Chẩn đoán lỗi thư viện QNN/HTP/SoC mapping",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F118",
+      "title": "Giám sát thermal/điện/năng lượng của workload AI",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F119",
+      "title": "Quản lý cập nhật model phiên bản, checksum, rollback",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F120",
+      "title": "Truy xuất log theo nguồn, mốc thời gian và scope",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F121",
+      "title": "Chuẩn hóa log thành typed network events",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F122",
+      "title": "Đồng bộ thời gian giữa log, KPI và kết quả tool",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F123",
+      "title": "Theo dõi state transition của radio/wan/client",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F124",
+      "title": "Nhận diện cùng triệu chứng nhưng khác nguyên nhân",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F125",
+      "title": "Xây danh sách giả thuyết từ nhiều nguồn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F126",
+      "title": "Kiểm tra điều kiện tiên quyết của tool debug",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F127",
+      "title": "Lựa chọn phép đo tiếp theo theo evidence gap",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F128",
+      "title": "Ngăn lặp bước đọc khi dữ liệu chưa thay đổi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F129",
+      "title": "Kiểm chứng evidence ID, provenance và staleness",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F130",
+      "title": "Cho phép kết luận chưa đủ bằng chứng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F131",
+      "title": "Xử lý ticket báo sai hoặc không có lỗi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F132",
+      "title": "Xuất báo cáo root cause với confidence được kiểm chuẩn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F133",
+      "title": "So sánh giả thuyết trước/sau phép đo bổ sung",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F134",
+      "title": "Duy trì causal graph mức thành phần/dịch vụ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F135",
+      "title": "Dashboard sức khỏe Gateway theo thời gian",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F136",
+      "title": "Phát hiện anomaly KPI bằng ngưỡng/EWMA/MAD",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F137",
+      "title": "Phát hiện drift/seasonality trong network usage",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F138",
+      "title": "Dự báo tỷ lệ DHCP success / timeout",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F139",
+      "title": "Dự báo tải radio và channel congestion",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F140",
+      "title": "Dự báo tràn DHCP pool/conntrack",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F141",
+      "title": "Dự báo tăng RTT khi đường truyền bão hòa",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F142",
+      "title": "Dự đoán rớt mạng theo chuỗi WAN/link state",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F143",
+      "title": "Phát hiện đa biến: radio + DHCP + WAN",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F144",
+      "title": "Học baseline riêng cho từng firmware/site",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F145",
+      "title": "Chỉ cảnh báo khi tín hiệu đủ tin cậy / false alarm budget",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F146",
+      "title": "Đánh giá cost/benefit của cảnh báo chủ động",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F147",
+      "title": "Đề xuất channel/width dựa trên kênh bận",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F148",
+      "title": "Đề xuất band steering/balancing theo client",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F149",
+      "title": "Đề xuất QoS cho game/video theo QoE thực",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F150",
+      "title": "Đề xuất tối ưu router khi CPU/RAM cao",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F151",
+      "title": "Đánh giá what-if đổi cấu hình QoS trước khi áp dụng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F152",
+      "title": "Đánh giá what-if đổi channel trước khi áp dụng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F153",
+      "title": "Mô phỏng chuyển AP/roaming trong mesh (nếu hỗ trợ)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F154",
+      "title": "Đề xuất tiết kiệm điện theo thời gian tải thấp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F155",
+      "title": "Kiểm tra cấu hình hợp lệ và tác động tới policy",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F156",
+      "title": "Chụp snapshot cấu hình và rollback có kiểm soát",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F157",
+      "title": "Xác minh KPI trước/sau cấu hình đã thay đổi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F158",
+      "title": "Tối ưu ML prediction khi có dữ liệu/hardware được xác nhận",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F159",
+      "title": "Liệt kê lịch điều khiển hiện hành",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F160",
+      "title": "Hẹn lịch tắt/bật Internet cho thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F161",
+      "title": "Điều khiển truy cập thiết bị theo profile",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F162",
+      "title": "Hủy lịch chặn/giới hạn đã đặt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F163",
+      "title": "Tạo hoặc tắt Wi‑Fi khách",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F164",
+      "title": "Chặn/khôi phục ứng dụng theo thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F165",
+      "title": "Chặn/khôi phục Internet theo thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F166",
+      "title": "Đề xuất bộ kiểm tra trước restart service",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F167",
+      "title": "Lập phương án thay đổi với precondition/dry-run",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F168",
+      "title": "Hỏi xác nhận thao tác ghi nguy cơ cao",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F169",
+      "title": "Xác minh hiệu quả thay đổi qua post-check",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F170",
+      "title": "Khôi phục snapshot khi kiểm chứng sau thay đổi thất bại",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F171",
+      "title": "Hiểu câu hỏi người dùng tiếng Việt/Anh về Gateway",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F172",
+      "title": "Nhận diện thiết bị đích và tham chiếu tiếp nối",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F173",
+      "title": "Tách ý định đa lệnh có kiểm soát",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F174",
+      "title": "Phân biệt tư vấn với yêu cầu thực thi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F175",
+      "title": "Tra cứu skill Top-K theo ngữ cảnh",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F176",
+      "title": "Nạp mô tả skill theo token budget",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F177",
+      "title": "Kiểm tra dependency/conflict giữa các skills",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F178",
+      "title": "Theo dõi tiến độ và thất bại từng bước",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F179",
+      "title": "Chọn CALL/FINISH/ASK/INCOMPLETE",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F180",
+      "title": "Tự động kết thúc điều tra khi đủ bằng chứng",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F181",
+      "title": "Tra cứu tài liệu đúng firmware/version (RAG)",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F182",
+      "title": "Giải thích tình trạng mạng với evidence links",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F183",
+      "title": "Đưa hướng dẫn debug từng bước cho kỹ thuật viên",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F184",
+      "title": "Lưu audit trail và thống kê lỗi agent",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F185",
+      "title": "Cho phép người dùng phản hồi chẩn đoán sai",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F186",
+      "title": "Phân loại ca no-fault/wrong-device/wrong-ticket",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F187",
+      "title": "Xây bộ fault injection thực nghiệm Wi‑Fi",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F188",
+      "title": "Xây benchmark mạng giả lập trước khi thử thật",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F189",
+      "title": "Lập gold root cause và expected action per scenario",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F190",
+      "title": "Đo action selection/finish và end-to-end success",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F191",
+      "title": "Đo precision/recall/F1 anomaly vs RCA correctness",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F192",
+      "title": "Đo false positive rate khi mạng khỏe",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F193",
+      "title": "Đo latency/RAM/CPU/NPU trên router chung STT",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F194",
+      "title": "Đo network QoE suy giảm khi AI inference",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F195",
+      "title": "Kiểm thử matched B0/B1/B2/B3 từ cùng model",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F196",
+      "title": "Kiểm thử an toàn: zero unauthorized writes",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F197",
+      "title": "Kiểm thử boot/firmware drift, missing source",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F198",
+      "title": "Đọc trạng thái MLO per-link khi firmware cung cấp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F199",
+      "title": "Đánh giá độ ổn định từng link MLO và sự kiện link switch",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F200",
+      "title": "Đối chiếu channel width, puncturing và EHT/HE capability",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F201",
+      "title": "Xác minh chính sách 6 GHz/DFS/AFC theo vùng triển khai",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F202",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F203",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F204",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F205",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F206",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F207",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F208",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F209",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F210",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F211",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F212",
+      "title": "Đọc tình trạng quang Rx/Tx power nếu ONT/SFP expose DOM",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F213",
+      "title": "Chẩn đoán LOS/LOF hoặc tín hiệu quang bất thường",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F214",
+      "title": "Phân tích FEC/BER/counter của PON nếu modem hỗ trợ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F215",
+      "title": "Tách lỗi lớp quang/ONT với lỗi WAN IP/DNS",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F216",
+      "title": "Đọc trạng thái provisioning OMCI khi có OLT/ONT interface",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F217",
+      "title": "Phát hiện cấu hình ACS/TR-069 không đồng bộ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F218",
+      "title": "Kiểm tra trạng thái USP/TR-369 agent khi firmware cài đặt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F219",
+      "title": "Phát hiện lỗi bootstrap/provision và certificate đã cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F220",
+      "title": "Phân tích drift cấu hình giữa template quản lý và Gateway",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F221",
+      "title": "Xuất gói chẩn đoán tối giản đã ẩn dữ liệu nhạy cảm",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F222",
+      "title": "Giám sát chất lượng firmware theo phiên bản trong fleet",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F223",
+      "title": "Đề xuất rollout theo nhóm thiết bị và canary",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F224",
+      "title": "Kiểm tra ảnh firmware và rollback khi triển khai OTA",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F225",
+      "title": "Tổng hợp nguyên nhân lặp lại trong fleet khi được đồng ý chia sẻ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F226",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F227",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F228",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F229",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F230",
+      "title": null,
+      "title_missing": true
+    },
+    {
+      "requirement_id": "F231",
+      "title": "Đọc trạng thái IPv6 Prefix Delegation và thời hạn prefix",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F232",
+      "title": "Chẩn đoán IPv6 có địa chỉ nhưng thiếu default route",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F233",
+      "title": "Đối chiếu Router Advertisement và DHCPv6 trên từng segment",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F234",
+      "title": "Đánh giá điều kiện triển khai NAT64/DNS64 nếu có gói hỗ trợ",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F235",
+      "title": "Chẩn đoán MTU/PMTUD gây tải trang hoặc ứng dụng chập chờn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F236",
+      "title": "Kiểm tra sai lệch VLAN tagging, PVID và bridge membership",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F237",
+      "title": "Kiểm tra xung đột policy routing và route theo nguồn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F238",
+      "title": "Chẩn đoán PPPoE reconnect, LCP và authentication failures",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F239",
+      "title": "Đọc WireGuard handshake mới nhất và counters của peer",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F240",
+      "title": "Chẩn đoán WireGuard kết nối nhưng không truy cập LAN được",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F241",
+      "title": "Kiểm tra chồng lấn AllowedIPs giữa các peer VPN",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F242",
+      "title": "Chẩn đoán OpenVPN TLS handshake và cipher mismatch",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F243",
+      "title": "Đánh giá MTU và fragmentation trên đường hầm VPN",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F244",
+      "title": "Kiểm tra Dynamic DNS cập nhật sai public IP",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F245",
+      "title": "Cảnh báo chứng thư quản trị hoặc VPN gần hết hạn",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F246",
+      "title": "Rà soát cổng quản trị phơi ra WAN và chính sách truy cập từ xa",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F247",
+      "title": "Khoanh vùng gói bị chặn theo nftables rule counters",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F248",
+      "title": "Phát hiện conntrack table pressure và nguy cơ kết nối mới thất bại",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F249",
+      "title": "Phân biệt TCP SYN timeout và DNS resolution failure",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F250",
+      "title": "Phát hiện ARP cache bất thường hoặc địa chỉ IPv4 trùng lặp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F251",
+      "title": "Chẩn đoán IPv6 Neighbor Discovery bị stale",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F252",
+      "title": "Kiểm tra IGMP snooping và chuyển tiếp multicast trong LAN",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F253",
+      "title": "Chẩn đoán dịch vụ mDNS/SSDP discovery qua nhiều segment",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F254",
+      "title": "Phát hiện DHCP lease churn tăng bất thường theo thiết bị",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F255",
+      "title": "Chẩn đoán procd service restart liên tục và backoff",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F256",
+      "title": "Phân biệt netifd interface flap và sự kiện người dùng tự ngắt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F257",
+      "title": "Theo dõi availability và method errors của dịch vụ UBUS",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F258",
+      "title": "Xem trước UCI diff theo transaction trước khi thay cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F259",
+      "title": "Rollback cấu hình nếu postcheck sau thay đổi không đạt",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F260",
+      "title": "Kiểm tra tính phù hợp image/board trước sysupgrade",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F261",
+      "title": "Kiểm kê gói phụ thuộc và mức độ cập nhật theo nhánh firmware",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F262",
+      "title": "Giám sát overlay storage, journal/flash pressure và wear proxy",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F263",
+      "title": "Phân tích lỗi 802.11r fast transition khi roaming",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F264",
+      "title": "Kiểm tra 802.11k neighbor report availability và cấu hình",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F265",
+      "title": "Giải thích 802.11v BSS transition request bị từ chối",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F266",
+      "title": "Đánh giá phân bổ airtime fairness giữa các client",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F267",
+      "title": "Phân tích CAKE/SQM drops và queue delay theo traffic class",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F268",
+      "title": "Phát hiện sai ánh xạ DSCP sang priority/queue",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F269",
+      "title": "Kiểm tra TWT/power-save negotiation nếu firmware cung cấp",
+      "title_missing": false
+    },
+    {
+      "requirement_id": "F270",
+      "title": "Phân tích sự kiện DFS radar và channel switch làm gián đoạn client",
+      "title_missing": false
+    }
+  ]
+}

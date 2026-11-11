@@ -1,0 +1,2783 @@
+{
+ "case_status": "PARTIAL",
+ "claims": {
+  "client_dns_failure": {
+   "diagnosis": "client_dns_failure",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "UNKNOWN"
+  },
+  "client_ip_reachable": {
+   "diagnosis": "client_ip_reachable",
+   "evidence": [],
+   "scope": "client",
+   "severity": "OBSERVATION",
+   "value": "UNKNOWN"
+  },
+  "client_ipv4_unconfigured": {
+   "diagnosis": "client_ipv4_unconfigured",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "client_no_lease": {
+   "diagnosis": "client_no_lease",
+   "evidence": [],
+   "scope": "client",
+   "severity": "OBSERVATION",
+   "value": "UNKNOWN"
+  },
+  "client_not_associated": {
+   "diagnosis": "client_not_associated",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "client_path_loss": {
+   "diagnosis": "client_path_loss",
+   "evidence": [],
+   "scope": "client",
+   "severity": "OBSERVATION",
+   "value": "UNKNOWN"
+  },
+  "client_path_unverified": {
+   "diagnosis": "client_path_unverified",
+   "evidence": [
+    "e8",
+    "e6"
+   ],
+   "scope": "gateway",
+   "severity": "OBSERVATION",
+   "value": "TRUE"
+  },
+  "dhcp_pool_exhausted": {
+   "diagnosis": "dhcp_pool_exhausted",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "UNKNOWN"
+  },
+  "dhcp_service_down": {
+   "diagnosis": "dhcp_service_down",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "UNKNOWN"
+  },
+  "gateway_dns_failure": {
+   "diagnosis": "gateway_dns_failure",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wan_link_down": {
+   "diagnosis": "wan_link_down",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wan_no_route": {
+   "diagnosis": "wan_no_route",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wan_packet_loss": {
+   "diagnosis": "wan_packet_loss",
+   "evidence": [],
+   "scope": "gateway",
+   "severity": "FAULT",
+   "value": "FALSE"
+  },
+  "wifi_weak_signal": {
+   "diagnosis": "wifi_weak_signal",
+   "evidence": [],
+   "scope": "client",
+   "severity": "FAULT",
+   "value": "FALSE"
+  }
+ },
+ "contract_0": [
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 6.0,
+     "nodes": 6
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [
+    {
+     "from_skill": "SK01",
+     "function_id": "clients.resolve",
+     "reason": "producer_for:client.identity"
+    }
+   ],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "wifi.station",
+    "client.ipv4",
+    "clients.resolve",
+    "wan.routes",
+    "wan.status"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wifi.station",
+     "input": "client.identity"
+    },
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    },
+    {
+     "function_id": "client.ipv4",
+     "input": "client.identity"
+    }
+   ],
+   "plan_revision": 2,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing client.identity client.ipv4 wifi.station wan.probe dns.probe client.probe client.dns",
+   "rejected": [
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK02",
+    "SK03",
+    "SK04"
+   ],
+   "skill_context": {
+    "client.ipv4": "SK03",
+    "clients.resolve": "SK01",
+    "wan.routes": "SK04",
+    "wan.status": "SK04",
+    "wifi.station": "SK02"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 5.0,
+     "nodes": 5
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "wifi.station",
+    "client.ipv4",
+    "wan.routes",
+    "wan.status"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    }
+   ],
+   "plan_revision": 3,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing client.ipv4 wifi.station wan.probe dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'}",
+   "rejected": [
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK02",
+    "SK03",
+    "SK04"
+   ],
+   "skill_context": {
+    "client.ipv4": "SK03",
+    "wan.routes": "SK04",
+    "wan.status": "SK04",
+    "wifi.station": "SK02"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 2,
+     "latency_ms": 5.0,
+     "nodes": 5
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "dns.probe",
+    "wan.routes",
+    "wan.status",
+    "dns.config"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "wan.routes",
+     "input": "wan.status"
+    },
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    }
+   ],
+   "plan_revision": 4,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing client.ipv4 wan.probe dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} wifi.station {'associated': True, 'rssi_dbm': -48}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "dns.config": "SK05",
+    "dns.probe": "SK05",
+    "wan.routes": "SK04",
+    "wan.status": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 1,
+     "latency_ms": 5.0,
+     "nodes": 5
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "client.ipv4",
+    "dns.probe",
+    "wan.routes",
+    "dns.config"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    }
+   ],
+   "plan_revision": 5,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing client.ipv4 wan.probe dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "client.ipv4": "SK03",
+    "dns.config": "SK05",
+    "dns.probe": "SK05",
+    "wan.routes": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 1,
+     "latency_ms": 4.0,
+     "nodes": 4
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "UNKNOWN",
+       "value": true
+      }
+     ],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "dns.probe",
+    "wan.routes",
+    "dns.config"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "wan.probe",
+     "input": "wan.routes"
+    },
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    }
+   ],
+   "plan_revision": 6,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing wan.probe dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} client.ipv4 {'address': '192.168.1.120', 'configured': True} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "wan.probe",
+     "reason": "deferred_unknown_precondition:wan.routes.default_route"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "dns.config": "SK05",
+    "dns.probe": "SK05",
+    "wan.routes": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 1,
+     "latency_ms": 3.0,
+     "nodes": 3
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [
+      {
+       "field": "default_route",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "wan.probe",
+    "dns.probe",
+    "dns.config"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    }
+   ],
+   "plan_revision": 7,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing wan.probe dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} client.ipv4 {'address': '192.168.1.120', 'configured': True} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'} wan.routes {'default_route': True, 'interface': 'wan'}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05",
+    "SK08",
+    "SK09"
+   ],
+   "skill_context": {
+    "dns.config": "SK05",
+    "dns.probe": "SK05",
+    "wan.probe": "SK04"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 1,
+     "latency_ms": 2.0,
+     "nodes": 2
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.routes": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "dns.probe",
+    "dns.config"
+   ],
+   "missing_inputs": [
+    {
+     "function_id": "dns.probe",
+     "input": "dns.config"
+    }
+   ],
+   "plan_revision": 8,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} client.ipv4 {'address': '192.168.1.120', 'configured': True} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'} wan.routes {'default_route': True, 'interface': 'wan'} wan.probe {'loss_pct': 0, 'rtt_ms': 18, 'measurement_point': 'gateway'}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {
+    "dns.config": "SK05",
+    "dns.probe": "SK05"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 0,
+     "latency_ms": 1.0,
+     "nodes": 1
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.routes": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "INCOMPLETE",
+   "function_candidates": [
+    "dns.probe"
+   ],
+   "missing_inputs": [],
+   "plan_revision": 9,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing dns.probe client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} client.ipv4 {'address': '192.168.1.120', 'configured': True} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'} wan.routes {'default_route': True, 'interface': 'wan'} wan.probe {'loss_pct': 0, 'rtt_ms': 18, 'measurement_point': 'gateway'} dns.config {'resolver': '192.168.1.1'}",
+   "rejected": [
+    {
+     "function_id": "client.dns",
+     "reason": "policy:capability_or_acl"
+    },
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05",
+    "SK08",
+    "SK09"
+   ],
+   "skill_context": {
+    "dns.probe": "SK05"
+   },
+   "skill_graph_version": 1
+  },
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 0,
+     "latency_ms": 0.0,
+     "nodes": 0
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [
+      {
+       "field": "configured",
+       "op": "eq",
+       "truth": "TRUE",
+       "value": true
+      }
+     ],
+     "status": "KNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.routes": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "KNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "KNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "BLOCKED",
+   "function_candidates": [],
+   "missing_inputs": [],
+   "plan_revision": 10,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet? missing client.probe client.dns facts client.identity {'client_id': 'client_02', 'hostname': 'laptop-an'} client.ipv4 {'address': '192.168.1.120', 'configured': True} wifi.station {'associated': True, 'rssi_dbm': -48} wan.status {'link_up': True, 'interface': 'wan'} wan.routes {'default_route': True, 'interface': 'wan'} wan.probe {'loss_pct': 0, 'rtt_ms': 18, 'measurement_point': 'gateway'} dns.config {'resolver': '192.168.1.1'} dns.probe {'rcode': 'NOERROR', 'query': 'example.com', 'measurement_point': 'gateway'}",
+   "rejected": [
+    {
+     "function_id": "client.probe",
+     "reason": "policy:capability_or_acl"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK08",
+    "SK09"
+   ],
+   "skill_context": {},
+   "skill_graph_version": 1
+  }
+ ],
+ "contract_a": [
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "clients.resolve#1",
+     "to": "wifi.station#1",
+     "type": "DATA"
+    },
+    {
+     "from": "clients.resolve#1",
+     "to": "wifi.station#1",
+     "type": "STATE"
+    },
+    {
+     "from": "clients.resolve#1",
+     "to": "client.ipv4#1",
+     "type": "DATA"
+    },
+    {
+     "from": "clients.resolve#1",
+     "to": "client.ipv4#1",
+     "type": "STATE"
+    },
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "clients.resolve#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wifi.station#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "client.ipv4#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "client.identity"
+     ],
+     "function_id": "clients.resolve",
+     "node_id": "clients.resolve#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK01",
+     "target": {
+      "client_id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "client.identity": {
+       "kind": "node",
+       "port": "client.identity",
+       "ref": "clients.resolve#1"
+      }
+     },
+     "effects": [
+      "wifi.station"
+     ],
+     "function_id": "wifi.station",
+     "node_id": "wifi.station#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "client.identity"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK02",
+     "target": {
+      "client_id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "client.identity": {
+       "kind": "node",
+       "port": "client.identity",
+       "ref": "clients.resolve#1"
+      }
+     },
+     "effects": [
+      "client.ipv4"
+     ],
+     "function_id": "client.ipv4",
+     "node_id": "client.ipv4#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "client.identity"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK03",
+     "target": {
+      "client_id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/2",
+   "revision": 2
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "wifi.station#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "client.ipv4#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wifi.station#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "client.ipv4#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "client.identity",
+       "ref": "e1"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "client.identity": {
+       "kind": "evidence",
+       "port": "client.identity",
+       "ref": "e1"
+      }
+     },
+     "effects": [
+      "wifi.station"
+     ],
+     "function_id": "wifi.station",
+     "node_id": "wifi.station#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "client.identity"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK02",
+     "target": {
+      "client_id": "client_02",
+      "id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "client.identity": {
+       "kind": "evidence",
+       "port": "client.identity",
+       "ref": "e1"
+      }
+     },
+     "effects": [
+      "client.ipv4"
+     ],
+     "function_id": "client.ipv4",
+     "node_id": "client.ipv4#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "client.identity"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK03",
+     "target": {
+      "client_id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/3",
+   "revision": 3
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "wan.status#1",
+     "to": "wan.routes#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.status#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "wan.status"
+     ],
+     "function_id": "wan.status",
+     "node_id": "wan.status#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "node",
+       "port": "wan.status",
+       "ref": "wan.status#1"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/4",
+   "revision": 4
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "client.ipv4#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.routes#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "client.ipv4#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "client.identity",
+       "ref": "e1"
+      },
+      {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "client.identity": {
+       "kind": "evidence",
+       "port": "client.identity",
+       "ref": "e1"
+      }
+     },
+     "effects": [
+      "client.ipv4"
+     ],
+     "function_id": "client.ipv4",
+     "node_id": "client.ipv4#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "client.identity"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK03",
+     "target": {
+      "client_id": "client_02",
+      "id": "client_02",
+      "scope": "client",
+      "selector": "laptop-an"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/5",
+   "revision": 5
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "wan.routes#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.routes#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.status": {
+       "kind": "evidence",
+       "port": "wan.status",
+       "ref": "e3"
+      }
+     },
+     "effects": [
+      "wan.routes"
+     ],
+     "function_id": "wan.routes",
+     "node_id": "wan.routes#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.status"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/6",
+   "revision": 6
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "wan.probe#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "wan.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "wan.routes",
+       "ref": "e5"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "wan.routes": {
+       "kind": "evidence",
+       "port": "wan.routes",
+       "ref": "e5"
+      }
+     },
+     "effects": [
+      "wan.probe"
+     ],
+     "function_id": "wan.probe",
+     "node_id": "wan.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "wan.routes",
+      "wan.routes.default_route eq True"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK04",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/7",
+   "revision": 7
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "dns.config#1",
+     "to": "dns.probe#1",
+     "type": "DATA"
+    },
+    {
+     "from": "src",
+     "to": "dns.config#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {},
+     "effects": [
+      "dns.config"
+     ],
+     "function_id": "dns.config",
+     "node_id": "dns.config#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "READ_ONLY",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "node",
+       "port": "dns.config",
+       "ref": "dns.config#1"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/8",
+   "revision": 8
+  },
+  {
+   "case_id": "golden-client_path_unverified",
+   "edges": [
+    {
+     "from": "src",
+     "to": "dns.probe#1",
+     "type": "ORDER"
+    },
+    {
+     "from": "dns.probe#1",
+     "to": "snk",
+     "type": "ORDER"
+    }
+   ],
+   "nodes": [
+    {
+     "effects": [
+      {
+       "kind": "evidence",
+       "port": "dns.config",
+       "ref": "e7"
+      }
+     ],
+     "node_id": "src"
+    },
+    {
+     "adapter": "synthetic_replay/v1",
+     "args": {
+      "dns.config": {
+       "kind": "evidence",
+       "port": "dns.config",
+       "ref": "e7"
+      }
+     },
+     "effects": [
+      "dns.probe"
+     ],
+     "function_id": "dns.probe",
+     "node_id": "dns.probe#1",
+     "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+     "repair_budget": 2,
+     "requires": [
+      "dns.config"
+     ],
+     "retry": {
+      "max_attempts": 1
+     },
+     "risk": "PROBE",
+     "skill_context": "SK05",
+     "target": {
+      "id": "gateway_01",
+      "scope": "gateway"
+     },
+     "timeout_ms": 2000,
+     "verifier": "schema_scope_provenance_freshness/v3"
+    },
+    {
+     "node_id": "snk",
+     "requires": []
+    }
+   ],
+   "plan_id": "golden-client_path_unverified/plan/9",
+   "revision": 9
+  }
+ ],
+ "contract_b": [
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "clients.resolve#1",
+   "observations": [
+    {
+     "evidence_id": "e1",
+     "kind": "client.identity",
+     "result": "OK",
+     "scope": "client",
+     "source": "synthetic_replay/v1",
+     "target": "client_02"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wifi.station#1",
+   "observations": [
+    {
+     "evidence_id": "e2",
+     "kind": "wifi.station",
+     "result": "OK",
+     "scope": "client",
+     "source": "synthetic_replay/v1",
+     "target": "client_02"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.status#1",
+   "observations": [
+    {
+     "evidence_id": "e3",
+     "kind": "wan.status",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "client.ipv4#1",
+   "observations": [
+    {
+     "evidence_id": "e4",
+     "kind": "client.ipv4",
+     "result": "OK",
+     "scope": "client",
+     "source": "synthetic_replay/v1",
+     "target": "client_02"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.routes#1",
+   "observations": [
+    {
+     "evidence_id": "e5",
+     "kind": "wan.routes",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "wan.probe#1",
+   "observations": [
+    {
+     "evidence_id": "e6",
+     "kind": "wan.probe",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "dns.config#1",
+   "observations": [
+    {
+     "evidence_id": "e7",
+     "kind": "dns.config",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  },
+  {
+   "goal_claim": "NOT_EVALUATED",
+   "node_id": "dns.probe#1",
+   "observations": [
+    {
+     "evidence_id": "e8",
+     "kind": "dns.probe",
+     "result": "OK",
+     "scope": "gateway",
+     "source": "synthetic_replay/v1",
+     "target": "gateway_01"
+    }
+   ],
+   "tool_status": "EXIT_OK"
+  }
+ ],
+ "contract_c": {
+  "case_id": "golden-client_path_unverified",
+  "concluded_claim": "client_path_unverified",
+  "decision": "PARTIAL",
+  "facts": {
+   "client_dns_works": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_identified": {
+    "evidence": [
+     "e1"
+    ],
+    "value": "TRUE"
+   },
+   "client_internet_reachable": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_ip_configured": {
+    "evidence": [
+     "e4"
+    ],
+    "value": "TRUE"
+   },
+   "client_lease_valid": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "client_wifi_associated": {
+    "evidence": [
+     "e2"
+    ],
+    "value": "TRUE"
+   },
+   "router_cpu_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_default_route": {
+    "evidence": [
+     "e5"
+    ],
+    "value": "TRUE"
+   },
+   "router_dhcp_pool_available": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dhcp_running": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_dns_works": {
+    "evidence": [
+     "e8"
+    ],
+    "value": "TRUE"
+   },
+   "router_memory_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_storage_ok": {
+    "evidence": [],
+    "value": "UNKNOWN"
+   },
+   "router_wan_link": {
+    "evidence": [
+     "e3"
+    ],
+    "value": "TRUE"
+   },
+   "router_wan_reachable": {
+    "evidence": [
+     "e6"
+    ],
+    "value": "TRUE"
+   }
+  },
+  "outstanding_questions": [
+   "client_internet_reachable",
+   "client_dns_works"
+  ],
+  "state_revision": 7
+ },
+ "events": [
+  {
+   "node": "clients.resolve#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 2,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wifi.station#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 3,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.status#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 4,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "client.ipv4#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 5,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.routes#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 6,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "wan.probe#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 7,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "dns.config#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 8,
+   "state": "SUCCEEDED"
+  },
+  {
+   "node": "dns.probe#1",
+   "reason": "schema_scope_source_freshness_verified",
+   "revision": 9,
+   "state": "SUCCEEDED"
+  }
+ ],
+ "golden_id": "client_path_unverified",
+ "input": {
+  "capabilities": [
+   "clients.resolve",
+   "client.ipv4",
+   "wifi.station",
+   "wan.status",
+   "wan.routes",
+   "wan.probe",
+   "dns.config",
+   "dns.probe",
+   "dhcp.leases",
+   "dhcp.pool",
+   "dhcp.service",
+   "system.resources",
+   "system.logs",
+   "dns.apply",
+   "qos.apply"
+  ],
+  "devices": [
+   "laptop-an"
+  ],
+  "fixture": "GLM-21-1",
+  "gateway_functions": [
+   "dhcp.pool",
+   "dhcp.service",
+   "dns.config",
+   "dns.probe",
+   "system.logs",
+   "system.resources",
+   "wan.probe",
+   "wan.routes",
+   "wan.status"
+  ],
+  "request": "Laptop An vẫn có Wi-Fi, sao không truy cập Internet?",
+  "workflow": "WF-INTERNET"
+ },
+ "note": "synthetic replay; not a router measurement",
+ "verdict": {
+  "action": "INCOMPLETE",
+  "diagnosis": "client_path_unverified",
+  "evidence_ids": [
+   "e8",
+   "e6"
+  ]
+ }
+}

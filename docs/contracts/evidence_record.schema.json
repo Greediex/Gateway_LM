@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM evidence record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "case_id",
+    "skill_context",
+    "function_id",
+    "source",
+    "target",
+    "observed_at",
+    "ttl_seconds",
+    "raw",
+    "validator",
+    "assertions"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "function_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "gateway",
+            "client"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "observed_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z$"
+    },
+    "ttl_seconds": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "raw": {},
+    "validator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "target",
+        "fresh"
+      ],
+      "properties": {
+        "schema": {
+          "type": "boolean"
+        },
+        "target": {
+          "type": "boolean"
+        },
+        "fresh": {
+          "type": "boolean"
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fact",
+          "value"
+        ],
+        "properties": {
+          "fact": {
+            "pattern": "^(router|client)_[a-z_]+$"
+          },
+          "value": {
+            "enum": [
+              "TRUE",
+              "FALSE",
+              "UNKNOWN"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

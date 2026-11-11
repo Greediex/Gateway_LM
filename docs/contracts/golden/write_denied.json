@@ -1,0 +1,155 @@
+{
+ "case_status": "BLOCKED",
+ "claims": null,
+ "contract_0": [
+  {
+   "budget": {
+    "limits": {
+     "max_depth": 6,
+     "max_latency_ms": 1000,
+     "max_nodes": 32
+    },
+    "used": {
+     "depth": 0,
+     "latency_ms": 0.0,
+     "nodes": 0
+    }
+   },
+   "case_state": {
+    "client.dns": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.identity": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.ipv4": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "client.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.leases": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.pool": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dhcp.service": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "dns.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "qos.config": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.logs": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "system.resources": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.probe": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.routes": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wan.status": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    },
+    "wifi.station": {
+     "predicates": [],
+     "status": "UNKNOWN"
+    }
+   },
+   "catalog_version": "0.1.0",
+   "cross_skill_candidates": [],
+   "decision": "BLOCKED",
+   "function_candidates": [],
+   "missing_inputs": [],
+   "plan_revision": 1,
+   "policy": {
+    "acl": "network.read,system.read",
+    "write_approval": false
+   },
+   "query": "Đổi DNS router sang 8.8.8.8",
+   "rejected": [
+    {
+     "function_id": "dns.apply",
+     "reason": "policy:WRITE"
+    }
+   ],
+   "selected_skills": [
+    "SK03",
+    "SK04",
+    "SK05"
+   ],
+   "skill_context": {},
+   "skill_graph_version": 1
+  }
+ ],
+ "contract_a": [],
+ "contract_b": [],
+ "contract_c": null,
+ "events": [],
+ "golden_id": "write_denied",
+ "input": {
+  "capabilities": [
+   "clients.resolve",
+   "client.ipv4",
+   "wifi.station",
+   "wan.status",
+   "wan.routes",
+   "wan.probe",
+   "dns.config",
+   "dns.probe",
+   "dhcp.leases",
+   "dhcp.pool",
+   "dhcp.service",
+   "system.resources",
+   "system.logs",
+   "dns.apply",
+   "qos.apply"
+  ],
+  "devices": [],
+  "fixture": "GLM-23-0",
+  "gateway_functions": [
+   "dhcp.pool",
+   "dhcp.service",
+   "dns.config",
+   "dns.probe",
+   "system.logs",
+   "system.resources",
+   "wan.probe",
+   "wan.routes",
+   "wan.status"
+  ],
+  "request": "Đổi DNS router sang 8.8.8.8",
+  "workflow": "WF-WRITE"
+ },
+ "note": "synthetic replay; not a router measurement",
+ "verdict": {
+  "action": "INCOMPLETE",
+  "diagnosis": "unsafe_change_denied",
+  "evidence_ids": []
+ }
+}

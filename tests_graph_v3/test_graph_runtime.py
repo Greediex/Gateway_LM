@@ -78,7 +78,7 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(set(p.nodes),{"wan.status"})
 
     def test_skill_dependency_cycle_rejected(self):
-        with self.assertRaisesRegex(PlanError,"skill_dependency_cycle"):
+        with self.assertRaisesRegex(PlanError,"WOULD_CREATE_CYCLE"):
             SkillGraph(self.registry.skills,[Relation("SK01","SK03","depends_on"),Relation("SK03","SK01","depends_on")])
 
     def test_membership_is_bidirectional(self):
@@ -256,7 +256,7 @@ class GraphTests(unittest.TestCase):
         self.assertTrue(self.state.fact('wan.routes'))
         self.assertEqual(self.state.attempts['dns.config'],1)
         self.assertEqual(self.state.attempts['dns.probe'],1)
-        self.assertTrue(any(a.get('operator')=='SUBSTITUTE_REWIRE_INSERT_PREREQ' for a in final.audit))
+        self.assertTrue(any(a.get('operator')=='SUBSTITUTE' and a['replaced']=={'wan.status':'z.status.backup'} for a in final.audit))
         self.assertEqual(self.state.attempts['z.status.backup'],1)
 
     def test_order_edge_does_not_invalidate_data_descendants(self):
@@ -357,26 +357,26 @@ class GraphTests(unittest.TestCase):
 
     def test_dry_run_edit_permission_version_and_rollback(self):
         gs=self.registry.gs
-        proposal=gs.propose_edge(Relation('SK05','SK04','alternative_to'))
+        proposal=gs.propose_edge(Relation('SK05','SK04','alternative_to'),reason='test alternative')
         self.assertEqual(gs.version,1)
         self.assertFalse(any(e.kind=='alternative_to' for e in gs.edges))
         with self.assertRaisesRegex(PlanError,'permission'):gs.apply(proposal)
         gs.apply(proposal,permissions={'graph.edit'},actor='test-core')
         self.assertEqual(gs.version,2)
         with self.assertRaisesRegex(PlanError,'version_conflict'):gs.apply(proposal,permissions={'graph.edit'})
-        gs.rollback(1,permissions={'graph.edit'})
+        gs.rollback(1,permissions={'graph.edit'},reason='undo test alternative')
         self.assertEqual(gs.version,3)
         self.assertFalse(any(e.kind=='alternative_to' for e in gs.edges))
 
     def test_conflicting_skill_dependency_proposal_rejected(self):
         gs=self.registry.gs
-        with self.assertRaisesRegex(PlanError,'dependency_conflict'):
-            gs.propose_edge(Relation('SK03','SK01','conflicts_with'))
+        with self.assertRaisesRegex(PlanError,'CONTRADICTORY_EDGE'):
+            gs.propose_edge(Relation('SK03','SK01','conflicts_with'),reason='test contradiction')
 
     def test_skill_graph_revision_change_invalidates_compiled_plan(self):
         p=Compiler(self.registry).compile(['wan.status'],self.state)
         gs=self.registry.gs
-        gs.apply(gs.propose_edge(Relation('SK05','SK04','composes_with')),permissions={'graph.edit'})
+        gs.apply(gs.propose_edge(Relation('SK05','SK04','similar_to'),reason='test graph revision'),permissions={'graph.edit'})
         with self.assertRaisesRegex(PlanError,'skill_graph_changed'):
             GraphRunner(self.registry,self.case,self.state).ready(p)
 

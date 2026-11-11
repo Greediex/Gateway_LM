@@ -1,0 +1,3 @@
+# Dữ liệu được kiểm bằng SHA-256 (data/frozen_manifest.json): không cho git đổi ký tự xuống dòng.
+data/** -text
+benchmarks/** -text

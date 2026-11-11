@@ -1,22 +1,37 @@
-"""Evidence-driven Core: persistent plan, GoS-ranked READY set, bounded repair."""
+"""GATEWAY_DESIGN: resolver-selected evidence and GoS-ranked READY scheduling."""
+import copy
 from ..core import PlanError
 from .planner import Compiler, NodeState
 from .runner import GraphRunner
+from .resolver import resolve
 
 
 def acquire(case, registry, state, *, method="gos", k=4, max_calls=12, max_repairs=2):
     goals = registry.goal_ports[case['workflow']]
-    feasible, unavailable = [], {}
-    for goal in goals:
-        try:
-            Compiler(registry).compile([goal], state)
-            feasible.append(goal)
-        except PlanError as exc:
-            unavailable[goal] = str(exc)
-    plan = Compiler(registry).compile(feasible, state)
     runner = GraphRunner(registry, case, state, max_calls=max_calls, max_repairs=max_repairs)
-    retrievals = run_plan(runner, plan, goals, method=method, k=k)
-    return {'plans': [p.export() for p in runner.plans], 'events': runner.events,
+    contracts, retrievals = [], []
+    while True:
+        view = copy.copy(state)
+        view.capabilities = state.capabilities - runner.excluded
+        contract = resolve(registry, view, case['request'], goals=goals, method=method)
+        contract['plan_revision'] = max(contract['plan_revision'],
+                                        runner.plans[-1].revision + 1 if runner.plans else 1)
+        contracts.append(contract)
+        candidates = contract['function_candidates']
+        if not candidates or runner.calls >= max_calls or contract['decision'] in {'BLOCKED', 'ASK_USER'}:
+            break
+        plan = Compiler(registry, excluded=set(registry.functions) - set(candidates)).compile(
+            (), state, requested=candidates, revision=contract['plan_revision'],
+            skill_context=contract['skill_context'])
+        before = runner.calls
+        retrievals.extend(run_plan(runner, plan, goals, method=method, k=k))
+        runner.excluded.update(n.function_id for p in runner.plans for n in p.nodes.values()
+                               if n.state in (NodeState.FAILED, NodeState.INCONCLUSIVE))
+        if runner.calls == before:
+            break
+    unavailable = {goal: contracts[-1]['decision'] for goal in goals if state.fact(goal) is None}
+    return {'contract_0': contracts[0], 'contract_0_history': contracts,
+            'plans': [p.export() for p in runner.plans], 'events': runner.events,
             'retrievals': retrievals, 'calls': runner.calls, 'repairs': runner.repairs,
             'spent_declared_cost': runner.spent, 'unavailable_goals': unavailable,
             'unverified_goals': [g for g in goals if state.fact(g) is None],

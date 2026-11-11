@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM Contract A",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plan_id", "revision", "case_id", "nodes", "edges"],
+  "properties": {
+    "plan_id": {"$ref": "#/$defs/id"},
+    "case_id": {"$ref": "#/$defs/id"},
+    "revision": {"type": "integer", "minimum": 1},
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["node_id", "effects"],
+            "properties": {
+              "node_id": {"const": "src"},
+              "effects": {"type": "array", "items": {"$ref": "#/$defs/binding"}}
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["node_id", "requires"],
+            "properties": {
+              "node_id": {"const": "snk"},
+              "requires": {"$ref": "#/$defs/ports"}
+            }
+          },
+          {"$ref": "#/$defs/invocation"}
+        ]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "type"],
+        "properties": {
+          "from": {"$ref": "#/$defs/id"},
+          "to": {"$ref": "#/$defs/id"},
+          "type": {"enum": ["DATA", "STATE", "ORDER"]}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "ports": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref", "port"],
+      "properties": {
+        "kind": {"enum": ["node", "evidence"]},
+        "ref": {"$ref": "#/$defs/id"},
+        "port": {"$ref": "#/$defs/id"}
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node_id", "function_id", "skill_context", "adapter", "target", "args",
+        "requires", "effects", "on_unknown", "verifier", "risk", "retry", "timeout_ms", "repair_budget"],
+      "properties": {
+        "node_id": {"$ref": "#/$defs/id"},
+        "function_id": {"$ref": "#/$defs/id"},
+        "skill_context": {"$ref": "#/$defs/id"},
+        "adapter": {"$ref": "#/$defs/id"},
+        "target": {
+          "type": "object", "required": ["scope"],
+          "properties": {"scope": {"enum": ["gateway", "client"]}}
+        },
+        "args": {"type": "object", "additionalProperties": {"$ref": "#/$defs/binding"}},
+        "requires": {"$ref": "#/$defs/ports"},
+        "effects": {"$ref": "#/$defs/ports"},
+        "on_unknown": {"$ref": "#/$defs/id"},
+        "verifier": {"$ref": "#/$defs/id"},
+        "risk": {"enum": ["READ", "READ_ONLY", "PROBE"]},
+        "retry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max_attempts"],
+          "properties": {"max_attempts": {"type": "integer", "minimum": 1}}
+        },
+        "timeout_ms": {"type": "number", "exclusiveMinimum": 0},
+        "repair_budget": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

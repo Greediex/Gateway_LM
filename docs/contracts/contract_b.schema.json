@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM Contract B",
+  "description": "Runner -> evidence layer. tool_status reports the adapter; goal_claim is never evaluated here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "node_id",
+    "tool_status",
+    "observations",
+    "goal_claim"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_status": {
+      "enum": [
+        "EXIT_OK",
+        "EXIT_ERROR",
+        "TIMEOUT"
+      ]
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidence_id",
+          "kind",
+          "target",
+          "scope",
+          "result",
+          "source"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "enum": [
+              "gateway",
+              "client"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "goal_claim": {
+      "const": "NOT_EVALUATED"
+    }
+  }
+}

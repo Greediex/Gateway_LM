@@ -1,0 +1,836 @@
+{
+ "version": "1.0.0",
+ "note": "Synthetic replay environments; labels from the contract compiler. Holdout runs once; nothing is tuned on it.",
+ "cases": [
+  {
+   "id": "FS-WF-018-normal-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "normal",
+   "request": "đường internet nhà mình có ổn không, kiểm tra giúp phía nhà mạng",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-normal-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "normal",
+   "request": "check whether the WAN uplink is healthy",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-missing_identity-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "missing_identity",
+   "request": "máy tính nhà tôi vào mạng chập chờn, xem đường truyền",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-missing_identity-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "missing_identity",
+   "request": "my computer keeps losing the connection, check the line",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-missing_capability-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "missing_capability",
+   "request": "kiểm tra kết nối ra ngoài của router",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-018-missing_capability-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "missing_capability",
+   "request": "is the router reaching the internet",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-018-stale_evidence-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "stale_evidence",
+   "request": "xem lại đường WAN lần nữa",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-stale_evidence-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "stale_evidence",
+   "request": "re-check the WAN link status",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-wrong_target-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "wrong_target",
+   "request": "kiểm tra WAN của modem",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-wrong_target-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "wrong_target",
+   "request": "verify the gateway uplink",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-018-write_request-dev",
+   "split": "dev",
+   "workflow": "WF-018",
+   "condition": "write_request",
+   "request": "đổi cấu hình WAN sang PPPoE",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-018-write_request-holdout",
+   "split": "holdout",
+   "workflow": "WF-018",
+   "condition": "write_request",
+   "request": "set the WAN mode to static IP",
+   "base_fixture": "GLM-04-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-023-normal-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "normal",
+   "request": "router có phân giải tên miền được không",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-normal-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "normal",
+   "request": "can the gateway resolve domain names",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-missing_identity-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "missing_identity",
+   "request": "điện thoại vào web bằng tên không được, kiểm tra DNS router",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-missing_identity-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "missing_identity",
+   "request": "phone can't open sites by name, check router DNS",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-missing_capability-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "missing_capability",
+   "request": "kiểm tra máy chủ DNS của router",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-023-missing_capability-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "missing_capability",
+   "request": "test the router resolver",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-023-stale_evidence-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "stale_evidence",
+   "request": "kiểm tra lại DNS router",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-stale_evidence-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "stale_evidence",
+   "request": "recheck gateway DNS",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-wrong_target-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "wrong_target",
+   "request": "DNS trên gateway có lỗi không",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-wrong_target-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "wrong_target",
+   "request": "is DNS failing on the gateway",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-023-write_request-dev",
+   "split": "dev",
+   "workflow": "WF-023",
+   "condition": "write_request",
+   "request": "đặt DNS router thành 1.1.1.1",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-023-write_request-holdout",
+   "split": "holdout",
+   "workflow": "WF-023",
+   "condition": "write_request",
+   "request": "change the router DNS to 9.9.9.9",
+   "base_fixture": "GLM-07-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-024-normal-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "normal",
+   "request": "laptop-an có nhận được địa chỉ IP từ DHCP không",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-024-normal-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "normal",
+   "request": "does laptop-an get a DHCP lease",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-024-missing_identity-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "missing_identity",
+   "request": "máy mới cắm vào không nhận IP",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-024-missing_identity-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "missing_identity",
+   "request": "a device cannot obtain an address",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-024-missing_capability-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "missing_capability",
+   "request": "kiểm tra cấp phát địa chỉ cho laptop-an",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-024-missing_capability-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "missing_capability",
+   "request": "check address allocation for laptop-an",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-024-stale_evidence-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "stale_evidence",
+   "request": "xem lại lease DHCP của laptop-an",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-024-stale_evidence-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "stale_evidence",
+   "request": "recheck laptop-an DHCP lease",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.leases",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-024-wrong_target-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "wrong_target",
+   "request": "ipad-be không lấy được IP",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-024-wrong_target-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "wrong_target",
+   "request": "tablet-kid cannot get an IP",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [
+    "clients.resolve",
+    "dhcp.pool",
+    "dhcp.service"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-024-write_request-dev",
+   "split": "dev",
+   "workflow": "WF-024",
+   "condition": "write_request",
+   "request": "đổi dải DHCP sang 192.168.10.0",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-024-write_request-holdout",
+   "split": "holdout",
+   "workflow": "WF-024",
+   "condition": "write_request",
+   "request": "update the DHCP pool range",
+   "base_fixture": "GLM-12-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-039-normal-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "normal",
+   "request": "router có quá tải CPU RAM không",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-normal-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "normal",
+   "request": "is the gateway short on memory or CPU",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-missing_identity-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "missing_identity",
+   "request": "máy tính chậm, kiểm tra tài nguyên router",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-missing_identity-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "missing_identity",
+   "request": "laptop slow, check router resources",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-missing_capability-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "missing_capability",
+   "request": "đo tài nguyên hệ thống của router",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-039-missing_capability-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "missing_capability",
+   "request": "measure router system resources",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-039-stale_evidence-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "stale_evidence",
+   "request": "kiểm tra lại RAM router",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-stale_evidence-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "stale_evidence",
+   "request": "recheck router memory",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-wrong_target-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "wrong_target",
+   "request": "tài nguyên gateway hiện thế nào",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-wrong_target-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "wrong_target",
+   "request": "gateway resource usage now",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [
+    "system.resources"
+   ],
+   "expected_status": "RESOLVED"
+  },
+  {
+   "id": "FS-WF-039-write_request-dev",
+   "split": "dev",
+   "workflow": "WF-039",
+   "condition": "write_request",
+   "request": "cài đặt lại cấu hình router",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-039-write_request-holdout",
+   "split": "holdout",
+   "workflow": "WF-039",
+   "condition": "write_request",
+   "request": "apply the factory profile to the router",
+   "base_fixture": "GLM-18-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-INTERNET-normal-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "normal",
+   "request": "laptop-an có wifi mà không vào được internet",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "PARTIAL"
+  },
+  {
+   "id": "FS-WF-INTERNET-normal-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "normal",
+   "request": "laptop-an is on wifi but has no internet",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "PARTIAL"
+  },
+  {
+   "id": "FS-WF-INTERNET-missing_identity-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "missing_identity",
+   "request": "máy tôi có wifi mà không vào mạng",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-INTERNET-missing_identity-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "missing_identity",
+   "request": "my device has wifi but no internet",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-INTERNET-missing_capability-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "missing_capability",
+   "request": "laptop-an bắt wifi nhưng web không tải",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-INTERNET-missing_capability-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "missing_capability",
+   "request": "laptop-an connected but pages do not load",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "INCONCLUSIVE"
+  },
+  {
+   "id": "FS-WF-INTERNET-stale_evidence-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "stale_evidence",
+   "request": "kiểm tra lại vì sao laptop-an không vào mạng",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "PARTIAL"
+  },
+  {
+   "id": "FS-WF-INTERNET-stale_evidence-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "stale_evidence",
+   "request": "recheck why laptop-an has no internet",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "client.ipv4",
+    "clients.resolve",
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status",
+    "wifi.station"
+   ],
+   "expected_status": "PARTIAL"
+  },
+  {
+   "id": "FS-WF-INTERNET-wrong_target-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "wrong_target",
+   "request": "ipad-be có wifi mà không vào mạng",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-INTERNET-wrong_target-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "wrong_target",
+   "request": "tablet-kid has wifi but no internet",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [
+    "dns.config",
+    "dns.probe",
+    "wan.probe",
+    "wan.routes",
+    "wan.status"
+   ],
+   "expected_status": "NEEDS_INPUT"
+  },
+  {
+   "id": "FS-WF-INTERNET-write_request-dev",
+   "split": "dev",
+   "workflow": "WF-INTERNET",
+   "condition": "write_request",
+   "request": "đổi kênh wifi cho laptop-an",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  },
+  {
+   "id": "FS-WF-INTERNET-write_request-holdout",
+   "split": "holdout",
+   "workflow": "WF-INTERNET",
+   "condition": "write_request",
+   "request": "change the wifi channel for laptop-an",
+   "base_fixture": "GLM-21-0",
+   "required_functions": [],
+   "expected_status": "BLOCKED"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway Function Resolver Contract 0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["query", "selected_skills", "case_state", "function_candidates", "missing_inputs", "cross_skill_candidates", "decision", "policy", "catalog_version", "skill_graph_version", "plan_revision", "skill_context", "rejected", "budget"],
+  "properties": {
+    "query": {"type": "string"},
+    "selected_skills": {"$ref": "#/$defs/ids"},
+    "case_state": {"type": "object", "additionalProperties": {
+      "type": "object", "additionalProperties": false, "required": ["status", "predicates"],
+      "properties": {
+        "status": {"enum": ["KNOWN", "UNKNOWN"]},
+        "predicates": {"type": "array", "uniqueItems": true, "items": {
+          "type": "object", "additionalProperties": false, "required": ["field", "op", "value", "truth"],
+          "properties": {"field": {"type": "string"}, "op": {"enum": ["exists", "eq", "gt"]},
+            "value": {}, "truth": {"enum": ["TRUE", "FALSE", "UNKNOWN"]}}
+        }}
+      }
+    }},
+    "function_candidates": {"$ref": "#/$defs/ids"},
+    "missing_inputs": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false, "required": ["function_id", "input"],
+      "properties": {"function_id": {"$ref": "#/$defs/id"}, "input": {"$ref": "#/$defs/id"}}
+    }},
+    "cross_skill_candidates": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false, "required": ["function_id", "from_skill", "reason"],
+      "properties": {"function_id": {"$ref": "#/$defs/id"}, "from_skill": {"$ref": "#/$defs/id"},
+        "reason": {"type": "string", "pattern": "^producer_for:.+"}}
+    }},
+    "decision": {"enum": ["READY_TO_COMPILE", "EXPAND_PREREQUISITES", "ASK_USER", "BLOCKED", "INCOMPLETE"]},
+    "policy": {"type": "object", "additionalProperties": false, "required": ["acl", "write_approval"],
+      "properties": {"acl": {"type": "string"}, "write_approval": {"const": false}}},
+    "catalog_version": {"$ref": "#/$defs/id"},
+    "skill_graph_version": {"type": "integer", "minimum": 1},
+    "plan_revision": {"type": "integer", "minimum": 1},
+    "skill_context": {"type": "object", "additionalProperties": {"$ref": "#/$defs/id"}},
+    "rejected": {"type": "array", "uniqueItems": true, "items": {
+      "type": "object", "additionalProperties": false, "required": ["function_id", "reason"],
+      "properties": {"function_id": {"$ref": "#/$defs/id"}, "reason": {"$ref": "#/$defs/id"}}
+    }},
+    "budget": {"type": "object", "additionalProperties": false, "required": ["used", "limits"], "properties": {
+      "used": {"type": "object", "additionalProperties": false, "required": ["depth", "nodes", "latency_ms"],
+        "properties": {"depth": {"type": "integer", "minimum": 0}, "nodes": {"type": "integer", "minimum": 0},
+          "latency_ms": {"type": "number", "minimum": 0}}},
+      "limits": {"type": "object", "additionalProperties": false, "required": ["max_depth", "max_nodes", "max_latency_ms"],
+        "properties": {"max_depth": {"type": "integer", "minimum": 0}, "max_nodes": {"type": "integer", "minimum": 0},
+          "max_latency_ms": {"type": "number", "minimum": 0}}}
+    }}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1},
+    "ids": {"type": "array", "items": {"$ref": "#/$defs/id"}, "uniqueItems": true}
+  }
+}

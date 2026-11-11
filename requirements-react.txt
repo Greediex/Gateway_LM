@@ -1,0 +1,4 @@
+-r requirements-graph-v3.lock
+langgraph==1.2.11
+langchain-core==1.7.6
+langgraph-prebuilt==1.1.1

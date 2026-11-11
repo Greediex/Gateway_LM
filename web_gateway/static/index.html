@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b1018">
+  <title>Gateway LM · Diagnostic Agent Playground</title>
+  <meta name="description" content="Giao diện hỏi trực tiếp Gateway LM trên dữ liệu synthetic replay, xem function calls, evidence và execution DAG.">
+  <link rel="stylesheet" href="/app.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><rect x="5" y="6" width="30" height="28" rx="9" stroke="currentColor" stroke-width="2"/><path d="M13 23l7-9 7 9M16 20h8M13 28h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="brand-title">Gateway <span>LM</span></div><div class="brand-caption">AGENT WORKBENCH <span class="vtag">BETA</span></div></div>
+      </div>
+      <div class="health-line"><span class="status-dot" id="healthDot"></span><span id="healthText">Đang kết nối...</span></div>
+      <div class="side-scroll">
+        <div class="side-section">
+          <div class="side-heading">NGUỒN DỮ LIỆU</div>
+          <div class="select-wrap"><select id="sourceSelect" aria-label="Nguồn dữ liệu"><option value="live" disabled>Đo thật từ Windows</option><option value="replay" selected>Replay mô phỏng</option></select></div>
+          <div id="fixtureField">
+            <div class="field-label">Tình huống mạng</div>
+            <div class="select-wrap"><select id="fixtureSelect" aria-label="Chọn tình huống mạng"><option value="GLM-21-1">Đang tải dữ liệu...</option></select></div>
+            <div class="fixture-note" id="fixtureNote">Tình huống mạng mô phỏng.</div>
+          </div>
+          <div class="fixture-note" id="liveNote" hidden>Đo từ máy Windows đang dùng gateway mặc định.</div>
+        </div>
+        <div class="divider"></div>
+        <div class="side-section">
+          <div class="side-heading">CẤU HÌNH SUY LUẬN</div>
+          <label class="field-label" for="policySelect">Chế độ chẩn đoán</label>
+          <div class="select-wrap"><select id="policySelect"><option value="react" disabled>LangGraph ReAct</option><option value="dynamic" selected>Dynamic Agent</option><option value="core">Core đối chứng</option></select></div>
+          <div class="field-label">Xếp hạng function</div>
+          <div class="segmented" role="group" aria-label="Phương pháp truy xuất">
+            <button type="button" class="seg active" id="bm25Btn" data-method="bm25">BM25</button>
+            <button type="button" class="seg" id="gosBtn" data-method="gos">Graph of Skills</button>
+          </div>
+          <div class="mini-note" id="methodNote">Đang kiểm tra Graph of Skills.</div>
+          <label class="switch-row"><span><b>Runbook RAG</b><small>Gợi ý tài liệu liên quan</small></span><input id="guideToggle" type="checkbox" checked><span class="switch"></span></label>
+          <label class="switch-row"><span><b>Skill context</b><small>Xem nhóm skill đã kiểm dependency</small></span><input id="skillToggle" type="checkbox"><span class="switch"></span></label>
+          <label class="switch-row"><span><b>LLM suy luận</b><small>Đề xuất phép đo khi có lựa chọn hoặc gặp lỗi</small></span><input id="llmToggle" type="checkbox"><span class="switch"></span></label>
+          <div class="model-field" id="modelField" hidden><div class="field-label">Tên local model (&lt;3B)</div><input id="modelName" value="qwen3:1.7b" type="text" spellcheck="false" placeholder="qwen3:1.7b"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="side-section">
+          <div class="side-heading">TRẠNG THÁI PHÉP ĐO</div>
+          <div class="stat-grid"><div class="stat"><b id="statCalls">—</b><small>Tool calls</small></div><div class="stat"><b id="statEvidence">—</b><small>Evidence</small></div><div class="stat"><b id="statRepairs">—</b><small>Repairs</small></div><div class="stat"><b id="statSkills">—</b><small>Steps</small></div></div>
+        </div>
+      </div>
+      <div class="side-bottom"><div class="safety-icon">◆</div><div><b>Chỉ đọc</b><span id="sourceFooter">Dữ liệu replay mô phỏng.</span></div></div>
+    </aside>
+
+    <main class="main">
+      <header class="main-header">
+        <div class="header-left"><button class="mobile-menu" id="menuBtn" aria-label="Mở thiết lập">☰</button><div class="header-crumb">Workspace <span>/</span> <b>Diagnostic Chat</b></div></div>
+        <div class="header-right"><button class="light-btn trace-open-btn" type="button" id="traceBtn">◉ Trace</button><span class="mode-pill"><span></span><b id="sourcePill">REPLAY MÔ PHỎNG</b></span><button class="light-btn" type="button" id="clearBtn" title="Xóa cuộc hội thoại">↻ <span>Xóa hội thoại</span></button></div>
+      </header>
+      <div class="chat-scroll" id="chatScroll">
+        <div class="chat-content">
+          <div class="intro" id="intro">
+            <div class="intro-orb"><div class="orb-inner">✳</div></div>
+            <div class="eyebrow">GATEWAY LM · INTERACTIVE PLAYGROUND</div>
+            <h1>Hỏi trực tiếp.<br><em>Nhìn rõ cách Agent xử lý.</em></h1>
+            <p id="introDescription">Đặt câu hỏi về WAN, Wi-Fi, DNS, DHCP hoặc sức khỏe gateway.</p>
+            <div class="intro-caption"><span class="caption-dot"></span><span id="introSource">Đang dùng tình huống mô phỏng được chọn ở bên trái</span></div>
+            <div class="suggestion-title">BẮT ĐẦU VỚI MỘT CÂU HỎI</div>
+            <div class="suggestions" id="suggestions">
+              <button class="suggestion" data-fixture="GLM-21-1" data-query="Laptop An có Wi-Fi nhưng không vào Internet, kiểm tra giúp tôi."><span class="s-icon i-blue">⌁</span><span>Wi-Fi có sóng nhưng không vào mạng<small>Xem chuỗi kiểm tra từ thiết bị đến WAN</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-fixture="WEB-WAN-TIMEOUT-1" data-query="Laptop An có Wi-Fi nhưng không vào Internet, kiểm tra giúp tôi."><span class="s-icon i-blue">⌁</span><span>WAN timeout, agent đổi mục tiêu<small>So sánh Dynamic và Core trên cùng replay</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-fixture="GLM-06-1" data-query="Kiểm tra vì sao DNS của gateway không phân giải được tên miền."><span class="s-icon i-purple">⌘</span><span>DNS phân giải thất bại<small>Kiểm tra resolver và đường Internet</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-fixture="GLM-10-1" data-query="Laptop An chưa được cấp IP, hãy kiểm tra DHCP."><span class="s-icon i-orange">◈</span><span>Thiết bị không nhận được IP<small>Đọc lease, DHCP pool và service</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-fixture="GLM-16-1" data-query="Kiểm tra CPU RAM và sức khỏe router hiện tại."><span class="s-icon i-green">▤</span><span>Router có đang quá tải?<small>Kiểm tra mức sử dụng tài nguyên</small></span><span class="arrow">↗</span></button>
+            </div>
+            <div class="suggestions" id="liveSuggestions" hidden>
+              <button class="suggestion" data-query="Mạng chất lượng thế nào?"><span class="s-icon i-blue">◎</span><span>Mạng chất lượng thế nào?<small>Đo độ trễ, mất gói và DNS</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-query="Gateway hiện tại là gì?"><span class="s-icon i-blue">⌁</span><span>Gateway hiện tại là gì?<small>Đọc tuyến mặc định và ping gateway</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-query="Kiểm tra Internet của máy này."><span class="s-icon i-purple">◎</span><span>Kiểm tra Internet<small>Ping gateway, IP Internet và kiểm tra DNS</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" data-query="Kiểm tra DNS từ máy Windows này."><span class="s-icon i-green">⌘</span><span>Kiểm tra DNS<small>Thử phân giải example.com từ Windows</small></span><span class="arrow">↗</span></button>
+            </div>
+          </div>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <div id="typing" class="typing" hidden><span class="dot-pulse"><i></i><i></i><i></i></span><span>Gateway LM đang lập kế hoạch và kiểm tra evidence…</span></div>
+        </div>
+      </div>
+      <div class="composer-outer">
+        <div class="composer"><textarea id="userInput" rows="1" maxlength="2000" placeholder="Hỏi Gateway LM... (Enter để gửi, Shift+Enter xuống dòng)" aria-label="Câu hỏi của bạn"></textarea><button id="sendBtn" class="send-btn" type="button" aria-label="Gửi câu hỏi" disabled><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="m5 12 14-8-4 16-3.5-6L5 12Zm6.5 2L19 4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></button></div>
+        <div class="composer-hint"><span><span class="hint-circle">i</span> <span id="composerSource">Đang dùng dữ liệu mô phỏng.</span></span><span id="charCount">0/2000</span></div>
+      </div>
+    </main>
+
+    <aside class="inspector" id="inspector">
+      <div class="inspector-header"><div><span class="inspector-overline">EXECUTION INSPECTOR</span><h2>Agent Trace</h2></div><span class="trace-live"><i></i> READ ONLY</span></div>
+      <div class="trace-tabs" role="tablist" aria-label="Chi tiết thực thi"><button class="trace-tab active" data-tab="timeline" role="tab">Quy trình</button><button class="trace-tab" data-tab="evidence" role="tab">Bằng chứng</button><button class="trace-tab" data-tab="dag" role="tab">DAG</button><button class="trace-tab" data-tab="contracts" role="tab">Contracts</button></div>
+      <div class="inspector-content" id="inspectorContent"><div class="empty-inspect"><div class="wireframe-icon">◎</div><h3>Chưa có lượt chạy</h3><p>Gửi một câu hỏi để xem Agent chọn function nào, thu evidence gì và lập kế hoạch ra sao.</p><div class="ghost-rows"><span></span><span></span><span></span></div></div></div>
+      <div class="inspector-footer"><div class="footer-row"><span>Execution engine</span><b>GraphRunner v3</b></div><div class="footer-row"><span>Nguồn đo</span><b id="traceSource">Replay mô phỏng</b></div><div class="footer-row"><span>Quyền</span><b>Chỉ đọc</b></div></div>
+    </aside>
+  </div>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

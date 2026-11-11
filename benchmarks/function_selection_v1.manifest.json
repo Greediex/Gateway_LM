@@ -1,0 +1,9 @@
+{
+ "file": "function_selection_v1.json",
+ "sha256": "ae9ac482e837143c7e527d2cbe1185d20c5adce3a3754b806cb06dacd950c8c5",
+ "cases": 60,
+ "splits": {
+  "dev": 30,
+  "holdout": 30
+ }
+}

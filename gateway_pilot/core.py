@@ -1,8 +1,4 @@
-"""Typed capability graph, shared policy and evidence gates, replay adapters.
-
-No shell, router, ubus, UCI, cloud, or write executor exists in this pilot.
-All arms share these gates. Only graph uses automatic dependency expansion.
-"""
+"""Typed capability graph, shared policy and read-only evidence adapters."""
 from __future__ import annotations
 
 import copy
@@ -203,12 +199,17 @@ def bind_and_gate(fid, arguments, state, registry):
 
 
 def execute(fid, args, state, case, registry):
-    """Replay adapter. Only this function sees private scenario world."""
+    """Collect and record a single-output observation after checking the read gate."""
     bound = bind_and_gate(fid, args, state, registry)
     state.attempts[fid] += 1
     state.executed.append({"function_id": fid, "arguments": bound})
     f = registry.functions[fid]
-    raw = copy.deepcopy(case["world"].get(fid, {"_status": "MISSING"}))
+    reader = case.get("live_reader")
+    if reader is None:
+        raw = copy.deepcopy(case["world"].get(fid, {"_status": "MISSING"}))
+        source, observed_at = "synthetic_replay/v1", "2026-11-07T00:00:00Z"
+    else:
+        raw, source, observed_at = reader(fid, state)
     status = raw.pop("_status", "OK")
     age = raw.pop("_age_s", 0)
     scope_target = raw.pop("_target", None)
@@ -224,7 +225,7 @@ def execute(fid, args, state, case, registry):
     observation = {"id": "e" + str(len(state.evidence) + 1), "function_id": fid,
                    "port": port, "scope": f["scope"],
                    "target": scope_target or ("gateway_01" if f["scope"] == "gateway" else default_target),
-                   "source": "synthetic_replay/v1", "observed_at": "2026-11-07T00:00:00Z",
+                   "source": source, "observed_at": observed_at,
                    "age_s": age, "ttl_s": f["ttl_s"], "status": status, "value": raw}
     state.evidence.append(observation)
     return observation

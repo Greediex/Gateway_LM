@@ -1,17 +1,21 @@
 """Text-first, evidence-driven diagnostic workflow for the read-only replay pilot."""
 
 import argparse
+import copy
 import json
 import re
 import sys
 import unicodedata
 
-from .core import ROOT, PlanError, Registry, read_json, support
+from .core import ROOT, PlanError, Registry, read_json
+from .adapters import gate_capabilities
+from .graph_v3.claims import claim_book
 from .graph_v3.graphs import GraphRegistry
 from .graph_v3.context import retrieve_context
 from .graph_v3.dynamic_policy import DiagnosticPolicy
 from .graph_v3.orchestrator import run_plan
 from .graph_v3.runner import GraphRunner
+from .graph_v3.resolver import resolve
 from .graph_v3.state import CaseState
 from .workflow_advisor import OllamaProbeAdvisor
 from .rag import DEFAULT_CATALOG, REPLAY_FIRMWARE, REPLAY_PRODUCT, RunbookIndex, explain
@@ -67,6 +71,21 @@ def match_device(text, devices):
     return matches[0] if len(matches) == 1 else None
 
 
+_rule_route = route
+
+
+def intake_supported(text, workflow):
+    """Require a compatible symptom before allowing an LLM proposal to route a read."""
+    dns_symptom = r"\b(?:dns|ten mien|phan giai|resolver)\b"
+    if workflow == "WF-INTERNET":
+        return bool(re.search(CLIENT_WORDS, text) and re.search(dns_symptom + "|" + INTERNET_WORDS, text))
+    if workflow == "WF-023":
+        return bool(re.search(r"\b(?:router|gateway|modem)\b", text) and re.search(dns_symptom, text))
+    if workflow == "WF-024":
+        return bool(re.search(TOPICS[workflow] + r"|\b(?:chua duoc cap ip|lay dia chi mai khong duoc)\b", text))
+    return bool(re.search(TOPICS[workflow], text))
+
+
 MESSAGES = {
     "intent_unclear": "Bạn đang gặp sự cố gì và trên thiết bị nào?",
     "target_ambiguous": "Bạn đang hỏi thiết bị nào? Cho mình tên thiết bị để kiểm tra đúng máy.",
@@ -96,9 +115,6 @@ MESSAGES = {
 
 HTML_WORKFLOW_IDS = {"WF-INTERNET": "WF-018", "WF-023": "WF-023",
                      "WF-024": "WF-024", "WF-039": "WF-039"}
-ROUTER_FAULTS = {"wan_link_down", "wan_no_route", "wan_packet_loss", "gateway_dns_failure"}
-PARTIAL_OBSERVATIONS = {"client_path_unverified", "client_ip_reachable", "client_path_loss",
-                        "client_no_lease", "gateway_ip_reachable_dns_unverified"}
 
 
 def workflow_registry():
@@ -118,23 +134,39 @@ def verdict(action, diagnosis, evidence_ids=()):
             "response": MESSAGES[diagnosis]}
 
 
-def finish(result, terminal):
+def finish(result, terminal, book=None):
+    """Case status from the concluded claim's scope/severity (C4); non-claim verdicts as before."""
     action, diagnosis = terminal["action"], terminal["diagnosis"]
+    claimed = book.status(diagnosis, action, result["workflow"]) if book is not None else None
     if action == "ASK_USER":
         status = "NEEDS_INPUT"
     elif diagnosis in {"unsafe_change_denied", "read_permission_denied"}:
         status = "BLOCKED"
-    elif (diagnosis in PARTIAL_OBSERVATIONS
-          or (result["workflow"] == "WF-INTERNET" and diagnosis in ROUTER_FAULTS)
-          or (result["workflow"] == "WF-023" and diagnosis in ROUTER_FAULTS - {"gateway_dns_failure"})):
-        status = "PARTIAL"
+    elif claimed is not None:
+        status = claimed
     else:
         status = "RESOLVED" if action == "FINISH" else "INCONCLUSIVE"
     return {**result, "terminal": terminal, "case_status": status}
 
 
+def verify_terminal(terminal, diag):
+    """Every concluded claim is re-checked on Case State; the Core supplies its evidence ids."""
+    if terminal is None or terminal["action"] == "ASK_USER":
+        return terminal
+    claim = diag.claims.lookup(terminal["diagnosis"], diag.case.get("workflow"))
+    if claim is None:
+        return terminal
+    truth, ids = claim.evaluate(diag.state)
+    if truth.value != "TRUE":
+        return verdict("INCOMPLETE", "insufficient_evidence")
+    return {**terminal, "evidence_ids": ids}
+
+
 class Diagnostic:
-    def __init__(self, case, registry, method, max_calls, advisor):
+    def __init__(self, case, registry, method, max_calls, advisor, selection="resolver"):
+        if selection not in ("resolver", "nba"):
+            raise ValueError("invalid_selection")
+        self.selection = selection
         self.case = case
         self.state = CaseState(case, registry)
         self.runner = GraphRunner(registry, case, self.state, max_calls=max_calls)
@@ -144,6 +176,83 @@ class Diagnostic:
         self.stages = []
         self.retrievals = []
         self.policy_steps = []
+        self.contracts = []
+
+    def run_resolver(self, *, goals=None, intent=None, reroute=None, goal_only=False, selected_skills=()):
+        """GATEWAY_DESIGN: re-resolve after each verified runner batch.
+
+        The existing policy is consulted only for terminal evidence checks;
+        its stages never choose resolver functions or their execution order.
+        Optional C2 goals/reroute reuse this runner and its verified CaseState.
+        Every terminal verdict is re-checked by the claim contracts (C4).
+        """
+        registry, runner = self.runner.registry, self.runner
+        goals = registry.goal_ports[self.case["workflow"]] if goals is None else goals
+        terminal_policy = DiagnosticPolicy(self)
+        while True:
+            view = copy.copy(self.state)
+            view.capabilities = self.state.capabilities - runner.excluded
+            contract = resolve(registry, view, self.case["request"], goals=goals, method=self.method,
+                               intent=intent, selected_skills=selected_skills)
+            previous = self.contracts[-1]["plan_revision"] if self.contracts else 0
+            contract["plan_revision"] = max(previous + 1, contract["plan_revision"])
+            self.contracts.append(contract)
+            if goal_only and all(self.state.fact(g) is not None for g in goals):
+                return None
+            terminal = None if goal_only else terminal_policy.decide()
+            if isinstance(terminal, dict):
+                return terminal
+            candidates = contract["function_candidates"]
+            if (runner.calls >= runner.max_calls or not candidates
+                    or contract["decision"] in {"BLOCKED", "ASK_USER"}):
+                break
+            try:
+                compiler = runner.compiler()
+                compiler.excluded.update(set(registry.functions) - set(candidates))
+                plan = compiler.compile((), self.state, requested=candidates,
+                                        revision=contract["plan_revision"], skill_context=contract["skill_context"])
+                runner.attach(plan)
+                ready = runner.ready(plan)
+                if not ready:
+                    break
+                # selection="nba": deterministic next-best-action over the claim contracts
+                # (HTML 08/07). Default keeps the resolver's ranking: on the 288 replay runs
+                # NBA changed no diagnosis but spent 5 more calls.
+                best = (self.claims.next_best_action(registry, self.state, self.case.get("workflow"),
+                                                     [n.function_id for n in ready])
+                        if self.selection == "nba" else None)
+                preferred = min(ready, key=lambda n: (n.function_id != best, candidates.index(n.function_id)))
+                node = runner.step(plan, preferred.id)
+            except PlanError as exc:
+                self.state.errors.append(str(exc))
+                break
+            if node is None:
+                break
+            # A batch is one invocation (possibly several verified outputs).
+            # Failed probes are not silently replayed under a fresh plan.
+            outputs = registry.functions[node.function_id].outputs
+            if not self.state.completed(registry.functions[node.function_id]):
+                runner.excluded.add(node.function_id)
+            terminal_policy.attempted.update(outputs)
+            if reroute is not None:
+                revised = reroute(self)
+                if revised is not None:
+                    self.case["workflow"] = revised["workflow"]
+                    goals = revised["goals"]
+                    selected_skills = registry.workflows[revised["workflow"]]["skill_ids"]
+                    terminal_policy = DiagnosticPolicy(self)
+                    goal_only = False
+                    reroute = None
+            terminal = None if goal_only else terminal_policy.decide()
+            if isinstance(terminal, dict):
+                return terminal
+        # Reuse the policy's existing partial/unresolved terminal paths once
+        # no admissible evidence remains, without executing policy stages.
+        if goal_only:
+            return None
+        terminal_policy.attempted.update(registry.ports)
+        terminal = terminal_policy.decide()
+        return terminal if isinstance(terminal, dict) else None
 
     def observe_stage(self, goals, reason, *, plan=None):
         stage = {"goal": goals[0], "reason": reason, "after_call": self.runner.calls}
@@ -205,18 +314,26 @@ class Diagnostic:
         event.update(selected=selection, accepted=True)
         return (selection, *(goal for goal in goals if goal != selection))
 
+    @property
+    def claims(self):
+        return claim_book(self.runner.registry)
+
     def proof(self, *diagnoses):
         for diagnosis in diagnoses:
-            supported, ids = support(diagnosis, self.state, self.case)
+            supported, ids = self.claims.support(diagnosis, self.state, self.case.get("workflow"))
             if supported and ids:
                 return verdict("FINISH", diagnosis, ids)
         return None
 
     def observed(self, action, diagnosis, *ports):
         facts = [self.state.fact(port) for port in ports]
-        if all(facts):
+        if not all(facts):
+            return None
+        claim = self.claims.lookup(diagnosis, self.case.get("workflow"))
+        if claim is None:
             return verdict(action, diagnosis, [fact["id"] for fact in facts])
-        return None
+        truth, ids = claim.evaluate(self.state)
+        return verdict(action, diagnosis, ids) if truth.value == "TRUE" else None
 
     def unresolved_client(self):
         if any(e["port"] == "client.identity" and e["status"] == "AMBIGUOUS"
@@ -225,11 +342,24 @@ class Diagnostic:
         return verdict("INCOMPLETE", "insufficient_evidence")
 
     def trace(self):
-        return {"stages": self.stages, "advice": self.advice, "plans": [p.export() for p in self.runner.plans],
+        trace = {"stages": self.stages, "advice": self.advice, "plans": [p.export() for p in self.runner.plans],
                 "events": self.runner.events, "retrievals": self.retrievals,
                 "calls": self.runner.calls, "repairs": self.runner.repairs,
                 "errors": self.state.errors, "executed": self.state.executed,
                 "evidence": self.state.public()["evidence"]}
+        if self.contracts:
+            trace["contract_0"] = self.contracts
+        # T7: runner -> evidence (B) and evidence -> planner (C) after this run.
+        trace["contract_a"] = []
+        for plan in self.runner.plans:
+            try:
+                trace["contract_a"].append(plan.export_contract_a())
+            except PlanError as exc:  # a plan rejected by structural validation is reported, not hidden
+                trace["contract_a"].append({"revision": plan.revision, "error": str(exc)})
+        trace["contract_b"] = self.runner.contract_b
+        trace["contract_c"] = self.state.export_contract_c(
+            self.runner.registry.goal_ports.get(self.case.get("workflow"), ()), exhausted=True)
+        return trace
 
 
 def wan(diag):
@@ -331,27 +461,68 @@ WORKFLOWS = {"WF-018": wan_workflow, "WF-023": dns_workflow, "WF-024": dhcp_work
 
 
 def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advisor=None,
-             context_bytes=None, dynamic=True):
+             context_bytes=None, dynamic=True, react=False, route="auto", workflow=None, turn_type=None,
+             plan_hint=None, reroute=None, selection="resolver", device_selector=None,
+             return_state=False):
     """Run from request text and trusted replay inventory, with no fixture verdict as input."""
     text = normalize(request)
-    workflow = route(text)
+    if route not in {"auto", "fastpath", "resolver"}:
+        raise ValueError("invalid_diagnostic_route")
+    workflow = _rule_route(text) if workflow is None else workflow
+    intent = turn_type or ("CHANGE" if workflow == "WF-WRITE" else None)
+    registry = registry or workflow_registry()
+    intake = {"source": "rules"}
+    understand = getattr(advisor, "understand_request", None)
+    if workflow is None and react and callable(understand):
+        intake = {"source": "llm", "model": advisor.model, "accepted": False}
+        try:
+            proposed = understand(request)
+        except (OSError, KeyError, TypeError, ValueError) as exc:
+            intake["reason"] = type(exc).__name__
+        else:
+            if isinstance(proposed, str) and proposed in WORKFLOWS and intake_supported(text, proposed):
+                workflow = proposed
+                intake["accepted"] = True
+    chosen_route = route
+    if route == "auto":
+        chosen_route = "fastpath" if workflow in WORKFLOWS and registry.goal_ports.get(workflow) else "resolver"
     result = {"request": request, "workflow": workflow, "workflow_id": HTML_WORKFLOW_IDS.get(workflow),
-              "target": None,
+              "route": chosen_route,
+              "target": None, "intake": intake,
               "execution": "synthetic_replay", "decision_source": "core_rules"}
+    def intake_contract():
+        empty_case = {"target": {}, "capabilities": replay["capabilities"]}
+        if "permissions" in replay:
+            empty_case["permissions"] = replay["permissions"]
+        goals = registry.goal_ports.get(workflow, ())
+        contract = resolve(registry, CaseState(empty_case, registry), request, goals=goals, method=method,
+                           intent=intent)
+        return {"contract_0": [contract], "calls": 0, "executed": []}
+
+    if chosen_route == "resolver" and (workflow is None or workflow == "WF-WRITE"):
+        result["graph"] = intake_contract()
+        # Direct callers retain legacy clarification. assistant.answer supplies
+        # the workflow and turn type from the confidence-aware C2 router.
     if workflow is None:
         return finish(result, verdict("ASK_USER", "intent_unclear"))
-    if workflow == "WF-WRITE":
+    if workflow == "WF-WRITE" or intent == "CHANGE":
         return finish(result, verdict("INCOMPLETE", "unsafe_change_denied"))
     permission = "system.read" if workflow == "WF-039" else "network.read"
     if "permissions" in replay and permission not in replay["permissions"]:
+        if chosen_route == "resolver":
+            result["graph"] = intake_contract()
         return finish(result, verdict("INCOMPLETE", "read_permission_denied"))
 
-    registry = registry or workflow_registry()
     target = {"scope": "gateway", "id": "gateway_01"}
     world = dict(replay["world"])
-    if workflow in ("WF-024", "WF-INTERNET"):
-        device = match_device(text, replay.get("devices", []))
+    client_plan = plan_hint is not None and any(registry.ports[g].scope == "client" for g in plan_hint["goals"])
+    if (plan_hint is None and workflow in ("WF-024", "WF-INTERNET") and turn_type != "LOOKUP") or client_plan:
+        # A session reply names the device explicitly; it must still be in the trusted inventory.
+        device = (next((d for d in replay.get("devices", []) if d["selector"] == device_selector), None)
+                  if device_selector is not None else match_device(text, replay.get("devices", [])))
         if device is None:
+            if chosen_route == "resolver":
+                result["graph"] = intake_contract()
             return finish(result, verdict("ASK_USER", "target_ambiguous"))
         target = {"scope": "client", "selector": device["selector"]}
         if device.get("client_id"):
@@ -360,24 +531,65 @@ def diagnose(request, replay, *, registry=None, method="gos", max_calls=12, advi
     # Only the replay executor consumes observations. Planner sees verified facts.
     initial = [e for e in replay.get("initial_evidence", []) if e["scope"] == "gateway"
                or (target.get("client_id") and e["target"] == target["client_id"])]
+    capabilities, probe_failures = replay["capabilities"], {}
+    adapter = replay.get("adapter")
+    if adapter is not None:  # T8: a Function whose probe failed never reaches the planner
+        capabilities, probe_failures = gate_capabilities(replay["capabilities"], adapter.probe())
     case = {"request": request, "workflow": workflow, "target": target, "world": world,
-            "capabilities": replay["capabilities"], "initial_evidence": initial}
+            "capabilities": capabilities, "initial_evidence": initial}
+    if adapter is not None:
+        case["adapter"] = adapter
     if "permissions" in replay:
         case["permissions"] = replay["permissions"]
-    diag = Diagnostic(case, registry, method, max_calls, advisor)
+    diag = Diagnostic(case, registry, method, max_calls, advisor, selection=selection)
     if context_bytes is not None:
         result["skill_context"] = retrieve_context(registry, diag.state, request,
                                                    registry.goal_ports[workflow], max_bytes=context_bytes, method=method)
-    if dynamic:
+    if chosen_route == "resolver":
+        terminal = diag.run_resolver(
+            goals=plan_hint["goals"] if plan_hint else None, intent=intent, reroute=reroute,
+            goal_only=bool(plan_hint and (turn_type == "LOOKUP" or plan_hint.get("reroute_after_evidence")
+                                          or len(plan_hint.get("workflows", [])) > 1
+                                          or workflow not in WORKFLOWS)),
+            selected_skills=tuple(dict.fromkeys(s for wid in plan_hint.get("workflows", [workflow])
+                                                for s in registry.workflows[wid]["skill_ids"])) if plan_hint else ())
+        if diag.case["workflow"] != workflow:
+            workflow = diag.case["workflow"]
+            result.update(workflow=workflow, workflow_id=HTML_WORKFLOW_IDS.get(workflow))
+        result["decision_source"] = "function_resolver"
+    elif react:
+        from .graph_v3.react_runtime import run_react
+        terminal, react_trace = run_react(diag)
+        result["decision_source"] = "langgraph_react"
+    elif dynamic:
         terminal = DiagnosticPolicy(diag).run()
         result["decision_source"] = "dynamic_policy"
     else:
         terminal = WORKFLOWS[workflow](diag)
     trace = diag.trace()
-    if dynamic:
+    if plan_hint and (turn_type == "LOOKUP" or len(plan_hint.get("workflows", [])) > 1
+                      or plan_hint.get("reroute_after_evidence")):
+        result["goal_facts"] = [fact for g in plan_hint["goals"]
+                                if (fact := diag.state.fact(g)) is not None]
+    if react or dynamic:
         trace["policy_steps"] = diag.policy_steps
-    return finish({**result, "target": target, "graph": trace},
-                  terminal or verdict("INCOMPLETE", "insufficient_evidence"))
+    if react and chosen_route == "fastpath":
+        trace["react"] = react_trace
+    terminal = verify_terminal(terminal, diag)
+    trace["claims"] = diag.claims.evaluate_all(diag.state, workflow)
+    if adapter is not None:
+        trace["adapter"] = {"name": adapter.name, "probe_failures": probe_failures}
+    if return_state:  # live CaseState for session continuity; not JSON-serialisable
+        result["case_state"] = diag.state
+    concluded = finish({**result, "target": target, "graph": trace},
+                       terminal or verdict("INCOMPLETE", "insufficient_evidence"), diag.claims)
+    # Contract C reports the Case decision the claims reached, not only the goal gap:
+    # a proven FAULT claim answers the question before every goal is measured.
+    contract_c = trace["contract_c"]
+    contract_c["decision"] = concluded["case_status"]
+    if diag.claims.lookup(concluded["terminal"]["diagnosis"], workflow) is not None:
+        contract_c["concluded_claim"] = concluded["terminal"]["diagnosis"]
+    return concluded
 
 
 def replay_from_fixture(fixture, registry):
@@ -403,6 +615,7 @@ def main():
     parser.add_argument("--request", required=True)
     parser.add_argument("--fixture", required=True, help="Selects the simulated adapter environment")
     parser.add_argument("--method", choices=("gos", "bm25"), default="gos")
+    parser.add_argument("--route", choices=("fastpath", "resolver", "auto"), default="auto")
     parser.add_argument("--model", help="Optional local Ollama advisor with fewer than 3B parameters")
     parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
     parser.add_argument("--guide", action="store_true", help="Attach local runbooks for this replay profile")
@@ -411,6 +624,7 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dynamic", dest="dynamic", action="store_true", help="Use the evidence-driven policy (default)")
     mode.add_argument("--core", dest="dynamic", action="store_false", help="Use the original Core workflow for comparison")
+    mode.add_argument("--react", action="store_true", help="Use the LangGraph ReAct template with SkillDAG validation")
     parser.set_defaults(dynamic=True)
     args = parser.parse_args()
     fixture = next((c for c in read_json(ROOT / "data/cases.json") if c["id"] == args.fixture), None)
@@ -429,7 +643,7 @@ def main():
             parser.error(str(exc))
     result = diagnose(args.request, replay_from_fixture(fixture, registry),
                       registry=registry, method=args.method, advisor=advisor, context_bytes=args.context_bytes,
-                      dynamic=args.dynamic)
+                      dynamic=args.dynamic, react=args.react, route=args.route)
     if args.guide:
         guide = RunbookIndex(DEFAULT_CATALOG).retrieve(args.request, product=REPLAY_PRODUCT,
                                                       firmware=REPLAY_FIRMWARE, permissions={"docs.read"})

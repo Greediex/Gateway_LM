@@ -84,11 +84,18 @@ class Port:
     scope: str
     schema: dict
     provenance: str = "synthetic_replay/"
+    # Free text written by the device (logs): data for display only, never part of a
+    # retrieval query, plan input or instruction (T8).
+    untrusted_text: bool = False
 
     def accepts(self, output):
         return (self.name == output.name and self.scope == output.scope
                 and output.provenance.startswith(self.provenance)
                 and schema_subset(output.schema, self.schema))
+
+
+NUMERIC_OPS = {"gt": lambda a, b: a > b, "ge": lambda a, b: a >= b,
+               "lt": lambda a, b: a < b, "le": lambda a, b: a <= b}
 
 
 @dataclass(frozen=True)
@@ -111,8 +118,9 @@ class Predicate:
             value = value[part]
         if self.op == "eq":
             result = type(value) is type(self.value) and value == self.value
-        elif self.op == "gt":
-            result = isinstance(value, (int, float)) and not isinstance(value, bool) and value > self.value
+        elif self.op in NUMERIC_OPS:
+            result = (isinstance(value, (int, float)) and not isinstance(value, bool)
+                      and NUMERIC_OPS[self.op](value, self.value))
         else:
             raise PlanError("unknown_predicate_operator")
         return Truth.TRUE if result else Truth.FALSE
@@ -145,7 +153,10 @@ class Function:
         return hashlib.sha256(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True).encode()).hexdigest()
 
 
-def from_legacy(legacy=None):
+LEGACY_UNTRUSTED_TEXT = {"system.logs"}  # the v1 data has no flag; v0.1 declares it per port
+
+
+def from_legacy(legacy=None, *, provenance="synthetic_replay/"):
     """Explicit migration, not edits to the frozen v1 data files."""
     legacy = legacy or Registry()
     scopes = {port: f["scope"] for f in legacy.functions.values() for port in f["produces"]}
@@ -154,7 +165,8 @@ def from_legacy(legacy=None):
     for name, fields in legacy.data["port_fields"].items():
         schema = {"type": "object", "properties": {k: {"type": types[t]} for k, t in fields.items()},
                   "required": sorted(fields), "additionalProperties": True}
-        ports[name] = Port(name, scopes[name], schema)
+        ports[name] = Port(name, scopes[name], schema, provenance=provenance,
+                           untrusted_text=name in LEGACY_UNTRUSTED_TEXT)
     functions = {}
     for fid, f in legacy.functions.items():
         functions[fid] = Function(fid, tuple(f["skills"]), {p: ports[p] for p in f["requires"]},

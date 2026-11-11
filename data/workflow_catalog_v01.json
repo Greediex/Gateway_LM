@@ -1,0 +1,1269 @@
+{
+  "version": "0.1.0",
+  "source": "runs/html_catalog_rag_v1/catalog.json",
+  "source_sha256": "823a47d5ef3c1b2f7b93f48e3694353f0ea7c961e0ed231355f4d7711914d99c",
+  "html_source": "C:\\Users\\Dell\\Downloads\\gateway-lm-v0.1-xem-truc-tiep-1-file.html",
+  "html_source_sha256": "524beac5e6ceb2344d061700ebb99356e00440cbf4f070fdc1ed020f8282379b",
+  "skills": [
+    {
+      "skill_id": "SK01",
+      "title": "Xác định thiết bị đích"
+    },
+    {
+      "skill_id": "SK02",
+      "title": "Đánh giá liên kết Wi-Fi"
+    },
+    {
+      "skill_id": "SK03",
+      "title": "Kiểm tra địa chỉ và segment"
+    },
+    {
+      "skill_id": "SK04",
+      "title": "Kiểm tra đường truyền và định tuyến"
+    },
+    {
+      "skill_id": "SK05",
+      "title": "Kiểm tra phân giải tên"
+    },
+    {
+      "skill_id": "SK06",
+      "title": "Đánh giá lưu lượng và QoS"
+    },
+    {
+      "skill_id": "SK07",
+      "title": "Kiểm tra truy cập và bảo mật"
+    },
+    {
+      "skill_id": "SK08",
+      "title": "Kiểm tra hệ thống và dịch vụ"
+    },
+    {
+      "skill_id": "SK09",
+      "title": "Đối chiếu bằng chứng theo thời gian"
+    },
+    {
+      "skill_id": "SK10",
+      "title": "Đánh giá giả thuyết và phép đo tiếp"
+    },
+    {
+      "skill_id": "SK11",
+      "title": "Tổng hợp hướng dẫn và báo cáo"
+    },
+    {
+      "skill_id": "SK12",
+      "title": "Lập và kiểm tra phương án thay đổi"
+    },
+    {
+      "skill_id": "SK13",
+      "title": "Thực hiện và hậu kiểm thay đổi"
+    },
+    {
+      "skill_id": "SK14",
+      "title": "Quản lý lịch và quyền chạy"
+    },
+    {
+      "skill_id": "SK15",
+      "title": "Theo dõi cửa sổ và tạo cảnh báo"
+    },
+    {
+      "skill_id": "SK16",
+      "title": "Phân loại hoặc dự báo bằng mô hình"
+    },
+    {
+      "skill_id": "SK17",
+      "title": "Triển khai artifact và xác minh sẵn sàng"
+    },
+    {
+      "skill_id": "SK18",
+      "title": "Chuẩn bị và quản lý dữ liệu kiểm định"
+    },
+    {
+      "skill_id": "SK19",
+      "title": "Chạy thí nghiệm và đánh giá"
+    },
+    {
+      "skill_id": "SK20",
+      "title": "Trao đổi dữ liệu và tham vấn ngoài Edge"
+    },
+    {
+      "skill_id": "SK21",
+      "title": "Kiểm tra VPN và truy cập từ xa"
+    },
+    {
+      "skill_id": "SK22",
+      "title": "Kiểm tra quang và provisioning"
+    }
+  ],
+  "workflows": [
+    {
+      "workflow_id": "WF-001",
+      "title": "Không rõ thiết bị nào đang kết nối, ở băng tần nào hoặc đã rời mạng lúc nào",
+      "symptoms": [
+        "Không rõ thiết bị nào đang kết nối, ở băng tần nào hoặc đã rời mạng lúc nào"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-002",
+      "title": "Có thiết bị mới hoặc các bản ghi IP/MAC/hostname không khớp",
+      "symptoms": [
+        "Có thiết bị mới hoặc các bản ghi IP/MAC/hostname không khớp"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-003",
+      "title": "Cần nhận diện loại thiết bị để áp dụng chính sách phù hợp",
+      "symptoms": [
+        "Cần nhận diện loại thiết bị để áp dụng chính sách phù hợp"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-004",
+      "title": "Cần biết thiết bị nào tiêu thụ lưu lượng hoặc có chất lượng kém",
+      "symptoms": [
+        "Cần biết thiết bị nào tiêu thụ lưu lượng hoặc có chất lượng kém"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK06"
+      ]
+    },
+    {
+      "workflow_id": "WF-005",
+      "title": "Thiết bị đổi định danh hoặc cần phân đoạn thiết bị chưa tin cậy",
+      "symptoms": [
+        "Thiết bị đổi định danh hoặc cần phân đoạn thiết bị chưa tin cậy"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-006",
+      "title": "Cần biết cấu hình radio và chất lượng liên kết của station",
+      "symptoms": [
+        "Cần biết cấu hình radio và chất lượng liên kết của station"
+      ],
+      "skill_ids": [
+        "SK02"
+      ]
+    },
+    {
+      "workflow_id": "WF-007",
+      "title": "Wi-Fi chậm: sóng yếu, kênh bận hay retry cao",
+      "symptoms": [
+        "Wi-Fi chậm: sóng yếu, kênh bận hay retry cao"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-008",
+      "title": "Thiết bị liên tục rớt hoặc không hoàn tất xác thực Wi-Fi",
+      "symptoms": [
+        "Thiết bị liên tục rớt hoặc không hoàn tất xác thực Wi-Fi"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-009",
+      "title": "Mất kết nối sau đổi kênh, sự kiện DFS hoặc nghi tranh chấp/hidden node",
+      "symptoms": [
+        "Mất kết nối sau đổi kênh, sự kiện DFS hoặc nghi tranh chấp/hidden node"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-010",
+      "title": "Các băng tần mất cân bằng hoặc cần đề xuất kênh/độ rộng/steering",
+      "symptoms": [
+        "Các băng tần mất cân bằng hoặc cần đề xuất kênh/độ rộng/steering"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-011",
+      "title": "Cần thay channel hoặc channel width",
+      "symptoms": [
+        "Cần thay channel hoặc channel width"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-012",
+      "title": "Thiết bị cần chuyển AP hoặc mesh handoff",
+      "symptoms": [
+        "Thiết bị cần chuyển AP hoặc mesh handoff"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-013",
+      "title": "Ứng dụng chậm, cần phân biệt radio/uplink hoặc độ trễ do tải",
+      "symptoms": [
+        "Ứng dụng chậm, cần phân biệt radio/uplink hoặc độ trễ do tải"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-014",
+      "title": "Game, video hoặc cuộc gọi giật/lag",
+      "symptoms": [
+        "Game, video hoặc cuộc gọi giật/lag"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-015",
+      "title": "Một client chiếm đường truyền hoặc cần kiểm chứng hiệu quả QoS",
+      "symptoms": [
+        "Một client chiếm đường truyền hoặc cần kiểm chứng hiệu quả QoS"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-016",
+      "title": "Cần cảnh báo trước khi trải nghiệm ứng dụng suy giảm",
+      "symptoms": [
+        "Cần cảnh báo trước khi trải nghiệm ứng dụng suy giảm"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-017",
+      "title": "Cần báo cáo chất lượng Wi-Fi theo thời gian",
+      "symptoms": [
+        "Cần báo cáo chất lượng Wi-Fi theo thời gian"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK11",
+        "SK15"
+      ]
+    },
+    {
+      "workflow_id": "WF-018",
+      "title": "WAN không lên hoặc có LAN nhưng không ra Internet",
+      "symptoms": [
+        "WAN không lên hoặc có LAN nhưng không ra Internet"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK04",
+        "SK05",
+        "SK10",
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-019",
+      "title": "WAN chập chờn, mất gói, route bất thường, PPPoE/IPoE hoặc MTU lỗi",
+      "symptoms": [
+        "WAN chập chờn, mất gói, route bất thường, PPPoE/IPoE hoặc MTU lỗi"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-020",
+      "title": "Multi-WAN không chuyển tuyến như mong muốn",
+      "symptoms": [
+        "Multi-WAN không chuyển tuyến như mong muốn"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK09",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-021",
+      "title": "Cần thay route hoặc chính sách multi-WAN",
+      "symptoms": [
+        "Cần thay route hoặc chính sách multi-WAN"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-022",
+      "title": "Cần báo trước nguy cơ uplink gián đoạn",
+      "symptoms": [
+        "Cần báo trước nguy cơ uplink gián đoạn"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-023",
+      "title": "Không phân giải được tên, DNS chậm hoặc upstream thiếu ổn định",
+      "symptoms": [
+        "Không phân giải được tên, DNS chậm hoặc upstream thiếu ổn định"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK05",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-024",
+      "title": "Client không nhận IP, pool cạn, trùng IP hoặc dịch vụ DHCP lỗi",
+      "symptoms": [
+        "Client không nhận IP, pool cạn, trùng IP hoặc dịch vụ DHCP lỗi"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK08",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-025",
+      "title": "Cần chọn DNS upstream thay thế",
+      "symptoms": [
+        "Cần chọn DNS upstream thay thế"
+      ],
+      "skill_ids": [
+        "SK05",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-026",
+      "title": "Cần thay DNS hoặc cấu hình DHCP",
+      "symptoms": [
+        "Cần thay DNS hoặc cấu hình DHCP"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK05",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-027",
+      "title": "Không rõ ứng dụng/queue nào gây nghẽn hoặc drops/backlog tăng",
+      "symptoms": [
+        "Không rõ ứng dụng/queue nào gây nghẽn hoặc drops/backlog tăng"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-028",
+      "title": "Cần biết chính sách giới hạn và ưu tiên hiện hành",
+      "symptoms": [
+        "Cần biết chính sách giới hạn và ưu tiên hiện hành"
+      ],
+      "skill_ids": [
+        "SK06"
+      ]
+    },
+    {
+      "workflow_id": "WF-029",
+      "title": "Cần phân loại realtime/bulk khi không có nhãn ứng dụng trực tiếp",
+      "symptoms": [
+        "Cần phân loại realtime/bulk khi không có nhãn ứng dụng trực tiếp"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-030",
+      "title": "Cần đề xuất giới hạn cho client dùng nhiều băng thông",
+      "symptoms": [
+        "Cần đề xuất giới hạn cho client dùng nhiều băng thông"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-031",
+      "title": "Cần áp dụng giới hạn hoặc ưu tiên game/video call",
+      "symptoms": [
+        "Cần áp dụng giới hạn hoặc ưu tiên game/video call"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-032",
+      "title": "Cần SQM/AQM hoặc xác định QoS có cải thiện thực sự",
+      "symptoms": [
+        "Cần SQM/AQM hoặc xác định QoS có cải thiện thực sự"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK12",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-033",
+      "title": "Firewall thay đổi ngoài dự kiến hoặc số kết nối tăng đột biến",
+      "symptoms": [
+        "Firewall thay đổi ngoài dự kiến hoặc số kết nối tăng đột biến"
+      ],
+      "skill_ids": [
+        "SK07",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-034",
+      "title": "Nghi quét cổng, domain bất thường hoặc client lạ",
+      "symptoms": [
+        "Nghi quét cổng, domain bất thường hoặc client lạ"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK05",
+        "SK07",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-035",
+      "title": "Wi-Fi có cấu hình yếu hoặc cần cân nhắc cô lập thiết bị",
+      "symptoms": [
+        "Wi-Fi có cấu hình yếu hoặc cần cân nhắc cô lập thiết bị"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK07",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-036",
+      "title": "Cần chặn hoặc khôi phục client/nhóm ứng dụng",
+      "symptoms": [
+        "Cần chặn hoặc khôi phục client/nhóm ứng dụng"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-037",
+      "title": "Cần truy vết thay đổi quyền do Agent thực hiện",
+      "symptoms": [
+        "Cần truy vết thay đổi quyền do Agent thực hiện"
+      ],
+      "skill_ids": [
+        "SK07",
+        "SK09",
+        "SK15"
+      ]
+    },
+    {
+      "workflow_id": "WF-038",
+      "title": "Cần quarantine theo hợp đồng firmware chuyên biệt",
+      "symptoms": [
+        "Cần quarantine theo hợp đồng firmware chuyên biệt"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-039",
+      "title": "Gateway chậm do CPU/RAM/flash hoặc filesystem có vấn đề",
+      "symptoms": [
+        "Gateway chậm do CPU/RAM/flash hoặc filesystem có vấn đề"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-040",
+      "title": "Gateway crash-loop hoặc dịch vụ mất phản hồi",
+      "symptoms": [
+        "Gateway crash-loop hoặc dịch vụ mất phản hồi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-041",
+      "title": "Cấu hình/firmware lệch baseline và cần phương án khôi phục",
+      "symptoms": [
+        "Cấu hình/firmware lệch baseline và cần phương án khôi phục"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-042",
+      "title": "Cần restart một dịch vụ",
+      "symptoms": [
+        "Cần restart một dịch vụ"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-043",
+      "title": "Quá nhiệt, watchdog/driver reset hoặc bất ổn sau update",
+      "symptoms": [
+        "Quá nhiệt, watchdog/driver reset hoặc bất ổn sau update"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-044",
+      "title": "Agent/model không hoạt động, thiếu bộ nhớ hoặc QNN load lỗi",
+      "symptoms": [
+        "Agent/model không hoạt động, thiếu bộ nhớ hoặc QNN load lỗi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-045",
+      "title": "Agent gọi sai schema, kết luận lỗi hoặc lặp/quá ngân sách",
+      "symptoms": [
+        "Agent gọi sai schema, kết luận lỗi hoặc lặp/quá ngân sách"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-046",
+      "title": "Inference cạnh tranh CPU/NPU/STT hoặc làm suy giảm mạng/nhiệt",
+      "symptoms": [
+        "Inference cạnh tranh CPU/NPU/STT hoặc làm suy giảm mạng/nhiệt"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-047",
+      "title": "Cần cập nhật model và quay lại phiên bản trước",
+      "symptoms": [
+        "Cần cập nhật model và quay lại phiên bản trước"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK17"
+      ]
+    },
+    {
+      "workflow_id": "WF-048",
+      "title": "Log/KPI rời rạc hoặc lệch thời gian khiến không dựng được sự cố",
+      "symptoms": [
+        "Log/KPI rời rạc hoặc lệch thời gian khiến không dựng được sự cố"
+      ],
+      "skill_ids": [
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-049",
+      "title": "Cùng triệu chứng có nhiều nguyên nhân, chưa biết đo gì tiếp",
+      "symptoms": [
+        "Cùng triệu chứng có nhiều nguyên nhân, chưa biết đo gì tiếp"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-050",
+      "title": "Đọc lặp, dùng dữ liệu cũ hoặc ticket sai/không có lỗi",
+      "symptoms": [
+        "Đọc lặp, dùng dữ liệu cũ hoặc ticket sai/không có lỗi"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK09",
+        "SK10"
+      ]
+    },
+    {
+      "workflow_id": "WF-051",
+      "title": "Cần giải thích nguyên nhân và cập nhật giả thuyết có bằng chứng",
+      "symptoms": [
+        "Cần giải thích nguyên nhân và cập nhật giả thuyết có bằng chứng"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10",
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-052",
+      "title": "Cần mô hình quan hệ nhân quả giữa thành phần/dịch vụ",
+      "symptoms": [
+        "Cần mô hình quan hệ nhân quả giữa thành phần/dịch vụ"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-053",
+      "title": "Cần theo dõi sức khỏe và phát hiện bất thường/drift theo thời gian",
+      "symptoms": [
+        "Cần theo dõi sức khỏe và phát hiện bất thường/drift theo thời gian"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK15"
+      ]
+    },
+    {
+      "workflow_id": "WF-054",
+      "title": "Cần báo trước suy giảm DHCP, nghẽn radio hoặc cạn pool/conntrack",
+      "symptoms": [
+        "Cần báo trước suy giảm DHCP, nghẽn radio hoặc cạn pool/conntrack"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK06",
+        "SK11",
+        "SK15",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-055",
+      "title": "Cần dự báo RTT/rớt mạng và bất thường đa biến theo từng site",
+      "symptoms": [
+        "Cần dự báo RTT/rớt mạng và bất thường đa biến theo từng site"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK16"
+      ]
+    },
+    {
+      "workflow_id": "WF-056",
+      "title": "Cảnh báo quá nhiều hoặc chưa chứng minh có ích",
+      "symptoms": [
+        "Cảnh báo quá nhiều hoặc chưa chứng minh có ích"
+      ],
+      "skill_ids": [
+        "SK15",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-057",
+      "title": "Cần tối ưu Wi-Fi/QoS hoặc giảm tải Gateway",
+      "symptoms": [
+        "Cần tối ưu Wi-Fi/QoS hoặc giảm tải Gateway"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK08",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-058",
+      "title": "Cần ước lượng tác động đổi QoS/kênh hoặc roaming trước khi làm",
+      "symptoms": [
+        "Cần ước lượng tác động đổi QoS/kênh hoặc roaming trước khi làm"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-059",
+      "title": "Cần tiết kiệm điện nhưng vẫn giữ dịch vụ và policy",
+      "symptoms": [
+        "Cần tiết kiệm điện nhưng vẫn giữ dịch vụ và policy"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-060",
+      "title": "Cần thay cấu hình có snapshot và xác minh hiệu quả",
+      "symptoms": [
+        "Cần thay cấu hình có snapshot và xác minh hiệu quả"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-061",
+      "title": "Cần mô hình tối ưu phù hợp dữ liệu và tài nguyên thiết bị",
+      "symptoms": [
+        "Cần mô hình tối ưu phù hợp dữ liệu và tài nguyên thiết bị"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-062",
+      "title": "Cần biết những lịch điều khiển nào đang tồn tại",
+      "symptoms": [
+        "Cần biết những lịch điều khiển nào đang tồn tại"
+      ],
+      "skill_ids": [
+        "SK14"
+      ]
+    },
+    {
+      "workflow_id": "WF-063",
+      "title": "Cần đặt/hủy lịch hoặc điều khiển theo profile",
+      "symptoms": [
+        "Cần đặt/hủy lịch hoặc điều khiển theo profile"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK12",
+        "SK13",
+        "SK14"
+      ]
+    },
+    {
+      "workflow_id": "WF-064",
+      "title": "Cần Wi-Fi khách hoặc chặn/khôi phục truy cập theo thiết bị",
+      "symptoms": [
+        "Cần Wi-Fi khách hoặc chặn/khôi phục truy cập theo thiết bị"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-065",
+      "title": "Cần thay đổi có dry-run, xác nhận, hậu kiểm và khôi phục",
+      "symptoms": [
+        "Cần thay đổi có dry-run, xác nhận, hậu kiểm và khôi phục"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-066",
+      "title": "Người dùng nói mơ hồ, nhiều ý hoặc chưa rõ tư vấn hay thực thi",
+      "symptoms": [
+        "Người dùng nói mơ hồ, nhiều ý hoặc chưa rõ tư vấn hay thực thi"
+      ],
+      "skill_ids": []
+    },
+    {
+      "workflow_id": "WF-067",
+      "title": "Nhiều skill nhưng chọn sai hoặc có xung đột/phụ thuộc",
+      "symptoms": [
+        "Nhiều skill nhưng chọn sai hoặc có xung đột/phụ thuộc"
+      ],
+      "skill_ids": []
+    },
+    {
+      "workflow_id": "WF-068",
+      "title": "Cần theo dõi tiến độ, quyết định bước tiếp theo và dừng đúng lúc",
+      "symptoms": [
+        "Cần theo dõi tiến độ, quyết định bước tiếp theo và dừng đúng lúc"
+      ],
+      "skill_ids": []
+    },
+    {
+      "workflow_id": "WF-069",
+      "title": "Cần tài liệu đúng firmware và giải thích/hướng dẫn có nguồn",
+      "symptoms": [
+        "Cần tài liệu đúng firmware và giải thích/hướng dẫn có nguồn"
+      ],
+      "skill_ids": [
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-070",
+      "title": "Cần audit và tiếp nhận phản hồi chẩn đoán sai",
+      "symptoms": [
+        "Cần audit và tiếp nhận phản hồi chẩn đoán sai"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-071",
+      "title": "Thiếu bộ ca có đáp án để biết hệ thống chẩn đoán đúng hay sai",
+      "symptoms": [
+        "Thiếu bộ ca có đáp án để biết hệ thống chẩn đoán đúng hay sai"
+      ],
+      "skill_ids": [
+        "SK18"
+      ]
+    },
+    {
+      "workflow_id": "WF-072",
+      "title": "Cần đo chọn hành động, kết luận và báo động sai",
+      "symptoms": [
+        "Cần đo chọn hành động, kết luận và báo động sai"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-073",
+      "title": "Cần so kiến trúc/model trong giới hạn router và STT",
+      "symptoms": [
+        "Cần so kiến trúc/model trong giới hạn router và STT"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-074",
+      "title": "Cần kiểm tra vượt quyền, reboot, firmware drift và thiếu nguồn",
+      "symptoms": [
+        "Cần kiểm tra vượt quyền, reboot, firmware drift và thiếu nguồn"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-075",
+      "title": "MLO hoặc link switch không ổn định, capability không khớp",
+      "symptoms": [
+        "MLO hoặc link switch không ổn định, capability không khớp"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-076",
+      "title": "Cần đối chiếu cấu hình vô tuyến với vùng triển khai",
+      "symptoms": [
+        "Cần đối chiếu cấu hình vô tuyến với vùng triển khai"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK11",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-077",
+      "title": "Mất mạng có thể do quang/ONT thay vì WAN IP/DNS",
+      "symptoms": [
+        "Mất mạng có thể do quang/ONT thay vì WAN IP/DNS"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK22"
+      ]
+    },
+    {
+      "workflow_id": "WF-078",
+      "title": "Provisioning, ACS/USP, bootstrap hoặc template không đồng bộ",
+      "symptoms": [
+        "Provisioning, ACS/USP, bootstrap hoặc template không đồng bộ"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK21",
+        "SK22"
+      ]
+    },
+    {
+      "workflow_id": "WF-079",
+      "title": "Cần chuyển gói chẩn đoán cho bên hỗ trợ",
+      "symptoms": [
+        "Cần chuyển gói chẩn đoán cho bên hỗ trợ"
+      ],
+      "skill_ids": [
+        "SK11",
+        "SK20"
+      ]
+    },
+    {
+      "workflow_id": "WF-080",
+      "title": "Cần phát hiện firmware lỗi theo fleet và lên kế hoạch canary",
+      "symptoms": [
+        "Cần phát hiện firmware lỗi theo fleet và lên kế hoạch canary"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK11",
+        "SK15"
+      ]
+    },
+    {
+      "workflow_id": "WF-081",
+      "title": "Cần kiểm tra và triển khai ảnh firmware OTA",
+      "symptoms": [
+        "Cần kiểm tra và triển khai ảnh firmware OTA"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK17"
+      ]
+    },
+    {
+      "workflow_id": "WF-082",
+      "title": "Cần tìm nguyên nhân lặp lại trên nhiều Gateway",
+      "symptoms": [
+        "Cần tìm nguyên nhân lặp lại trên nhiều Gateway"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-083",
+      "title": "Edge cần trợ giúp nhưng dữ liệu và quyền phải được kiểm soát HC001 HC002 HC003 HC004 HC005 SK09 SK10 SK20 Đối chiếu bằng chứng theo thời gian · Đánh giá giả thuyết và phép đo tiếp · Trao đổi dữ liệu và tham vấn ngoài Edge Tạo tóm tắt sự cố có bằng chứng để xin Cloud hỗ trợ Ẩn danh MAC/IP/SSID trước khi gửi Cloud Phân tuyến Cloud theo mức khó và độ tin cậy Edge Giới hạn ngân sách token/latency/chi phí Cloud Chuyển kết quả Cloud về dạng tư vấn không có quyền lệnh",
+      "symptoms": [
+        "Edge cần trợ giúp nhưng dữ liệu và quyền phải được kiểm soát HC001 HC002 HC003 HC004 HC005 SK09 SK10 SK20 Đối chiếu bằng chứng theo thời gian · Đánh giá giả thuyết và phép đo tiếp · Trao đổi dữ liệu và tham vấn ngoài Edge Tạo tóm tắt sự cố có bằng chứng để xin Cloud hỗ trợ Ẩn danh MAC/IP/SSID trước khi gửi Cloud Phân tuyến Cloud theo mức khó và độ tin cậy Edge Giới hạn ngân sách token/latency/chi phí Cloud Chuyển kết quả Cloud về dạng tư vấn không có quyền lệnh"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10",
+        "SK20"
+      ]
+    },
+    {
+      "workflow_id": "WF-084",
+      "title": "Cần dùng tri thức hoặc xu hướng từ nhiều Gateway HC006 HC007 SK11 SK20 Tổng hợp hướng dẫn và báo cáo · Trao đổi dữ liệu và tham vấn ngoài Edge Dùng tri thức fleet để so khớp lỗi lặp lại Dự báo xu hướng KPI theo nhiều Gateway",
+      "symptoms": [
+        "Cần dùng tri thức hoặc xu hướng từ nhiều Gateway HC006 HC007 SK11 SK20 Tổng hợp hướng dẫn và báo cáo · Trao đổi dữ liệu và tham vấn ngoài Edge Dùng tri thức fleet để so khớp lỗi lặp lại Dự báo xu hướng KPI theo nhiều Gateway"
+      ],
+      "skill_ids": [
+        "SK11",
+        "SK20"
+      ]
+    },
+    {
+      "workflow_id": "WF-085",
+      "title": "Cần train/distill model từ telemetry và kiểm định thiết bị độc lập HC008 HC009 HC010 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá Huấn luyện offline time-series encoder từ telemetry Distill mô hình anomaly nhỏ xuống Edge Đánh giá model tại cloud trên tập thiết bị holdout",
+      "symptoms": [
+        "Cần train/distill model từ telemetry và kiểm định thiết bị độc lập HC008 HC009 HC010 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá Huấn luyện offline time-series encoder từ telemetry Distill mô hình anomaly nhỏ xuống Edge Đánh giá model tại cloud trên tập thiết bị holdout"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-086",
+      "title": "Cần phân phối model, theo dõi drift và chạy shadow HC011 HC012 HC013 SK15 SK17 Theo dõi cửa sổ và tạo cảnh báo · Triển khai artifact và xác minh sẵn sàng Đồng bộ mô hình/cấu hình có xác thực chữ ký Theo dõi drift của model theo firmware và board Triển khai shadow mode khi có model mới",
+      "symptoms": [
+        "Cần phân phối model, theo dõi drift và chạy shadow HC011 HC012 HC013 SK15 SK17 Theo dõi cửa sổ và tạo cảnh báo · Triển khai artifact và xác minh sẵn sàng Đồng bộ mô hình/cấu hình có xác thực chữ ký Theo dõi drift của model theo firmware và board Triển khai shadow mode khi có model mới"
+      ],
+      "skill_ids": [
+        "SK15",
+        "SK17"
+      ]
+    },
+    {
+      "workflow_id": "WF-087",
+      "title": "Cần biết Edge-only, Cloud-only hay Hybrid có lợi hơn HC014 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá So sánh Edge-only, Cloud-only và Hybrid theo tác vụ",
+      "symptoms": [
+        "Cần biết Edge-only, Cloud-only hay Hybrid có lợi hơn HC014 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá So sánh Edge-only, Cloud-only và Hybrid theo tác vụ"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ]
+    },
+    {
+      "workflow_id": "WF-088",
+      "title": "Cloud mất kết nối hoặc không được phép gửi dữ liệu HC015 SK10 SK11 Đánh giá giả thuyết và phép đo tiếp · Tổng hợp hướng dẫn và báo cáo Fallback hoàn toàn offline khi Cloud mất kết nối",
+      "symptoms": [
+        "Cloud mất kết nối hoặc không được phép gửi dữ liệu HC015 SK10 SK11 Đánh giá giả thuyết và phép đo tiếp · Tổng hợp hướng dẫn và báo cáo Fallback hoàn toàn offline khi Cloud mất kết nối"
+      ],
+      "skill_ids": [
+        "SK10",
+        "SK11"
+      ]
+    },
+    {
+      "workflow_id": "WF-089",
+      "title": "IPv6 có địa chỉ nhưng không hoạt động hoặc cần NAT64/DNS64",
+      "symptoms": [
+        "IPv6 có địa chỉ nhưng không hoạt động hoặc cần NAT64/DNS64"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK05"
+      ]
+    },
+    {
+      "workflow_id": "WF-090",
+      "title": "Trang tải chập chờn do MTU, VLAN, policy route hoặc PPPoE",
+      "symptoms": [
+        "Trang tải chập chờn do MTU, VLAN, policy route hoặc PPPoE"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-091",
+      "title": "VPN có handshake nhưng không vào LAN hoặc TLS/MTU lỗi",
+      "symptoms": [
+        "VPN có handshake nhưng không vào LAN hoặc TLS/MTU lỗi"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK07",
+        "SK21"
+      ]
+    },
+    {
+      "workflow_id": "WF-092",
+      "title": "Truy cập từ xa lỗi do DDNS/chứng thư hoặc cổng quản trị phơi WAN",
+      "symptoms": [
+        "Truy cập từ xa lỗi do DDNS/chứng thư hoặc cổng quản trị phơi WAN"
+      ],
+      "skill_ids": [
+        "SK05",
+        "SK07",
+        "SK21"
+      ]
+    },
+    {
+      "workflow_id": "WF-093",
+      "title": "Kết nối mới thất bại do firewall, conntrack hay TCP/DNS",
+      "symptoms": [
+        "Kết nối mới thất bại do firewall, conntrack hay TCP/DNS"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK05",
+        "SK07"
+      ]
+    },
+    {
+      "workflow_id": "WF-094",
+      "title": "Trùng IPv4 hoặc neighbor IPv6 stale",
+      "symptoms": [
+        "Trùng IPv4 hoặc neighbor IPv6 stale"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-095",
+      "title": "Multicast/discovery qua segment lỗi hoặc DHCP lease đổi liên tục",
+      "symptoms": [
+        "Multicast/discovery qua segment lỗi hoặc DHCP lease đổi liên tục"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK07",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-096",
+      "title": "Dịch vụ restart liên tục, interface flap hoặc UBUS lỗi",
+      "symptoms": [
+        "Dịch vụ restart liên tục, interface flap hoặc UBUS lỗi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-097",
+      "title": "Cần xem diff trước khi ghi và khôi phục khi postcheck thất bại",
+      "symptoms": [
+        "Cần xem diff trước khi ghi và khôi phục khi postcheck thất bại"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ]
+    },
+    {
+      "workflow_id": "WF-098",
+      "title": "Cần kiểm tra image/board/package/storage trước nâng cấp",
+      "symptoms": [
+        "Cần kiểm tra image/board/package/storage trước nâng cấp"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-099",
+      "title": "Roaming 802.11r/k/v không hoạt động như mong muốn",
+      "symptoms": [
+        "Roaming 802.11r/k/v không hoạt động như mong muốn"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ]
+    },
+    {
+      "workflow_id": "WF-100",
+      "title": "Airtime thiếu công bằng, CAKE/SQM drops hoặc DSCP sai queue",
+      "symptoms": [
+        "Airtime thiếu công bằng, CAKE/SQM drops hoặc DSCP sai queue"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK12"
+      ]
+    },
+    {
+      "workflow_id": "WF-101",
+      "title": "Power-save/TWT hoặc DFS/channel switch gây gián đoạn",
+      "symptoms": [
+        "Power-save/TWT hoặc DFS/channel switch gây gián đoạn"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ]
+    }
+  ]
+}

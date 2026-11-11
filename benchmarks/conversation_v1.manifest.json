@@ -1,0 +1,21 @@
+{
+ "file": "conversation_v1.json",
+ "sha256": "c7b69ff4d9b3141ebf7152c1b748029623ecf00a3b6ca4eef0f4a3434175eb63",
+ "items": 176,
+ "turns": 193,
+ "conversations": 15,
+ "turn_types": {
+  "CAPABILITY": 15,
+  "CHANGE": 15,
+  "DIAGNOSE": 82,
+  "FOLLOW_UP": 15,
+  "KNOWLEDGE": 16,
+  "LOOKUP": 18,
+  "OUT_OF_SCOPE": 16,
+  "SMALLTALK": 16
+ },
+ "splits": {
+  "dev": 86,
+  "holdout": 90
+ }
+}

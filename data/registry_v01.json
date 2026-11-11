@@ -1,0 +1,3711 @@
+{
+  "version": "0.1.0",
+  "ports": {
+    "client.identity": {
+      "schema_id": "client.identity/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "client_id"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "client.ipv4": {
+      "schema_id": "client.ipv4/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "configured": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "address",
+          "configured"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "wifi.station": {
+      "schema_id": "wifi.station/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "associated": {
+            "type": "boolean"
+          },
+          "rssi_dbm": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "associated",
+          "rssi_dbm"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "wan.status": {
+      "schema_id": "wan.status/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "link_up": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "link_up"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "wan.routes": {
+      "schema_id": "wan.routes/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "default_route": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "default_route"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "wan.probe": {
+      "schema_id": "wan.probe/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "loss_pct": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "loss_pct"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "dns.config": {
+      "schema_id": "dns.config/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "resolver": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "resolver"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "dns.probe": {
+      "schema_id": "dns.probe/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "rcode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "rcode"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "dhcp.leases": {
+      "schema_id": "dhcp.leases/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "lease_valid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lease_valid"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "dhcp.pool": {
+      "schema_id": "dhcp.pool/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "free_addresses": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "free_addresses"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "dhcp.service": {
+      "schema_id": "dhcp.service/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "running": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "running"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "system.resources": {
+      "schema_id": "system.resources/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "available_ram_pct": {
+            "type": "number"
+          },
+          "cpu_pct": {
+            "type": "number"
+          },
+          "storage_used_pct": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "available_ram_pct",
+          "cpu_pct",
+          "storage_used_pct"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "system.logs": {
+      "schema_id": "system.logs/v1",
+      "untrusted_text": true,
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array"
+          }
+        },
+        "required": [
+          "events"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "client.probe": {
+      "schema_id": "client.probe/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "loss_pct": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "loss_pct"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "qos.config": {
+      "schema_id": "qos.config/v1",
+      "scope": "gateway",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    },
+    "client.dns": {
+      "schema_id": "client.dns/v1",
+      "scope": "client",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "rcode": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "rcode"
+        ],
+        "additionalProperties": true
+      },
+      "provenance": "synthetic_replay/"
+    }
+  },
+  "skills": [
+    {
+      "skill_id": "SK01",
+      "version": "0.1.0",
+      "name": "Identify target client xác định thiết bị",
+      "description": "Identify target client xác định thiết bị",
+      "tags": [],
+      "requires": [],
+      "produces": [
+        "client.identity"
+      ],
+      "completion_ports": [
+        "client.identity"
+      ],
+      "read_set": [
+        "client.identity"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "clients.resolve"
+      ]
+    },
+    {
+      "skill_id": "SK02",
+      "version": "0.1.0",
+      "name": "Wi-Fi diagnostics tín hiệu sóng",
+      "description": "Wi-Fi diagnostics tín hiệu sóng",
+      "tags": [],
+      "requires": [
+        "client.identity"
+      ],
+      "produces": [
+        "wifi.station"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "client.identity",
+        "wifi.station"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "wifi.station"
+      ]
+    },
+    {
+      "skill_id": "SK03",
+      "version": "0.1.0",
+      "name": "DHCP IP address diagnostics cấp phát IP",
+      "description": "DHCP IP address diagnostics cấp phát IP",
+      "tags": [],
+      "requires": [
+        "client.identity"
+      ],
+      "produces": [
+        "client.ipv4",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "client.identity",
+        "client.ipv4",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "client.ipv4",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ]
+    },
+    {
+      "skill_id": "SK04",
+      "version": "0.1.0",
+      "name": "WAN route IP connectivity diagnostics Internet",
+      "description": "WAN route IP connectivity diagnostics Internet",
+      "tags": [],
+      "requires": [
+        "client.identity",
+        "client.ipv4"
+      ],
+      "produces": [
+        "client.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "client.identity",
+        "client.ipv4",
+        "client.probe",
+        "wan.probe",
+        "wan.routes",
+        "wan.status"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe",
+        "client.probe"
+      ]
+    },
+    {
+      "skill_id": "SK05",
+      "version": "0.1.0",
+      "name": "DNS name resolution diagnostics phân giải tên miền",
+      "description": "DNS name resolution diagnostics phân giải tên miền",
+      "tags": [],
+      "requires": [],
+      "produces": [
+        "dns.config",
+        "dns.probe"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "dns.config",
+        "dns.probe"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "dns.config",
+        "dns.probe"
+      ]
+    },
+    {
+      "skill_id": "SK08",
+      "version": "0.1.0",
+      "name": "Gateway system health CPU RAM storage sức khỏe hệ thống",
+      "description": "Gateway system health CPU RAM storage sức khỏe hệ thống",
+      "tags": [],
+      "requires": [],
+      "produces": [
+        "system.logs",
+        "system.resources"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "system.logs",
+        "system.resources"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "system.resources",
+        "system.logs"
+      ]
+    },
+    {
+      "skill_id": "SK09",
+      "version": "0.1.0",
+      "name": "Correlate evidence theo thời gian",
+      "description": "Correlate evidence theo thời gian",
+      "tags": [],
+      "requires": [
+        "system.resources"
+      ],
+      "produces": [
+        "system.logs"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "system.logs",
+        "system.resources"
+      ],
+      "write_set": [],
+      "required_capabilities": [
+        "system.logs"
+      ]
+    },
+    {
+      "skill_id": "SK13",
+      "version": "0.1.0",
+      "name": "Apply and verify authorized configuration",
+      "description": "Apply and verify authorized configuration",
+      "tags": [],
+      "requires": [],
+      "produces": [
+        "dns.config",
+        "qos.config"
+      ],
+      "completion_ports": [],
+      "read_set": [
+        "dns.config"
+      ],
+      "write_set": [
+        "dns.config",
+        "qos.config"
+      ],
+      "required_capabilities": [
+        "dns.apply",
+        "qos.apply"
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "function_id": "clients.resolve",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK01"
+      ],
+      "requirement_refs": [
+        "F002",
+        "F006"
+      ],
+      "description": "Resolve device hostname MAC IP xác định thiết bị laptop điện thoại DHCP client",
+      "inputs": {},
+      "outputs": {
+        "client.identity": "client.identity/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.clients_resolve",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "client.ipv4",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK03"
+      ],
+      "requirement_refs": [],
+      "description": "Read client IP address subnet địa chỉ IP thiết bị",
+      "inputs": {
+        "client.identity": "client.identity/v1"
+      },
+      "outputs": {
+        "client.ipv4": "client.ipv4/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.client_ipv4",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "client_id": [
+          "client.identity",
+          "client_id"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client_id"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "wifi.station",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK02"
+      ],
+      "requirement_refs": [
+        "F012"
+      ],
+      "description": "Read Wi-Fi station RSSI association tín hiệu sóng yếu Wi-Fi chậm",
+      "inputs": {
+        "client.identity": "client.identity/v1"
+      },
+      "outputs": {
+        "wifi.station": "wifi.station/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.wifi_station",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "client_id": [
+          "client.identity",
+          "client_id"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client_id"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "wan.status",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK04"
+      ],
+      "requirement_refs": [
+        "F040"
+      ],
+      "description": "Read WAN uplink physical link status cổng WAN mất mạng Internet",
+      "inputs": {},
+      "outputs": {
+        "wan.status": "wan.status/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.wan_status",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "wan.routes",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK04"
+      ],
+      "requirement_refs": [],
+      "description": "Read WAN default route routing bảng định tuyến Internet",
+      "inputs": {
+        "wan.status": "wan.status/v1"
+      },
+      "outputs": {
+        "wan.routes": "wan.routes/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.wan_routes",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "wan.probe",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK04"
+      ],
+      "requirement_refs": [
+        "F028"
+      ],
+      "description": "Probe Internet external IP packet loss RTT WAN kết nối mất gói",
+      "inputs": {
+        "wan.routes": "wan.routes/v1"
+      },
+      "outputs": {
+        "wan.probe": "wan.probe/v1"
+      },
+      "preconditions": [
+        {
+          "port": "wan.routes",
+          "field": "default_route",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [],
+      "risk": "PROBE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.wan_probe",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dns.config",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK05"
+      ],
+      "requirement_refs": [
+        "F054"
+      ],
+      "description": "Read configured DNS resolver cấu hình máy chủ phân giải tên miền",
+      "inputs": {},
+      "outputs": {
+        "dns.config": "dns.config/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dns_config",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dns.probe",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK05"
+      ],
+      "requirement_refs": [
+        "F056"
+      ],
+      "description": "Query DNS configured resolver domain RCODE SERVFAIL phân giải tên miền lỗi DNS",
+      "inputs": {
+        "dns.config": "dns.config/v1"
+      },
+      "outputs": {
+        "dns.probe": "dns.probe/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "PROBE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dns_probe",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "resolver": [
+          "dns.config",
+          "resolver"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "resolver"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dhcp.leases",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK03"
+      ],
+      "requirement_refs": [
+        "F060"
+      ],
+      "description": "Read target DHCP lease IP allocation cấp IP DHCP thiết bị chưa có IP",
+      "inputs": {
+        "client.identity": "client.identity/v1"
+      },
+      "outputs": {
+        "dhcp.leases": "dhcp.leases/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dhcp_leases",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "client_id": [
+          "client.identity",
+          "client_id"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client_id"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dhcp.pool",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK03"
+      ],
+      "requirement_refs": [
+        "F060"
+      ],
+      "description": "Read DHCP pool free addresses hết địa chỉ cấp IP DHCP",
+      "inputs": {},
+      "outputs": {
+        "dhcp.pool": "dhcp.pool/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dhcp_pool",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dhcp.service",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK03"
+      ],
+      "requirement_refs": [],
+      "description": "Read DHCP service status dịch vụ cấp phát IP DHCP",
+      "inputs": {},
+      "outputs": {
+        "dhcp.service": "dhcp.service/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dhcp_service",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "system.resources",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK08"
+      ],
+      "requirement_refs": [
+        "F093"
+      ],
+      "description": "Read gateway CPU RAM available memory persistent storage sức khỏe hệ thống bộ nhớ quá tải đầy ổ",
+      "inputs": {},
+      "outputs": {
+        "system.resources": "system.resources/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "system.read",
+      "capability_probe": "probe.replay.system_resources",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "system.logs",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ],
+      "requirement_refs": [],
+      "description": "Read system logs OOM crash service events nhật ký sức khỏe hệ thống",
+      "inputs": {
+        "system.resources": "system.resources/v1"
+      },
+      "outputs": {
+        "system.logs": "system.logs/v1"
+      },
+      "preconditions": [],
+      "effects": [],
+      "risk": "READ_ONLY",
+      "permission": "system.read",
+      "capability_probe": "probe.replay.system_logs",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "client.probe",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK04"
+      ],
+      "requirement_refs": [
+        "F028"
+      ],
+      "description": "Probe from client device Internet path kiểm tra đường đi từ laptop điện thoại",
+      "inputs": {
+        "client.ipv4": "client.ipv4/v1",
+        "client.identity": "client.identity/v1"
+      },
+      "outputs": {
+        "client.probe": "client.probe/v1"
+      },
+      "preconditions": [
+        {
+          "port": "client.ipv4",
+          "field": "configured",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [],
+      "risk": "PROBE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.client_probe",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "client_id": [
+          "client.identity",
+          "client_id"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client_id"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "dns.apply",
+      "version": "3.0.0",
+      "status": "PROPOSED_NOT_VERIFIED",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK13"
+      ],
+      "requirement_refs": [
+        "F067"
+      ],
+      "description": "WRITE change DNS resolver đổi cấu hình DNS",
+      "inputs": {
+        "dns.config": "dns.config/v1"
+      },
+      "outputs": {
+        "dns.config": "dns.config/v1"
+      },
+      "preconditions": [],
+      "effects": [
+        "dns.config"
+      ],
+      "risk": "WRITE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.dns_apply",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "qos.apply",
+      "version": "3.0.0",
+      "status": "PROPOSED_NOT_VERIFIED",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK13"
+      ],
+      "requirement_refs": [],
+      "description": "WRITE apply QoS bandwidth configuration thay đổi băng thông",
+      "inputs": {},
+      "outputs": {
+        "qos.config": "qos.config/v1"
+      },
+      "preconditions": [],
+      "effects": [
+        "qos.config"
+      ],
+      "risk": "WRITE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.qos_apply",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "gateway",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {},
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": []
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    },
+    {
+      "function_id": "client.dns",
+      "version": "3.0.0",
+      "status": "REPLAY_ONLY",
+      "adapter": "synthetic_replay/v1",
+      "skill_ids": [
+        "SK05"
+      ],
+      "requirement_refs": [],
+      "description": "Measure DNS from the identified client",
+      "inputs": {
+        "client.ipv4": "client.ipv4/v1",
+        "client.identity": "client.identity/v1"
+      },
+      "outputs": {
+        "client.dns": "client.dns/v1"
+      },
+      "preconditions": [
+        {
+          "port": "client.ipv4",
+          "field": "configured",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "effects": [],
+      "risk": "PROBE",
+      "permission": "network.read",
+      "capability_probe": "probe.replay.client_dns",
+      "verifier": "schema_scope_provenance_freshness/v3",
+      "evidence_scope": "client",
+      "ttl_seconds": 30,
+      "timeout_ms": 2000,
+      "retry": {
+        "max_attempts": 1
+      },
+      "cost": 1.0,
+      "latency_ms": 1.0,
+      "order_after": [],
+      "argument_sources": {
+        "client_id": [
+          "client.identity",
+          "client_id"
+        ]
+      },
+      "arguments_schema": {
+        "type": "object",
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "interface": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "resolver": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client_id"
+        ]
+      },
+      "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE"
+    }
+  ],
+  "relations": [
+    {
+      "source": "SK02",
+      "target": "SK01",
+      "type": "depends_on",
+      "weight": 1.0,
+      "origin": "legacy.skills.depends_on",
+      "reason": "Client diagnostics require target identification."
+    },
+    {
+      "source": "SK03",
+      "target": "SK01",
+      "type": "depends_on",
+      "weight": 1.0,
+      "origin": "legacy.skills.depends_on",
+      "reason": "Client diagnostics require target identification."
+    },
+    {
+      "source": "SK04",
+      "target": "SK05",
+      "type": "composes_with",
+      "weight": 1.0,
+      "origin": "legacy.relations",
+      "reason": "WAN and DNS diagnostics compose without an execution prerequisite."
+    }
+  ],
+  "extension_relations": [],
+  "conflicts": [
+    [
+      "dns.apply",
+      "qos.apply"
+    ]
+  ],
+  "workflow_evidence": {
+    "WF-018": [
+      "wan.status",
+      "wan.routes",
+      "wan.probe"
+    ],
+    "WF-023": [
+      "dns.config",
+      "dns.probe",
+      "wan.probe"
+    ],
+    "WF-024": [
+      "client.identity",
+      "dhcp.leases",
+      "dhcp.pool",
+      "dhcp.service"
+    ],
+    "WF-039": [
+      "system.resources"
+    ],
+    "WF-INTERNET": [
+      "client.identity",
+      "client.ipv4",
+      "wifi.station",
+      "wan.probe",
+      "dns.probe",
+      "client.probe",
+      "client.dns"
+    ],
+    "WF-WRITE": []
+  },
+  "workflows": [
+    {
+      "workflow_id": "WF-001",
+      "title": "Không rõ thiết bị nào đang kết nối, ở băng tần nào hoặc đã rời mạng lúc nào",
+      "symptoms": [
+        "Không rõ thiết bị nào đang kết nối, ở băng tần nào hoặc đã rời mạng lúc nào"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-001",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-002",
+      "title": "Có thiết bị mới hoặc các bản ghi IP/MAC/hostname không khớp",
+      "symptoms": [
+        "Có thiết bị mới hoặc các bản ghi IP/MAC/hostname không khớp"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-002",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-003",
+      "title": "Cần nhận diện loại thiết bị để áp dụng chính sách phù hợp",
+      "symptoms": [
+        "Cần nhận diện loại thiết bị để áp dụng chính sách phù hợp"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-003",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-004",
+      "title": "Cần biết thiết bị nào tiêu thụ lưu lượng hoặc có chất lượng kém",
+      "symptoms": [
+        "Cần biết thiết bị nào tiêu thụ lưu lượng hoặc có chất lượng kém"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK06"
+      ],
+      "html_workflow_id": "WF-004",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-005",
+      "title": "Thiết bị đổi định danh hoặc cần phân đoạn thiết bị chưa tin cậy",
+      "symptoms": [
+        "Thiết bị đổi định danh hoặc cần phân đoạn thiết bị chưa tin cậy"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-005",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-006",
+      "title": "Cần biết cấu hình radio và chất lượng liên kết của station",
+      "symptoms": [
+        "Cần biết cấu hình radio và chất lượng liên kết của station"
+      ],
+      "skill_ids": [
+        "SK02"
+      ],
+      "html_workflow_id": "WF-006",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-007",
+      "title": "Wi-Fi chậm: sóng yếu, kênh bận hay retry cao",
+      "symptoms": [
+        "Wi-Fi chậm: sóng yếu, kênh bận hay retry cao"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-007",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-008",
+      "title": "Thiết bị liên tục rớt hoặc không hoàn tất xác thực Wi-Fi",
+      "symptoms": [
+        "Thiết bị liên tục rớt hoặc không hoàn tất xác thực Wi-Fi"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-008",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-009",
+      "title": "Mất kết nối sau đổi kênh, sự kiện DFS hoặc nghi tranh chấp/hidden node",
+      "symptoms": [
+        "Mất kết nối sau đổi kênh, sự kiện DFS hoặc nghi tranh chấp/hidden node"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-009",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-010",
+      "title": "Các băng tần mất cân bằng hoặc cần đề xuất kênh/độ rộng/steering",
+      "symptoms": [
+        "Các băng tần mất cân bằng hoặc cần đề xuất kênh/độ rộng/steering"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-010",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-011",
+      "title": "Cần thay channel hoặc channel width",
+      "symptoms": [
+        "Cần thay channel hoặc channel width"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-011",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-012",
+      "title": "Thiết bị cần chuyển AP hoặc mesh handoff",
+      "symptoms": [
+        "Thiết bị cần chuyển AP hoặc mesh handoff"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-012",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-013",
+      "title": "Ứng dụng chậm, cần phân biệt radio/uplink hoặc độ trễ do tải",
+      "symptoms": [
+        "Ứng dụng chậm, cần phân biệt radio/uplink hoặc độ trễ do tải"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-013",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-014",
+      "title": "Game, video hoặc cuộc gọi giật/lag",
+      "symptoms": [
+        "Game, video hoặc cuộc gọi giật/lag"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-014",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-015",
+      "title": "Một client chiếm đường truyền hoặc cần kiểm chứng hiệu quả QoS",
+      "symptoms": [
+        "Một client chiếm đường truyền hoặc cần kiểm chứng hiệu quả QoS"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-015",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-016",
+      "title": "Cần cảnh báo trước khi trải nghiệm ứng dụng suy giảm",
+      "symptoms": [
+        "Cần cảnh báo trước khi trải nghiệm ứng dụng suy giảm"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-016",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-017",
+      "title": "Cần báo cáo chất lượng Wi-Fi theo thời gian",
+      "symptoms": [
+        "Cần báo cáo chất lượng Wi-Fi theo thời gian"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK11",
+        "SK15"
+      ],
+      "html_workflow_id": "WF-017",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-018",
+      "title": "Đường truyền ra ngoài gián đoạn hoặc mạng lag khi họp online",
+      "symptoms": [
+        "WAN không lên",
+        "Uplink gián đoạn",
+        "Không có default route",
+        "Lỗi định tuyến",
+        "Mất gói trên đường truyền",
+        "Mạng lag khi họp online",
+        "Đường truyền ra ngoài bị đứt",
+        "Cuộc gọi trực tuyến bị ngắt liên tục",
+        "Độ trễ cao, mạng chập chờn, giật và mạng chậm",
+        "Chất lượng kết nối kém, jitter tăng",
+        "Tốc độ mạng và băng thông thấp",
+        "Tốc độ Internet tải lên hoặc tải xuống chậm",
+        "Kiểm tra kết nối mạng từ cổng mặc định",
+        "External connection keeps dropping during meetings",
+        "Packet loss, latency and jitter",
+        "Slow download speed or upload speed, Mbps Gbps speedtest",
+        "Check default gateway and external connectivity",
+        "Mạng có ổn không, đường truyền thế nào"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK04",
+        "SK05"
+      ],
+      "html_workflow_id": "WF-018",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "goal_ports": [
+        "wan.status",
+        "wan.routes",
+        "wan.probe"
+      ],
+      "minimal_goals": [
+        "wan.status"
+      ],
+      "claims": [
+        "wan_link_down",
+        "wan_no_route",
+        "wan_packet_loss",
+        "no_fault_observed"
+      ],
+      "status": "SUPPORTED"
+    },
+    {
+      "workflow_id": "WF-019",
+      "covered_by": "WF-018",
+      "title": "WAN chập chờn, mất gói, route bất thường, PPPoE/IPoE hoặc MTU lỗi",
+      "symptoms": [
+        "WAN chập chờn, mất gói, route bất thường, PPPoE/IPoE hoặc MTU lỗi"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-019",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-020",
+      "title": "Multi-WAN không chuyển tuyến như mong muốn",
+      "symptoms": [
+        "Multi-WAN không chuyển tuyến như mong muốn"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK09",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-020",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-021",
+      "title": "Cần thay route hoặc chính sách multi-WAN",
+      "symptoms": [
+        "Cần thay route hoặc chính sách multi-WAN"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-021",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-022",
+      "title": "Cần báo trước nguy cơ uplink gián đoạn",
+      "symptoms": [
+        "Cần báo trước nguy cơ uplink gián đoạn"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-022",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-023",
+      "partial_claims": ["wan_link_down", "wan_no_route", "wan_packet_loss"],
+      "title": "Không phân giải được tên, DNS chậm hoặc trang web không tải được",
+      "symptoms": [
+        "DNS lỗi",
+        "Resolver không phản hồi",
+        "Phân giải tên miền thất bại",
+        "Trang web không tải được",
+        "Gõ địa chỉ trang báo lỗi tra cứu",
+        "Mở trang theo tên không được nhưng địa chỉ số vẫn tới",
+        "Không tìm thấy tên máy chủ",
+        "Website names cannot be resolved",
+        "Name lookup fails for web pages",
+        "Hostname resolution unavailable",
+        "DNS resolver timeout"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK05",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-023",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "goal_ports": [
+        "dns.config",
+        "dns.probe",
+        "wan.probe"
+      ],
+      "minimal_goals": [
+        "dns.config"
+      ],
+      "claims": [
+        "wan_link_down",
+        "wan_no_route",
+        "wan_packet_loss",
+        "gateway_dns_failure",
+        "gateway_ip_reachable_dns_unverified",
+        "no_fault_observed"
+      ],
+      "status": "SUPPORTED"
+    },
+    {
+      "workflow_id": "WF-024",
+      "title": "Kết nối chờ xin địa chỉ, DHCP pool cạn hoặc lỗi cấp phát",
+      "symptoms": [
+        "DHCP lỗi",
+        "Cấp IP thất bại",
+        "Cấp địa chỉ IP không thành công",
+        "Không có IP",
+        "Chưa có IP",
+        "Chưa nhận được IP",
+        "Cấp phát IP lỗi",
+        "Pool cạn",
+        "Lease không hợp lệ",
+        "Máy chờ nhận địa chỉ mãi",
+        "Kết nối cứ mắc ở bước xin địa chỉ",
+        "Lấy địa chỉ mãi không được",
+        "Chưa được cấp IP",
+        "Address allocation keeps failing",
+        "Waiting forever for an assigned address",
+        "No IP address, DHCP lease pool exhausted"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK08",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-024",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "goal_ports": [
+        "client.identity",
+        "dhcp.leases",
+        "dhcp.pool",
+        "dhcp.service"
+      ],
+      "minimal_goals": [
+        "client.identity"
+      ],
+      "claims": [
+        "dhcp_pool_exhausted",
+        "dhcp_service_down",
+        "client_no_lease",
+        "no_fault_observed"
+      ],
+      "status": "SUPPORTED"
+    },
+    {
+      "workflow_id": "WF-025",
+      "title": "Cần chọn DNS upstream thay thế",
+      "symptoms": [
+        "Cần chọn DNS upstream thay thế"
+      ],
+      "skill_ids": [
+        "SK05",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-025",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-026",
+      "title": "Cần thay DNS hoặc cấu hình DHCP",
+      "symptoms": [
+        "Cần thay DNS hoặc cấu hình DHCP"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK05",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-026",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-027",
+      "title": "Không rõ ứng dụng/queue nào gây nghẽn hoặc drops/backlog tăng",
+      "symptoms": [
+        "Không rõ ứng dụng/queue nào gây nghẽn hoặc drops/backlog tăng"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-027",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-028",
+      "title": "Cần biết chính sách giới hạn và ưu tiên hiện hành",
+      "symptoms": [
+        "Cần biết chính sách giới hạn và ưu tiên hiện hành"
+      ],
+      "skill_ids": [
+        "SK06"
+      ],
+      "html_workflow_id": "WF-028",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-029",
+      "title": "Cần phân loại realtime/bulk khi không có nhãn ứng dụng trực tiếp",
+      "symptoms": [
+        "Cần phân loại realtime/bulk khi không có nhãn ứng dụng trực tiếp"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-029",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-030",
+      "title": "Cần đề xuất giới hạn cho client dùng nhiều băng thông",
+      "symptoms": [
+        "Cần đề xuất giới hạn cho client dùng nhiều băng thông"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK06",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-030",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-031",
+      "title": "Cần áp dụng giới hạn hoặc ưu tiên game/video call",
+      "symptoms": [
+        "Cần áp dụng giới hạn hoặc ưu tiên game/video call"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-031",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-032",
+      "title": "Cần SQM/AQM hoặc xác định QoS có cải thiện thực sự",
+      "symptoms": [
+        "Cần SQM/AQM hoặc xác định QoS có cải thiện thực sự"
+      ],
+      "skill_ids": [
+        "SK06",
+        "SK12",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-032",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-033",
+      "title": "Firewall thay đổi ngoài dự kiến hoặc số kết nối tăng đột biến",
+      "symptoms": [
+        "Firewall thay đổi ngoài dự kiến hoặc số kết nối tăng đột biến"
+      ],
+      "skill_ids": [
+        "SK07",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-033",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-034",
+      "title": "Nghi quét cổng, domain bất thường hoặc client lạ",
+      "symptoms": [
+        "Nghi quét cổng, domain bất thường hoặc client lạ"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK05",
+        "SK07",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-034",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-035",
+      "title": "Wi-Fi có cấu hình yếu hoặc cần cân nhắc cô lập thiết bị",
+      "symptoms": [
+        "Wi-Fi có cấu hình yếu hoặc cần cân nhắc cô lập thiết bị"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK07",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-035",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-036",
+      "title": "Cần chặn hoặc khôi phục client/nhóm ứng dụng",
+      "symptoms": [
+        "Cần chặn hoặc khôi phục client/nhóm ứng dụng"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-036",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-037",
+      "title": "Cần truy vết thay đổi quyền do Agent thực hiện",
+      "symptoms": [
+        "Cần truy vết thay đổi quyền do Agent thực hiện"
+      ],
+      "skill_ids": [
+        "SK07",
+        "SK09",
+        "SK15"
+      ],
+      "html_workflow_id": "WF-037",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-038",
+      "title": "Cần quarantine theo hợp đồng firmware chuyên biệt",
+      "symptoms": [
+        "Cần quarantine theo hợp đồng firmware chuyên biệt"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-038",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-039",
+      "title": "Bộ xử lý bị chiếm dụng, bộ nhớ gần cạn hoặc máy nóng",
+      "symptoms": [
+        "CPU cao",
+        "RAM đầy",
+        "Lưu trữ gần hết",
+        "Router quá tải",
+        "Tài nguyên cạn",
+        "Sức khỏe hệ thống kém",
+        "Bộ nhớ gần cạn và máy nóng",
+        "Nhiệt độ cao",
+        "Bộ xử lý bị chiếm dụng liên tục",
+        "Dung lượng flash đầy",
+        "Processor utilization and memory exhaustion",
+        "Storage space almost full",
+        "System resources and gateway health",
+        "Router health, CPU and RAM usage"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-039",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "goal_ports": [
+        "system.resources"
+      ],
+      "minimal_goals": [
+        "system.resources"
+      ],
+      "claims": [
+        "system_memory_pressure",
+        "system_cpu_load",
+        "system_storage_full",
+        "no_fault_observed"
+      ],
+      "status": "SUPPORTED"
+    },
+    {
+      "workflow_id": "WF-040",
+      "covered_by": "WF-039",
+      "title": "Gateway crash-loop hoặc dịch vụ mất phản hồi",
+      "symptoms": [
+        "Gateway crash-loop hoặc dịch vụ mất phản hồi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-040",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-041",
+      "title": "Cấu hình/firmware lệch baseline và cần phương án khôi phục",
+      "symptoms": [
+        "Cấu hình/firmware lệch baseline và cần phương án khôi phục"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-041",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-042",
+      "title": "Cần restart một dịch vụ",
+      "symptoms": [
+        "Cần restart một dịch vụ"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-042",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-043",
+      "title": "Quá nhiệt, watchdog/driver reset hoặc bất ổn sau update",
+      "symptoms": [
+        "Quá nhiệt, watchdog/driver reset hoặc bất ổn sau update"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-043",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-044",
+      "title": "Agent/model không hoạt động, thiếu bộ nhớ hoặc QNN load lỗi",
+      "symptoms": [
+        "Agent/model không hoạt động, thiếu bộ nhớ hoặc QNN load lỗi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-044",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-045",
+      "title": "Agent gọi sai schema, kết luận lỗi hoặc lặp/quá ngân sách",
+      "symptoms": [
+        "Agent gọi sai schema, kết luận lỗi hoặc lặp/quá ngân sách"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK11"
+      ],
+      "html_workflow_id": "WF-045",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-046",
+      "title": "Inference cạnh tranh CPU/NPU/STT hoặc làm suy giảm mạng/nhiệt",
+      "symptoms": [
+        "Inference cạnh tranh CPU/NPU/STT hoặc làm suy giảm mạng/nhiệt"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-046",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-047",
+      "title": "Cần cập nhật model và quay lại phiên bản trước",
+      "symptoms": [
+        "Cần cập nhật model và quay lại phiên bản trước"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK17"
+      ],
+      "html_workflow_id": "WF-047",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-048",
+      "title": "Log/KPI rời rạc hoặc lệch thời gian khiến không dựng được sự cố",
+      "symptoms": [
+        "Log/KPI rời rạc hoặc lệch thời gian khiến không dựng được sự cố"
+      ],
+      "skill_ids": [
+        "SK09"
+      ],
+      "html_workflow_id": "WF-048",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-049",
+      "title": "Cùng triệu chứng có nhiều nguyên nhân, chưa biết đo gì tiếp",
+      "symptoms": [
+        "Cùng triệu chứng có nhiều nguyên nhân, chưa biết đo gì tiếp"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-049",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-050",
+      "title": "Đọc lặp, dùng dữ liệu cũ hoặc ticket sai/không có lỗi",
+      "symptoms": [
+        "Đọc lặp, dùng dữ liệu cũ hoặc ticket sai/không có lỗi"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK09",
+        "SK10"
+      ],
+      "html_workflow_id": "WF-050",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-051",
+      "title": "Cần giải thích nguyên nhân và cập nhật giả thuyết có bằng chứng",
+      "symptoms": [
+        "Cần giải thích nguyên nhân và cập nhật giả thuyết có bằng chứng"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10",
+        "SK11"
+      ],
+      "html_workflow_id": "WF-051",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-052",
+      "title": "Cần mô hình quan hệ nhân quả giữa thành phần/dịch vụ",
+      "symptoms": [
+        "Cần mô hình quan hệ nhân quả giữa thành phần/dịch vụ"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-052",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-053",
+      "title": "Cần theo dõi sức khỏe và phát hiện bất thường/drift theo thời gian",
+      "symptoms": [
+        "Cần theo dõi sức khỏe và phát hiện bất thường/drift theo thời gian"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK15"
+      ],
+      "html_workflow_id": "WF-053",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-054",
+      "title": "Cần báo trước suy giảm DHCP, nghẽn radio hoặc cạn pool/conntrack",
+      "symptoms": [
+        "Cần báo trước suy giảm DHCP, nghẽn radio hoặc cạn pool/conntrack"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK06",
+        "SK11",
+        "SK15",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-054",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-055",
+      "title": "Cần dự báo RTT/rớt mạng và bất thường đa biến theo từng site",
+      "symptoms": [
+        "Cần dự báo RTT/rớt mạng và bất thường đa biến theo từng site"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK04",
+        "SK06",
+        "SK16"
+      ],
+      "html_workflow_id": "WF-055",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-056",
+      "title": "Cảnh báo quá nhiều hoặc chưa chứng minh có ích",
+      "symptoms": [
+        "Cảnh báo quá nhiều hoặc chưa chứng minh có ích"
+      ],
+      "skill_ids": [
+        "SK15",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-056",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-057",
+      "title": "Cần tối ưu Wi-Fi/QoS hoặc giảm tải Gateway",
+      "symptoms": [
+        "Cần tối ưu Wi-Fi/QoS hoặc giảm tải Gateway"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK08",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-057",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-058",
+      "title": "Cần ước lượng tác động đổi QoS/kênh hoặc roaming trước khi làm",
+      "symptoms": [
+        "Cần ước lượng tác động đổi QoS/kênh hoặc roaming trước khi làm"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-058",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-059",
+      "title": "Cần tiết kiệm điện nhưng vẫn giữ dịch vụ và policy",
+      "symptoms": [
+        "Cần tiết kiệm điện nhưng vẫn giữ dịch vụ và policy"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-059",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-060",
+      "title": "Cần thay cấu hình có snapshot và xác minh hiệu quả",
+      "symptoms": [
+        "Cần thay cấu hình có snapshot và xác minh hiệu quả"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-060",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-061",
+      "title": "Cần mô hình tối ưu phù hợp dữ liệu và tài nguyên thiết bị",
+      "symptoms": [
+        "Cần mô hình tối ưu phù hợp dữ liệu và tài nguyên thiết bị"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-061",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-062",
+      "title": "Cần biết những lịch điều khiển nào đang tồn tại",
+      "symptoms": [
+        "Cần biết những lịch điều khiển nào đang tồn tại"
+      ],
+      "skill_ids": [
+        "SK14"
+      ],
+      "html_workflow_id": "WF-062",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-063",
+      "title": "Cần đặt/hủy lịch hoặc điều khiển theo profile",
+      "symptoms": [
+        "Cần đặt/hủy lịch hoặc điều khiển theo profile"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK12",
+        "SK13",
+        "SK14"
+      ],
+      "html_workflow_id": "WF-063",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-064",
+      "title": "Cần Wi-Fi khách hoặc chặn/khôi phục truy cập theo thiết bị",
+      "symptoms": [
+        "Cần Wi-Fi khách hoặc chặn/khôi phục truy cập theo thiết bị"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK07",
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-064",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-065",
+      "title": "Cần thay đổi có dry-run, xác nhận, hậu kiểm và khôi phục",
+      "symptoms": [
+        "Cần thay đổi có dry-run, xác nhận, hậu kiểm và khôi phục"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-065",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-066",
+      "title": "Người dùng nói mơ hồ, nhiều ý hoặc chưa rõ tư vấn hay thực thi",
+      "symptoms": [
+        "Người dùng nói mơ hồ, nhiều ý hoặc chưa rõ tư vấn hay thực thi"
+      ],
+      "skill_ids": [],
+      "html_workflow_id": "WF-066",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-067",
+      "title": "Nhiều skill nhưng chọn sai hoặc có xung đột/phụ thuộc",
+      "symptoms": [
+        "Nhiều skill nhưng chọn sai hoặc có xung đột/phụ thuộc"
+      ],
+      "skill_ids": [],
+      "html_workflow_id": "WF-067",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-068",
+      "title": "Cần theo dõi tiến độ, quyết định bước tiếp theo và dừng đúng lúc",
+      "symptoms": [
+        "Cần theo dõi tiến độ, quyết định bước tiếp theo và dừng đúng lúc"
+      ],
+      "skill_ids": [],
+      "html_workflow_id": "WF-068",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-069",
+      "title": "Cần tài liệu đúng firmware và giải thích/hướng dẫn có nguồn",
+      "symptoms": [
+        "Cần tài liệu đúng firmware và giải thích/hướng dẫn có nguồn"
+      ],
+      "skill_ids": [
+        "SK11"
+      ],
+      "html_workflow_id": "WF-069",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-070",
+      "title": "Cần audit và tiếp nhận phản hồi chẩn đoán sai",
+      "symptoms": [
+        "Cần audit và tiếp nhận phản hồi chẩn đoán sai"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK11"
+      ],
+      "html_workflow_id": "WF-070",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-071",
+      "title": "Thiếu bộ ca có đáp án để biết hệ thống chẩn đoán đúng hay sai",
+      "symptoms": [
+        "Thiếu bộ ca có đáp án để biết hệ thống chẩn đoán đúng hay sai"
+      ],
+      "skill_ids": [
+        "SK18"
+      ],
+      "html_workflow_id": "WF-071",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-072",
+      "title": "Cần đo chọn hành động, kết luận và báo động sai",
+      "symptoms": [
+        "Cần đo chọn hành động, kết luận và báo động sai"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-072",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-073",
+      "title": "Cần so kiến trúc/model trong giới hạn router và STT",
+      "symptoms": [
+        "Cần so kiến trúc/model trong giới hạn router và STT"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-073",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-074",
+      "title": "Cần kiểm tra vượt quyền, reboot, firmware drift và thiếu nguồn",
+      "symptoms": [
+        "Cần kiểm tra vượt quyền, reboot, firmware drift và thiếu nguồn"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-074",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-075",
+      "title": "MLO hoặc link switch không ổn định, capability không khớp",
+      "symptoms": [
+        "MLO hoặc link switch không ổn định, capability không khớp"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-075",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-076",
+      "title": "Cần đối chiếu cấu hình vô tuyến với vùng triển khai",
+      "symptoms": [
+        "Cần đối chiếu cấu hình vô tuyến với vùng triển khai"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK11",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-076",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-077",
+      "tags": ["pon", "los"],
+      "title": "Mất mạng có thể do quang/ONT thay vì WAN IP/DNS",
+      "symptoms": [
+        "Mất mạng có thể do quang/ONT thay vì WAN IP/DNS"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK22"
+      ],
+      "html_workflow_id": "WF-077",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-078",
+      "title": "Provisioning, ACS/USP, bootstrap hoặc template không đồng bộ",
+      "symptoms": [
+        "Provisioning, ACS/USP, bootstrap hoặc template không đồng bộ"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK21",
+        "SK22"
+      ],
+      "html_workflow_id": "WF-078",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-079",
+      "title": "Cần chuyển gói chẩn đoán cho bên hỗ trợ",
+      "symptoms": [
+        "Cần chuyển gói chẩn đoán cho bên hỗ trợ"
+      ],
+      "skill_ids": [
+        "SK11",
+        "SK20"
+      ],
+      "html_workflow_id": "WF-079",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-080",
+      "title": "Cần phát hiện firmware lỗi theo fleet và lên kế hoạch canary",
+      "symptoms": [
+        "Cần phát hiện firmware lỗi theo fleet và lên kế hoạch canary"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK11",
+        "SK15"
+      ],
+      "html_workflow_id": "WF-080",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-081",
+      "title": "Cần kiểm tra và triển khai ảnh firmware OTA",
+      "symptoms": [
+        "Cần kiểm tra và triển khai ảnh firmware OTA"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12",
+        "SK17"
+      ],
+      "html_workflow_id": "WF-081",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-082",
+      "title": "Cần tìm nguyên nhân lặp lại trên nhiều Gateway",
+      "symptoms": [
+        "Cần tìm nguyên nhân lặp lại trên nhiều Gateway"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-082",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-083",
+      "title": "Edge cần trợ giúp nhưng dữ liệu và quyền phải được kiểm soát HC001 HC002 HC003 HC004 HC005 SK09 SK10 SK20 Đối chiếu bằng chứng theo thời gian · Đánh giá giả thuyết và phép đo tiếp · Trao đổi dữ liệu và tham vấn ngoài Edge Tạo tóm tắt sự cố có bằng chứng để xin Cloud hỗ trợ Ẩn danh MAC/IP/SSID trước khi gửi Cloud Phân tuyến Cloud theo mức khó và độ tin cậy Edge Giới hạn ngân sách token/latency/chi phí Cloud Chuyển kết quả Cloud về dạng tư vấn không có quyền lệnh",
+      "symptoms": [
+        "Edge cần trợ giúp nhưng dữ liệu và quyền phải được kiểm soát HC001 HC002 HC003 HC004 HC005 SK09 SK10 SK20 Đối chiếu bằng chứng theo thời gian · Đánh giá giả thuyết và phép đo tiếp · Trao đổi dữ liệu và tham vấn ngoài Edge Tạo tóm tắt sự cố có bằng chứng để xin Cloud hỗ trợ Ẩn danh MAC/IP/SSID trước khi gửi Cloud Phân tuyến Cloud theo mức khó và độ tin cậy Edge Giới hạn ngân sách token/latency/chi phí Cloud Chuyển kết quả Cloud về dạng tư vấn không có quyền lệnh"
+      ],
+      "skill_ids": [
+        "SK09",
+        "SK10",
+        "SK20"
+      ],
+      "html_workflow_id": "WF-083",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-084",
+      "title": "Cần dùng tri thức hoặc xu hướng từ nhiều Gateway HC006 HC007 SK11 SK20 Tổng hợp hướng dẫn và báo cáo · Trao đổi dữ liệu và tham vấn ngoài Edge Dùng tri thức fleet để so khớp lỗi lặp lại Dự báo xu hướng KPI theo nhiều Gateway",
+      "symptoms": [
+        "Cần dùng tri thức hoặc xu hướng từ nhiều Gateway HC006 HC007 SK11 SK20 Tổng hợp hướng dẫn và báo cáo · Trao đổi dữ liệu và tham vấn ngoài Edge Dùng tri thức fleet để so khớp lỗi lặp lại Dự báo xu hướng KPI theo nhiều Gateway"
+      ],
+      "skill_ids": [
+        "SK11",
+        "SK20"
+      ],
+      "html_workflow_id": "WF-084",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-085",
+      "title": "Cần train/distill model từ telemetry và kiểm định thiết bị độc lập HC008 HC009 HC010 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá Huấn luyện offline time-series encoder từ telemetry Distill mô hình anomaly nhỏ xuống Edge Đánh giá model tại cloud trên tập thiết bị holdout",
+      "symptoms": [
+        "Cần train/distill model từ telemetry và kiểm định thiết bị độc lập HC008 HC009 HC010 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá Huấn luyện offline time-series encoder từ telemetry Distill mô hình anomaly nhỏ xuống Edge Đánh giá model tại cloud trên tập thiết bị holdout"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-085",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-086",
+      "title": "Cần phân phối model, theo dõi drift và chạy shadow HC011 HC012 HC013 SK15 SK17 Theo dõi cửa sổ và tạo cảnh báo · Triển khai artifact và xác minh sẵn sàng Đồng bộ mô hình/cấu hình có xác thực chữ ký Theo dõi drift của model theo firmware và board Triển khai shadow mode khi có model mới",
+      "symptoms": [
+        "Cần phân phối model, theo dõi drift và chạy shadow HC011 HC012 HC013 SK15 SK17 Theo dõi cửa sổ và tạo cảnh báo · Triển khai artifact và xác minh sẵn sàng Đồng bộ mô hình/cấu hình có xác thực chữ ký Theo dõi drift của model theo firmware và board Triển khai shadow mode khi có model mới"
+      ],
+      "skill_ids": [
+        "SK15",
+        "SK17"
+      ],
+      "html_workflow_id": "WF-086",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-087",
+      "title": "Cần biết Edge-only, Cloud-only hay Hybrid có lợi hơn HC014 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá So sánh Edge-only, Cloud-only và Hybrid theo tác vụ",
+      "symptoms": [
+        "Cần biết Edge-only, Cloud-only hay Hybrid có lợi hơn HC014 SK18 SK19 Chuẩn bị và quản lý dữ liệu kiểm định · Chạy thí nghiệm và đánh giá So sánh Edge-only, Cloud-only và Hybrid theo tác vụ"
+      ],
+      "skill_ids": [
+        "SK18",
+        "SK19"
+      ],
+      "html_workflow_id": "WF-087",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-088",
+      "title": "Cloud mất kết nối hoặc không được phép gửi dữ liệu HC015 SK10 SK11 Đánh giá giả thuyết và phép đo tiếp · Tổng hợp hướng dẫn và báo cáo Fallback hoàn toàn offline khi Cloud mất kết nối",
+      "symptoms": [
+        "Cloud mất kết nối hoặc không được phép gửi dữ liệu HC015 SK10 SK11 Đánh giá giả thuyết và phép đo tiếp · Tổng hợp hướng dẫn và báo cáo Fallback hoàn toàn offline khi Cloud mất kết nối"
+      ],
+      "skill_ids": [
+        "SK10",
+        "SK11"
+      ],
+      "html_workflow_id": "WF-088",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-089",
+      "title": "IPv6 có địa chỉ nhưng không hoạt động hoặc cần NAT64/DNS64",
+      "symptoms": [
+        "IPv6 có địa chỉ nhưng không hoạt động hoặc cần NAT64/DNS64"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK05"
+      ],
+      "html_workflow_id": "WF-089",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-090",
+      "title": "Trang tải chập chờn do MTU, VLAN, policy route hoặc PPPoE",
+      "symptoms": [
+        "Trang tải chập chờn do MTU, VLAN, policy route hoặc PPPoE"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-090",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-091",
+      "title": "VPN có handshake nhưng không vào LAN hoặc TLS/MTU lỗi",
+      "symptoms": [
+        "VPN có handshake nhưng không vào LAN hoặc TLS/MTU lỗi"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK04",
+        "SK07",
+        "SK21"
+      ],
+      "html_workflow_id": "WF-091",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-092",
+      "title": "Truy cập từ xa lỗi do DDNS/chứng thư hoặc cổng quản trị phơi WAN",
+      "symptoms": [
+        "Truy cập từ xa lỗi do DDNS/chứng thư hoặc cổng quản trị phơi WAN"
+      ],
+      "skill_ids": [
+        "SK05",
+        "SK07",
+        "SK21"
+      ],
+      "html_workflow_id": "WF-092",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-093",
+      "title": "Kết nối mới thất bại do firewall, conntrack hay TCP/DNS",
+      "symptoms": [
+        "Kết nối mới thất bại do firewall, conntrack hay TCP/DNS"
+      ],
+      "skill_ids": [
+        "SK04",
+        "SK05",
+        "SK07"
+      ],
+      "html_workflow_id": "WF-093",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-094",
+      "covered_by": "WF-024",
+      "title": "Trùng IPv4 hoặc neighbor IPv6 stale",
+      "symptoms": [
+        "Trùng IPv4 hoặc neighbor IPv6 stale"
+      ],
+      "skill_ids": [
+        "SK01",
+        "SK03",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-094",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-095",
+      "title": "Multicast/discovery qua segment lỗi hoặc DHCP lease đổi liên tục",
+      "symptoms": [
+        "Multicast/discovery qua segment lỗi hoặc DHCP lease đổi liên tục"
+      ],
+      "skill_ids": [
+        "SK03",
+        "SK07",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-095",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-096",
+      "covered_by": "WF-039",
+      "title": "Dịch vụ restart liên tục, interface flap hoặc UBUS lỗi",
+      "symptoms": [
+        "Dịch vụ restart liên tục, interface flap hoặc UBUS lỗi"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-096",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-097",
+      "title": "Cần xem diff trước khi ghi và khôi phục khi postcheck thất bại",
+      "symptoms": [
+        "Cần xem diff trước khi ghi và khôi phục khi postcheck thất bại"
+      ],
+      "skill_ids": [
+        "SK12",
+        "SK13"
+      ],
+      "html_workflow_id": "WF-097",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-098",
+      "title": "Cần kiểm tra image/board/package/storage trước nâng cấp",
+      "symptoms": [
+        "Cần kiểm tra image/board/package/storage trước nâng cấp"
+      ],
+      "skill_ids": [
+        "SK08",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-098",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-099",
+      "title": "Roaming 802.11r/k/v không hoạt động như mong muốn",
+      "symptoms": [
+        "Roaming 802.11r/k/v không hoạt động như mong muốn"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-099",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-100",
+      "title": "Airtime thiếu công bằng, CAKE/SQM drops hoặc DSCP sai queue",
+      "symptoms": [
+        "Airtime thiếu công bằng, CAKE/SQM drops hoặc DSCP sai queue"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK06",
+        "SK12"
+      ],
+      "html_workflow_id": "WF-100",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-101",
+      "title": "Power-save/TWT hoặc DFS/channel switch gây gián đoạn",
+      "symptoms": [
+        "Power-save/TWT hoặc DFS/channel switch gây gián đoạn"
+      ],
+      "skill_ids": [
+        "SK02",
+        "SK09"
+      ],
+      "html_workflow_id": "WF-101",
+      "kind": "OTHER",
+      "target_scope": "gateway",
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    },
+    {
+      "workflow_id": "WF-INTERNET",
+      "html_workflow_id": "WF-018",
+      "skill_ids": [
+        "SK01",
+        "SK02",
+        "SK03",
+        "SK04",
+        "SK05"
+      ],
+      "title": "Có Wi-Fi nhưng riêng máy không lên mạng dù vẫn bắt sóng",
+      "symptoms": [
+        "Có Wi-Fi nhưng không vào Internet",
+        "Laptop không vào mạng",
+        "Điện thoại mất mạng",
+        "Máy tính, phone hoặc tablet không truy cập mạng",
+        "Thiết bị có sóng nhưng không kết nối được",
+        "Máy không lên mạng dù vẫn bắt sóng",
+        "Chỉ riêng máy này không mở được trang",
+        "Cùng điểm phát nhưng máy này không đi ra ngoài được",
+        "Cường độ sóng yếu, tín hiệu Wi-Fi kém",
+        "Băng tần hoặc kênh Wi-Fi không ổn",
+        "Only this device cannot reach websites",
+        "WiFi connected but no internet on my laptop",
+        "Phone has wireless signal but cannot browse",
+        "RSSI low, weak wireless signal on the client"
+      ],
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "goal_ports": [
+        "client.identity",
+        "client.ipv4",
+        "wifi.station",
+        "wan.probe",
+        "dns.probe",
+        "client.probe",
+        "client.dns"
+      ],
+      "minimal_goals": [
+        "client.identity",
+        "wifi.station"
+      ],
+      "claims": [
+        "client_not_associated",
+        "wifi_weak_signal",
+        "client_ipv4_unconfigured",
+        "dhcp_pool_exhausted",
+        "dhcp_service_down",
+        "client_no_lease",
+        "wan_link_down",
+        "wan_no_route",
+        "wan_packet_loss",
+        "gateway_dns_failure",
+        "client_path_loss",
+        "client_dns_failure",
+        "client_ip_reachable",
+        "client_path_unverified"
+      ],
+      "status": "SUPPORTED"
+    },
+    {
+      "workflow_id": "WF-WRITE",
+      "title": "Yêu cầu thay đổi cấu hình",
+      "symptoms": [
+        "Đổi DNS",
+        "Thay cấu hình mạng",
+        "Áp dụng cấu hình",
+        "Change network settings"
+      ],
+      "kind": "CHANGE",
+      "target_scope": "gateway",
+      "skill_ids": [],
+      "goal_ports": [],
+      "minimal_goals": [],
+      "claims": [],
+      "status": "CATALOG_ONLY"
+    }
+  ],
+  "facts": [
+    {"fact": "router_wan_link", "scope": "gateway", "port": "wan.status", "field": "link_up", "op": "eq", "value": true},
+    {"fact": "router_default_route", "scope": "gateway", "port": "wan.routes", "field": "default_route", "op": "eq", "value": true},
+    {"fact": "router_wan_reachable", "scope": "gateway", "port": "wan.probe", "field": "loss_pct", "op": "le", "value": 0},
+    {"fact": "router_dns_works", "scope": "gateway", "port": "dns.probe", "field": "rcode", "op": "eq", "value": "NOERROR"},
+    {"fact": "router_dhcp_running", "scope": "gateway", "port": "dhcp.service", "field": "running", "op": "eq", "value": true},
+    {"fact": "router_dhcp_pool_available", "scope": "gateway", "port": "dhcp.pool", "field": "free_addresses", "op": "gt", "value": 0},
+    {"fact": "router_memory_ok", "scope": "gateway", "port": "system.resources", "field": "available_ram_pct", "op": "ge", "value": 10},
+    {"fact": "router_cpu_ok", "scope": "gateway", "port": "system.resources", "field": "cpu_pct", "op": "le", "value": 90},
+    {"fact": "router_storage_ok", "scope": "gateway", "port": "system.resources", "field": "storage_used_pct", "op": "le", "value": 95},
+    {"fact": "client_identified", "scope": "client", "port": "client.identity", "op": "exists", "value": true},
+    {"fact": "client_ip_configured", "scope": "client", "port": "client.ipv4", "field": "configured", "op": "eq", "value": true},
+    {"fact": "client_wifi_associated", "scope": "client", "port": "wifi.station", "field": "associated", "op": "eq", "value": true},
+    {"fact": "client_lease_valid", "scope": "client", "port": "dhcp.leases", "field": "lease_valid", "op": "eq", "value": true},
+    {"fact": "client_internet_reachable", "scope": "client", "port": "client.probe", "field": "loss_pct", "op": "le", "value": 0},
+    {"fact": "client_dns_works", "scope": "client", "port": "client.dns", "field": "rcode", "op": "eq", "value": "NOERROR"}
+  ],
+  "claims": [
+    {"claim_id": "wan_link_down", "diagnosis": "wan_link_down", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "wan.status", "field": "link_up", "op": "eq", "value": false}], "excludes": [], "message_key": "wan_link_down"},
+    {"claim_id": "wan_no_route", "diagnosis": "wan_no_route", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "wan.status", "field": "link_up", "op": "eq", "value": true}, {"port": "wan.routes", "field": "default_route", "op": "eq", "value": false}], "excludes": [], "message_key": "wan_no_route"},
+    {"claim_id": "wan_packet_loss", "diagnosis": "wan_packet_loss", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "wan.probe", "field": "loss_pct", "op": "ge", "value": 50}], "excludes": [], "message_key": "wan_packet_loss"},
+    {"claim_id": "gateway_dns_failure", "diagnosis": "gateway_dns_failure", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "dns.probe", "field": "rcode", "op": "in", "value": ["SERVFAIL", "TIMEOUT", "REFUSED"]}, {"port": "wan.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "gateway_dns_failure"},
+    {"claim_id": "gateway_ip_reachable_dns_unverified", "diagnosis": "gateway_ip_reachable_dns_unverified", "scope": "gateway", "severity": "OBSERVATION", "requires": [{"port": "wan.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "gateway_ip_reachable_dns_unverified"},
+    {"claim_id": "dhcp_pool_exhausted", "diagnosis": "dhcp_pool_exhausted", "scope": "client", "severity": "FAULT", "requires": [{"port": "dhcp.leases", "field": "lease_valid", "op": "eq", "value": false}, {"port": "dhcp.pool", "field": "free_addresses", "op": "eq", "value": 0}], "excludes": [], "message_key": "dhcp_pool_exhausted"},
+    {"claim_id": "dhcp_service_down", "diagnosis": "dhcp_service_down", "scope": "client", "severity": "FAULT", "requires": [{"port": "dhcp.leases", "field": "lease_valid", "op": "eq", "value": false}, {"port": "dhcp.service", "field": "running", "op": "eq", "value": false}], "excludes": [], "message_key": "dhcp_service_down"},
+    {"claim_id": "client_no_lease", "diagnosis": "client_no_lease", "scope": "client", "severity": "OBSERVATION", "requires": [{"port": "dhcp.leases", "field": "lease_valid", "op": "eq", "value": false}], "excludes": [], "message_key": "client_no_lease"},
+    {"claim_id": "system_memory_pressure", "diagnosis": "system_memory_pressure", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "system.resources", "field": "available_ram_pct", "op": "lt", "value": 10}], "excludes": [], "message_key": "system_memory_pressure"},
+    {"claim_id": "system_cpu_load", "diagnosis": "system_cpu_load", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "system.resources", "field": "cpu_pct", "op": "gt", "value": 90}], "excludes": [], "message_key": "system_cpu_load"},
+    {"claim_id": "system_storage_full", "diagnosis": "system_storage_full", "scope": "gateway", "severity": "FAULT", "requires": [{"port": "system.resources", "field": "storage_used_pct", "op": "gt", "value": 95}], "excludes": [], "message_key": "system_storage_full"},
+    {"claim_id": "wifi_weak_signal", "diagnosis": "wifi_weak_signal", "scope": "client", "severity": "FAULT", "requires": [{"port": "wifi.station", "field": "rssi_dbm", "op": "lt", "value": -78}], "excludes": [], "message_key": "wifi_weak_signal"},
+    {"claim_id": "client_not_associated", "diagnosis": "client_not_associated", "scope": "client", "severity": "FAULT", "requires": [{"port": "wifi.station", "field": "associated", "op": "eq", "value": false}], "excludes": [], "message_key": "client_not_associated"},
+    {"claim_id": "client_ipv4_unconfigured", "diagnosis": "client_ipv4_unconfigured", "scope": "client", "severity": "FAULT", "requires": [{"port": "wifi.station", "field": "associated", "op": "eq", "value": true}, {"port": "client.ipv4", "field": "configured", "op": "eq", "value": false}], "excludes": [], "message_key": "client_ipv4_unconfigured"},
+    {"claim_id": "client_path_loss", "diagnosis": "client_path_loss", "scope": "client", "severity": "OBSERVATION", "requires": [{"port": "client.probe", "field": "loss_pct", "op": "ge", "value": 50}], "excludes": [], "message_key": "client_path_loss"},
+    {"claim_id": "client_ip_reachable", "diagnosis": "client_ip_reachable", "scope": "client", "severity": "OBSERVATION", "requires": [{"port": "client.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "client_ip_reachable"},
+    {"claim_id": "client_dns_failure", "diagnosis": "client_dns_failure", "scope": "client", "severity": "FAULT", "requires": [{"port": "client.dns", "field": "rcode", "op": "in", "value": ["SERVFAIL", "TIMEOUT", "REFUSED"]}, {"port": "client.probe", "field": "loss_pct", "op": "eq", "value": 0}, {"port": "dns.probe", "field": "rcode", "op": "eq", "value": "NOERROR"}], "excludes": [], "message_key": "client_dns_failure"},
+    {"claim_id": "client_path_unverified", "diagnosis": "client_path_unverified", "scope": "gateway", "severity": "OBSERVATION", "requires": [{"port": "dns.probe", "field": "rcode", "op": "eq", "value": "NOERROR"}, {"port": "wan.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "client_path_unverified"},
+    {"claim_id": "no_fault_observed.WF-018", "diagnosis": "no_fault_observed", "scope": "gateway", "severity": "HEALTHY", "requires": [{"port": "wan.status", "field": "link_up", "op": "eq", "value": true}, {"port": "wan.routes", "field": "default_route", "op": "eq", "value": true}, {"port": "wan.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "no_fault_observed", "workflow": "WF-018"},
+    {"claim_id": "no_fault_observed.WF-023", "diagnosis": "no_fault_observed", "scope": "gateway", "severity": "HEALTHY", "requires": [{"port": "dns.probe", "field": "rcode", "op": "eq", "value": "NOERROR"}, {"port": "wan.probe", "field": "loss_pct", "op": "eq", "value": 0}], "excludes": [], "message_key": "no_fault_observed", "workflow": "WF-023"},
+    {"claim_id": "no_fault_observed.WF-024", "diagnosis": "no_fault_observed", "scope": "client", "severity": "HEALTHY", "requires": [{"port": "dhcp.leases", "field": "lease_valid", "op": "eq", "value": true}, {"port": "dhcp.pool", "field": "free_addresses", "op": "gt", "value": 0}, {"port": "dhcp.service", "field": "running", "op": "eq", "value": true}], "excludes": [], "message_key": "no_fault_observed", "workflow": "WF-024"},
+    {"claim_id": "no_fault_observed.WF-039", "diagnosis": "no_fault_observed", "scope": "gateway", "severity": "HEALTHY", "requires": [{"port": "system.resources", "field": "available_ram_pct", "op": "ge", "value": 10}, {"port": "system.resources", "field": "cpu_pct", "op": "le", "value": 90}, {"port": "system.resources", "field": "storage_used_pct", "op": "le", "value": 95}], "excludes": [], "message_key": "no_fault_observed", "workflow": "WF-039"}
+  ]
+}
