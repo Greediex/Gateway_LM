@@ -1,4 +1,4 @@
-name: Composite Adapter / Graph Regression
+name: Gateway LM / Refactor CI
 
 on:
   push:
@@ -37,6 +37,9 @@ jobs:
             exit 1
           fi
 
+      - name: Repository structure and active-document check
+        run: python -m scripts.check_project
+
       - name: Composite adapter unit tests
         run: python -m unittest tests_graph_v3.test_composite_adapter -v
 
@@ -45,6 +48,9 @@ jobs:
 
       - name: Legacy regression suite
         run: python -m unittest discover -s tests -v
+
+      - name: Web adapter regression suite
+        run: python -m unittest discover -s web_gateway/tests -v
 
       - name: Run end-to-end assistant replay on cloud runner
         run: |
