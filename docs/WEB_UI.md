@@ -38,3 +38,18 @@ Web giữ một phiên (`session_id`, trong bộ nhớ, hết hạn sau 15 phút
 ```
 
 Chạy `python -m unittest discover -s tests/web -v` để kiểm tra adapter, đối chứng Dynamic/Core, phối hợp ReAct/GoS/SkillDAG và cổng chặn yêu cầu ghi.
+
+## GoalInspector API (opt-in, replay only)
+
+Server hỗ trợ `POST /api/goals` để đo **các output port đã khai báo** thông qua GoalAgent, độc lập với workflow ID cố định. Endpoint chỉ lấy dữ liệu từ fixture đã kiểm tra trong `data/cases.json`, không chấp nhận backend/permissions/world do client cung cấp. `source_mode=live` bị từ chối tại endpoint này; chế độ live hiện có vẫn dùng `/api/chat`.
+
+Ví dụ PowerShell:
+
+```powershell
+$body = @{ message = "WAN and RAM status"; fixture_id = "GLM-04-0"; goals = @("wan.status", "system.resources"); method = "bm25"; source_mode = "replay" } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://127.0.0.1:8765/api/goals" -Method Post -ContentType "application/json" -Body $body
+```
+
+Trả về `goals`, `goal_facts`, `missing_goals`, `plans`, `ready_trace`, `contract_b`, `contract_c`. `status=RESOLVED` là **đã đo và xác minh mục tiêu**, không phải sửa xong sự cố; `diagnosis=NOT_EVALUATED` báo chưa có RCA.
+
+Nếu muốn suy luận goal từ câu hỏi: gửi `registry="v01"` và bỏ trường `goals`. Chỉ khi Turn Router xác nhận workflow được hỗ trợ mới thực thi; yêu cầu không rõ trả `NEEDS_INPUT`/bị chặn.

@@ -290,6 +290,54 @@ def analyze(payload: dict):
     }
 
 
+def analyze_goals(payload: dict):
+    """Opt-in typed GoalAgent HTTP endpoint: replay fixture only, read-only.
+
+    The request may select an existing fixture and registered output ports,
+    but cannot supply adapter instances, world data, permissions or arbitrary
+    Function IDs. Unsupported goals are rejected before any execution.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("Body phải là JSON object")
+    message = payload.get("message")
+    if not isinstance(message, str) or not 1 <= len(message.strip()) <= 2000:
+        raise ValueError("Câu hỏi phải dài 1–2000 ký tự")
+    if payload.get("source_mode", "replay") != "replay":
+        raise ValueError("Goal endpoint hiện chỉ hỗ trợ replay")
+    fixture_id = payload.get("fixture_id", DEFAULT_FIXTURE)
+    cases = fixture_catalog()
+    if not isinstance(fixture_id, str) or fixture_id not in cases:
+        raise ValueError("Fixture không tồn tại trong data/cases.json")
+    method = payload.get("method", "bm25")
+    if method not in ("bm25", "gos"):
+        raise ValueError("Method chỉ hỗ trợ bm25 hoặc gos")
+    registry_version = payload.get("registry", "legacy")
+    if registry_version not in ("legacy", "v01"):
+        raise ValueError("Registry chỉ hỗ trợ legacy hoặc v01")
+    goals = payload.get("goals")
+    if (goals is not None and
+            (not isinstance(goals, list) or not 1 <= len(goals) <= 8 or
+             any(not isinstance(g, str) or not 1 <= len(g) <= 128 for g in goals))):
+        raise ValueError("goals phải là danh sách 1–8 output port hợp lệ")
+    if goals is None and registry_version != "v01":
+        raise ValueError("Suy luận goal cần registry v01 có workflow catalog")
+    max_calls = payload.get("max_calls", 12)
+    if type(max_calls) is not int or not 1 <= max_calls <= 12:
+        raise ValueError("max_calls phải là số nguyên từ 1 đến 12")
+    from gateway_pilot.core import PlanError
+    from gateway_pilot.graph_v3.goal_agent import GoalAgent
+    from gateway_pilot.graph_v3.graphs import GraphRegistry
+
+    registry = GraphRegistry.from_v01() if registry_version == "v01" else GraphRegistry()
+    fixture = deepcopy(cases[fixture_id])
+    fixture.pop("gold", None)  # Labels belong to offline scoring only.
+    agent = GoalAgent(registry, method=method, max_calls=max_calls)
+    try:
+        return agent.run(message, fixture, goals=goals)
+    except PlanError as exc:
+        raise ValueError("Goal không được hỗ trợ hoặc không hợp lệ: " + str(exc)) from exc
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "GatewayLMWeb/1.0"
 
@@ -368,7 +416,8 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self._local_request():
             return
-        if urlparse(self.path).path != "/api/chat":
+        endpoint = urlparse(self.path).path
+        if endpoint not in ("/api/chat", "/api/goals"):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -382,7 +431,7 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             if isinstance(data, dict):
                 data.setdefault("source_mode", getattr(self.server, "default_source", "replay"))
-            result = analyze(data)
+            result = analyze_goals(data) if endpoint == "/api/goals" else analyze(data)
             return self._json(result)
         except ValueError as exc:
             return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)

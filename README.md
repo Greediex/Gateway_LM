@@ -80,7 +80,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "Check WAN and memory" --goals wan.status system.resources --method bm25
 ```
 
-Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra root-cause diagnosis. Mọi Function vẫn phải qua Registry/permission/capability/Verifier. Xem [reference alignment](docs/REFERENCE_IMPLEMENTATION.md).
+Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra root-cause diagnosis. Có thể gọi tương đương qua `POST /api/goals` (replay-only; xem [Web UI](docs/WEB_UI.md)). Mọi Function vẫn phải qua Registry/permission/capability/Verifier. Xem [reference alignment](docs/REFERENCE_IMPLEMENTATION.md).
 
 ## Những gì chưa hỗ trợ
 

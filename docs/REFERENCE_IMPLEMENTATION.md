@@ -44,6 +44,8 @@ The existing pinned upstream commits and their hashes remain unchanged.
    declared Case capabilities with the assigned Adapter's probed status.
    An unassigned Function cannot fall back to a synthetic replay world.
 
+6. **Web API**: `POST /api/goals` là giao diện replay-only gọi GoalAgent từ HTTP mà không cho phép client inject `world`, backend, permissions hay Function tùy ý. `POST /api/chat` vẫn giữ nguyên. Xem [Web UI guide](WEB_UI.md).
+
 ## How to run
 
 From the repository root after Python 3.12 setup and `setup_upstream.py`:
@@ -78,8 +80,7 @@ intentional, not a missing output field.
 - Cloud delegation, durable state checkpoints, semantic retrieval, model-based
   task decomposition, production observability and large-scale cross-domain
   tests remain separate implementation work.
-- The existing Web and Assistant paths are unchanged; GoalAgent is a **new
-  opt-in programmatic/CLI path**, not a drop-in replacement for all policies.
+- The existing `/api/chat` and Assistant paths retain their semantics; `/api/goals` is an **opt-in read-only endpoint** and GoalAgent is also available via CLI. This is not a drop-in replacement for all policies.
 - For new capabilities, add versioned Function contracts and conformance
   tests before advertising or routing them. Do **not** infer an executable
   Function from one of the 270 product requirements.
