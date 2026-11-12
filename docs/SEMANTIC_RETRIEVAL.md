@@ -102,3 +102,5 @@ python -m scripts.analysis.evaluate_retrieval \\
 ```
 
 Đây là **illustrative smoke suite**, không phải holdout. Để đo mô hình thực, chuẩn bị tập riêng biệt và dùng `--methods bm25 gos hybrid --semantic-model-dir /trusted/local/model`, sau đó báo cáo chênh lệch và intervals trên tập lỗi unseen. Giữ kết quả trong `runs/` và không cập nhật lại các bảng benchmark lịch sử.
+
+**Independent held-out requirement:** `evaluate_retrieval.py` accepts a real local model directory, but the repository does not include a verified downloaded embedding or a private held-out dataset. No model-quality numbers may be quoted until the operator runs the test split independently; see [acceptance](ACCEPTANCE_9_TASKS.md).

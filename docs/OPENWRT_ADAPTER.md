@@ -61,3 +61,7 @@ python -m unittest tests.graph_v3.test_ubus_read -v
 ```
 
 This boundary is **not** OpenWrt production support, and does not enable WRITE.
+
+## Native Ubus CLI read transport (on-board only)
+
+`gateway_pilot/adapters/ubus_cli.py` implements `UbusCliReadTransport`, a real subprocess transport for native OpenWrt `ubus`. It does `ubus -v list <object>` for exact method discovery and `ubus -S call <object> <method> <validated-JSON>` to read JSON; no shell or dynamic executable path. Transport exceptions/timeout/non-object JSON fail closed. Bind only with trusted, independently verified firmware mapping and the existing `UbusReadAdapter` contract gates. CI uses mocked subprocess, not a router. Do not set Function to `PROBED_OK` without board-backed validation.

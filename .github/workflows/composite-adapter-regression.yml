@@ -118,6 +118,15 @@ jobs:
       - name: Signed WRITE approval, nonce and rollback (mock driver only)
         run: python -m unittest tests.graph_v3.test_change_transaction -v
 
+      - name: Real integration interfaces and conservative calibration (mock I/O)
+        run: |
+          python -m unittest tests.graph_v3.test_real_integration_boundaries -v
+          python -m unittest tests.graph_v3.test_acceptance_infrastructure -v
+          python -m scripts.analysis.audit_requirement_traceability --output runs/requirement_traceability.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/requirement_traceability.json").read_text()); assert r["requirement_count"]==270 and r["firmware_verified_requirement_count"]==0 and r["mapped_requirement_count"]==10; print("Traceability: 10 linked, 260 unmapped, 0 firmware verified")'
+          python -m scripts.hardware.measure_gateway --samples 2 --interval 0.1 --output runs/host_only_hardware_smoke.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/host_only_hardware_smoke.json").read_text()); assert not r["device_acceptance_possible"]; print("Host smoke is NOT gateway acceptance")'
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

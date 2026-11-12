@@ -14,11 +14,11 @@ remain snapshots, not refreshed production measurements.
 | Composite Function Adapter and probe gate | DONE (pilot) | `test_composite_adapter` |
 | Unified READY-node selection interface | DONE (pilot) | `selection.py`, `test_task_decomposer` |
 | Multi-clause goal decomposition, bilingual aliases | DONE (bounded) | `task_decomposer.py`, `goal_aliases_v01.json`; unknown/unsafe => zero calls |
-| Free-form semantic task decomposition | PARTIAL (bounded LLM proposal opt-in) | Model may nominate registered READ goals via quoted spans; no generalized planning, calibration or WRITE |
+| Free-form semantic task decomposition | PARTIAL (real local-model adapter + offline calibration harness) | `OllamaGoalModel` and dev/test goal metrics implemented; real Ollama heldout NOT RUN; unknown Functions still blocked |
 | Resolver, Fastpath, ReAct shared execution | DONE (shared READY dispatch) / POLICY UNIFICATION PARTIAL | All diagnostic paths select and invoke via `execute_ready_once` or `run_plan` + GraphRunner; workflow policy state machines remain distinct |
 | Dynamic graph replanning + bounded repair | DONE (pilot) | Existing graph v4 tests; no crash recovery |
 | Evidence-led RCA / claim engine | DONE (adaptive read-only replay pilot) / REAL VALIDATION PENDING | `RCAAgent` and localhost `POST /api/rca`; selects missing Claim evidence, replans under budgets; no hardware/causal proof |
-| 22 Skills / 270 requirements | DESIGN / PARTIAL | Catalog presence does not mean 270 executable Functions |
+| 22 Skills / 270 requirements | DESIGN / PARTIAL (8 Skills, 17 Functions, 10/270 mapped) | Traceability audit is reproducible; 260 requirements unmapped; firmware-supported count is 0 |
 | Versioned declarative read-only Function/Skill overlay | DONE (bounded pilot) | JSON manifest adds gateway zero-input single-output READ contracts transactionally; v0.1 starts unverified, no firmware claim |
 | Semantic vector + lexical + graph retrieval | DONE (opt-in integration, mock-tested) / MODEL EVAL PENDING | Local embedding adapter, cosine threshold, BM25/GoS fusion, strict gates; no measured encoder accuracy, latency or NPU |
 | Offline retrieval benchmark protocol | DONE (harness, illustrative data only) | JSONL split/group evaluator; Recall@K, Precision@K, MRR@K, host latency; independent held-out/model evaluation still pending |
@@ -26,9 +26,9 @@ remain snapshots, not refreshed production measurements.
 | Signed read-only DAG step journal | DONE (local pilot) | HMAC chain, atomic bounded audit, context/ACL verification; combined with EvidenceCheckpoint for safe READ replanning |
 | Full durable DAG/job recovery | PARTIAL | READ evidence + step receipts; no exactly-once external actions, crash-safe WRITE/outbox or remote scheduler |
 | OpenWrt read-only Adapter interface | DONE (mock-only) | `ubus_read.py`, `test_ubus_read` — injectable trusted firmware-specific transport, no guessed mapping |
-| OpenWrt firmware probes and verified adapters | BLOCKED ON HARDWARE | No firmware access or board-backed probe pass |
+| OpenWrt firmware probes and verified adapters | INTEGRATION IMPLEMENTED / BLOCKED ON HARDWARE | `UbusCliReadTransport` uses bounded subprocess calls and method discovery; no board-backed probe pass or schema captures |
 | Edge–Cloud policy and privacy/budget gate | DONE (mock-only policy) / REAL INTEGRATION PENDING | Disabled by default; explicit consent, aggregate-only telemetry, bounded requests/estimated USD; no provider/NPU measurements |
-| Hardware latency / CPU / RAM / NPU test | BLOCKED ON HARDWARE | Must test target device |
+| Hardware latency / CPU / RAM / NPU test | INSTRUMENTATION DONE / BLOCKED ON HARDWARE | `scripts/hardware/measure_gateway.py` collects /proc + optional /sys NPU; only target OpenWrt capture counts |
 | WRITE approval and rollback state machine | DONE (disabled-by-default mock pilot) / FIRMWARE PENDING | HMAC approval tied to target/revision/typed args, durable one-time nonce, snapshot/preview/readback/rollback; no real router backend |
 
 ## Decomposition contract
@@ -55,3 +55,7 @@ unknown actions or execute catalog-only requirements.
 One feature is marked done **at pilot level** only when a test demonstrates its
 positive and negative contracts and the full CI passes. Real network and
 hardware claims require board-backed evidence, not generic simulations.
+
+## Nine-workstream acceptance protocol
+
+See [ACCEPTANCE_9_TASKS.md](ACCEPTANCE_9_TASKS.md) for model/calibration, 270-requirement traceability, OpenWrt Ubus, on-device metrics, Cloud and WRITE sign-off gates. A green CI does not complete board-backed tasks.

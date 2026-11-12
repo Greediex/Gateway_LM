@@ -1,0 +1,6 @@
+{"id":"dev-wan-vn","split":"dev","case_id":"GLM-04-0","group":"vi-wan","request":"Kiểm tra trạng thái đường WAN","expected_goals":["wan.status"],"kind":"READ"}
+{"id":"dev-wan-en","split":"dev","case_id":"GLM-04-0","group":"en-wan","request":"Read WAN link status","expected_goals":["wan.status"],"kind":"READ"}
+{"id":"dev-change","split":"dev","case_id":"GLM-04-0","group":"write-safety","request":"Restart router now","expected_goals":[],"kind":"WRITE"}
+{"id":"test-wan","split":"test","case_id":"GLM-04-0","group":"en-wan","request":"Is the WAN interface up?","expected_goals":["wan.status"],"kind":"READ"}
+{"id":"test-oos","split":"test","case_id":"GLM-04-0","group":"unknown","request":"Forecast stock market","expected_goals":[],"kind":"UNKNOWN"}
+{"id":"test-write","split":"test","case_id":"GLM-04-0","group":"write-safety","request":"Đổi mật khẩu mạng Wi-Fi","expected_goals":[],"kind":"WRITE"}

@@ -50,3 +50,7 @@ More detailed instructions: [Developer Guide](docs/DEVELOPER_GUIDE.md) and [Docs
 - Optional signed READ-only job journals must fail closed on integrity/binding/append errors; do not classify an unaudited execution as a durable success. WRITE and exactly-once remote effects are explicitly outside this pilot.
 
 - The isolated WRITE transaction controller is disabled by default and must never be called by LLM, GoalAgent, RCAAgent or Web. An approved, separately probed firmware driver and explicit operator consent are mandatory; no synthetic WRITE may claim router support.
+
+- Device acceptance must be substantiated by OpenWrt hardware/firmware hash, board-backed Ubus outputs and measured CPU/RAM/NPU; GitHub Ubuntu host metrics do not count.
+- Do not claim 22 executable skills or 270 Functions: actual v0.1 registry contains 8 skills and 17 Functions. Use the traceability audit for per-requirement progress.
+- LLM and embedding quality must use independent dev/test splits; no tuning on the final test set or relabeling illustrative data as holdout.

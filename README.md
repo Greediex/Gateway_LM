@@ -141,3 +141,12 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 ## WRITE transaction safety (opt-in mock only)
 
 `SafeWriteTransaction` là state machine **mặc định tắt** cho thao tác cấu hình có phê duyệt. Gồm HMAC token theo Function/target/revision, nonce bền vững, snapshot, preview, read-back và rollback đã kiểm thử với driver giả. **Không mở WRITE trong Agent, Web hoặc trên OpenWrt thật**. Xem [WRITE Transactions](docs/WRITE_TRANSACTIONS.md).
+
+## Real integration and acceptance tools (not device-certified)
+
+- `OllamaGoalModel` can query a **local** Ollama server; `evaluate_goal_proposals.py` calibrates on dev only and reports on separate labeled test data. The example JSONL is **illustrative**, not held-out accuracy.
+- `UbusCliReadTransport` calls native `ubus` with argument lists, timeout and method discovery; firmware mappings/probes must still be verified on the actual board.
+- `audit_requirement_traceability.py` reports actual coverage: **8 skills, 17 registered Functions, 10/270 requirements linked** in current v0.1 catalog; none is firmware-probed.
+- `measure_gateway.py` captures /proc CPU/RAM/process RSS and actual /sys NPU when supplied on-device. GitHub CI only exercises host smoke and must **never** claim on-device acceptance.
+
+[Precise acceptance instructions](docs/ACCEPTANCE_9_TASKS.md).

@@ -65,3 +65,7 @@ python -m unittest tests.graph_v3.test_llm_goals -v
 python -m unittest tests.graph_v3.test_execution_kernel -v
 python -m unittest discover -s tests -v
 ```
+
+## Real local LLM adapter and calibration
+
+`OllamaGoalModel` validates the local Ollama model via `/api/show`, uses structured JSON response, and never creates Function IDs. A trusted operator can pass it into `BoundedGoalProposer`. Use `python -m scripts.analysis.evaluate_goal_proposals --model qwen3:0.6b --input /trusted/labeled_goal_holdout.jsonl --output runs/goal_model_eval.json` on a host with an actual downloaded model. The harness checks dev/test separation, picks a threshold using **dev only**, and reports precision/coverage/unsafe acceptances on untouched test. If no safe threshold exists, evaluation fails closed. The bundled `examples/evaluation/illustrative_goal_proposals.jsonl` only illustrates the format.
