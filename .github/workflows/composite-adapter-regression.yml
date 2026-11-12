@@ -106,6 +106,9 @@ jobs:
       - name: Evidence-driven RCA (adaptive read-only replay)
         run: python -m unittest tests.graph_v3.test_rca_agent -v
 
+      - name: Edge-first Cloud policy, budget and privacy tests (mock only)
+        run: python -m unittest tests.graph_v3.test_delegation -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

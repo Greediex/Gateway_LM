@@ -44,3 +44,5 @@ More detailed instructions: [Developer Guide](docs/DEVELOPER_GUIDE.md) and [Docs
 - All diagnostic READY execution must go through `graph_v3.execution_kernel.execute_ready_once` and `GraphRunner.step`; no independent tool-call shortcut for Fastpath, Resolver or ReAct.
 
 - RCA labels require a declared Claim evaluated TRUE with verified, scoped, fresh evidence IDs. An observation-only Claim or a measurement RESOLVED status is not causal root-cause proof.
+
+- Cloud delegation defaults disabled. Share only verified aggregated gateway numeric telemetry with server-side consent and fixed budget; never elevate a cloud hypothesis into evidence or execute returned instructions.

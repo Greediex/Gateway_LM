@@ -26,7 +26,7 @@ remain snapshots, not refreshed production measurements.
 | Full durable DAG/job recovery | NOT YET | Requires persistence of job receipts, idempotency and crash-safe external side effects |
 | OpenWrt read-only Adapter interface | DONE (mock-only) | `ubus_read.py`, `test_ubus_read` — injectable trusted firmware-specific transport, no guessed mapping |
 | OpenWrt firmware probes and verified adapters | BLOCKED ON HARDWARE | No firmware access or board-backed probe pass |
-| Edge/Cloud delegation and resource budgets | NOT YET | No measured cloud policy/Edge QNN performance |
+| Edge–Cloud policy and privacy/budget gate | DONE (mock-only policy) / REAL INTEGRATION PENDING | Disabled by default; explicit consent, aggregate-only telemetry, bounded requests/estimated USD; no provider/NPU measurements |
 | Hardware latency / CPU / RAM / NPU test | BLOCKED ON HARDWARE | Must test target device |
 | WRITE approvals and transactional rollback | NOT YET | Explicitly disabled in read-only pilot |
 

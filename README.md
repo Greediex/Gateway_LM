@@ -125,3 +125,7 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 ## RCA có bằng chứng (opt-in, replay pilot)
 
 `gateway_pilot.graph_v3.rca_agent.RCAAgent` chạy vòng lặp Claim UNKNOWN → chọn phép đo → GraphRunner/Verifier → đánh giá lại. Kết quả lỗi chỉ được trả về nếu thỏa mãn Claim có evidence ID hợp lệ; healthy đòi các fault Claim được loại trừ. Chưa có nghiệm thu router thật hoặc causal RCA. Xem [Evidence RCA](docs/EVIDENCE_RCA.md).
+
+## Edge–Cloud Delegation (policy + mock)
+
+`EdgeCloudPolicy` mặc định chọn Edge và **không gọi Cloud** nếu chưa có cấu hình, consent và budget hợp lệ. Chỉ gửi metric số/boolean từ gateway đã xác minh; phản hồi Cloud luôn là hypothesis chưa được chứng thực. Không có provider API thực trong repo. Xem [Edge Cloud Policy](docs/EDGE_CLOUD_POLICY.md).
