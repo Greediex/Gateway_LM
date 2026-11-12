@@ -59,11 +59,12 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 | `data/`, `benchmarks/` | Registry, fixture, bộ đánh giá và manifest đã khóa |
 | `tests/`, `tests_graph_v3/`, `web_gateway/tests/` | Legacy, graph và web regression tests |
 | `docs/` | Kiến trúc, protocol, paper audit, các hợp đồng và báo cáo lịch sử |
-| `scripts/` | Kiểm tra vệ sinh repository |
+| `scripts/` | Benchmark, phân tích và kiểm tra vệ sinh repository |
 
 ## Tài liệu quan trọng
 
 - [Docs index — bắt đầu từ đây](docs/INDEX.md)
+- [Các lệnh benchmark/analysis mới](scripts/README.md)
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](README_WEB.md)

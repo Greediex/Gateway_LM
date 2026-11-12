@@ -1,4 +1,4 @@
-> **Bản lưu đầy đủ README trước đợt dọn dẹp.** Các số liệu v1–v4 trong tài liệu này là kết quả tại thời điểm chạy, không phải trạng thái CI mới nhất. Thư mục `runs/` được gitignore nên các link tới báo cáo trong `runs/` chỉ có tác dụng nếu dữ liệu đã có trên máy.
+> **Bản lưu đầy đủ README trước đợt dọn dẹp.** Các lệnh root script trong nội dung cũ đã được chuyển vào `scripts/`; xem [bảng lệnh mới](../scripts/README.md). Các số liệu v1–v4 trong tài liệu này là kết quả tại thời điểm chạy, không phải trạng thái CI mới nhất. Thư mục `runs/` được gitignore nên các link tới báo cáo trong `runs/` chỉ có tác dụng nếu dữ liệu đã có trên máy.
 
 # Gateway LM v0.1 — small-model / Skill Graph pilot
 

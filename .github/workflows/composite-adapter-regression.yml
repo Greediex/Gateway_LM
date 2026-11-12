@@ -43,6 +43,12 @@ jobs:
       - name: Composite adapter unit tests
         run: python -m unittest tests_graph_v3.test_composite_adapter -v
 
+      - name: Benchmark and analysis CLI smoke
+        run: |
+          python -m scripts.benchmarks.run_function_selection --help
+          python -m scripts.benchmarks.run_dynamic_benchmark --help
+          python -m scripts.analysis.audit_html --help
+
       - name: Graph regression suite
         run: python -m unittest discover -s tests_graph_v3 -v
 

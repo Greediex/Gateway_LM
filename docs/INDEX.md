@@ -6,6 +6,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 
 | Tài liệu | Mục đích |
 | --- | --- |
+| [CLI script migration](../scripts/README.md) | Bảng chuyển lệnh root script sang package `scripts/benchmarks` và `scripts/analysis` |
 | [Developer Guide](DEVELOPER_GUIDE.md) | Setup Windows/Linux/CI, cấu trúc module, thêm Function và chạy test |
 | [Architecture HTML v0.1](architecture/gateway-lm-v0.1-kien-truc.html) | Thiết kế giao diện và năng lực dự kiến; **không** phải danh mục implementation đã được chứng minh |
 | [Graph v3 Protocol](GRAPH_V3_PROTOCOL.md) | Phạm vi, giới hạn, kế hoạch/contract và test |

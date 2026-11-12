@@ -43,6 +43,8 @@ gateway_pilot/
 web_gateway/                                # web UI and tests
 data/ + benchmarks/                         # frozen test data
 docs/contracts/                             # machine-readable contracts
+scripts/benchmarks/                         # benchmark entry points
+scripts/analysis/                           # analysis / audit tools
 ```
 
 Điểm bắt đầu hợp lý khi mở rộng Function: [Adapter composition](ADAPTER_COMPOSITION.md), `registry_v01.py`, `tests_graph_v3/test_registry_v01.py`.
@@ -76,3 +78,19 @@ CI trên nhánh refactor thực hiện tương đương và lưu hai trace smoke
 - Đừng dùng fixture test để tối ưu rồi gọi kết quả là holdout.
 - Các tài liệu v1/v2 là baseline, không phải mô tả đầy đủ của code Graph v4.
 - Không đổi hash upstream sang một giá trị tùy ý hoặc bỏ qua verifier để làm CI xanh.
+
+## 7. Vị trí CLI sau khi dọn dẹp
+
+Các script không thuộc runtime được chuyển khỏi repo root. Chạy từ repo root với `python -m` để bảo đảm import độc lập hệ điều hành:
+
+```bash
+python -m scripts.benchmarks.run_function_selection --help
+python -m scripts.benchmarks.run_html_benchmark --help
+python -m scripts.benchmarks.run_dynamic_benchmark --help
+python -m scripts.analysis.audit_html --help
+python -m scripts.analysis.verify_run --help
+```
+
+Danh mục đầy đủ và ánh xạ lệnh cũ/mới tại [scripts/README.md](../scripts/README.md).
+
+**Giữ ở repo root:** `setup_upstream.py` là bootstrap; `prepare_data.py` là bộ sinh fixture có đường dẫn được lưu trong metadata/hashes v1/v2. Không chuyển hoặc sinh lại frozen fixture. Các command cũ `python run_*.py` phải đổi sang `python -m scripts.benchmarks.run_*`.
