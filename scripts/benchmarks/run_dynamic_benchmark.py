@@ -7,7 +7,7 @@ from pathlib import Path
 from gateway_pilot.graph_v3.contracts import validate
 from gateway_pilot.workflow import diagnose, workflow_registry
 from gateway_pilot.workflow_advisor import OllamaProbeAdvisor
-from run_html_benchmark import TARGET, internet_replay
+from .run_html_benchmark import TARGET, internet_replay
 
 
 REQUEST = "Máy tính phòng khách vẫn có Wi-Fi nhưng không mở được trang web."

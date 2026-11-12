@@ -3,7 +3,7 @@
 All numbers are synthetic replay on the host, never router measurements. The
 router thresholds were not re-calibrated for this run; the holdout is run once.
 
-Usage:  python run_conversation_benchmark.py --run conversation_v1_YYYYMMDD [--configs regex,router,advisor]
+Usage:  python -m scripts.benchmarks.run_conversation_benchmark --run conversation_v1_YYYYMMDD [--configs regex,router,advisor]
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "benchmarks"))
 
