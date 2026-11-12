@@ -45,3 +45,16 @@ jobs:
 
       - name: Legacy regression suite
         run: python -m unittest discover -s tests -v
+
+      - name: Run end-to-end assistant replay on cloud runner
+        run: |
+          mkdir -p runs/cloud_smoke
+          python -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace > runs/cloud_smoke/wan.json
+          python -m gateway_pilot.assistant --fixture GLM-21-1 --request "Laptop An có wifi nhưng không vào internet" --trace > runs/cloud_smoke/client.json
+          python -c 'import json; from pathlib import Path; rows=[(p.name,json.loads(p.read_text(encoding="utf-8"))) for p in sorted(Path("runs/cloud_smoke").glob("*.json"))]; print("\n".join("{}: {} | {}".format(name, row.get("case_status"), row.get("answer","")[:180]) for name,row in rows)); assert len(rows)==2; assert all(row.get("answer") for _,row in rows)'
+
+      - name: Upload demo results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-lm-cloud-smoke
+          path: runs/cloud_smoke/*.json
