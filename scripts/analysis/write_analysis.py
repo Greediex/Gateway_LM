@@ -103,7 +103,7 @@ def main():
                 continue
             selected.append({k: r[k] for k in ("case_id", "arm", "gold", "terminal", "autonomous_success", "raw_rejections", "executed", "evidence", "trace")})
             lines.append(f"- `{r['case_id']}` / `{arm}`: gold `{r['gold']['action']}/{r['gold']['diagnosis']}`, nhận `{r['terminal']['action']}/{r['terminal']['diagnosis']}`, tự hoàn tất đúng={r['autonomous_success']}.")
-    lines += ["", "```powershell", f"python inspect_case.py {a.run.as_posix()} --case GLM-01-1 --arm graph_batch", "```", "",
+    lines += ["", "```powershell", f"python -m scripts.analysis.inspect_case {a.run.as_posix()} --case GLM-01-1 --arm graph_batch", "```", "",
               "## Hướng dùng trong dự án", "",
               "1. Với bốn workflow xác định WAN/DNS/DHCP/sức khỏe, giữ Fastpath/luật làm nền và dùng graph/contract để kiểm tra dependency, scope, capability và evidence.",
               "2. Chưa giao model nhỏ quyền tự điều phối hoàn toàn. Dùng model ở vai trò analyst/advisor có validator; chỉ giữ phần nào vượt baseline trên dữ liệu mới.",
