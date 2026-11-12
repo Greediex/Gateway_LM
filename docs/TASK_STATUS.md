@@ -22,6 +22,7 @@ remain snapshots, not refreshed production measurements.
 | Semantic vector + lexical + graph retrieval | PARTIAL | Lexical / GoS PPR present; no embedding/vector evidence |
 | HMAC-authenticated evidence checkpoint | DONE (read-only pilot) | `checkpoint.py`, `test_checkpoint` — fresh facts only, not running jobs/WRITE actions |
 | Full durable DAG/job recovery | NOT YET | Requires persistence of job receipts, idempotency and crash-safe external side effects |
+| OpenWrt read-only Adapter interface | DONE (mock-only) | `ubus_read.py`, `test_ubus_read` — injectable trusted firmware-specific transport, no guessed mapping |
 | OpenWrt firmware probes and verified adapters | BLOCKED ON HARDWARE | No firmware access or board-backed probe pass |
 | Edge/Cloud delegation and resource budgets | NOT YET | No measured cloud policy/Edge QNN performance |
 | Hardware latency / CPU / RAM / NPU test | BLOCKED ON HARDWARE | Must test target device |

@@ -8,6 +8,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | --- | --- |
 | [CLI script migration](../scripts/README.md) | Bảng chuyển lệnh root script sang package `scripts/benchmarks` và `scripts/analysis` |
 | [Developer Guide](DEVELOPER_GUIDE.md) | Setup Windows/Linux/CI, cấu trúc module, thêm Function và chạy test |
+| [OpenWrt Ubus adapter boundary](OPENWRT_ADAPTER.md) | Trusted Function mapping and requirements for real device probe |
 | [Evidence checkpoint](CHECKPOINT.md) | HMAC-backed replay fact restore, ACL and freshness boundaries |
 | [Task status / roadmap](TASK_STATUS.md) | Mốc MVP đã có, task còn thiếu và tiêu chí nghiệm thu |
 | [Runtime stages](RUNTIME_STAGES.md) | Tách Routing, Planning, Execution và Evidence Verification; nêu phần đã có/chưa có |

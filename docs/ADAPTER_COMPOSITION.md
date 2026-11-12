@@ -43,3 +43,5 @@ python -m unittest discover -s tests -v
 4. Add firmware-specific capability catalogs and adapter conformance tests.
 
 See [Task status](TASK_STATUS.md) and [Runtime stages](RUNTIME_STAGES.md) for the newer code path.
+
+A trusted read-only Ubus integration boundary exists in `gateway_pilot/adapters/ubus_read.py` with mocked transport tests. Real board transport, verified object/method mapping and firmware probes remain pending. See [OpenWrt Adapter](OPENWRT_ADAPTER.md).

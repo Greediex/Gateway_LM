@@ -106,3 +106,4 @@ def gate_capabilities(capabilities, probe):
 # Expose composite dispatch while retaining the legacy Adapter API.
 from .composite import CompositeAdapter  # noqa: E402,F401
 from .results import ToolResult  # noqa: E402,F401
+from .ubus_read import UbusReadAdapter, UbusReadBinding  # noqa: E402,F401

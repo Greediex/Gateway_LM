@@ -99,3 +99,7 @@ Với Registry v0.1, ví dụ `python -m gateway_pilot.graph_v3.goal_agent --reg
 ## Evidence checkpoint (opt-in)
 
 Có `EvidenceCheckpoint` HMAC-SHA256 để phục hồi **fact đọc còn hiệu lực** sau restart, không phục hồi lệnh đang chạy hay WRITE. Bật từ cấu hình Python tin cậy, không nhận khóa hoặc file path qua HTTP. Xem [Checkpoint guide](docs/CHECKPOINT.md).
+
+## Ubus read-only integration (mock-only)
+
+Có `UbusReadAdapter` hỗ trợ transport injection và Function mapping đã được xác minh từ firmware. Test hiện tại dùng transport giả; **chưa có mapping OpenWrt nào được probe trên board thật**. Xem [OpenWrt Adapter](docs/OPENWRT_ADAPTER.md).
