@@ -62,6 +62,10 @@ class TaskRuntime:
         else:
             if task.goals is not None or not isinstance(task.workflow, str):
                 raise PlanError("diagnosis_requires_registered_workflow")
+            wf = getattr(self.registry, "workflows", {}).get(task.workflow)
+            if (not isinstance(wf, dict) or wf.get("status") != "SUPPORTED"
+                    or wf.get("kind") != "DIAGNOSE"):
+                raise PlanError("diagnosis_requires_supported_workflow")
         if TaskDecomposer(self.registry).is_write_intent(task.request):
             return {
                 "mode": mode, "status": "BLOCKED", "diagnosis": None,
