@@ -49,6 +49,12 @@ jobs:
           python -m scripts.benchmarks.run_dynamic_benchmark --help
           python -m scripts.analysis.audit_html --help
 
+      - name: Run moved benchmark entry points end to end
+        run: |
+          python -m scripts.benchmarks.run_dynamic_benchmark --output runs/dynamic-cleanup.json
+          python -m scripts.benchmarks.run_html_benchmark --repeat 1 --output runs/html-cleanup
+          python -c 'import json; from pathlib import Path; d=json.loads(Path("runs/dynamic-cleanup.json").read_text(encoding="utf-8")); h=json.loads(Path("runs/html-cleanup/summary.json").read_text(encoding="utf-8")); assert d["dynamic"]["passed"] == d["dynamic"]["total"] == 18, d["dynamic"]; assert h["trials"] == h["trials_pass"] == 36, h; print("Replay benchmark smoke: PASS (18 dynamic cases, 36 HTML cases)")'
+
       - name: Graph regression suite
         run: python -m unittest discover -s tests_graph_v3 -v
 
@@ -69,4 +75,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gateway-lm-cloud-smoke
-          path: runs/cloud_smoke/*.json
+          path: |
+            runs/cloud_smoke/*.json
+            runs/dynamic-cleanup.json
+            runs/html-cleanup/summary.json
+            runs/html-cleanup/REPORT.md
