@@ -1,6 +1,6 @@
 # Đối chiếu implementation với HTML Gateway LM v0.1
 
-Ghi chú phiên bản: đây là audit baseline `core.py`/`run.py` v1/v2 trước khi sửa. Graph v3 nằm riêng trong `gateway_pilot/graph_v3`, xem `../GRAPH_V3_RESULT_VI.md`. Các kết luận thiếu thành phần dưới đây được giữ như hồ sơ của baseline; v3 chưa đồng nghĩa hoàn thiện toàn bộ HTML.
+Ghi chú phiên bản: đây là audit baseline `core.py`/`run.py` v1/v2 trước khi sửa. Graph v3 nằm riêng trong `gateway_pilot/graph_v3`, xem `reports/GRAPH_V3_RESULT_VI.md`. Các kết luận thiếu thành phần dưới đây được giữ như hồ sơ của baseline; v3 chưa đồng nghĩa hoàn thiện toàn bộ HTML.
 
 Đối chiếu ngày 07/11/2026 với tài liệu kiến trúc Gateway LM v0.1, phần 03, 06 và Architecture Deep Dive; đọc trực tiếp `gateway_pilot/core.py`, `run.py`, `native_run.py`, `prepare_data.py` và registry hiện tại.
 

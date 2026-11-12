@@ -13,7 +13,7 @@ Ví dụ, cùng câu “Máy tính phòng khách vẫn có Wi-Fi nhưng không m
 
 ```powershell
 python -m gateway_pilot.workflow --fixture GLM-21-1 --request "Laptop An vẫn có Wi-Fi, sao không truy cập Internet?" --trace
-python run_dynamic_benchmark.py --output runs/dynamic-policy.json --model qwen3:1.7b
+python -m scripts.benchmarks.run_dynamic_benchmark --output runs/dynamic-policy.json --model qwen3:1.7b
 ```
 
 | Chế độ | Ca đạt | Ca đạt khi chèn lỗi | DAG | Tool calls | Model calls |

@@ -6,12 +6,15 @@ the relation to the unofficial GraSP reproduction.
 import copy
 from ..core import PlanError, bind_and_gate, execute
 from .contracts import Truth, validate
+from .execution import InvocationExecutor
 from .planner import Compiler, NodeState
-from .repair import P_MAX, classify, local_repair
+from .repair import P_MAX, local_repair
+from .verification import EvidenceVerifier
 
 
 class GraphRunner:
-    def __init__(self, registry, case, state, *, max_calls=12, max_repairs=2, deadline_s=120, cost_budget=100):
+    def __init__(self, registry, case, state, *, max_calls=12, max_repairs=2, deadline_s=120,
+                 cost_budget=100, executor=None, verifier=None):
         self.registry, self.case, self.state = registry, case, state
         self.max_calls, self.max_repairs, self.deadline_s, self.cost_budget = max_calls, max_repairs, deadline_s, cost_budget
         self.started = state.clock()
@@ -23,6 +26,9 @@ class GraphRunner:
         self.global_replans = 0
         self.contract_b = []
         self.incomplete = False
+        # Trusted composition roots: user/model input never injects executors or verifiers.
+        self.executor = executor if executor is not None else InvocationExecutor()
+        self.verifier = verifier if verifier is not None else EvidenceVerifier()
 
     def compiler(self):
         return Compiler(self.registry, max_cost=max(0, self.cost_budget - self.spent),
@@ -99,6 +105,10 @@ class GraphRunner:
         ready = self.ready(plan)
         if not ready:
             return None
+        # Never silently execute another Function when a planner explicitly
+        # selected a stale or ineligible node.
+        if preferred is not None and not any(node.id == preferred for node in ready):
+            raise PlanError("preferred_node_not_ready")
         n = next((node for node in ready if node.id == preferred), ready[0])
         f = self.registry.functions[n.function_id]
         state = self.node_state(n)
@@ -130,63 +140,11 @@ class GraphRunner:
         before = self.state.clock()
         self.calls += 1
         self.spent += self.registry.objective(f.id)
-        live = "live_reader" in self.case
-        # The adapter is a service object, not replay data: share it, copy the rest.
-        local_case = self.case if live else {key: value if key == "adapter" else copy.deepcopy(value)
-                                             for key, value in self.case.items()}
-        response = {} if live else local_case["world"].get(f.id, {})
-        simulated_ms = response.pop("_duration_ms", 0) if isinstance(response, dict) else 0
         try:
-            adapter = self.case.get("adapter")
-            if len(f.outputs) == 1:
-                observations = [adapter.call(f.id, arguments, state, local_case) if adapter is not None
-                                else execute(f.id, arguments, state, local_case, self.registry.legacy)]
-            elif live:
-                raise PlanError("live_requires_single_output_contract")
-            else:
-                # Explicit multi-output replay envelope for hyperedges. One call,
-                # separate evidence records and validation for each output port.
-                state.attempts[f.id] += 1
-                self.state.executed.append({"function_id": f.id, "arguments": arguments})
-                observations = []
-                for name, port in f.outputs.items():
-                    value = copy.deepcopy(response.get("outputs", {}).get(name, {}))
-                    status = value.pop("_status", "OK")
-                    age = value.pop("_age_s", 0)
-                    target = value.pop("_target", self.state.gateway_id if port.scope == "gateway" else
-                                       arguments.get("client_id", value.get("client_id", "unresolved")))
-                    e = {"id": "e" + str(len(self.state.evidence) + 1), "function_id": f.id,
-                         "port": name, "scope": port.scope, "target": target, "source": "synthetic_replay/v3",
-                         "age_s": age, "ttl_s": self.ttl_seconds(f), "status": status, "value": value,
-                         "observed_at": self.state.observed_at()}
-                    self.state.evidence.append(e)
-                    observations.append(e)
+            observations, simulated_ms = self.executor.collect(self, f, arguments, state)
             elapsed_ms = 1000 * (self.state.clock() - before)
-            adapter_status = {e["id"]: e["status"] for e in observations}
-            for e in observations:
-                e["ttl_s"] = self.ttl_seconds(f)  # freshness bound comes from the contract
-                if (n.context_target and e["scope"] == "client" and
-                        e["target"] != n.context_target["client_id"]):
-                    e["_scope_mismatch"] = True
-                    e["_invalidated"] = True
-                    e["status"] = "VERIFICATION_FAILED"
-                state.record(e)
-                if max(simulated_ms, elapsed_ms) > f.timeout_ms:
-                    e["status"] = "TIMEOUT"
-                e["verifier"] = f.verifier
-                e["contract_digest"] = f.digest()
-                if e["status"] == "OK" and state.fact(e["port"], f.outputs[e["port"]]) is not e:
-                    e["status"] = "VERIFICATION_FAILED"
-                self.annotate(e, n, f, state)
-            self.contract_b.append(self.export_contract_b(n, observations, adapter_status, simulated_ms, elapsed_ms, f))
-            self.state.refresh_revision()
-            if all(e["status"] == "OK" for e in observations):
-                n.output_evidence = {e["port"]: e["id"] for e in observations}
-                n.transition(NodeState.SUCCEEDED, "schema_scope_source_freshness_verified")
-            else:
-                status = next(e["status"] for e in observations if e["status"] != "OK")
-                n.failure = {"type": classify(status), "status": status, "message": status}
-                n.transition(NodeState.FAILED if status == "TIMEOUT" else NodeState.INCONCLUSIVE, status)
+            self.verifier.verify(self, n, f, state, observations,
+                                 simulated_ms=simulated_ms, elapsed_ms=elapsed_ms)
         except PlanError as exc:
             n.failure = {"type": "execution", "status": "ERROR", "message": str(exc)}
             n.transition(NodeState.FAILED, str(exc))
@@ -196,35 +154,19 @@ class GraphRunner:
         return n
 
     def ttl_seconds(self, f):
-        """TTL from the Function contract (v0.1 ttl_seconds, else the legacy ttl_s)."""
-        ttl = getattr(f, "ttl_seconds", None)
-        return ttl if ttl is not None else self.registry.legacy.functions[f.id]["ttl_s"]
+        """Compatibility facade; verification policy lives in EvidenceVerifier."""
+        return self.verifier.ttl_seconds(self, f)
 
     def annotate(self, e, node, f, state):
-        """Complete the HTML evidence record fields after verification."""
-        port = f.outputs.get(e["port"])
-        if e.get("source", "").startswith("synthetic_replay"):
-            e["observed_at"] = self.state.observed_at()
-        e.update(evidence_id=e["id"], case_id=self.state.case_id, skill_context=node.skill_context,
-                 ttl_seconds=e.get("ttl_s"), raw=copy.deepcopy(e.get("value")))
-        e["validator_result"] = state.validator(e, port) if port is not None else {}
-        e["assertions"] = state.assertions_for(e) if e["status"] == "OK" else []
+        """Compatibility facade for evidence annotation."""
+        return self.verifier.annotate(self, e, node, f, state)
 
     @staticmethod
     def export_contract_b(node, observations, adapter_status, simulated_ms, elapsed_ms, f):
-        """Contract B (runner -> evidence layer): tool status kept apart from any goal claim."""
-        statuses = set(adapter_status.values())
-        if "TIMEOUT" in statuses or max(simulated_ms, elapsed_ms) > f.timeout_ms:
-            tool = "TIMEOUT"
-        elif statuses <= {"OK", "PARSE_ERROR"}:
-            tool = "EXIT_OK"  # the adapter answered; verification is the evidence layer's job
-        else:
-            tool = "EXIT_ERROR"
-        return {"node_id": node.id, "tool_status": tool,
-                "observations": [{"evidence_id": e["id"], "kind": e["port"], "target": e["target"],
-                                  "scope": e["scope"], "result": e["status"], "source": e["source"]}
-                                 for e in observations],
-                "goal_claim": "NOT_EVALUATED"}
+        """Compatibility facade: Contract B is produced by EvidenceVerifier."""
+        return EvidenceVerifier.export_contract_b(
+            node, observations, adapter_status, simulated_ms, elapsed_ms, f
+        )
 
     def repair(self, plan, failed, event=None):
         """RETRY, then bounded local repair on the same DAG, then one GLOBAL_REPLAN."""

@@ -1,15 +1,13 @@
 """T9: Function Selection benchmark data integrity and a smoke run of every arm."""
 import hashlib
 import re
-import sys
 import unittest
 from collections import Counter
 
 from gateway_pilot.core import ROOT, read_json
 from gateway_pilot.graph_v3.graphs import GraphRegistry
 
-sys.path.insert(0, str(ROOT))
-import run_function_selection as bench  # noqa: E402
+from scripts.benchmarks import run_function_selection as bench
 
 DATA = read_json(ROOT / "benchmarks/function_selection_v1.json")
 

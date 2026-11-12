@@ -34,10 +34,10 @@ Trong 28 ca đủ dữ liệu, native model từng đề xuất đúng nhãn v�
 
 ## Hồ sơ đầy đủ
 
-- Primary: [runs/test_qwen3_v1/REPORT_VI.md](runs/test_qwen3_v1/REPORT_VI.md)
-- Primary error analysis: [runs/test_qwen3_v1/TAKEAWAYS_VI.md](runs/test_qwen3_v1/TAKEAWAYS_VI.md)
-- Native follow-up: [runs/test_native_v2/REPORT_VI.md](runs/test_native_v2/REPORT_VI.md)
-- Native error analysis: [runs/test_native_v2/TAKEAWAYS_VI.md](runs/test_native_v2/TAKEAWAYS_VI.md)
-- Code papers: [docs/PAPER_SOURCES.md](docs/PAPER_SOURCES.md)
-- Scope: [docs/PROJECT_ALIGNMENT.md](docs/PROJECT_ALIGNMENT.md)
-- Primary-source interface notes: [docs/MODEL_INTERFACE_NOTES.md](docs/MODEL_INTERFACE_NOTES.md)
+- Primary: [runs/test_qwen3_v1/REPORT_VI.md](../../runs/test_qwen3_v1/REPORT_VI.md)
+- Primary error analysis: [runs/test_qwen3_v1/TAKEAWAYS_VI.md](../../runs/test_qwen3_v1/TAKEAWAYS_VI.md)
+- Native follow-up: [runs/test_native_v2/REPORT_VI.md](../../runs/test_native_v2/REPORT_VI.md)
+- Native error analysis: [runs/test_native_v2/TAKEAWAYS_VI.md](../../runs/test_native_v2/TAKEAWAYS_VI.md)
+- Code papers: [docs/PAPER_SOURCES.md](../PAPER_SOURCES.md)
+- Scope: [docs/PROJECT_ALIGNMENT.md](../PROJECT_ALIGNMENT.md)
+- Primary-source interface notes: [docs/MODEL_INTERFACE_NOTES.md](../MODEL_INTERFACE_NOTES.md)

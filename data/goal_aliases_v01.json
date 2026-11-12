@@ -1,0 +1,129 @@
+{
+  "version": "1.0",
+  "aliases": {
+    "client.identity": [
+      "target client",
+      "client identity",
+      "device identity",
+      "dinh danh thiet bi"
+    ],
+    "client.ipv4": [
+      "client ip",
+      "ip thiet bi",
+      "dia chi ip client",
+      "ipv4 cua thiet bi"
+    ],
+    "wifi.station": [
+      "wifi signal",
+      "wifi station",
+      "tin hieu wifi",
+      "rssi",
+      "wifi association"
+    ],
+    "wan.status": [
+      "wan status",
+      "trang thai wan",
+      "duong wan",
+      "uplink status",
+      "wan link"
+    ],
+    "wan.routes": [
+      "wan routes",
+      "default route",
+      "bang dinh tuyen wan",
+      "wan route"
+    ],
+    "wan.probe": [
+      "wan probe",
+      "wan packet loss",
+      "packet loss wan",
+      "do mat goi wan",
+      "ping wan"
+    ],
+    "dns.config": [
+      "dns config",
+      "dns resolver config",
+      "cau hinh dns",
+      "dns server config"
+    ],
+    "dns.probe": [
+      "dns probe",
+      "dns resolution",
+      "kiem tra phan giai dns",
+      "phan giai ten mien"
+    ],
+    "dhcp.leases": [
+      "dhcp leases",
+      "dhcp lease",
+      "lease client",
+      "dia chi dhcp da cap"
+    ],
+    "dhcp.pool": [
+      "dhcp pool",
+      "dhcp address pool",
+      "pool dhcp",
+      "so ip con trong"
+    ],
+    "dhcp.service": [
+      "dhcp service",
+      "trang thai dhcp service",
+      "dich vu dhcp"
+    ],
+    "system.resources": [
+      "ram",
+      "cpu",
+      "memory",
+      "tai nguyen he thong",
+      "system resources",
+      "bo nho",
+      "storage usage"
+    ],
+    "system.logs": [
+      "system logs",
+      "nhat ky he thong",
+      "log he thong"
+    ],
+    "client.probe": [
+      "client probe",
+      "client packet loss",
+      "do mat goi client"
+    ],
+    "client.dns": [
+      "client dns",
+      "dns client",
+      "phan giai dns client"
+    ],
+    "qos.config": [
+      "qos config",
+      "cau hinh qos",
+      "qos profile"
+    ]
+  },
+  "unsafe_phrases": [
+    "khoi dong lai",
+    "reboot",
+    "restart",
+    "reset",
+    "block internet",
+    "chan internet",
+    "chan mang",
+    "xoa",
+    "delete",
+    "tat wifi",
+    "disable wifi",
+    "change",
+    "apply",
+    "update",
+    "configurer",
+    "set bandwidth",
+    "gioi han bang thong",
+    "dat cau hinh",
+    "sua cau hinh",
+    "doi cau hinh",
+    "thay doi cau hinh",
+    "turn off",
+    "turn on",
+    "factory reset",
+    "firewall rule"
+  ]
+}

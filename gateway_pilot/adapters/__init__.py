@@ -101,3 +101,9 @@ def gate_capabilities(capabilities, probe):
     allowed = [fid for fid in capabilities if probe.get(fid) == PROBE_OK]
     failed = {fid: probe.get(fid, "NOT_PROBED") for fid in capabilities if probe.get(fid) != PROBE_OK}
     return allowed, failed
+
+
+# Expose composite dispatch while retaining the legacy Adapter API.
+from .composite import CompositeAdapter  # noqa: E402,F401
+from .results import ToolResult  # noqa: E402,F401
+from .ubus_read import UbusReadAdapter, UbusReadBinding  # noqa: E402,F401

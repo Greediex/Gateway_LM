@@ -1,0 +1,2 @@
+{"id":"illustrative-wan-01","case_id":"GLM-04-0","request":"WAN uplink link status","goals":[],"expected_functions":["wan.status"],"group":"wan","split":"illustrative"}
+{"id":"illustrative-system-01","case_id":"GLM-04-0","request":"Memory CPU resources","goals":[],"expected_functions":["system.resources"],"group":"system","split":"illustrative"}

@@ -11,7 +11,7 @@ Arms (same request text, same candidate budget K and call budget for all):
 Reference rows (not arms): R = diagnose(route="resolver") with the case workflow;
 R-NBA = the same with the claim-based next-best-action selector (C4).
 
-Usage:  python run_function_selection.py --run function_selection_v1_YYYYMMDD
+Usage:  python -m scripts.benchmarks.run_function_selection --run function_selection_v1_YYYYMMDD
 """
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ import tracemalloc
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "benchmarks"))
 

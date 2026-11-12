@@ -14,8 +14,8 @@ from ..core import ROOT, PlanError, terms
 
 COMMIT = "2bd7baffae58854018f75857e5626a4a28a705ae"
 FILES = {
-    "search": "248b5b7a6e201bbc10ccdecb10655da1ccb49087228e27895f68ba813998153b",
-    "graph": "da73c98ef43246ac21da9acc7ede5a2b3c4d9817b16b07d73e52e9c41df7392e",
+    "search": "5bed3919f5a9676e40ea7ba1d3bf8c06324f867161e0c0e2fb44da9f455795ff",
+    "graph": "97a181273002647a97d58628af588b5843e73d9873e6e5b7768eb7315051456b",
 }
 SOURCE = ROOT / "third_party" / "SkillDAG" / "src" / "skilldag"
 

@@ -324,6 +324,12 @@ class GraphRegistry:
         self._registry_revision = getattr(self, "_registry_revision", 0) + 1
         self._retrieval_graph = None
 
+    def configure_semantic(self, encoder, *, min_similarity=0.62):
+        """Enable opt-in, trusted local vector retrieval without changing Core."""
+        from .semantic import LocalSemanticIndex
+        self._semantic_index = LocalSemanticIndex(encoder, min_similarity=min_similarity)
+        return self
+
     def objective(self, fid):
         f = self.functions[fid]
         return f.cost + f.latency_ms / 1000
@@ -441,7 +447,7 @@ class GraphRegistry:
 
     def retrieve(self, request, goals, state, k=None, *, seed_top_k=None, top_n=None,
                  workflow_top_n=3, method="gos", excluded=()):
-        """GoS lexical-seed mode (no embeddings or LLM rewrite).
+        """GoS/BM25 baseline, or opt-in local semantic+lexical+GoS hybrid.
 
         PORTED_WITH_PARITY_TEST: field rerank + lexical rank fusion, then PPR
         candidate scan/rerank. UPSTREAM_CALLED: reciprocal personalization/PPR.
@@ -454,12 +460,18 @@ class GraphRegistry:
             raise ValueError("nonpositive or invalid k")
         seed_top_k = seed_top_k if seed_top_k is not None else (k if k is not None else 4)
         top_n = top_n if top_n is not None else (k if k is not None else 5)
-        if method not in ("gos", "bm25") or any(type(n) is not int or n <= 0
+        if method not in ("gos", "bm25", "hybrid") or any(type(n) is not int or n <= 0
                                                for n in (seed_top_k, top_n, workflow_top_n)):
             raise ValueError("unsupported retrieval method or nonpositive budget")
         allowed = {fid for fid in self.eligible(state, excluded) if not state.completed(self.functions[fid])}
         key, names, edges, provenance, fields, docs = self._static_retrieval_graph()
         query = self.state_query(request, goals, state)
+        semantic_scores = {}
+        if method == "hybrid":
+            index = getattr(self, "_semantic_index", None)
+            if index is None:
+                raise ValueError("semantic_provider_required")
+            semantic_scores = index.score(key, names, fields, query)
         q = sorted(set(terms(fold(query))))
         df = {term: sum(term in d for d in docs.values()) for term in q}
         avg = sum(sum(d.values()) for d in docs.values()) / max(1, len(docs))
@@ -469,14 +481,19 @@ class GraphRegistry:
         # BM25 uses every node, then gates precede seed fusion/top-k. Forbidden
         # and completed functions remain in the diffusion graph.
         workflows = getattr(self, "workflows", {})
-        workflow_hits = sorted((n for n in names if n.startswith("w:") and lexical[n] > 0),
-                               key=lambda n: (-lexical[n], n))
-        workflow_seed_scores = {n: rerank_score(query, **fields[n], lexical_rank=i)
-                                for i, n in enumerate(workflow_hits, 1)}
+        workflow_hits = sorted((n for n in names if n.startswith("w:") and
+                                (lexical[n] > 0 or semantic_scores.get(n, 0) > 0)),
+                               key=lambda n: (-lexical[n], -semantic_scores.get(n, 0), n))
+        workflow_seed_scores = {
+            n: rerank_score(query, **fields[n],
+                            lexical_rank=i if lexical[n] > 0 else None)
+               + (2 * semantic_scores.get(n, 0) if method == "hybrid" else 0)
+            for i, n in enumerate(workflow_hits, 1)
+        }
         workflow_seeds = sorted(workflow_hits, key=lambda n: (-workflow_seed_scores[n], n))[:seed_top_k]
         workflow_results = []
         if workflow_seeds:
-            workflow_scores = rank(names, edges, workflow_seeds, graph_key=key) if method == "gos" else lexical
+            workflow_scores = rank(names, edges, workflow_seeds, graph_key=key) if method in ("gos", "hybrid") else lexical
             workflow_ranks = {n: i for i, n in enumerate(workflow_seeds, 1)}
             for n in sorted((n for n in names if n.startswith("w:")),
                             key=lambda n: (-workflow_scores[n], n)):
@@ -485,7 +502,8 @@ class GraphRegistry:
                 workflow_results.append(dict(workflow_id=n[2:], status=workflows[n[2:]]["status"],
                     score=workflow_scores[n], rerank_score=(rerank_score(query, **fields[n],
                         graph_score=workflow_scores[n], seed_rank=workflow_ranks.get(n))
-                        if method == "gos" else lexical[n])))
+                        + (semantic_scores.get(n, 0) if method == "hybrid" else 0)
+                        if method in ("gos", "hybrid") else lexical[n])))
                 if len(workflow_results) >= workflow_top_n:
                     break
             workflow_results.sort(key=lambda w: (-w["rerank_score"], -w["score"], w["workflow_id"]))
@@ -496,18 +514,28 @@ class GraphRegistry:
                 return row["status"] != "CATALOG_ONLY" and row["kind"] != "CHANGE"
             return n.startswith("s:") or n[2:] in allowed
 
-        hits = sorted((n for n in names if lexical[n] > 0 and may_seed(n)),
-                      key=lambda n: (-lexical[n], n))
-        seed_scores = {n: rerank_score(query, **fields[n], lexical_rank=i)
-                       for i, n in enumerate(hits, 1)}
+        hits = sorted((n for n in names if may_seed(n) and
+                       (lexical[n] > 0 or semantic_scores.get(n, 0) > 0)),
+                      key=lambda n: (-lexical[n], -semantic_scores.get(n, 0), n))
+        lexical_ranks = {n: i for i, n in enumerate(hits, 1) if lexical[n] > 0}
+        semantic_hits = sorted((n for n in hits if semantic_scores.get(n, 0) > 0),
+                               key=lambda n: (-semantic_scores[n], n))
+        semantic_ranks = {n: i for i, n in enumerate(semantic_hits, 1)}
+        seed_scores = {
+            n: rerank_score(query, **fields[n], lexical_rank=lexical_ranks.get(n))
+               + (2 * semantic_scores.get(n, 0)
+                  + (.25 / semantic_ranks[n] if n in semantic_ranks else 0)
+                  if method == "hybrid" else 0)
+            for n in hits
+        }
         ordered_seeds = sorted(seed_scores, key=lambda n: (-seed_scores[n], n))[:seed_top_k]
         seed_ranks = {n: i for i, n in enumerate(ordered_seeds, 1)}
         total = sum(1 / i for i in seed_ranks.values())
         seeds = {n: (1 / i) / total for n, i in seed_ranks.items()}
-        lexical_match = bool(seeds)
+        lexical_match = any(lexical[n] > 0 for n in ordered_seeds)
         scores, reranked, candidates = {}, {}, []
-        if lexical_match:
-            scores = rank(names, edges, ordered_seeds, graph_key=key) if method == "gos" else lexical
+        if ordered_seeds:
+            scores = rank(names, edges, ordered_seeds, graph_key=key) if method in ("gos", "hybrid") else lexical
             # async_retrieve scans PPR order, stops at top_n, then sorts that
             # selected subset by the field rerank (not a global rerank).
             for n in sorted(names, key=lambda n: (-scores[n], n)):
@@ -516,15 +544,25 @@ class GraphRegistry:
                 if method == "bm25" and scores[n] <= 0:
                     continue
                 candidates.append(n[2:])
-                reranked[n] = (rerank_score(query, **fields[n], graph_score=scores[n],
-                                            seed_rank=seed_ranks.get(n)) if method == "gos" else scores[n])
+                reranked[n] = (
+                    rerank_score(query, **fields[n], graph_score=scores[n],
+                                 seed_rank=seed_ranks.get(n))
+                    + (semantic_scores.get(n, 0) if method == "hybrid" else 0)
+                    if method in ("gos", "hybrid") else scores[n]
+                )
                 if len(candidates) >= top_n:
                     break
             candidates.sort(key=lambda fid: (-reranked["f:" + fid], -scores["f:" + fid], self.objective(fid), fid))
-        return {"functions": candidates, "workflows": workflow_results,
-                "query": query, "seeds": seeds, "scores": scores,
-                "eligible": sorted(allowed), "edges": list(edges), "method": method,
-                "lexical_match": lexical_match,
-                "upstream_kernel_used": method == "gos" and (lexical_match or bool(workflow_seeds)),
-                "rerank_scores": reranked, "seed_ranks": seed_ranks, "graph_key": key,
-                "edge_provenance": copy.deepcopy(provenance)}
+        result = {"functions": candidates, "workflows": workflow_results,
+                  "query": query, "seeds": seeds, "scores": scores,
+                  "eligible": sorted(allowed), "edges": list(edges), "method": method,
+                  "lexical_match": lexical_match,
+                  "upstream_kernel_used": method in ("gos", "hybrid") and
+                      (bool(ordered_seeds) or bool(workflow_seeds)),
+                  "rerank_scores": reranked, "seed_ranks": seed_ranks, "graph_key": key,
+                  "edge_provenance": copy.deepcopy(provenance)}
+        if method == "hybrid":
+            result["semantic_match"] = bool(semantic_hits)
+            result["semantic_model"] = self._semantic_index.model_id
+            result["semantic_scores"] = semantic_scores.copy()
+        return result

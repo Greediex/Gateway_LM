@@ -1,0 +1,128 @@
+name: Gateway LM / Refactor CI
+
+on:
+  push:
+    branches:
+      - refactor/gateway-lm-composite-adapter-pr01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-react.txt
+
+      - name: Fetch and verify pinned GoS and SkillDAG kernels
+        run: |
+          if ! python setup_upstream.py; then
+            echo "Pinned source hashes at checked-out commits:"
+            sha256sum third_party/graph-of-skills/gos/core/retrieval.py || true
+            sha256sum third_party/SkillDAG/src/skilldag/search.py || true
+            sha256sum third_party/SkillDAG/src/skilldag/graph.py || true
+            exit 1
+          fi
+
+      - name: Repository structure and active-document check
+        run: python -m scripts.check_project
+
+      - name: Composite adapter unit tests
+        run: python -m unittest tests.graph_v3.test_composite_adapter -v
+
+      - name: Benchmark and analysis CLI smoke
+        run: |
+          python -m scripts.benchmarks.run_function_selection --help
+          python -m scripts.benchmarks.run_dynamic_benchmark --help
+          python -m scripts.analysis.audit_html --help
+
+      - name: Run moved benchmark entry points end to end
+        run: |
+          python -m scripts.benchmarks.run_dynamic_benchmark --output runs/dynamic-cleanup.json
+          python -m scripts.benchmarks.run_html_benchmark --repeat 1 --output runs/html-cleanup
+          python -c 'import json; from pathlib import Path; d=json.loads(Path("runs/dynamic-cleanup.json").read_text(encoding="utf-8")); h=json.loads(Path("runs/html-cleanup/summary.json").read_text(encoding="utf-8")); assert d["dynamic"]["passed"] == d["dynamic"]["total"] == 18, d["dynamic"]; assert h["trials"] == h["trials_pass"] == 36, h; print("Replay benchmark smoke: PASS (18 dynamic cases, 36 HTML cases)")'
+
+      - name: Runtime stage boundary and negative-path tests
+        run: python -m unittest tests.graph_v3.test_runtime_stages -v
+
+      - name: Structured Adapter and registered goal tests
+        run: |
+          python -m unittest tests.graph_v3.test_tool_result -v
+          python -m unittest tests.graph_v3.test_goal_agent -v
+
+      - name: Registered multi-goal assistant replay
+        run: |
+          mkdir -p runs/goal_smoke
+          python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "WAN and RAM status" --goals wan.status system.resources --method bm25 > runs/goal_smoke/goals.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/goal_smoke/goals.json").read_text(encoding="utf-8")); assert r["status"] == "RESOLVED" and r["calls"] == 2 and r["diagnosis"] == "NOT_EVALUATED", r; print("Goal smoke: PASS (2 verified ports, no RCA claim)")'
+
+      - name: Web Goal API isolation tests
+        run: python -m unittest tests.web.test_adapter.WebAdapterTests.test_goal_endpoint_executes_only_trusted_fixture_outputs tests.web.test_adapter.WebAdapterTests.test_goal_endpoint_rejects_unregistered_or_unsafe_inputs -v
+
+      - name: Compound goal decomposition / shared READY selection
+        run: |
+          python -m unittest tests.graph_v3.test_task_decomposer -v
+          python -m gateway_pilot.graph_v3.goal_agent --registry v01 --fixture GLM-04-0 --request "Kiểm tra trạng thái WAN và RAM" --method bm25 > runs/goal_smoke/compound.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/goal_smoke/compound.json").read_text(encoding="utf-8")); assert r["status"]=="RESOLVED" and r["calls"]==2 and r["goals"]==["wan.status","system.resources"], r; print("Compound goals: PASS")'
+
+      - name: Signed evidence checkpoint and safe resume
+        run: python -m unittest tests.graph_v3.test_checkpoint -v
+
+      - name: Read-only OpenWrt Ubus binding conformance (mock only)
+        run: python -m unittest tests.graph_v3.test_ubus_read -v
+
+      - name: Local-only hybrid semantic retrieval (mock encoder)
+        run: |
+          python -m unittest tests.graph_v3.test_hybrid_retrieval -v
+          python -m gateway_pilot.graph_v3.goal_agent --help
+
+      - name: Declarative read-only registry extension conformance
+        run: python -m unittest tests.graph_v3.test_extension_loader -v
+
+      - name: Offline retrieval metrics / illustrative suite (no model claim)
+        run: |
+          python -m unittest tests.graph_v3.test_retrieval_eval -v
+          python -m scripts.analysis.evaluate_retrieval --input examples/evaluation/illustrative_retrieval.jsonl --split illustrative --methods bm25 gos --top-k 5 --output runs/retrieval-eval-smoke.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/retrieval-eval-smoke.json").read_text(encoding="utf-8")); assert r["protocol"]=="retrieval-eval/v1" and r["methods"]["bm25"]["cases"]==2 and r["methods"]["gos"]["cases"]==2; print("Retrieval evaluator smoke: PASS")'
+
+      - name: Bounded LLM goal and unified execution safety tests
+        run: |
+          python -m unittest tests.graph_v3.test_llm_goals -v
+          python -m unittest tests.graph_v3.test_execution_kernel -v
+
+      - name: Evidence-driven RCA (adaptive read-only replay)
+        run: python -m unittest tests.graph_v3.test_rca_agent -v
+
+      - name: Full regression suite (legacy, graph, web)
+        run: python -m unittest discover -s tests -v
+
+      - name: Run end-to-end assistant replay on cloud runner
+        run: |
+          mkdir -p runs/cloud_smoke
+          python -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace > runs/cloud_smoke/wan.json
+          python -m gateway_pilot.assistant --fixture GLM-21-1 --request "Laptop An có wifi nhưng không vào internet" --trace > runs/cloud_smoke/client.json
+          python -c 'import json; from pathlib import Path; rows=[(p.name,json.loads(p.read_text(encoding="utf-8"))) for p in sorted(Path("runs/cloud_smoke").glob("*.json"))]; print("\n".join("{}: {} | {}".format(name, row.get("case_status"), row.get("answer","")[:180]) for name,row in rows)); assert len(rows)==2; assert all(row.get("answer") for _,row in rows)'
+
+      - name: Upload demo results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-lm-cloud-smoke
+          path: |
+            runs/cloud_smoke/*.json
+            runs/dynamic-cleanup.json
+            runs/html-cleanup/summary.json
+            runs/html-cleanup/REPORT.md
+            runs/goal_smoke/goals.json

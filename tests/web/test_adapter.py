@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ADAPTER = Path(__file__).resolve().parents[1] / 'server.py'
+ADAPTER = Path(__file__).resolve().parents[2] / 'web_gateway' / 'server.py'
 
 
 class WebAdapterTests(unittest.TestCase):
@@ -90,6 +90,31 @@ class WebAdapterTests(unittest.TestCase):
         self.assertIsNone(seen['kwargs']['advisor'])
         self.assertEqual(seen['replay']['capabilities'],['wan.status'])
         self.assertNotIn('gold',seen['replay'])
+
+
+    def test_goal_endpoint_executes_only_trusted_fixture_outputs(self):
+        result = self.srv.analyze_goals({
+            "message": "WAN and memory", "fixture_id": "GLM-21-1",
+            "goals": ["wan.status"], "method": "bm25",
+            "world": {"wan.status": {"link_up": True}},
+            "permissions": ["router.write"], "capabilities": ["dns.apply"],
+        })
+        self.assertEqual(result["status"], "RESOLVED")
+        self.assertEqual(result["calls"], 1)
+        self.assertEqual(result["diagnosis"], "NOT_EVALUATED")
+        self.assertEqual(result["goal_facts"][0]["value"], {"link_up": False})
+        self.assertEqual(result["missing_goals"], [])
+
+    def test_goal_endpoint_rejects_unregistered_or_unsafe_inputs(self):
+        request = {"message": "Check WAN", "fixture_id": "GLM-21-1",
+                   "goals": ["wan.status"], "method": "bm25"}
+        for update in (
+            {"goals": ["shell.exec"]}, {"goals": []}, {"goals": "wan.status"},
+            {"max_calls": True}, {"max_calls": 999}, {"source_mode": "live"},
+            {"fixture_id": "no-such-fixture"}, {"goals": None, "registry": "legacy"},
+        ):
+            with self.subTest(update=update), self.assertRaises(ValueError):
+                self.srv.analyze_goals({**request, **update})
 
 
 if __name__=='__main__': unittest.main()

@@ -1,7 +1,7 @@
 # Demo repair graph v4 (T6)
 
 Sinh bằng cách chạy `GraphRunner.run` trên fixture `dns_fail` với registry legacy và các Function
-thay thế dựng trong test (`tests_graph_v3/test_repair_t6.py`). Mọi số là **replay tổng hợp trên host**,
+thay thế dựng trong test (`tests/graph_v3/test_repair_t6.py`). Mọi số là **replay tổng hợp trên host**,
 không phải router thật. Demo cũ `GRAPH_V3_REPAIR_DEMO.md` giữ nguyên.
 
 Thứ tự thử toán tử theo loại lỗi (theo bảng của bản tái lập GraSP không chính thức):

@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "ports": [
+    {
+      "id": "gateway.temperature",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "celsius": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "celsius"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "SK99",
+      "name": "Gateway sensor diagnostics",
+      "description": "Read a firmware-verified gateway temperature measurement",
+      "produces": [
+        "gateway.temperature"
+      ],
+      "requires": [],
+      "depends_on": []
+    }
+  ],
+  "functions": [
+    {
+      "id": "gateway.temperature.read",
+      "skills": [
+        "SK99"
+      ],
+      "description": "Read gateway temperature from an independently verified Ubus method",
+      "outputs": [
+        "gateway.temperature"
+      ],
+      "inputs": [],
+      "permission": "system.read",
+      "cost": 1,
+      "latency_ms": 1,
+      "ttl_seconds": 30,
+      "timeout_ms": 2000
+    }
+  ]
+}

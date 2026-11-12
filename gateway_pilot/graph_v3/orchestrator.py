@@ -1,28 +1,31 @@
 """GATEWAY_DESIGN: resolver-selected evidence and GoS-ranked READY scheduling."""
 import copy
 from ..core import PlanError
-from .planner import Compiler, NodeState
+from .planner import NodeState
+from .planning_stage import FunctionPlanner
 from .runner import GraphRunner
-from .resolver import resolve
+from .routing import FunctionRouter
+from .execution_kernel import execute_ready_once
 
 
-def acquire(case, registry, state, *, method="gos", k=4, max_calls=12, max_repairs=2):
+def acquire(case, registry, state, *, method="gos", k=4, max_calls=12, max_repairs=2,
+            router=None, planner=None):
     goals = registry.goal_ports[case['workflow']]
+    router = router if router is not None else FunctionRouter()
+    planner = planner if planner is not None else FunctionPlanner()
     runner = GraphRunner(registry, case, state, max_calls=max_calls, max_repairs=max_repairs)
     contracts, retrievals = [], []
     while True:
         view = copy.copy(state)
         view.capabilities = state.capabilities - runner.excluded
-        contract = resolve(registry, view, case['request'], goals=goals, method=method)
+        contract = router.route(registry, view, case['request'], goals=goals, method=method)
         contract['plan_revision'] = max(contract['plan_revision'],
                                         runner.plans[-1].revision + 1 if runner.plans else 1)
         contracts.append(contract)
         candidates = contract['function_candidates']
         if not candidates or runner.calls >= max_calls or contract['decision'] in {'BLOCKED', 'ASK_USER'}:
             break
-        plan = Compiler(registry, excluded=set(registry.functions) - set(candidates)).compile(
-            (), state, requested=candidates, revision=contract['plan_revision'],
-            skill_context=contract['skill_context'])
+        plan = planner.compile(registry, state, contract)
         before = runner.calls
         retrievals.extend(run_plan(runner, plan, goals, method=method, k=k))
         runner.excluded.update(n.function_id for p in runner.plans for n in p.nodes.values()
@@ -40,23 +43,18 @@ def acquire(case, registry, state, *, method="gos", k=4, max_calls=12, max_repai
 
 def run_plan(runner, plan, goals, *, method="gos", k=4):
     """Schedule one plan against the case's existing budgets and evidence."""
-    registry, case, state = runner.registry, runner.case, runner.state
+    state = runner.state
     runner.attach(plan)
     retrievals = []
     while True:
         ready = runner.ready(plan)
         if not ready:
             break
-        retrieval = registry.retrieve(case['request'], goals, state, k=k, method=method, excluded=runner.excluded)
-        # Rank the eligible READY set with actual upstream scores. Dependencies
-        # remain hard constraints; graph rank never makes a blocked node ready.
-        preferred = min(ready, key=lambda n: (-retrieval['scores'].get('f:' + n.function_id, 0),
-                                              registry.objective(n.function_id), n.id))
-        retrieval['ready_set'] = [n.id for n in ready]
-        retrieval['selected_ready'] = preferred.id
-        retrievals.append(retrieval)
         try:
-            node = runner.step(plan, preferred.id)
+            node, _ = execute_ready_once(
+                runner, plan, goals, method=method, k=k,
+                ready=ready, audit=retrievals,
+            )
         except PlanError as exc:
             state.errors.append(str(exc))
             break
