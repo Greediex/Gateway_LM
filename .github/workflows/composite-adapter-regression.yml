@@ -89,6 +89,9 @@ jobs:
           python -m unittest tests.graph_v3.test_hybrid_retrieval -v
           python -m gateway_pilot.graph_v3.goal_agent --help
 
+      - name: Declarative read-only registry extension conformance
+        run: python -m unittest tests.graph_v3.test_extension_loader -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

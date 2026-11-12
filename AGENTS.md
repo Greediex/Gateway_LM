@@ -15,6 +15,7 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 - Only the trusted Core may authorize `WRITE`; default is read-only. Preserve hard ACL, target/scope, schema, TTL and budget gates.
 - A Function capability is `PROBE_OK` only after verification. Never assume OpenWrt backend support from a placeholder map.
 - New Skill/Function/Workflow or retrieval algorithm should extend registries/interfaces instead of introducing workflow-name conditionals in Core.
+- Declarative extension manifests may only describe preapproved READ metadata. No executable source, WRITE rights, remote schema references, auto-probe approval or auto-backend binding.
 - Preserve typed DAG dependency semantics (DATA/STATE/ORDER), plan revisions, evidence provenance and local/global repair guards.
 - No silent fallback on failed upstream SHA checks. Pinned GoS/SkillDAG source and license terms stay intact.
 - Opt-in semantic retrieval must use a trusted local encoder, never user-provided model paths or remote requests. Vector scores must never bypass eligibility, ACL, scope or evidence verification.

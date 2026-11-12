@@ -112,3 +112,7 @@ See [reference alignment and limits](REFERENCE_IMPLEMENTATION.md); this is an op
 ## 10. Optional hybrid retrieval (trusted local encoder)
 
 Gọi `registry.configure_semantic(encoder, min_similarity=0.62)` và `registry.retrieve(..., method="hybrid")`. Không cấu hình encoder từ user request. Khả năng vector chỉ thay đổi seed/rank; quyền Function vẫn do Registry và CaseState kiểm soát. Mọi model thực cần benchmark độc lập, xem [Semantic Retrieval](SEMANTIC_RETRIEVAL.md).
+
+## 11. Manifest-driven read-only Registry extension
+
+`install_extension(registry, trusted_json_path)` xây dựng overlay trong RAM cho gateway READ, zero-input, one-output; fail atomic khi schema/ID/Skill DAG sai. Manifest không được khai báo `PROBED_OK` hoặc WRITE. V0.1 extension vẫn `PROPOSED_NOT_VERIFIED` cho đến khi có bằng chứng từ firmware. Xem [Registry Extensions](REGISTRY_EXTENSIONS.md).

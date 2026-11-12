@@ -67,6 +67,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
 - [Đối chiếu upstream và goal execution (opt-in)](docs/REFERENCE_IMPLEMENTATION.md)
 - [Hybrid Semantic Retrieval (opt-in, local-only)](docs/SEMANTIC_RETRIEVAL.md)
+- [Declarative Registry Extensions (read-only pilot)](docs/REGISTRY_EXTENSIONS.md)
 - [Bảng trạng thái task còn thiếu / hoàn thành](docs/TASK_STATUS.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](docs/WEB_UI.md)
@@ -108,3 +109,7 @@ Có `UbusReadAdapter` hỗ trợ transport injection và Function mapping đã �
 ## Hybrid Retrieval (opt-in, chưa đo chất lượng model)
 
 Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model` cho `gateway_pilot.graph_v3.goal_agent`. Phải cung cấp một model embedding tải sẵn tại máy; không tự download, không nhận đường dẫn từ HTTP, và không chạy NPU tự động. BM25/GoS vẫn là baseline. [Hướng dẫn và giới hạn](docs/SEMANTIC_RETRIEVAL.md).
+
+## Thêm Skill/Function từ JSON (read-only pilot)
+
+`install_extension(registry, "examples/extensions/gateway_temperature_read.json")` đăng ký port, Skill và Function mới trong **bản Registry chạy trong RAM**, không sửa dữ liệu gốc. V0.1 luôn bắt đầu bằng `PROPOSED_NOT_VERIFIED`; cần xác minh firmware, gán Adapter và probe mới có thể thực thi. [Hướng dẫn](docs/REGISTRY_EXTENSIONS.md).
