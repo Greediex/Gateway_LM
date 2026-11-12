@@ -14,6 +14,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [Declarative Registry Extensions](REGISTRY_EXTENSIONS.md) | Trusted JSON overlays for safe new READ Functions/Skills |
 | [Retrieval evaluation harness](SEMANTIC_RETRIEVAL.md#offline-function-retrieval-benchmark-v1) | Benchmark metrics and labeled JSONL test protocol |
 | [Hybrid Semantic Retrieval](SEMANTIC_RETRIEVAL.md) | Local-only vector similarity, BM25/GoS fusion, hard gates, model evaluation pending |
+| [Evidence-driven RCA](EVIDENCE_RCA.md) | Adaptive Claim-based evidence acquisition and proof boundaries |
 | [Bounded LLM goal / shared execution](LLM_EXECUTION_POLICY.md) | Validated LLM goal proposals and common READY dispatch |
 | [Runtime stages](RUNTIME_STAGES.md) | Tách Routing, Planning, Execution và Evidence Verification; nêu phần đã có/chưa có |
 | [Upstream comparison and goal execution](REFERENCE_IMPLEMENTATION.md) | GoS, SkillDAG, LangGraph, GraphFlow, ToolResult, dynamic goal DAG (opt-in) |

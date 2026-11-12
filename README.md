@@ -121,3 +121,7 @@ Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model
 ## Bounded LLM proposal + Shared Execution Kernel
 
 GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất output port đã được đăng ký và có quyền READ, không tự cấp quyền hay viết cấu hình. `orchestrator.run_plan` và `Diagnostic.run_resolver` dùng chung READY dispatch qua `execution_kernel.py`. Xem [hướng dẫn và giới hạn](docs/LLM_EXECUTION_POLICY.md).
+
+## RCA có bằng chứng (opt-in, replay pilot)
+
+`gateway_pilot.graph_v3.rca_agent.RCAAgent` chạy vòng lặp Claim UNKNOWN → chọn phép đo → GraphRunner/Verifier → đánh giá lại. Kết quả lỗi chỉ được trả về nếu thỏa mãn Claim có evidence ID hợp lệ; healthy đòi các fault Claim được loại trừ. Chưa có nghiệm thu router thật hoặc causal RCA. Xem [Evidence RCA](docs/EVIDENCE_RCA.md).

@@ -103,6 +103,9 @@ jobs:
           python -m unittest tests.graph_v3.test_llm_goals -v
           python -m unittest tests.graph_v3.test_execution_kernel -v
 
+      - name: Evidence-driven RCA (adaptive read-only replay)
+        run: python -m unittest tests.graph_v3.test_rca_agent -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 
