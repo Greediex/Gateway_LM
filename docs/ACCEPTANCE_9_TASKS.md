@@ -74,3 +74,21 @@ on-device values; do not invent a sysfs counter name. On standard GitHub CI,
 Do not mark any hardware/model/provider row as PASS until its artifact
 contains source, command, environment and measured outcome. The 270-item
 requirements list is a product taxonomy, **not** a 270-Function executor.
+
+## Additional code delivered
+
+- `TaskRuntime`: unifies the typed MEASURE/DIAGNOSE API and phase trace; legacy policy terminal transitions still need migration.
+- `DurableWriteOutbox`: records pre-apply and in-flight state, with post-crash readback-only reconciliation. It prevents blind retries but cannot establish exactly-once hardware execution without firmware acknowledgement.
+- `HTTPSHypothesisBackend`: operator-controlled HTTPS-only hypothesis service transport with redirect and payload restrictions; provider credentials/live checks remain external.
+- `scripts.hardware.summarize_inference`: validates an independently captured per-request timing JSONL (model SHA, backend, TTFT, total_ms, token counts, peak RSS) and combines it with hardware provenance. It never marks synthetic/host-only inputs accepted.
+
+For the latency report:
+
+```bash
+python -m scripts.hardware.summarize_inference \\
+  --input /trusted/on_device_inference_timings.jsonl \\
+  --hardware-report runs/gateway_hardware.json \\
+  --output runs/gateway_inference_summary.json
+```
+
+A report labelled `REQUIRES_MANUAL_BOARD_ATTESTATION_AND_THRESHOLDS` is **not a production pass**. Firmware idempotency and crash fault injection are still sign-off requirements.

@@ -15,7 +15,7 @@ remain snapshots, not refreshed production measurements.
 | Unified READY-node selection interface | DONE (pilot) | `selection.py`, `test_task_decomposer` |
 | Multi-clause goal decomposition, bilingual aliases | DONE (bounded) | `task_decomposer.py`, `goal_aliases_v01.json`; unknown/unsafe => zero calls |
 | Free-form semantic task decomposition | PARTIAL (real local-model adapter + offline calibration harness) | `OllamaGoalModel` and dev/test goal metrics implemented; real Ollama heldout NOT RUN; unknown Functions still blocked |
-| Resolver, Fastpath, ReAct shared execution | DONE (shared READY dispatch) / POLICY UNIFICATION PARTIAL | All diagnostic paths select and invoke via `execute_ready_once` or `run_plan` + GraphRunner; workflow policy state machines remain distinct |
+| Resolver, Fastpath, ReAct shared execution | DONE (common READY dispatch + typed TaskRuntime pilot) / POLICY UNIFICATION PARTIAL | `TaskRuntime` gives one read-only MEASURE/DIAGNOSE state path; legacy workflow-specific terminal policies remain distinct |
 | Dynamic graph replanning + bounded repair | DONE (pilot) | Existing graph v4 tests; no crash recovery |
 | Evidence-led RCA / claim engine | DONE (adaptive read-only replay pilot) / REAL VALIDATION PENDING | `RCAAgent` and localhost `POST /api/rca`; selects missing Claim evidence, replans under budgets; no hardware/causal proof |
 | 22 Skills / 270 requirements | DESIGN / PARTIAL (8 Skills, 17 Functions, 10/270 mapped) | Traceability audit is reproducible; 260 requirements unmapped; firmware-supported count is 0 |
@@ -24,12 +24,12 @@ remain snapshots, not refreshed production measurements.
 | Offline retrieval benchmark protocol | DONE (harness, illustrative data only) | JSONL split/group evaluator; Recall@K, Precision@K, MRR@K, host latency; independent held-out/model evaluation still pending |
 | HMAC-authenticated evidence checkpoint | DONE (read-only pilot) | `checkpoint.py`, `test_checkpoint` — fresh facts only, not running jobs/WRITE actions |
 | Signed read-only DAG step journal | DONE (local pilot) | HMAC chain, atomic bounded audit, context/ACL verification; combined with EvidenceCheckpoint for safe READ replanning |
-| Full durable DAG/job recovery | PARTIAL | READ evidence + step receipts; no exactly-once external actions, crash-safe WRITE/outbox or remote scheduler |
+| Full durable DAG/job recovery | PARTIAL (durable WRITE outbox pilot) | `DurableWriteOutbox` records in-doubt WRITE and reconciles via readback, NEVER blindly retries; no firmware idempotency proof / exactly-once |
 | OpenWrt read-only Adapter interface | DONE (mock-only) | `ubus_read.py`, `test_ubus_read` — injectable trusted firmware-specific transport, no guessed mapping |
 | OpenWrt firmware probes and verified adapters | INTEGRATION IMPLEMENTED / BLOCKED ON HARDWARE | `UbusCliReadTransport` uses bounded subprocess calls and method discovery; no board-backed probe pass or schema captures |
-| Edge–Cloud policy and privacy/budget gate | DONE (mock-only policy) / REAL INTEGRATION PENDING | Disabled by default; explicit consent, aggregate-only telemetry, bounded requests/estimated USD; no provider/NPU measurements |
-| Hardware latency / CPU / RAM / NPU test | INSTRUMENTATION DONE / BLOCKED ON HARDWARE | `scripts/hardware/measure_gateway.py` collects /proc + optional /sys NPU; only target OpenWrt capture counts |
-| WRITE approval and rollback state machine | DONE (disabled-by-default mock pilot) / FIRMWARE PENDING | HMAC approval tied to target/revision/typed args, durable one-time nonce, snapshot/preview/readback/rollback; no real router backend |
+| Edge–Cloud policy and privacy/budget gate | DONE (opt-in HTTPS transport + mock tests) / LIVE PROVIDER PENDING | `HTTPSHypothesisBackend` has approved HTTPS host, no redirects, strict payload/response; no credentials/provider benchmark in CI |
+| Hardware latency / CPU / RAM / NPU test | INSTRUMENTATION DONE / BLOCKED ON HARDWARE | `measure_gateway.py` + `summarize_inference.py` report authentic CPU/RAM/NPU & TTFT/p95; CI host results never count |
+| WRITE approval and rollback state machine | DONE (disabled-by-default mock + durable in-doubt outbox) / FIRMWARE PENDING | One-time signed approval, persistent PREPARED/IN_FLIGHT receipt and readback-only reconciliation; no real router rollback |
 
 ## Decomposition contract
 

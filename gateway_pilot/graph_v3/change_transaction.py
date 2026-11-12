@@ -18,6 +18,7 @@ from pathlib import Path
 
 from ..core import PlanError
 from .contracts import validate
+from .write_outbox import DurableWriteOutbox
 
 
 def canonical(obj):
@@ -136,7 +137,8 @@ class SafeWriteTransaction:
     """
 
     def __init__(self, registry, adapter, authority: ApprovalAuthority,
-                 ledger: DurableApprovalLedger, *, allowlist=(), enabled=False):
+                 ledger: DurableApprovalLedger, *, allowlist=(), enabled=False,
+                 outbox=None):
         if (type(enabled) is not bool or not isinstance(authority, ApprovalAuthority)
                 or not isinstance(ledger, DurableApprovalLedger)
                 or not all(callable(getattr(adapter, name, None)) for name in (
@@ -149,7 +151,10 @@ class SafeWriteTransaction:
             raise ValueError("invalid_write_allowlist")
         self.registry, self.adapter = registry, adapter
         self.authority, self.ledger = authority, ledger
+        if outbox is not None and not isinstance(outbox, DurableWriteOutbox):
+            raise ValueError("write_outbox_must_be_trusted")
         self.allowlist, self.enabled = frozenset(allowlist), enabled
+        self.outbox = outbox
 
     def commit(self, token, *, target, revision, operator,
                permissions=frozenset(), capabilities=frozenset()):
@@ -195,6 +200,17 @@ class SafeWriteTransaction:
                 raise PlanError("write_snapshot_invalid")
         except (OSError, RuntimeError, ValueError, TimeoutError) as exc:
             raise PlanError("write_prepare_failed") from exc
+        if self.outbox is not None:
+            self.outbox.prepare(
+                nonce=payload["nonce"], target=target, revision=revision,
+                function_id=fid, before=before, desired=desired,
+            )
+            # IN_FLIGHT is fsynced before the real adapter.apply. A crash
+            # after this transition leaves an IN-DOUBT receipt to reconcile,
+            # never a retry token.
+            self.outbox.transition(
+                payload["nonce"], from_status="PREPARED", to_status="IN_FLIGHT"
+            )
         try:
             self.adapter.apply(fid, dict(payload["arguments"]))
             actual = self.adapter.readback()
@@ -207,16 +223,29 @@ class SafeWriteTransaction:
                 if canonical(recovered) != canonical(before):
                     raise PlanError("write_rollback_not_verified")
             except (OSError, RuntimeError, ValueError, TimeoutError, PlanError):
+                if self.outbox is not None:
+                    self.outbox.transition(
+                        payload["nonce"], from_status="IN_FLIGHT",
+                        to_status="MANUAL_RECOVERY_REQUIRED",
+                    )
                 return {
                     "status": "MANUAL_RECOVERY_REQUIRED", "function_id": fid,
                     "reason": "rollback_or_postrollback_verification_failed",
                     "evidence": "NO_VERIFIED_POSTCONDITION",
                 }
+            if self.outbox is not None:
+                self.outbox.transition(
+                    payload["nonce"], from_status="IN_FLIGHT", to_status="ROLLED_BACK"
+                )
             return {
                 "status": "ROLLED_BACK", "function_id": fid,
                 "reason": type(exc).__name__,
                 "evidence": "ROLLBACK_READBACK_VERIFIED",
             }
+        if self.outbox is not None:
+            self.outbox.transition(
+                payload["nonce"], from_status="IN_FLIGHT", to_status="COMMITTED"
+            )
         return {
             "status": "COMMITTED", "function_id": fid,
             "reason": "postcondition_readback_verified",

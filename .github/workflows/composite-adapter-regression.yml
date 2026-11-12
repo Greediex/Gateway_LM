@@ -127,6 +127,13 @@ jobs:
           python -m scripts.hardware.measure_gateway --samples 2 --interval 0.1 --output runs/host_only_hardware_smoke.json
           python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/host_only_hardware_smoke.json").read_text()); assert not r["device_acceptance_possible"]; print("Host smoke is NOT gateway acceptance")'
 
+      - name: Typed unified TaskRuntime, Cloud HTTPS and WRITE recovery
+        run: |
+          python -m unittest tests.graph_v3.test_task_runtime -v
+          python -m unittest tests.graph_v3.test_https_hypothesis -v
+          python -m unittest tests.graph_v3.test_write_outbox -v
+          python -m unittest tests.graph_v3.test_inference_summary -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

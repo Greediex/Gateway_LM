@@ -150,3 +150,12 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 - `measure_gateway.py` captures /proc CPU/RAM/process RSS and actual /sys NPU when supplied on-device. GitHub CI only exercises host smoke and must **never** claim on-device acceptance.
 
 [Precise acceptance instructions](docs/ACCEPTANCE_9_TASKS.md).
+
+## Additional reliability integrations (opt-in)
+
+- `TaskRuntime`: one typed read-only `MEASURE` / `DIAGNOSE` phase contract, still preserves legacy workflow terminal policies.
+- `DurableWriteOutbox`: fsynced SQLite `PREPARED` → `IN_FLIGHT` receipts before `apply`; after crash, **readback-only** reconciliation; no automatic replay or exactly-once firmware claim.
+- `HTTPSHypothesisBackend`: trusted HTTPS allowlist, no redirects, strict aggregate-only input/output, no provider credentials in the repo.
+- `summarize_inference.py`: evaluates independently captured model TTFT/p50/p95, requires board report before hardware review.
+
+[Xem TaskRuntime](docs/TASK_RUNTIME.md), [WRITE](docs/WRITE_TRANSACTIONS.md), [Cloud](docs/EDGE_CLOUD_POLICY.md), [9-task acceptance](docs/ACCEPTANCE_9_TASKS.md).

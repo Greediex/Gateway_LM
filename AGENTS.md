@@ -54,3 +54,7 @@ More detailed instructions: [Developer Guide](docs/DEVELOPER_GUIDE.md) and [Docs
 - Device acceptance must be substantiated by OpenWrt hardware/firmware hash, board-backed Ubus outputs and measured CPU/RAM/NPU; GitHub Ubuntu host metrics do not count.
 - Do not claim 22 executable skills or 270 Functions: actual v0.1 registry contains 8 skills and 17 Functions. Use the traceability audit for per-requirement progress.
 - LLM and embedding quality must use independent dev/test splits; no tuning on the final test set or relabeling illustrative data as holdout.
+
+- A write outbox `IN_FLIGHT` row represents an in-doubt hardware side effect. Never auto-repeat a WRITE; reconciliation must use independent readback and correct operator/firmware binding.
+- HTTPS Cloud service endpoints and bearer tokens must be configured by a trusted operator; deny redirects, arbitrary domains and raw client/log payload. A hypothesis is never proof.
+- `TaskRuntime` is a read-only route/phase abstraction; avoid claiming all legacy business policy state machines have been replaced.

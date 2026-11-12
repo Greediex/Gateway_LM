@@ -13,6 +13,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [Signed read-only job journal](JOB_JOURNAL.md) | HMAC-chained step receipts and recovery boundaries |
 | [Evidence checkpoint](CHECKPOINT.md) | HMAC-backed replay fact restore, ACL and freshness boundaries |
 | [Nine workstream acceptance plan](ACCEPTANCE_9_TASKS.md) | Exact pilot vs hardware/model/live-provider sign-off criteria and commands |
+| [Unified TaskRuntime](TASK_RUNTIME.md) | Common typed MEASURE / DIAGNOSE entrypoint and phase trace |
 | [Task status / roadmap](TASK_STATUS.md) | Mốc MVP đã có, task còn thiếu và tiêu chí nghiệm thu |
 | [Declarative Registry Extensions](REGISTRY_EXTENSIONS.md) | Trusted JSON overlays for safe new READ Functions/Skills |
 | [Retrieval evaluation harness](SEMANTIC_RETRIEVAL.md#offline-function-retrieval-benchmark-v1) | Benchmark metrics and labeled JSONL test protocol |

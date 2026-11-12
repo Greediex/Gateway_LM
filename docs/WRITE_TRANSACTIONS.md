@@ -67,3 +67,7 @@ a mock in-memory QoS profile driver.
 ```bash
 python -m unittest tests.graph_v3.test_change_transaction -v
 ```
+
+## Crash-safe in-doubt receipt (optional, still NOT exactly-once)
+
+`DurableWriteOutbox` stores a SQLite row for nonce/target/revision/Function and **SHA-256 hashes only** of `before` and `desired` state; no raw secrets in the outbox. `SafeWriteTransaction(..., outbox=...)` persists `PREPARED` then `IN_FLIGHT` before adapter.apply. After success it records `COMMITTED`; after verified rollback records `ROLLED_BACK`. A process killed during apply leaves `IN_FLIGHT`. Operator calls `outbox.reconcile(nonce, driver=trusted_driver, target=..., revision=...)`, which calls **readback only** and returns `COMMITTED_OBSERVED`, `NOT_APPLIED_OBSERVED` or `MANUAL_RECOVERY_REQUIRED`. The used approval nonce cannot be replayed. The outbox does not substitute hardware idempotency, independent audit or tested firmware crash behavior. Test: `python -m unittest tests.graph_v3.test_write_outbox -v`.

@@ -63,3 +63,7 @@ Function or permission escalation.
 ```bash
 python -m unittest tests.graph_v3.test_delegation -v
 ```
+
+## Optional real HTTPS request transport (requires operator configuration)
+
+`HTTPSHypothesisBackend` implements the existing `analyze(payload)` protocol using Python's verified TLS stack, an exact trusted hostname allowlist, a preapproved `/v1/hypothesis` endpoint, a server-side bearer token, redirect refusal and bounded JSON. The remote service must implement a simple `POST` that returns exactly `{"hypothesis":"..."}`. No credentials or provider service are shipped; the Cloud gate defaults **disabled** and must check consent and privacy before calling this transport. CI tests the transport without network egress. It is *not* a measurement of commercial Cloud inference or billing.
