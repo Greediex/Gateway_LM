@@ -27,8 +27,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-react.txt
 
-      - name: Fetch pinned GoS and SkillDAG kernels
-        run: python setup_upstream.py
+      - name: Fetch and verify pinned GoS and SkillDAG kernels
+        run: |
+          if ! python setup_upstream.py; then
+            echo "Pinned source hashes at checked-out commits:"
+            sha256sum third_party/graph-of-skills/gos/core/retrieval.py || true
+            sha256sum third_party/SkillDAG/src/skilldag/search.py || true
+            sha256sum third_party/SkillDAG/src/skilldag/graph.py || true
+            exit 1
+          fi
 
       - name: Composite adapter unit tests
         run: python -m unittest tests_graph_v3.test_composite_adapter -v
