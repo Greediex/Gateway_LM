@@ -9,7 +9,7 @@ or relabeled. This is not a reproduction of the referenced benchmarks.
 
 | Reference | Verified approach | Gateway LM implementation | Deliberate limitation |
 | --- | --- | --- | --- |
-| [Graph of Skills (GoS)](https://github.com/davidliuk/graph-of-skills) | Offline dependency graph; hybrid lexical/semantic seeds; graph reranking and dependency-aware skill bundles | Pinned PPR kernel in `graph_v3/upstream.py`; lexical seeds, typed membership, reranking in `graphs.py` | No semantic embedding or full paper pipeline, no claim of GoS benchmark parity |
+| [Graph of Skills (GoS)](https://github.com/davidliuk/graph-of-skills) | Offline dependency graph; hybrid lexical/semantic seeds; graph reranking and dependency-aware skill bundles | Pinned PPR kernel in `graph_v3/upstream.py`; lexical seeds, typed membership, reranking in `graphs.py` | Optional local semantic seed fusion is implemented; no full paper pipeline/model performance parity |
 | [SkillDAG](https://github.com/Ericbai06/SkillDAG) | Typed Skill dependencies/conflicts; proposal/commit of graph changes backed by execution | Pinned SkillDAG inference/check functions in `skilldag.py`; guarded graph edits in `graphs.py` | No automatic learning from execution evidence or autonomous graph write permissions |
 | [LangGraph](https://github.com/langchain-ai/langgraph) | Explicit graph state, bounded cycles and durable checkpoints | Separate stages and DAG revision history; optional existing ReAct runtime | Authenticated replay fact checkpoint only; no durable job recovery |
 | [AutoGen GraphFlow](https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/graph-flow.html) | Conditional, directed execution with fan-out and joins | Typed DATA/STATE/ORDER edges, READY scheduling, dependency closure and bounded local/global repair | No asynchronous parallel executor or cross-node distributed scheduling |
@@ -77,7 +77,7 @@ intentional, not a missing output field.
   or a typed, registered output port with a working probe/Adapter.
 - OpenWrt Ubus functions, firmware-specific permissions, write approvals,
   real network RCA and device latency/NPU memory measurements need hardware.
-- Cloud delegation, durable **job** checkpoints, semantic retrieval, model-based
+- Cloud delegation, durable **job** checkpoints, evaluated semantic models, model-based
   task decomposition, production observability and large-scale cross-domain
   tests remain separate implementation work.
 - The existing `/api/chat` and Assistant paths retain their semantics; `/api/goals` is an **opt-in read-only endpoint** and GoalAgent is also available via CLI. This is not a drop-in replacement for all policies.
@@ -86,3 +86,5 @@ intentional, not a missing output field.
   Function from one of the 270 product requirements.
 
 Read [Evidence checkpoint](CHECKPOINT.md) for the opt-in read-only signed cache and its threat model.
+
+Hybrid local-only embedding and threshold contract: [Semantic Retrieval](SEMANTIC_RETRIEVAL.md). Mock tests prove wiring, not actual model gains.

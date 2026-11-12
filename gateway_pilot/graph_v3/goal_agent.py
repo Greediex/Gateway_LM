@@ -27,8 +27,10 @@ class GoalAgent:
 
     def __init__(self, registry=None, *, method="gos", max_calls=12,
                  max_repairs=2, max_rounds=3, retrieval_k=4, checkpoint=None):
-        if method not in {"gos", "bm25"}:
+        if method not in {"gos", "bm25", "hybrid"}:
             raise ValueError("invalid_goal_method")
+        if method == "hybrid" and getattr(registry, "_semantic_index", None) is None:
+            raise ValueError("semantic_provider_required")
         if any(type(n) is not int or n <= 0 for n in (max_calls, max_rounds, retrieval_k)):
             raise ValueError("invalid_goal_budget")
         if type(max_repairs) is not int or max_repairs < 0:
@@ -210,7 +212,9 @@ def main(argv=None):
     parser.add_argument("--goals", nargs="*", default=None,
                         help="Explicit output-port goals; omit for versioned-catalog inference")
     parser.add_argument("--registry", choices=("legacy", "v01"), default="legacy")
-    parser.add_argument("--method", choices=("bm25", "gos"), default="bm25")
+    parser.add_argument("--method", choices=("bm25", "gos", "hybrid"), default="bm25")
+    parser.add_argument("--semantic-model-dir",
+                        help="Trusted local sentence-transformers model directory; required for hybrid")
     parser.add_argument("--max-calls", type=int, default=12)
     args = parser.parse_args(argv)
     cases = read_json(ROOT / "data/cases.json")
@@ -218,6 +222,15 @@ def main(argv=None):
     if case is None:
         parser.error("unknown replay fixture")
     registry = GraphRegistry.from_v01() if args.registry == "v01" else GraphRegistry()
+    if args.method == "hybrid":
+        if not args.semantic_model_dir:
+            parser.error("hybrid requires --semantic-model-dir (trusted local model)")
+        from .semantic import LocalSentenceTransformerEncoder
+        registry.configure_semantic(
+            LocalSentenceTransformerEncoder(args.semantic_model_dir)
+        )
+    elif args.semantic_model_dir:
+        parser.error("--semantic-model-dir requires --method hybrid")
     agent = GoalAgent(registry, method=args.method, max_calls=args.max_calls)
     result = agent.run(args.request, case, goals=args.goals)
     print(json.dumps(result, ensure_ascii=False, indent=2))

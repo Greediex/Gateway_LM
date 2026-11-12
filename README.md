@@ -66,6 +66,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
 - [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
 - [Đối chiếu upstream và goal execution (opt-in)](docs/REFERENCE_IMPLEMENTATION.md)
+- [Hybrid Semantic Retrieval (opt-in, local-only)](docs/SEMANTIC_RETRIEVAL.md)
 - [Bảng trạng thái task còn thiếu / hoàn thành](docs/TASK_STATUS.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](docs/WEB_UI.md)
@@ -103,3 +104,7 @@ Có `EvidenceCheckpoint` HMAC-SHA256 để phục hồi **fact đọc còn hiệ
 ## Ubus read-only integration (mock-only)
 
 Có `UbusReadAdapter` hỗ trợ transport injection và Function mapping đã được xác minh từ firmware. Test hiện tại dùng transport giả; **chưa có mapping OpenWrt nào được probe trên board thật**. Xem [OpenWrt Adapter](docs/OPENWRT_ADAPTER.md).
+
+## Hybrid Retrieval (opt-in, chưa đo chất lượng model)
+
+Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model` cho `gateway_pilot.graph_v3.goal_agent`. Phải cung cấp một model embedding tải sẵn tại máy; không tự download, không nhận đường dẫn từ HTTP, và không chạy NPU tự động. BM25/GoS vẫn là baseline. [Hướng dẫn và giới hạn](docs/SEMANTIC_RETRIEVAL.md).

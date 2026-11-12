@@ -84,6 +84,11 @@ jobs:
       - name: Read-only OpenWrt Ubus binding conformance (mock only)
         run: python -m unittest tests.graph_v3.test_ubus_read -v
 
+      - name: Local-only hybrid semantic retrieval (mock encoder)
+        run: |
+          python -m unittest tests.graph_v3.test_hybrid_retrieval -v
+          python -m gateway_pilot.graph_v3.goal_agent --help
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

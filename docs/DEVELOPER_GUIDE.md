@@ -108,3 +108,7 @@ Return `ToolResult(observations=(obs_port_a, obs_port_b))` from a trusted Adapte
 Run: `python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "Check WAN and memory" --goals wan.status system.resources --method bm25`.
 
 See [reference alignment and limits](REFERENCE_IMPLEMENTATION.md); this is an opt-in path and `RESOLVED` means measurement ports were verified, not that a real network incident was fixed.
+
+## 10. Optional hybrid retrieval (trusted local encoder)
+
+Gọi `registry.configure_semantic(encoder, min_similarity=0.62)` và `registry.retrieve(..., method="hybrid")`. Không cấu hình encoder từ user request. Khả năng vector chỉ thay đổi seed/rank; quyền Function vẫn do Registry và CaseState kiểm soát. Mọi model thực cần benchmark độc lập, xem [Semantic Retrieval](SEMANTIC_RETRIEVAL.md).

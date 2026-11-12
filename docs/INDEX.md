@@ -11,6 +11,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [OpenWrt Ubus adapter boundary](OPENWRT_ADAPTER.md) | Trusted Function mapping and requirements for real device probe |
 | [Evidence checkpoint](CHECKPOINT.md) | HMAC-backed replay fact restore, ACL and freshness boundaries |
 | [Task status / roadmap](TASK_STATUS.md) | Mốc MVP đã có, task còn thiếu và tiêu chí nghiệm thu |
+| [Hybrid Semantic Retrieval](SEMANTIC_RETRIEVAL.md) | Local-only vector similarity, BM25/GoS fusion, hard gates, model evaluation pending |
 | [Runtime stages](RUNTIME_STAGES.md) | Tách Routing, Planning, Execution và Evidence Verification; nêu phần đã có/chưa có |
 | [Upstream comparison and goal execution](REFERENCE_IMPLEMENTATION.md) | GoS, SkillDAG, LangGraph, GraphFlow, ToolResult, dynamic goal DAG (opt-in) |
 | [Web UI guide](WEB_UI.md) | Cách khởi động web và chọn replay/live adapter |

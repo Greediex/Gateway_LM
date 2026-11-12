@@ -17,6 +17,7 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 - New Skill/Function/Workflow or retrieval algorithm should extend registries/interfaces instead of introducing workflow-name conditionals in Core.
 - Preserve typed DAG dependency semantics (DATA/STATE/ORDER), plan revisions, evidence provenance and local/global repair guards.
 - No silent fallback on failed upstream SHA checks. Pinned GoS/SkillDAG source and license terms stay intact.
+- Opt-in semantic retrieval must use a trusted local encoder, never user-provided model paths or remote requests. Vector scores must never bypass eligibility, ACL, scope or evidence verification.
 
 ## Code and data quality
 - Prefer small, cohesive changes and explicit dependencies over broad file moves or rewrite-from-scratch.
