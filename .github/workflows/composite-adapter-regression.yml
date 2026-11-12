@@ -109,6 +109,9 @@ jobs:
       - name: Edge-first Cloud policy, budget and privacy tests (mock only)
         run: python -m unittest tests.graph_v3.test_delegation -v
 
+      - name: Replay-only RCA HTTP endpoint isolation
+        run: python -m unittest tests.web.test_adapter.WebAdapterTests.test_rca_endpoint_uses_verified_claims_and_trusted_replay_only tests.web.test_adapter.WebAdapterTests.test_rca_endpoint_rejects_unsupported_or_live_requests -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

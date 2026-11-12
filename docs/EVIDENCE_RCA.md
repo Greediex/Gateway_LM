@@ -51,3 +51,7 @@ fault injection and held-out tests are still required.
 python -m unittest tests.graph_v3.test_rca_agent -v
 python -m unittest discover -s tests -v
 ```
+
+## Web replay endpoint
+
+`POST /api/rca` được expose trên localhost cùng `/api/goals`, nhưng luôn dùng fixture trong `data/cases.json`. Frontend input chỉ quyết định workflow có kiểu `DIAGNOSE`, phương pháp BM25/GoS và ngân sách được giới hạn; không thể cấp dữ liệu đo, quyền hay Adapter từ JSON. Xem [Web UI](WEB_UI.md).

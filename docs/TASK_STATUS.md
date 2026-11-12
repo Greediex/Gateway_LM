@@ -17,7 +17,7 @@ remain snapshots, not refreshed production measurements.
 | Free-form semantic task decomposition | PARTIAL (bounded LLM proposal opt-in) | Model may nominate registered READ goals via quoted spans; no generalized planning, calibration or WRITE |
 | Resolver, Fastpath, ReAct shared execution | DONE (shared READY dispatch) / POLICY UNIFICATION PARTIAL | All diagnostic paths select and invoke via `execute_ready_once` or `run_plan` + GraphRunner; workflow policy state machines remain distinct |
 | Dynamic graph replanning + bounded repair | DONE (pilot) | Existing graph v4 tests; no crash recovery |
-| Evidence-led RCA / claim engine | DONE (adaptive read-only replay pilot) / REAL VALIDATION PENDING | `RCAAgent` selects missing Claim evidence and revises plan under call budgets; no hardware/causal proof |
+| Evidence-led RCA / claim engine | DONE (adaptive read-only replay pilot) / REAL VALIDATION PENDING | `RCAAgent` and localhost `POST /api/rca`; selects missing Claim evidence, replans under budgets; no hardware/causal proof |
 | 22 Skills / 270 requirements | DESIGN / PARTIAL | Catalog presence does not mean 270 executable Functions |
 | Versioned declarative read-only Function/Skill overlay | DONE (bounded pilot) | JSON manifest adds gateway zero-input single-output READ contracts transactionally; v0.1 starts unverified, no firmware claim |
 | Semantic vector + lexical + graph retrieval | DONE (opt-in integration, mock-tested) / MODEL EVAL PENDING | Local embedding adapter, cosine threshold, BM25/GoS fusion, strict gates; no measured encoder accuracy, latency or NPU |

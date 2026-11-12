@@ -129,3 +129,7 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 ## Edge–Cloud Delegation (policy + mock)
 
 `EdgeCloudPolicy` mặc định chọn Edge và **không gọi Cloud** nếu chưa có cấu hình, consent và budget hợp lệ. Chỉ gửi metric số/boolean từ gateway đã xác minh; phản hồi Cloud luôn là hypothesis chưa được chứng thực. Không có provider API thực trong repo. Xem [Edge Cloud Policy](docs/EDGE_CLOUD_POLICY.md).
+
+## RCA API (replay-only)
+
+`POST http://127.0.0.1:8765/api/rca` nhận `{"message":"WAN down","fixture_id":"GLM-01-0","workflow":"WF-018","method":"bm25"}`. Endpoint sử dụng đúng fixture trong repo, không chấp nhận adapter/world/permission từ HTTP, và báo kết quả theo Claim cùng evidence. Xem [Web UI](docs/WEB_UI.md).

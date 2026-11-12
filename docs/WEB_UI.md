@@ -53,3 +53,7 @@ Invoke-RestMethod -Uri "http://127.0.0.1:8765/api/goals" -Method Post -ContentTy
 Trả về `goals`, `goal_facts`, `missing_goals`, `plans`, `ready_trace`, `contract_b`, `contract_c`. `status=RESOLVED` là **đã đo và xác minh mục tiêu**, không phải sửa xong sự cố; `diagnosis=NOT_EVALUATED` báo chưa có RCA.
 
 Nếu muốn suy luận goal từ câu hỏi: gửi `registry="v01"` và bỏ trường `goals`. Chỉ khi Turn Router xác nhận workflow được hỗ trợ mới thực thi; yêu cầu không rõ trả `NEEDS_INPUT`/bị chặn.
+
+## RCA API (read-only replay, opt-in)
+
+`POST /api/rca` nhận JSON `{"message":"WAN down","fixture_id":"GLM-01-0","workflow":"WF-018","method":"bm25","max_calls":8,"source_mode":"replay"}`. Mọi Function phải thuộc Registry v0.1 và được chứng minh bằng Claim; endpoint không cho client cấp `world`, `permissions`, `capabilities`, `adapter` hoặc yêu cầu LIVE. Trả về `VERIFIED_FAULT`, `HEALTHY_OBSERVED`, hoặc `INCONCLUSIVE` cùng evidence IDs và DAG trace. Đây là API replay nội bộ, **không phải đo router thật**. Xem [RCA](EVIDENCE_RCA.md).

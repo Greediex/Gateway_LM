@@ -117,4 +117,37 @@ class WebAdapterTests(unittest.TestCase):
                 self.srv.analyze_goals({**request, **update})
 
 
+    def test_rca_endpoint_uses_verified_claims_and_trusted_replay_only(self):
+        output = self.srv.analyze_rca({
+            "message": "WAN down", "fixture_id": "GLM-21-1",
+            "workflow": "WF-018", "method": "bm25",
+            "world": {"wan.status": {"link_up": True}},
+            "permissions": [], "capabilities": ["shell.exec"],
+            "adapter": "arbitrary.untrusted",
+        })
+        self.assertEqual(output["mode"], "synthetic_replay")
+        self.assertEqual(output["status"], "VERIFIED_FAULT")
+        self.assertEqual(output["diagnosis"], "wan_link_down")
+        self.assertEqual(output["calls"], 1)
+        self.assertTrue(output["evidence_ids"])
+        self.assertIn("Claim", output["disclaimer"])
+
+    def test_rca_endpoint_rejects_unsupported_or_live_requests(self):
+        valid = {"message": "WAN", "fixture_id": "GLM-21-1",
+                 "workflow": "WF-018", "method": "bm25"}
+        for update in (
+            {"workflow": "WF-WRITE"},
+            {"workflow": "WF-001"},
+            {"workflow": "shell.exec"},
+            {"workflow": None},
+            {"method": "hybrid"},
+            {"source_mode": "live"},
+            {"max_calls": True},
+            {"max_calls": 999},
+            {"fixture_id": "not-a-fixture"},
+        ):
+            with self.subTest(update=update), self.assertRaises(ValueError):
+                self.srv.analyze_rca({**valid, **update})
+
+
 if __name__=='__main__': unittest.main()

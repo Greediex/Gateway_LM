@@ -338,6 +338,50 @@ def analyze_goals(payload: dict):
         raise ValueError("Goal không được hỗ trợ hoặc không hợp lệ: " + str(exc)) from exc
 
 
+def analyze_rca(payload: dict):
+    """Opt-in Claim-backed RCA from trusted replay fixtures only.
+
+    User JSON can select a workflow/fixture, not override the trusted world,
+    Function registry, device permissions, Adapter or evidence.
+    """
+    if not isinstance(payload, dict):
+        raise ValueError("Body phải là JSON object")
+    message = payload.get("message")
+    if not isinstance(message, str) or not 1 <= len(message.strip()) <= 2000:
+        raise ValueError("Câu hỏi phải dài 1–2000 ký tự")
+    if payload.get("source_mode", "replay") != "replay":
+        raise ValueError("RCA endpoint hiện chỉ hỗ trợ replay")
+    fixture_id = payload.get("fixture_id", DEFAULT_FIXTURE)
+    cases = fixture_catalog()
+    if not isinstance(fixture_id, str) or fixture_id not in cases:
+        raise ValueError("Fixture không tồn tại trong data/cases.json")
+    method = payload.get("method", "bm25")
+    if method not in ("bm25", "gos"):
+        raise ValueError("Method chỉ hỗ trợ bm25 hoặc gos")
+    workflow = payload.get("workflow")
+    if not isinstance(workflow, str) or not 1 <= len(workflow) <= 32:
+        raise ValueError("Workflow DIAGNOSE phải được chỉ định rõ")
+    max_calls = payload.get("max_calls", 10)
+    if type(max_calls) is not int or not 1 <= max_calls <= 12:
+        raise ValueError("max_calls phải là số nguyên từ 1 đến 12")
+
+    from gateway_pilot.core import PlanError
+    from gateway_pilot.graph_v3.rca_agent import RCAAgent
+    from gateway_pilot.graph_v3.graphs import GraphRegistry
+
+    registry = GraphRegistry.from_v01()
+    fixture = deepcopy(cases[fixture_id])
+    fixture.pop("gold", None)
+    agent = RCAAgent(registry, method=method, max_calls=max_calls)
+    try:
+        result = agent.run(message.strip(), fixture, workflow=workflow)
+    except PlanError as exc:
+        raise ValueError("Workflow RCA không được hỗ trợ: " + str(exc)) from exc
+    result["mode"] = "synthetic_replay"
+    result["fixture_id"] = fixture_id
+    return result
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "GatewayLMWeb/1.0"
 
@@ -417,7 +461,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         endpoint = urlparse(self.path).path
-        if endpoint not in ("/api/chat", "/api/goals"):
+        if endpoint not in ("/api/chat", "/api/goals", "/api/rca"):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -431,7 +475,8 @@ class Handler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             if isinstance(data, dict):
                 data.setdefault("source_mode", getattr(self.server, "default_source", "replay"))
-            result = analyze_goals(data) if endpoint == "/api/goals" else analyze(data)
+            result = (analyze_goals(data) if endpoint == "/api/goals" else
+                      analyze_rca(data) if endpoint == "/api/rca" else analyze(data))
             return self._json(result)
         except ValueError as exc:
             return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
