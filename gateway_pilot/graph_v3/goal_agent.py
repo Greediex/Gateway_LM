@@ -20,13 +20,15 @@ from .runner import GraphRunner
 from .state import CaseState
 from .task_decomposer import TaskDecomposer
 from .checkpoint import EvidenceCheckpoint
+from .llm_goals import BoundedGoalProposer
 
 
 class GoalAgent:
     """Bounded evidence-acquisition loop for one or many known output ports."""
 
     def __init__(self, registry=None, *, method="gos", max_calls=12,
-                 max_repairs=2, max_rounds=3, retrieval_k=4, checkpoint=None):
+                 max_repairs=2, max_rounds=3, retrieval_k=4, checkpoint=None,
+                 goal_proposer=None):
         if method not in {"gos", "bm25", "hybrid"}:
             raise ValueError("invalid_goal_method")
         if method == "hybrid" and getattr(registry, "_semantic_index", None) is None:
@@ -44,6 +46,9 @@ class GoalAgent:
         if checkpoint is not None and not isinstance(checkpoint, EvidenceCheckpoint):
             raise ValueError("checkpoint_must_be_trusted_store")
         self.checkpoint = checkpoint
+        if goal_proposer is not None and not isinstance(goal_proposer, BoundedGoalProposer):
+            raise ValueError("goal_proposer_must_be_trusted")
+        self.goal_proposer = goal_proposer
 
     def run(self, request: str, case: dict, *, goals: Sequence[str] | None = None,
             inventory=(), advisor=None):
@@ -57,7 +62,13 @@ class GoalAgent:
         if goals is None:
             if not hasattr(registry, "workflows"):
                 raise PlanError("goal_inference_requires_versioned_catalog")
-            decomposition = TaskDecomposer(registry).decompose(request)
+            decomposer = TaskDecomposer(registry)
+            if decomposer.is_write_intent(request):
+                return self._result((), state, None,
+                                    routing={"source": "write_policy", "action": "REFUSE"},
+                                    status="BLOCKED",
+                                    reason="write_intent_requires_approval")
+            decomposition = decomposer.decompose(request)
             if decomposition.decision == "READY":
                 goals = decomposition.goals
                 routing = {
@@ -87,10 +98,28 @@ class GoalAgent:
                            "source": "calibrated_workflow_router"}
                 hint = routed.get("plan_hint")
                 if routed["action"] != "RUN" or hint is None:
-                    return self._result((), state, None, routing=routing,
-                                        status="NEEDS_INPUT" if routed["action"] == "ASK_USER"
-                                        else "BLOCKED", reason=routed["reason"])
-                goals = hint["goals"]
+                    if self.goal_proposer is not None and routed["action"] in {
+                        "ASK_USER", "ANSWER", "NO_ACTION", "REFUSE", "BLOCKED"
+                    }:
+                        proposed = self.goal_proposer.propose(request, registry, state, decomposer)
+                        routing = {
+                            "source": "bounded_llm_proposal",
+                            "action": "RUN" if proposed.decision == "READY" else "ASK_USER",
+                            "reason": proposed.reason,
+                            "original_router": routing,
+                        }
+                        if proposed.decision == "READY":
+                            goals = proposed.goals
+                        else:
+                            return self._result((), state, None, routing=routing,
+                                                status=proposed.decision,
+                                                reason=proposed.reason)
+                    else:
+                        return self._result((), state, None, routing=routing,
+                                            status="NEEDS_INPUT" if routed["action"] == "ASK_USER"
+                                            else "BLOCKED", reason=routed["reason"])
+                else:
+                    goals = hint["goals"]
         if isinstance(goals, (str, bytes)) or not isinstance(goals, Sequence):
             raise ValueError("invalid_goal_ports")
         goals = tuple(dict.fromkeys(goals))

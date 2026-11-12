@@ -15,7 +15,7 @@ from .graph_v3.context import retrieve_context
 from .graph_v3.dynamic_policy import DiagnosticPolicy
 from .graph_v3.orchestrator import run_plan
 from .graph_v3.runner import GraphRunner
-from .graph_v3.selection import ReadySelector
+from .graph_v3.execution_kernel import execute_ready_once
 from .graph_v3.resolver import resolve
 from .graph_v3.state import CaseState
 from .workflow_advisor import OllamaProbeAdvisor
@@ -222,8 +222,10 @@ class Diagnostic:
                 best = (self.claims.next_best_action(registry, self.state, self.case.get("workflow"),
                                                      [n.function_id for n in ready])
                         if self.selection == "nba" else None)
-                preferred = ReadySelector.choose(ready, ordered_ids=candidates, favored=best)
-                node = runner.step(plan, preferred.id)
+                node, _ = execute_ready_once(
+                    runner, plan, goals, ordered_ids=candidates,
+                    favored=best, ready=ready,
+                )
             except PlanError as exc:
                 self.state.errors.append(str(exc))
                 break

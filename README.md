@@ -117,3 +117,7 @@ Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model
 ## Retrieval evaluation (offline)
 
 `python -m scripts.analysis.evaluate_retrieval --input examples/evaluation/illustrative_retrieval.jsonl --split illustrative --methods bm25 gos --output runs/retrieval-eval-smoke.json` tạo báo cáo Recall@K/Precision@K/MRR và latency trên host. Dataset ví dụ chỉ để smoke test, **không phải kết quả nghiệm thu embedding thật**. [Hướng dẫn](docs/SEMANTIC_RETRIEVAL.md).
+
+## Bounded LLM proposal + Shared Execution Kernel
+
+GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất output port đã được đăng ký và có quyền READ, không tự cấp quyền hay viết cấu hình. `orchestrator.run_plan` và `Diagnostic.run_resolver` dùng chung READY dispatch qua `execution_kernel.py`. Xem [hướng dẫn và giới hạn](docs/LLM_EXECUTION_POLICY.md).

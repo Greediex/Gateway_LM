@@ -39,3 +39,6 @@ python -m unittest discover -s tests -v
 - Record the CI run URL and explain any skipped/unavailable checks before calling a change complete.
 
 More detailed instructions: [Developer Guide](docs/DEVELOPER_GUIDE.md) and [Docs index](docs/INDEX.md).
+
+- A model may nominate typed READ goals only via bounded, audited proposals. Never pass model-proposed arbitrary Functions, permissions, execution adapters or network targets to a tool.
+- All diagnostic READY execution must go through `graph_v3.execution_kernel.execute_ready_once` and `GraphRunner.step`; no independent tool-call shortcut for Fastpath, Resolver or ReAct.

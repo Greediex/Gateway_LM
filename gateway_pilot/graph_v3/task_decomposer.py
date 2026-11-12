@@ -77,6 +77,12 @@ class TaskDecomposer:
     def _contains(clause: str, phrase: str) -> bool:
         return re.search(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", clause) is not None
 
+    def is_write_intent(self, request: str) -> bool:
+        normalized = normalize(request)
+        return bool(re.search(CHANGE_REQUEST, normalized)) or any(
+            self._contains(normalized, phrase) for phrase in self.unsafe
+        )
+
     def decompose(self, request: str) -> GoalDecomposition:
         if not isinstance(request, str) or not request.strip() or len(request) > 2000:
             raise ValueError("invalid_decomposition_request")
@@ -89,9 +95,7 @@ class TaskDecomposer:
                                      reason="invalid_compound_request")
         # Read-only pilot: never partially execute a request containing a
         # requested configuration or reboot, even if other clauses are benign.
-        if re.search(CHANGE_REQUEST, normalized) or any(
-            self._contains(normalized, phrase) for phrase in self.unsafe
-        ):
+        if self.is_write_intent(request):
             return GoalDecomposition("BLOCKED", (), clauses, reason="write_intent_in_compound_request")
         resolved, unresolved = [], []
         for clause in clauses:

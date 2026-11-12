@@ -14,8 +14,8 @@ remain snapshots, not refreshed production measurements.
 | Composite Function Adapter and probe gate | DONE (pilot) | `test_composite_adapter` |
 | Unified READY-node selection interface | DONE (pilot) | `selection.py`, `test_task_decomposer` |
 | Multi-clause goal decomposition, bilingual aliases | DONE (bounded) | `task_decomposer.py`, `goal_aliases_v01.json`; unknown/unsafe => zero calls |
-| Free-form semantic task decomposition | PARTIAL | Registered alias/port and catalog paths only; no general LLM policy |
-| Resolver, Fastpath, ReAct shared execution | PARTIAL | GraphRunner/Verifier reused; legacy policy state machines not fully unified |
+| Free-form semantic task decomposition | PARTIAL (bounded LLM proposal opt-in) | Model may nominate registered READ goals via quoted spans; no generalized planning, calibration or WRITE |
+| Resolver, Fastpath, ReAct shared execution | DONE (shared READY dispatch) / POLICY UNIFICATION PARTIAL | All diagnostic paths select and invoke via `execute_ready_once` or `run_plan` + GraphRunner; workflow policy state machines remain distinct |
 | Dynamic graph replanning + bounded repair | DONE (pilot) | Existing graph v4 tests; no crash recovery |
 | Evidence-led RCA / claim engine | PARTIAL | Replay contracts only; no real network truth |
 | 22 Skills / 270 requirements | DESIGN / PARTIAL | Catalog presence does not mean 270 executable Functions |

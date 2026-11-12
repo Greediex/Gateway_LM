@@ -98,6 +98,11 @@ jobs:
           python -m scripts.analysis.evaluate_retrieval --input examples/evaluation/illustrative_retrieval.jsonl --split illustrative --methods bm25 gos --top-k 5 --output runs/retrieval-eval-smoke.json
           python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/retrieval-eval-smoke.json").read_text(encoding="utf-8")); assert r["protocol"]=="retrieval-eval/v1" and r["methods"]["bm25"]["cases"]==2 and r["methods"]["gos"]["cases"]==2; print("Retrieval evaluator smoke: PASS")'
 
+      - name: Bounded LLM goal and unified execution safety tests
+        run: |
+          python -m unittest tests.graph_v3.test_llm_goals -v
+          python -m unittest tests.graph_v3.test_execution_kernel -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 
