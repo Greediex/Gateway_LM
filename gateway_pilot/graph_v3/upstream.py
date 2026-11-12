@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 PILOT = Path(__file__).resolve().parents[2]
 COMMIT = "203f60a2c689da055ce1ac351eb3cb9912a3bca7"
-KERNEL_SHA256 = "3c03db37774949b67d03e5da2852bbc694ae9a8d38593bdd7d17d6f7a03d072c"
+KERNEL_SHA256 = "32bd2464164374079448531ef377bea65cdcccd32ed8242067fa83023e07ee5a"
 SOURCE = PILOT / "third_party/graph-of-skills/gos/core/retrieval.py"
 _kernel = None
 
