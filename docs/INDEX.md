@@ -9,6 +9,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [CLI script migration](../scripts/README.md) | Bảng chuyển lệnh root script sang package `scripts/benchmarks` và `scripts/analysis` |
 | [Developer Guide](DEVELOPER_GUIDE.md) | Setup Windows/Linux/CI, cấu trúc module, thêm Function và chạy test |
 | [OpenWrt Ubus adapter boundary](OPENWRT_ADAPTER.md) | Trusted Function mapping and requirements for real device probe |
+| [Signed read-only job journal](JOB_JOURNAL.md) | HMAC-chained step receipts and recovery boundaries |
 | [Evidence checkpoint](CHECKPOINT.md) | HMAC-backed replay fact restore, ACL and freshness boundaries |
 | [Task status / roadmap](TASK_STATUS.md) | Mốc MVP đã có, task còn thiếu và tiêu chí nghiệm thu |
 | [Declarative Registry Extensions](REGISTRY_EXTENSIONS.md) | Trusted JSON overlays for safe new READ Functions/Skills |

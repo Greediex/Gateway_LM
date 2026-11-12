@@ -21,6 +21,7 @@ from .state import CaseState
 from .task_decomposer import TaskDecomposer
 from .checkpoint import EvidenceCheckpoint
 from .llm_goals import BoundedGoalProposer
+from .job_journal import ReadOnlyJobJournal
 
 
 class GoalAgent:
@@ -28,7 +29,7 @@ class GoalAgent:
 
     def __init__(self, registry=None, *, method="gos", max_calls=12,
                  max_repairs=2, max_rounds=3, retrieval_k=4, checkpoint=None,
-                 goal_proposer=None):
+                 goal_proposer=None, journal=None):
         if method not in {"gos", "bm25", "hybrid"}:
             raise ValueError("invalid_goal_method")
         if method == "hybrid" and getattr(registry, "_semantic_index", None) is None:
@@ -49,6 +50,9 @@ class GoalAgent:
         if goal_proposer is not None and not isinstance(goal_proposer, BoundedGoalProposer):
             raise ValueError("goal_proposer_must_be_trusted")
         self.goal_proposer = goal_proposer
+        if journal is not None and not isinstance(journal, ReadOnlyJobJournal):
+            raise ValueError("journal_must_be_trusted_local")
+        self.journal = journal
 
     def run(self, request: str, case: dict, *, goals: Sequence[str] | None = None,
             inventory=(), advisor=None):
@@ -137,8 +141,13 @@ class GoalAgent:
             # Registry/target/firmware/ACL. Running nodes never auto-resume.
             self.checkpoint.restore(registry, state, request, goals)
         if all(state.fact(goal) is not None for goal in goals):
-            return self._result(goals, state, None, routing=routing,
-                                status="RESOLVED", reason="verified_evidence_reused")
+            result = self._result(goals, state, None, routing=routing,
+                                  status="RESOLVED", reason="verified_evidence_reused")
+            if self.journal is not None:
+                result["journal_events"] = self.journal.recover(
+                    registry, state, request, goals
+                )
+            return result
         if not any(key in case for key in ("world", "adapter", "live_reader")):
             return self._result(goals, state, None, routing=routing,
                                 status="INCONCLUSIVE", reason="observation_source_not_configured")
@@ -158,8 +167,15 @@ class GoalAgent:
             state.capabilities.intersection_update(verified)
             state.probe_capabilities.intersection_update(verified)
 
+        if self.journal is not None:
+            # Verify persisted HMAC chain before doing any further work.
+            self.journal.recover(registry, state, request, goals)
+        event_sink = (
+            (lambda event: self.journal.append(registry, state, request, goals, event))
+            if self.journal is not None else None
+        )
         runner = GraphRunner(registry, case, state, max_calls=self.max_calls,
-                             max_repairs=self.max_repairs)
+                             max_repairs=self.max_repairs, event_sink=event_sink)
         trace = []
         reason = "no_admissible_plan"
         for _ in range(self.max_rounds):
@@ -205,6 +221,10 @@ class GoalAgent:
                               reason=reason, trace=trace)
         if self.checkpoint is not None:
             result["checkpoint_facts_saved"] = self.checkpoint.save(
+                registry, state, request, goals
+            )
+        if self.journal is not None:
+            result["journal_events"] = self.journal.recover(
                 registry, state, request, goals
             )
         return result

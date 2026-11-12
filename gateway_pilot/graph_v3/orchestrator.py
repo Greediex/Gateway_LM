@@ -56,6 +56,10 @@ def run_plan(runner, plan, goals, *, method="gos", k=4):
                 ready=ready, audit=retrievals,
             )
         except PlanError as exc:
+            if str(exc) == "runner_audit_sink_failed":
+                # An opt-in durable audit failure is a hard stop, not a
+                # successful measured goal with a lost receipt.
+                raise
             state.errors.append(str(exc))
             break
         if node is None:

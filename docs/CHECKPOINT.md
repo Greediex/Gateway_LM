@@ -46,3 +46,7 @@ Enabling automatic checkpointing in Web requires an authenticated trusted
 server-side configuration and privacy review.
 
 Tests: `python -m unittest tests.graph_v3.test_checkpoint -v`.
+
+## Signed execution receipts
+
+Có thể kết hợp `EvidenceCheckpoint` với [Read-only Job Journal](JOB_JOURNAL.md) để lưu audit từng node thành công/thất bại. Journal chứng thực thứ tự, không tự chạy lại tác vụ đang thực thi.

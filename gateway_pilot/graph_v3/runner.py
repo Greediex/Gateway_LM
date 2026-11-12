@@ -14,7 +14,7 @@ from .verification import EvidenceVerifier
 
 class GraphRunner:
     def __init__(self, registry, case, state, *, max_calls=12, max_repairs=2, deadline_s=120,
-                 cost_budget=100, executor=None, verifier=None):
+                 cost_budget=100, executor=None, verifier=None, event_sink=None):
         self.registry, self.case, self.state = registry, case, state
         self.max_calls, self.max_repairs, self.deadline_s, self.cost_budget = max_calls, max_repairs, deadline_s, cost_budget
         self.started = state.clock()
@@ -29,6 +29,9 @@ class GraphRunner:
         # Trusted composition roots: user/model input never injects executors or verifiers.
         self.executor = executor if executor is not None else InvocationExecutor()
         self.verifier = verifier if verifier is not None else EvidenceVerifier()
+        if event_sink is not None and not callable(event_sink):
+            raise ValueError("runner_event_sink_must_be_callable")
+        self.event_sink = event_sink
 
     def compiler(self):
         return Compiler(self.registry, max_cost=max(0, self.cost_budget - self.spent),
@@ -151,6 +154,13 @@ class GraphRunner:
             self.contract_b.append({"node_id": n.id, "tool_status": "EXIT_ERROR", "observations": [],
                                     "goal_claim": "NOT_EVALUATED"})
         self.events.append({"revision": plan.revision, "node": n.id, "state": n.state, "reason": n.reason})
+        if self.event_sink is not None:
+            try:
+                self.event_sink(self.events[-1])
+            except (OSError, ValueError, RuntimeError, PlanError) as exc:
+                # Optional signed journaling fails closed. This can follow a
+                # verified READ; the next process must recheck fresh evidence.
+                raise PlanError("runner_audit_sink_failed") from exc
         return n
 
     def ttl_seconds(self, f):

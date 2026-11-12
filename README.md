@@ -133,3 +133,7 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 ## RCA API (replay-only)
 
 `POST http://127.0.0.1:8765/api/rca` nhận `{"message":"WAN down","fixture_id":"GLM-01-0","workflow":"WF-018","method":"bm25"}`. Endpoint sử dụng đúng fixture trong repo, không chấp nhận adapter/world/permission từ HTTP, và báo kết quả theo Claim cùng evidence. Xem [Web UI](docs/WEB_UI.md).
+
+## Signed Job Journal (READ-only opt-in)
+
+`ReadOnlyJobJournal` lưu bằng chứng **thực thi** gồm node/revision/status/reason qua HMAC chain, không lưu raw request hay payload. Kết hợp `EvidenceCheckpoint` để phục hồi fact còn hạn sau restart. Không phải exactly-once WRITE, không tự retry job ngoại vi. Xem [Job Journal](docs/JOB_JOURNAL.md).

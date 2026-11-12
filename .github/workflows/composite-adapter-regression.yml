@@ -112,6 +112,9 @@ jobs:
       - name: Replay-only RCA HTTP endpoint isolation
         run: python -m unittest tests.web.test_adapter.WebAdapterTests.test_rca_endpoint_uses_verified_claims_and_trusted_replay_only tests.web.test_adapter.WebAdapterTests.test_rca_endpoint_rejects_unsupported_or_live_requests -v
 
+      - name: Signed read-only job journal and crash-restart recovery tests
+        run: python -m unittest tests.graph_v3.test_job_journal -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 
