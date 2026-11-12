@@ -29,7 +29,8 @@ class LocalModelCalibrationTests(unittest.TestCase):
         base = dict(case_id=self.case, group="wan", expected_goals=["wan.status"], kind="READ")
         return [
             dict(base, id="d-good", split="dev", request="wan status please"),
-            dict(base, id="d-bad", split="dev", request="system resources please"),
+            dict(base, id="d-bad", split="dev", request="system resources please",
+                 expected_goals=["system.resources"]),
             dict(base, id="t-good", split="test", request="router wan link"),
             dict(base, id="t-bad", split="test", request="change wifi password",
                  kind="WRITE", expected_goals=[]),
