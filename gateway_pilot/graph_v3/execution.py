@@ -36,10 +36,14 @@ class InvocationExecutor:
                 return [result], 0
             raise PlanError("adapter_typed_result_required")
         if len(function.outputs) == 1:
+            # Preserve the legacy synthetic duration used by timeout/repair
+            # fixtures. This value is meaningful ONLY without an Adapter.
+            replay = local_case.get("world", {}).get(function.id, {})
+            simulated_ms = replay.get("_duration_ms", 0) if isinstance(replay, dict) else 0
             observation = execute(function.id, arguments, state, local_case, runner.registry.legacy)
             if not isinstance(observation, dict):
                 raise PlanError("adapter_invalid_observation")
-            return [observation], 0
+            return [observation], simulated_ms
         if live:
             raise PlanError("live_requires_explicit_adapter_contract")
         # Synthetic multi-output replay is allowed only when no adapter is

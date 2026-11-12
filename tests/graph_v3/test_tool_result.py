@@ -157,5 +157,29 @@ class ToolResultTests(unittest.TestCase):
         self.assertEqual(len(state.evidence), 0)
 
 
+    def test_synthetic_timeout_still_triggers_repair_path(self):
+        self.case["world"]["wan.status"]["_duration_ms"] = 3000
+        state = CaseState(self.case, self.registry)
+        plan = Compiler(self.registry).compile(["wan.status"], state)
+        runner = GraphRunner(self.registry, self.case, state, max_repairs=0)
+        result = runner.run(plan)
+        self.assertEqual(result.nodes["wan.status"].state, NodeState.FAILED)
+        self.assertEqual(result.nodes["wan.status"].failure["type"], "timeout")
+        self.assertIsNone(state.fact("wan.status"))
+
+    def test_real_adapter_result_ignores_fixture_simulated_duration(self):
+        self.case["world"]["wan.status"]["_duration_ms"] = 100000
+        self.case["adapter"] = StructuredAdapter("wan.status", ToolResult((
+            self._observation("wan.status", ident="real-1", fid="wan.status",
+                              value={"link_up": True}),
+        )))
+        state = CaseState(self.case, self.registry)
+        plan = Compiler(self.registry).compile(["wan.status"], state)
+        runner = GraphRunner(self.registry, self.case, state, max_repairs=0)
+        result = runner.run(plan)
+        self.assertEqual(result.nodes["wan.status"].state, NodeState.SUCCEEDED)
+        self.assertIsNotNone(state.fact("wan.status"))
+
+
 if __name__ == "__main__":
     unittest.main()
