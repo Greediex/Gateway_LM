@@ -105,6 +105,10 @@ class GraphRunner:
         ready = self.ready(plan)
         if not ready:
             return None
+        # Never silently execute another Function when a planner explicitly
+        # selected a stale or ineligible node.
+        if preferred is not None and not any(node.id == preferred for node in ready):
+            raise PlanError("preferred_node_not_ready")
         n = next((node for node in ready if node.id == preferred), ready[0])
         f = self.registry.functions[n.function_id]
         state = self.node_state(n)

@@ -106,6 +106,15 @@ class RuntimeStageTests(unittest.TestCase):
         self.assertIsNone(self.state.fact("wan.status"))
         self.assertEqual(runner.calls, 1)
 
+    def test_preferred_unready_node_is_not_silently_substituted(self):
+        plan = Compiler(self.registry).compile(["wan.status"], self.state)
+        runner = GraphRunner(self.registry, self.case, self.state, max_repairs=0)
+        with self.assertRaisesRegex(PlanError, "preferred_node_not_ready"):
+            runner.step(plan, preferred="shell.exec")
+        self.assertEqual(runner.calls, 0)
+        self.assertEqual(self.state.evidence, [])
+
+
 
 if __name__ == "__main__":
     unittest.main()
