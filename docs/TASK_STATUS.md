@@ -21,6 +21,7 @@ remain snapshots, not refreshed production measurements.
 | 22 Skills / 270 requirements | DESIGN / PARTIAL | Catalog presence does not mean 270 executable Functions |
 | Versioned declarative read-only Function/Skill overlay | DONE (bounded pilot) | JSON manifest adds gateway zero-input single-output READ contracts transactionally; v0.1 starts unverified, no firmware claim |
 | Semantic vector + lexical + graph retrieval | DONE (opt-in integration, mock-tested) / MODEL EVAL PENDING | Local embedding adapter, cosine threshold, BM25/GoS fusion, strict gates; no measured encoder accuracy, latency or NPU |
+| Offline retrieval benchmark protocol | DONE (harness, illustrative data only) | JSONL split/group evaluator; Recall@K, Precision@K, MRR@K, host latency; independent held-out/model evaluation still pending |
 | HMAC-authenticated evidence checkpoint | DONE (read-only pilot) | `checkpoint.py`, `test_checkpoint` — fresh facts only, not running jobs/WRITE actions |
 | Full durable DAG/job recovery | NOT YET | Requires persistence of job receipts, idempotency and crash-safe external side effects |
 | OpenWrt read-only Adapter interface | DONE (mock-only) | `ubus_read.py`, `test_ubus_read` — injectable trusted firmware-specific transport, no guessed mapping |

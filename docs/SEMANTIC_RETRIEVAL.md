@@ -89,3 +89,16 @@ unseen synonym/fault-family splits.
 
 References: [pinned GoS contract](GRAPH_V3_UPSTREAM_CONTRACT.md) and
 [task status](TASK_STATUS.md).
+
+## Offline Function Retrieval Benchmark v1
+
+`scripts/analysis/evaluate_retrieval.py` so sánh các phương thức trên **cùng JSONL gán nhãn** (mỗi dòng gồm `id, case_id, request, goals, expected_functions, group, split`). Script kiểm tra Function được gán nhãn có thực sự đủ điều kiện trong fixture, không chuyển gold hay world cho retriever, và báo cáo Recall@K, Precision@K, MRR@K, thời gian trung bình/P95 và kết quả theo nhóm.
+
+```bash
+python -m scripts.analysis.evaluate_retrieval \\
+  --input examples/evaluation/illustrative_retrieval.jsonl \\
+  --split illustrative --methods bm25 gos --top-k 5 \\
+  --output runs/retrieval-eval-smoke.json
+```
+
+Đây là **illustrative smoke suite**, không phải holdout. Để đo mô hình thực, chuẩn bị tập riêng biệt và dùng `--methods bm25 gos hybrid --semantic-model-dir /trusted/local/model`, sau đó báo cáo chênh lệch và intervals trên tập lỗi unseen. Giữ kết quả trong `runs/` và không cập nhật lại các bảng benchmark lịch sử.

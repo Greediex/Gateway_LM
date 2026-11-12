@@ -113,3 +113,7 @@ Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model
 ## Thêm Skill/Function từ JSON (read-only pilot)
 
 `install_extension(registry, "examples/extensions/gateway_temperature_read.json")` đăng ký port, Skill và Function mới trong **bản Registry chạy trong RAM**, không sửa dữ liệu gốc. V0.1 luôn bắt đầu bằng `PROPOSED_NOT_VERIFIED`; cần xác minh firmware, gán Adapter và probe mới có thể thực thi. [Hướng dẫn](docs/REGISTRY_EXTENSIONS.md).
+
+## Retrieval evaluation (offline)
+
+`python -m scripts.analysis.evaluate_retrieval --input examples/evaluation/illustrative_retrieval.jsonl --split illustrative --methods bm25 gos --output runs/retrieval-eval-smoke.json` tạo báo cáo Recall@K/Precision@K/MRR và latency trên host. Dataset ví dụ chỉ để smoke test, **không phải kết quả nghiệm thu embedding thật**. [Hướng dẫn](docs/SEMANTIC_RETRIEVAL.md).
