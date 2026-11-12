@@ -17,28 +17,37 @@ class InvocationExecutor:
     def collect(self, runner, function, arguments: dict, state):
         case = runner.case
         live = "live_reader" in case
-        # The adapter is a trusted service, not mutable replay input.
+        adapter = case.get("adapter")
+        # The adapter is a trusted service object; no fixture data can supply
+        # or complete an adapter's missing outputs.
         local_case = case if live else {
             key: value if key == "adapter" else copy.deepcopy(value)
             for key, value in case.items()
         }
-        response = {} if live else local_case["world"].get(function.id, {})
-        simulated_ms = response.pop("_duration_ms", 0) if isinstance(response, dict) else 0
-        adapter = case.get("adapter")
+        if adapter is not None:
+            from ..adapters.results import ToolResult
+            result = adapter.call(function.id, arguments, state, local_case)
+            if isinstance(result, ToolResult):
+                if result.is_error:
+                    raise PlanError("adapter_reported_error:" + result.error_code)
+                return list(result.observations), 0
+            if len(function.outputs) == 1 and isinstance(result, dict):
+                # Existing one-observation Adapter API remains supported.
+                return [result], 0
+            raise PlanError("adapter_typed_result_required")
         if len(function.outputs) == 1:
-            observation = (
-                adapter.call(function.id, arguments, state, local_case) if adapter is not None
-                else execute(function.id, arguments, state, local_case, runner.registry.legacy)
-            )
+            observation = execute(function.id, arguments, state, local_case, runner.registry.legacy)
             if not isinstance(observation, dict):
                 raise PlanError("adapter_invalid_observation")
-            return [observation], simulated_ms
-        if live or adapter is not None:
-            # The current adapter API returns one Observation. Never fabricate
-            # missing outputs from the replay world for an assigned backend.
-            raise PlanError("multi_output_adapter_contract_required")
+            return [observation], 0
+        if live:
+            raise PlanError("live_requires_explicit_adapter_contract")
+        # Synthetic multi-output replay is allowed only when no adapter is
+        # configured; the envelope is not a substitute for a real backend.
+        response = copy.deepcopy(local_case.get("world", {}).get(function.id, {}))
         if not isinstance(response, dict):
             raise PlanError("replay_invalid_multi_output_envelope")
+        simulated_ms = response.pop("_duration_ms", 0)
         outputs = response.get("outputs")
         if not isinstance(outputs, dict) or set(outputs) != set(function.outputs):
             raise PlanError("replay_multi_output_mismatch")

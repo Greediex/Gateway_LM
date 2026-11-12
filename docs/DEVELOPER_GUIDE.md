@@ -100,3 +100,11 @@ Danh mục đầy đủ và ánh xạ lệnh cũ/mới tại [scripts/README.md]
 ## 8. Runtime stage interfaces
 
 Các bước FunctionRouter → FunctionPlanner → GraphRunner → InvocationExecutor → EvidenceVerifier đã tách thành module riêng. Dependency injection chỉ từ cấu hình đáng tin cậy, không từ yêu cầu hay LLM. Xem [Runtime stages](RUNTIME_STAGES.md) cho phạm vi và những phần chưa thực hiện.
+
+## 9. Typed multi-output Adapter & goal execution
+
+Return `ToolResult(observations=(obs_port_a, obs_port_b))` from a trusted Adapter when a Function declares more than one output. Each observation requires a unique ID and the registered Function/port/source/target/schema; rejected results never assert a goal claim. The historical single-observation dict remains valid for one-output Functions.
+
+Run: `python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "Check WAN and memory" --goals wan.status system.resources --method bm25`.
+
+See [reference alignment and limits](REFERENCE_IMPLEMENTATION.md); this is an opt-in path and `RESOLVED` means measurement ports were verified, not that a real network incident was fixed.

@@ -65,6 +65,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Các lệnh benchmark/analysis mới](scripts/README.md)
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
 - [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
+- [Đối chiếu upstream và goal execution (opt-in)](docs/REFERENCE_IMPLEMENTATION.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](docs/WEB_UI.md)
 - [Kết quả Graph v4 (ảnh chụp ngày 11/11/2026)](docs/GRAPH_V4_RESULT_VI.md)
@@ -72,6 +73,14 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Nguồn paper, mức độ tích hợp và giấy phép](docs/PAPER_SOURCES.md)
 - [Composite Adapter refactor](docs/ADAPTER_COMPOSITION.md)
 - [README v0.1 đầy đủ trước cleanup — lưu trữ](docs/README_V01_DETAILS.md)
+
+## Goal execution (mới, trên replay)
+
+```bash
+python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "Check WAN and memory" --goals wan.status system.resources --method bm25
+```
+
+Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra root-cause diagnosis. Mọi Function vẫn phải qua Registry/permission/capability/Verifier. Xem [reference alignment](docs/REFERENCE_IMPLEMENTATION.md).
 
 ## Những gì chưa hỗ trợ
 

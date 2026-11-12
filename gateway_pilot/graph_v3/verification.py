@@ -68,10 +68,28 @@ class EvidenceVerifier:
         if (any(not required.issubset(e) or e.get("function_id") != function.id for e in observations)
                 or {e["port"] for e in observations} != expected):
             raise PlanError("observation_contract_mismatch")
-        if len({e["id"] for e in observations}) != len(observations):
-            raise PlanError("observation_duplicate_id")
+        if (any(not isinstance(e.get("id"), str) or not e["id"]
+                or not isinstance(e.get("status"), str)
+                or not isinstance(e.get("source"), str)
+                or not isinstance(e.get("target"), str)
+                or not isinstance(e.get("scope"), str) for e in observations)
+                or len({e["id"] for e in observations}) != len(observations)):
+            raise PlanError("observation_invalid_identity_or_status")
+        # An assigned Adapter can return a fresh observation without mutating
+        # CaseState. Legacy execute() and synthetic replay already append it.
+        # Reject ID collisions: a ToolResult may never overwrite prior evidence.
+        for evidence in observations:
+            if any(old["id"] == evidence["id"] and old is not evidence
+                   for old in runner.state.evidence):
+                raise PlanError("observation_id_collision")
         adapter_status = {e["id"]: e["status"] for e in observations}
         for evidence in observations:
+            if not any(old is evidence for old in runner.state.evidence):
+                # Never trust timestamp/boot metadata embedded by an adapter.
+                # CaseState.record stamps receipt time and environment itself.
+                for key in ("_received_at", "boot_id", "config_version"):
+                    evidence.pop(key, None)
+                runner.state.evidence.append(evidence)
             evidence["ttl_s"] = self.ttl_seconds(runner, function)
             if (node.context_target and evidence["scope"] == "client"
                     and evidence["target"] != node.context_target["client_id"]):

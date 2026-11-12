@@ -10,6 +10,8 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 ## Design boundaries
 - The **Router** interprets requests; **Resolver/Planner** proposes eligible Function DAGs; **Runner** executes; **Verifier/Claim Engine** validates evidence and terminal claims.
 - No user text or LLM text may execute commands directly. Use typed Function IDs and allowlisted adapters.
+- Structured ToolResult must declare all outputs exactly once; reject partial, foreign and duplicate IDs before admitting evidence. Error results have no successful observations.
+- A completed set of measurement ports is not by itself evidence for an RCA diagnosis. Do not label `GoalAgent` results as repaired incidents.
 - Only the trusted Core may authorize `WRITE`; default is read-only. Preserve hard ACL, target/scope, schema, TTL and budget gates.
 - A Function capability is `PROBE_OK` only after verification. Never assume OpenWrt backend support from a placeholder map.
 - New Skill/Function/Workflow or retrieval algorithm should extend registries/interfaces instead of introducing workflow-name conditionals in Core.

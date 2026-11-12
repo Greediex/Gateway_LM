@@ -58,6 +58,17 @@ jobs:
       - name: Runtime stage boundary and negative-path tests
         run: python -m unittest tests.graph_v3.test_runtime_stages -v
 
+      - name: Structured Adapter and registered goal tests
+        run: |
+          python -m unittest tests.graph_v3.test_tool_result -v
+          python -m unittest tests.graph_v3.test_goal_agent -v
+
+      - name: Registered multi-goal assistant replay
+        run: |
+          mkdir -p runs/goal_smoke
+          python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "WAN and RAM status" --goals wan.status system.resources --method bm25 > runs/goal_smoke/goals.json
+          python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/goal_smoke/goals.json").read_text(encoding="utf-8")); assert r["status"] == "RESOLVED" and r["calls"] == 2 and r["diagnosis"] == "NOT_EVALUATED", r; print("Goal smoke: PASS (2 verified ports, no RCA claim)")'
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 
@@ -77,3 +88,4 @@ jobs:
             runs/dynamic-cleanup.json
             runs/html-cleanup/summary.json
             runs/html-cleanup/REPORT.md
+            runs/goal_smoke/goals.json

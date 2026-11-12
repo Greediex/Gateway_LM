@@ -79,3 +79,7 @@ end-to-end smoke results; do not claim hardware performance from those results.
    (not 270 already executable Functions); zero hard-coded workflow-name branches.
 5. Independent benchmarks for routing, dynamic replanning, evidence RCA,
    latency, memory and NPU use on device.
+
+## Further implementation: structured Adapter results and registered multi-goal execution
+
+The opt-in `ToolResult` API supports verified multiple outputs and explicit tool errors; `GoalAgent` can dynamically compile registered output goals without a hard-coded Workflow ID. Neither path claims arbitrary-task planning or production OpenWrt support. See [upstream alignment and tests](REFERENCE_IMPLEMENTATION.md).
