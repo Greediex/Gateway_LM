@@ -35,6 +35,8 @@ py -3.12 -m venv .venv-graph
 gateway_pilot/
   assistant.py, turn_router.py, answer.py   # interaction + output
   graph_v3/
+    routing.py, planning_stage.py          # Contract 0 selection → typed DAG
+    execution.py, verification.py          # adapter observations → verified evidence
     registry_v01.py, graphs.py, resolver.py  # catalog/retrieval
     planner.py, runner.py, repair.py         # planning/execution
     state.py, claims.py, contracts.py        # verified state/claims
@@ -64,6 +66,7 @@ scripts/analysis/                           # analysis / audit tools
 
 ```bash
 python -m scripts.check_project
+python -m unittest tests.graph_v3.test_runtime_stages -v
 python -m unittest discover -s tests -v
 python -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace
 ```
@@ -93,3 +96,7 @@ python -m scripts.analysis.verify_run --help
 Danh mục đầy đủ và ánh xạ lệnh cũ/mới tại [scripts/README.md](../scripts/README.md).
 
 **Giữ ở repo root:** `setup_upstream.py` là bootstrap; `prepare_data.py` là bộ sinh fixture có đường dẫn được lưu trong metadata/hashes v1/v2. Không chuyển hoặc sinh lại frozen fixture. Các command cũ `python run_*.py` phải đổi sang `python -m scripts.benchmarks.run_*`.
+
+## 8. Runtime stage interfaces
+
+Các bước FunctionRouter → FunctionPlanner → GraphRunner → InvocationExecutor → EvidenceVerifier đã tách thành module riêng. Dependency injection chỉ từ cấu hình đáng tin cậy, không từ yêu cầu hay LLM. Xem [Runtime stages](RUNTIME_STAGES.md) cho phạm vi và những phần chưa thực hiện.

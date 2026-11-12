@@ -55,6 +55,9 @@ jobs:
           python -m scripts.benchmarks.run_html_benchmark --repeat 1 --output runs/html-cleanup
           python -c 'import json; from pathlib import Path; d=json.loads(Path("runs/dynamic-cleanup.json").read_text(encoding="utf-8")); h=json.loads(Path("runs/html-cleanup/summary.json").read_text(encoding="utf-8")); assert d["dynamic"]["passed"] == d["dynamic"]["total"] == 18, d["dynamic"]; assert h["trials"] == h["trials_pass"] == 36, h; print("Replay benchmark smoke: PASS (18 dynamic cases, 36 HTML cases)")'
 
+      - name: Runtime stage boundary and negative-path tests
+        run: python -m unittest tests.graph_v3.test_runtime_stages -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

@@ -51,7 +51,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 | Đường dẫn | Vai trò |
 | --- | --- |
 | `gateway_pilot/assistant.py` | Entry point hội thoại và Answer Composer |
-| `gateway_pilot/graph_v3/` | Contract, Registry, Retrieval, Compiler, Runner, Repair, State/Claims |
+| `gateway_pilot/graph_v3/` | Routing/Planning/Execution/Verification stages; Contract, Registry, Retrieval, Compiler, Runner, Repair, State/Claims |
 | `gateway_pilot/adapters/` | Backend boundary, Replay/Windows/OpenWrt skeleton, Composite Adapter |
 | `web_gateway/` | HTTP server và giao diện thử nghiệm |
 | `data/`, `benchmarks/` | Registry, fixture, bộ đánh giá và manifest đã khóa |
@@ -64,6 +64,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Docs index — bắt đầu từ đây](docs/INDEX.md)
 - [Các lệnh benchmark/analysis mới](scripts/README.md)
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
+- [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](docs/WEB_UI.md)
 - [Kết quả Graph v4 (ảnh chụp ngày 11/11/2026)](docs/GRAPH_V4_RESULT_VI.md)
