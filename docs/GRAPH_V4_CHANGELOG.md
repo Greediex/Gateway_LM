@@ -79,12 +79,12 @@ nhận goal rỗng thì không có node. Không đổi router, dynamic policy, C
 
 Test mới `CatalogC1Tests.test_loader_rejects_goal_without_eligible_in_principle_producer`
 kiểm riêng việc loader từ chối producer thiếu, WRITE, PROBE_FAILED hoặc sai adapter.
-Các test mới khác nằm trong `tests_graph_v3/test_catalog_c1.py`. Toàn bộ phần catalog
+Các test mới khác nằm trong `tests/graph_v3/test_catalog_c1.py`. Toàn bộ phần catalog
 là `GATEWAY_DESIGN`; công thức rerank và kernel upstream của T3 không đổi.
 
 ## T3 — G2 / G3 / G4 / G5 / G6 (2026-11-10)
 
-Không sửa test cũ. Thêm 8 test trong `tests_graph_v3/test_gos_retrieval.py`: parity kernel với seed reciprocal-rank, công thức rerank tính tay trên sáu node, transition membership và weight I/O, hard gate trên graph đầy đủ, query không match trả rỗng và caller fallback, cache theo G_S version, budget/alias `k`, cùng pipeline seed fusion và scan PPR trước rerank top_n.
+Không sửa test cũ. Thêm 8 test trong `tests/graph_v3/test_gos_retrieval.py`: parity kernel với seed reciprocal-rank, công thức rerank tính tay trên sáu node, transition membership và weight I/O, hard gate trên graph đầy đủ, query không match trả rỗng và caller fallback, cache theo G_S version, budget/alias `k`, cùng pipeline seed fusion và scan PPR trước rerank top_n.
 
 Hành vi mới: seed/top_n độc lập; không dùng BM25 thô làm personalization; bỏ fallback chữ cái; graph tĩnh đầy đủ; dependency weight theo phần input consumer được `Port.accepts` xác nhận; một cạnh membership Skill→Function kiểu workflow và reverse do kernel. Nhãn: GoS lexical-seed mode, không có embedding/LLM rewrite. READY vẫn dùng PPR, khi retrieval rỗng dùng objective rồi id; không thay resolver (T4).
 
@@ -103,7 +103,7 @@ Hành vi mới: seed/top_n độc lập; không dùng BM25 thô làm personaliza
 |---|---|---|---|
 | `ResolverTests.test_c_change_dns_is_blocked_without_adapter_calls` | G20; nợ T4 #1 | Resolver tự nhận diện yêu cầu thay đổi bằng regex trùng `CHANGE_REQUEST`. | Caller truyền `intent="CHANGE"`; giữ nguyên mọi assert BLOCKED, WRITE bị từ chối và 0 tool call. Turn Router dùng duy nhất `workflow.CHANGE_REQUEST`. |
 
-Thêm `tests_graph_v3/test_turn_router.py`; mặc định `workflow.diagnose()` vẫn dùng registry legacy,
+Thêm `tests/graph_v3/test_turn_router.py`; mặc định `workflow.diagnose()` vẫn dùng registry legacy,
 chỉ `assistant.answer()` mặc định registry v0.1. Không sửa symptoms, web, dữ liệu frozen, runs hay mã/SHA upstream.
 
 ### C2 — Sửa lần 1 (2026-11-10)

@@ -40,14 +40,15 @@ gateway_pilot/
     state.py, claims.py, contracts.py        # verified state/claims
     upstream.py, skilldag.py                 # pinned upstream integration
   adapters/                                 # typed Function adapters
-web_gateway/                                # web UI and tests
+web_gateway/                                # web UI
+  tests/graph_v3/, tests/web/               # regression suites
 data/ + benchmarks/                         # frozen test data
 docs/contracts/                             # machine-readable contracts
 scripts/benchmarks/                         # benchmark entry points
 scripts/analysis/                           # analysis / audit tools
 ```
 
-Điểm bắt đầu hợp lý khi mở rộng Function: [Adapter composition](ADAPTER_COMPOSITION.md), `registry_v01.py`, `tests_graph_v3/test_registry_v01.py`.
+Điểm bắt đầu hợp lý khi mở rộng Function: [Adapter composition](ADAPTER_COMPOSITION.md), `registry_v01.py`, `tests/graph_v3/test_registry_v01.py`.
 
 ## 4. Thêm Function/Adapter đúng cách
 
@@ -63,9 +64,7 @@ scripts/analysis/                           # analysis / audit tools
 
 ```bash
 python -m scripts.check_project
-python -m unittest discover -s tests_graph_v3 -v
 python -m unittest discover -s tests -v
-python -m unittest discover -s web_gateway/tests -v
 python -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace
 ```
 

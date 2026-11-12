@@ -41,9 +41,7 @@ Dữ liệu trong ví dụ là **fixture mô phỏng**. Trạng thái `PARTIAL`/
 
 ```bash
 python -m scripts.check_project
-python -m unittest discover -s tests_graph_v3 -v
 python -m unittest discover -s tests -v
-python -m unittest discover -s web_gateway/tests -v
 ```
 
 GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh refactor: [CI workflow](.github/workflows/composite-adapter-regression.yml). Các test web chỉ dành cho Windows được skip trên Linux. Các báo cáo nghiên cứu cũ **không được cập nhật số liệu một cách hồi tố**.
@@ -57,8 +55,8 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 | `gateway_pilot/adapters/` | Backend boundary, Replay/Windows/OpenWrt skeleton, Composite Adapter |
 | `web_gateway/` | HTTP server và giao diện thử nghiệm |
 | `data/`, `benchmarks/` | Registry, fixture, bộ đánh giá và manifest đã khóa |
-| `tests/`, `tests_graph_v3/`, `web_gateway/tests/` | Legacy, graph và web regression tests |
-| `docs/` | Kiến trúc, protocol, paper audit, các hợp đồng và báo cáo lịch sử |
+| `tests/` | Regression tests: `graph_v3/`, `web/` và baseline |
+| `docs/` | Kiến trúc, protocol, Web UI, báo cáo lịch sử trong `reports/` |
 | `scripts/` | Benchmark, phân tích và kiểm tra vệ sinh repository |
 
 ## Tài liệu quan trọng
@@ -67,7 +65,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Các lệnh benchmark/analysis mới](scripts/README.md)
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
 - [Quy tắc coding agent](AGENTS.md)
-- [Web UI và chế độ đo](README_WEB.md)
+- [Web UI và chế độ đo](docs/WEB_UI.md)
 - [Kết quả Graph v4 (ảnh chụp ngày 11/11/2026)](docs/GRAPH_V4_RESULT_VI.md)
 - [Kiến trúc tổng thể v0.1 (HTML)](docs/architecture/gateway-lm-v0.1-kien-truc.html)
 - [Nguồn paper, mức độ tích hợp và giấy phép](docs/PAPER_SOURCES.md)

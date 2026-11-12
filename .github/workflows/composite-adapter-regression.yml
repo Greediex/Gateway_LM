@@ -41,7 +41,7 @@ jobs:
         run: python -m scripts.check_project
 
       - name: Composite adapter unit tests
-        run: python -m unittest tests_graph_v3.test_composite_adapter -v
+        run: python -m unittest tests.graph_v3.test_composite_adapter -v
 
       - name: Benchmark and analysis CLI smoke
         run: |
@@ -55,14 +55,8 @@ jobs:
           python -m scripts.benchmarks.run_html_benchmark --repeat 1 --output runs/html-cleanup
           python -c 'import json; from pathlib import Path; d=json.loads(Path("runs/dynamic-cleanup.json").read_text(encoding="utf-8")); h=json.loads(Path("runs/html-cleanup/summary.json").read_text(encoding="utf-8")); assert d["dynamic"]["passed"] == d["dynamic"]["total"] == 18, d["dynamic"]; assert h["trials"] == h["trials_pass"] == 36, h; print("Replay benchmark smoke: PASS (18 dynamic cases, 36 HTML cases)")'
 
-      - name: Graph regression suite
-        run: python -m unittest discover -s tests_graph_v3 -v
-
-      - name: Legacy regression suite
+      - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
-
-      - name: Web adapter regression suite
-        run: python -m unittest discover -s web_gateway/tests -v
 
       - name: Run end-to-end assistant replay on cloud runner
         run: |

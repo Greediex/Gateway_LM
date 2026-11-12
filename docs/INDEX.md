@@ -8,6 +8,7 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | --- | --- |
 | [CLI script migration](../scripts/README.md) | Bảng chuyển lệnh root script sang package `scripts/benchmarks` và `scripts/analysis` |
 | [Developer Guide](DEVELOPER_GUIDE.md) | Setup Windows/Linux/CI, cấu trúc module, thêm Function và chạy test |
+| [Web UI guide](WEB_UI.md) | Cách khởi động web và chọn replay/live adapter |
 | [Architecture HTML v0.1](architecture/gateway-lm-v0.1-kien-truc.html) | Thiết kế giao diện và năng lực dự kiến; **không** phải danh mục implementation đã được chứng minh |
 | [Graph v3 Protocol](GRAPH_V3_PROTOCOL.md) | Phạm vi, giới hạn, kế hoạch/contract và test |
 | [Graph v3 Upstream Contract](GRAPH_V3_UPSTREAM_CONTRACT.md) | GoS/SkillDAG pin và phép ánh xạ |
@@ -22,8 +23,8 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [Graph v4 result — 11/11/2026](GRAPH_V4_RESULT_VI.md) | Snapshot G1–G23, kiểm thử trên replay; không thay thế kết quả CI của nhánh hiện tại |
 | [Graph v4 changelog](GRAPH_V4_CHANGELOG.md) | Lịch sử thay đổi |
 | [Graph v4 repair demo](GRAPH_V4_REPAIR_DEMO.md) | Ví dụ repair bằng dữ liệu replay |
-| [Graph v3 result (historical)](../GRAPH_V3_RESULT_VI.md) | Báo cáo giai đoạn Graph v3 |
-| [v1/v2 experiment overview](../EXPERIMENT_OVERVIEW_VI.md) | Benchmark và hạn chế của baseline |
+| [Graph v3 result (historical)](reports/GRAPH_V3_RESULT_VI.md) | Báo cáo giai đoạn Graph v3 |
+| [v1/v2 experiment overview](reports/EXPERIMENT_OVERVIEW_VI.md) | Benchmark và hạn chế của baseline |
 | [Graph v3 repair demo](GRAPH_V3_REPAIR_DEMO.md) | Demo lịch sử |
 
 ## III. Báo cáo/paper và bằng chứng

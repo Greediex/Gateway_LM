@@ -13,7 +13,7 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 ACTIVE_DOCS = (
     "README.md",
-    "README_WEB.md",
+    "docs/WEB_UI.md",
     "AGENTS.md",
     "docs/INDEX.md",
     "docs/DEVELOPER_GUIDE.md",
@@ -26,6 +26,8 @@ REQUIRED = (
     "data/frozen_manifest.json",
     "gateway_pilot/graph_v3/contracts.py",
     "gateway_pilot/adapters/composite.py",
+    "tests/graph_v3/test_composite_adapter.py",
+    "tests/web/test_adapter.py",
 )
 GENERATED_TOP = {"runs", "third_party", "models", "captures", "logs"}
 GENERATED_DIRS = {

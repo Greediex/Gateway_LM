@@ -1,6 +1,6 @@
 # Paper fidelity audit: Gateway LM pilot
 
-Scope/version note: this audit describes the original `core.py`/`run.py` v1/v2 baseline. The separate `gateway_pilot/graph_v3` implementation added afterwards is documented in `GRAPH_V3_PROTOCOL.md` and `../GRAPH_V3_RESULT_VI.md`; historical findings below are preserved.
+Scope/version note: this audit describes the original `core.py`/`run.py` v1/v2 baseline. The separate `gateway_pilot/graph_v3` implementation added afterwards is documented in `GRAPH_V3_PROTOCOL.md` and `reports/GRAPH_V3_RESULT_VI.md`; historical findings below are preserved.
 
 Checked 2026-11-07 by source inspection only. No pilot code/data/results changed; no benchmark, inference, installation, tuning or clone performed for this audit. Paths below are relative to the repository root.
 

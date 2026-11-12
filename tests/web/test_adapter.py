@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ADAPTER = Path(__file__).resolve().parents[1] / 'server.py'
+ADAPTER = Path(__file__).resolve().parents[2] / 'web_gateway' / 'server.py'
 
 
 class WebAdapterTests(unittest.TestCase):

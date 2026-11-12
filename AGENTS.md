@@ -27,9 +27,7 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 ## Required validation
 ```bash
 python -m scripts.check_project
-python -m unittest discover -s tests_graph_v3 -v
 python -m unittest discover -s tests -v
-python -m unittest discover -s web_gateway/tests -v
 ```
 - Add contract/negative-path tests for new interfaces; verify wrong targets, missing permissions, malformed responses, timeouts, and stale facts.
 - Run end-to-end replay smoke tests when changing Router, Resolver, Runner or Answer Composer.

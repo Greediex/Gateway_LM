@@ -34,7 +34,7 @@ Dữ liệu benchmark vẫn ở `benchmarks/`, frozen manifests được giữ n
 ## Smoke test
 
 ```bash
-python -m unittest tests_graph_v3.test_script_layout -v
+python -m unittest tests.graph_v3.test_script_layout -v
 python -m scripts.check_project
 python -m scripts.benchmarks.run_function_selection --help
 python -m scripts.analysis.audit_html --help

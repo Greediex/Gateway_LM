@@ -2,7 +2,7 @@
 
 Giao diện chat gọi `gateway_pilot.workflow.diagnose()` của pilot hiện tại. Backend trả kết luận, các mục tiêu policy đã cân nhắc, tool calls, evidence và từng phiên bản DAG. Mọi kết quả đo dùng dữ liệu replay trên máy.
 
-Chạy từ thư mục `gateway_lm_pilot` trên Windows:
+Chạy từ thư mục gốc repository trên Windows:
 
 ```powershell
 .\web_gateway\start_windows.ps1
@@ -37,4 +37,4 @@ Web giữ một phiên (`session_id`, trong bộ nhớ, hết hạn sau 15 phút
 {"message":"Laptop An có Wi-Fi nhưng không vào Internet.","fixture_id":"WEB-WAN-TIMEOUT-1","policy":"dynamic","method":"gos","with_guide":true,"with_skill_context":true,"with_llm":false}
 ```
 
-Chạy `python -m unittest discover -s web_gateway/tests -v` để kiểm tra adapter, đối chứng Dynamic/Core, phối hợp ReAct/GoS/SkillDAG và cổng chặn yêu cầu ghi.
+Chạy `python -m unittest discover -s tests/web -v` để kiểm tra adapter, đối chứng Dynamic/Core, phối hợp ReAct/GoS/SkillDAG và cổng chặn yêu cầu ghi.

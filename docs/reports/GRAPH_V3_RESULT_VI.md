@@ -46,7 +46,7 @@ Graph mới không làm tăng số ca model thành công trong lượt này. L�
 # Chạy từ thư mục Gateway_LM
 python -m venv .venv-graph
 .\.venv-graph\Scripts\python.exe -m pip install -r requirements-graph-v3.lock
-.\.venv-graph\Scripts\python.exe -m unittest discover -s tests_graph_v3 -v
+.\.venv-graph\Scripts\python.exe -m unittest discover -s tests/graph_v3 -v
 .\.venv-graph\Scripts\python.exe -m gateway_pilot.graph_v3.evaluate --output runs/my_graph_run
 .\.venv-graph\Scripts\python.exe -m gateway_pilot.graph_v3.evaluate --model qwen3:1.7b --output runs/my_model_run
 ```

@@ -13,7 +13,7 @@ python -m venv .venv-graph
 .\web_gateway\start_windows.ps1
 ```
 
-`setup_upstream.py` tải GoS và SkillDAG theo commit đã ghim. Hướng dẫn chạy và cấu hình nguồn đo nằm trong [README Web](../README_WEB.md).
+`setup_upstream.py` tải GoS và SkillDAG theo commit đã ghim. Hướng dẫn chạy và cấu hình nguồn đo nằm trong [README Web](WEB_UI.md).
 
 ## MVP v0.1 — graph v4 (hiện trạng)
 
@@ -38,7 +38,7 @@ Adapter OpenWrt mới là khung (`gateway_pilot/adapters`): chưa có Function n
 
 ```powershell
 .\.venv-graph\Scripts\python.exe run_operations_replay.py --output runs/my_operations_replay
-.\.venv-graph\Scripts\python.exe -m unittest discover -s tests_graph_v3 -p test_operations.py -v
+.\.venv-graph\Scripts\python.exe -m unittest discover -s tests/graph_v3 -p test_operations.py -v
 ```
 
 Replay nghiệp vụ minh họa QoS có duyệt và hậu kiểm (WF-031), lịch truy cập một lần qua khởi động lại (WF-063), cảnh báo ngưỡng theo cửa sổ (WF-054) và preflight artifact (WF-047/WF-081). QoS và lịch chỉ thay đổi SQLite local. Preflight demo kiểm chữ ký bằng verifier và khóa fixture.
@@ -82,11 +82,11 @@ Bộ chạy ghi kết quả Core trên 72 ca replay cũ. Khi có `--model`, nó 
 
 ## Graph v3 — implementation hiện tại
 
-[Báo cáo v3 và lệnh chạy](../GRAPH_V3_RESULT_VI.md): đã tích hợp kernel PPR GoS gốc, tách G_S/G_SF/H_F/G_run, typed invocation DAG, schema/guard/evidence binding, chọn producer theo chi phí trong ngân sách, READY scheduler và bounded repair. 50 test v3 + 34 test legacy pass; 48 ca cấu trúc và 48 ca model hoàn tất. Model vẫn đạt 27/48, không coi graph đúng cấu trúc là bằng chứng reasoning tăng.
+[Báo cáo v3 và lệnh chạy](reports/GRAPH_V3_RESULT_VI.md): đã tích hợp kernel PPR GoS gốc, tách G_S/G_SF/H_F/G_run, typed invocation DAG, schema/guard/evidence binding, chọn producer theo chi phí trong ngân sách, READY scheduler và bounded repair. 50 test v3 + 34 test legacy pass; 48 ca cấu trúc và 48 ca model hoàn tất. Model vẫn đạt 27/48, không coi graph đúng cấu trúc là bằng chứng reasoning tăng.
 
 ```powershell
 # Chạy từ thư mục Gateway_LM
-.\.venv-graph\Scripts\python.exe -m unittest discover -s tests_graph_v3 -v
+.\.venv-graph\Scripts\python.exe -m unittest discover -s tests/graph_v3 -v
 .\.venv-graph\Scripts\python.exe -m gateway_pilot.graph_v3.evaluate --output runs/my_new_graph_run
 ```
 
@@ -96,7 +96,7 @@ Dependency của v3 dùng venv riêng và [requirements-graph-v3.lock](../requir
 
 ## Kết quả v1/v2 đã chạy
 
-[Đọc báo cáo tổng hợp và kết luận](../EXPERIMENT_OVERVIEW_VI.md): 240 episode primary (48 ca × 5 arm), thêm 48 episode native exploratory trên cùng ca. Qwen3 `qwen3:1.7b`, actual artifact count 2.032B, Q4_K_M, CPU. Graph tự điều phối đạt 9/48; Core chuẩn bị evidence rồi native model kết luận đạt 27/48; baseline luật đạt 48/48 trên fixture đơn giản này. Chưa chứng minh khả năng trên router thật hoặc trần năng lực mọi model <3B.
+[Đọc báo cáo tổng hợp và kết luận](reports/EXPERIMENT_OVERVIEW_VI.md): 240 episode primary (48 ca × 5 arm), thêm 48 episode native exploratory trên cùng ca. Qwen3 `qwen3:1.7b`, actual artifact count 2.032B, Q4_K_M, CPU. Graph tự điều phối đạt 9/48; Core chuẩn bị evidence rồi native model kết luận đạt 27/48; baseline luật đạt 48/48 trên fixture đơn giản này. Chưa chứng minh khả năng trên router thật hoặc trần năng lực mọi model <3B.
 
 34 kiểm thử Core/adapter pass. Commit và giấy phép của các repo tham chiếu được ghi trong [PAPER_SOURCES.md](PAPER_SOURCES.md).
 

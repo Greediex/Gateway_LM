@@ -31,8 +31,7 @@ text. An unassigned Function must not be available even if a backend advertises 
 ## Tests
 
 ```bash
-python -m unittest tests_graph_v3.test_composite_adapter -v
-python -m unittest discover -s tests_graph_v3 -v
+python -m unittest tests.graph_v3.test_composite_adapter -v
 python -m unittest discover -s tests -v
 ```
 

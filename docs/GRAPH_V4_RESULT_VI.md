@@ -42,7 +42,7 @@ GraSP chỉ có bản tái lập **không chính thức**; không có câu "tái
 |---|---|---|
 | Function Selection (60 ca) | Arm E: recall 0.97, đúng status 30/30, 0 false-resolution, 0 vi phạm; precision 0.36, 239 lượt gọi. Arm D: 0 false-resolution, 0 vi phạm | `run_function_selection.py` |
 | Hội thoại (193 lượt) | Router: đúng loại lượt 0.81 (regex 0.26), 0 câu trả lời rỗng, 0 false-resolution; gọi tool sai S/K/C 1/25 | `run_conversation_benchmark.py` |
-| Claims ↔ `core.support()` | 16.320 lần so tại mọi `proof()`, 0 sai lệch | `tests_graph_v3/test_claims_session_c4.py` |
+| Claims ↔ `core.support()` | 16.320 lần so tại mọi `proof()`, 0 sai lệch | `tests/graph_v3/test_claims_session_c4.py` |
 
 ## Chưa đạt / việc mở
 
