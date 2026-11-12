@@ -63,12 +63,14 @@ class GoalAgent:
             if not hasattr(registry, "workflows"):
                 raise PlanError("goal_inference_requires_versioned_catalog")
             decomposer = TaskDecomposer(registry)
-            if decomposer.is_write_intent(request):
+            decomposition = decomposer.decompose(request)
+            # Preserve the existing compound-request refusal contract; the
+            # single-intent gate applies only when decomposition abstains.
+            if decomposition.decision == "NOT_APPLICABLE" and decomposer.is_write_intent(request):
                 return self._result((), state, None,
                                     routing={"source": "write_policy", "action": "REFUSE"},
                                     status="BLOCKED",
                                     reason="write_intent_requires_approval")
-            decomposition = decomposer.decompose(request)
             if decomposition.decision == "READY":
                 goals = decomposition.goals
                 routing = {
