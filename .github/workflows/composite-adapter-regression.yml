@@ -115,6 +115,9 @@ jobs:
       - name: Signed read-only job journal and crash-restart recovery tests
         run: python -m unittest tests.graph_v3.test_job_journal -v
 
+      - name: Signed WRITE approval, nonce and rollback (mock driver only)
+        run: python -m unittest tests.graph_v3.test_change_transaction -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

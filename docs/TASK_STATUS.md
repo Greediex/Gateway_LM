@@ -29,7 +29,7 @@ remain snapshots, not refreshed production measurements.
 | OpenWrt firmware probes and verified adapters | BLOCKED ON HARDWARE | No firmware access or board-backed probe pass |
 | Edge–Cloud policy and privacy/budget gate | DONE (mock-only policy) / REAL INTEGRATION PENDING | Disabled by default; explicit consent, aggregate-only telemetry, bounded requests/estimated USD; no provider/NPU measurements |
 | Hardware latency / CPU / RAM / NPU test | BLOCKED ON HARDWARE | Must test target device |
-| WRITE approvals and transactional rollback | NOT YET | Explicitly disabled in read-only pilot |
+| WRITE approval and rollback state machine | DONE (disabled-by-default mock pilot) / FIRMWARE PENDING | HMAC approval tied to target/revision/typed args, durable one-time nonce, snapshot/preview/readback/rollback; no real router backend |
 
 ## Decomposition contract
 

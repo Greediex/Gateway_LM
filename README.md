@@ -137,3 +137,7 @@ GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất ou
 ## Signed Job Journal (READ-only opt-in)
 
 `ReadOnlyJobJournal` lưu bằng chứng **thực thi** gồm node/revision/status/reason qua HMAC chain, không lưu raw request hay payload. Kết hợp `EvidenceCheckpoint` để phục hồi fact còn hạn sau restart. Không phải exactly-once WRITE, không tự retry job ngoại vi. Xem [Job Journal](docs/JOB_JOURNAL.md).
+
+## WRITE transaction safety (opt-in mock only)
+
+`SafeWriteTransaction` là state machine **mặc định tắt** cho thao tác cấu hình có phê duyệt. Gồm HMAC token theo Function/target/revision, nonce bền vững, snapshot, preview, read-back và rollback đã kiểm thử với driver giả. **Không mở WRITE trong Agent, Web hoặc trên OpenWrt thật**. Xem [WRITE Transactions](docs/WRITE_TRANSACTIONS.md).

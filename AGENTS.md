@@ -48,3 +48,5 @@ More detailed instructions: [Developer Guide](docs/DEVELOPER_GUIDE.md) and [Docs
 - Cloud delegation defaults disabled. Share only verified aggregated gateway numeric telemetry with server-side consent and fixed budget; never elevate a cloud hypothesis into evidence or execute returned instructions.
 
 - Optional signed READ-only job journals must fail closed on integrity/binding/append errors; do not classify an unaudited execution as a durable success. WRITE and exactly-once remote effects are explicitly outside this pilot.
+
+- The isolated WRITE transaction controller is disabled by default and must never be called by LLM, GoalAgent, RCAAgent or Web. An approved, separately probed firmware driver and explicit operator consent are mandatory; no synthetic WRITE may claim router support.
