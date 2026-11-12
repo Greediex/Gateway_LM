@@ -24,6 +24,7 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 - Distinguish Observation, verified Fact, Hypothesis and Claim. A hypothesis is never sufficient proof for `RESOLVED`.
 - Keep synthetic fixture data and production adapter logic separated. Do not leak ground-truth labels into inference prompts.
 - Never commit secrets, user identifiers, network captures, models, `runs/`, or virtual environments.
+- Signed checkpoints are trusted local READ-only evidence caches, not job journals or authorizations. Never accept checkpoint files/keys from HTTP or LLM input.
 - Respect frozen benchmark manifests. Any new evaluation must have a distinct version and reproducible metadata.
 
 ## Required validation

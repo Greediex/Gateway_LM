@@ -78,6 +78,9 @@ jobs:
           python -m gateway_pilot.graph_v3.goal_agent --registry v01 --fixture GLM-04-0 --request "Kiểm tra trạng thái WAN và RAM" --method bm25 > runs/goal_smoke/compound.json
           python -c 'import json; from pathlib import Path; r=json.loads(Path("runs/goal_smoke/compound.json").read_text(encoding="utf-8")); assert r["status"]=="RESOLVED" and r["calls"]==2 and r["goals"]==["wan.status","system.resources"], r; print("Compound goals: PASS")'
 
+      - name: Signed evidence checkpoint and safe resume
+        run: python -m unittest tests.graph_v3.test_checkpoint -v
+
       - name: Full regression suite (legacy, graph, web)
         run: python -m unittest discover -s tests -v
 

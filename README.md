@@ -95,3 +95,7 @@ Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra
 ## Phân rã câu hỏi có nhiều mục tiêu (experimental)
 
 Với Registry v0.1, ví dụ `python -m gateway_pilot.graph_v3.goal_agent --registry v01 --fixture GLM-04-0 --request "Kiểm tra trạng thái WAN và RAM" --method bm25`. Mỗi mệnh đề phải khớp một port đã đăng ký bằng `data/goal_aliases_v01.json`; mệnh đề thiếu rõ ràng hoặc có yêu cầu WRITE sẽ **không gọi Function nào**. [Các giới hạn](docs/TASK_STATUS.md).
+
+## Evidence checkpoint (opt-in)
+
+Có `EvidenceCheckpoint` HMAC-SHA256 để phục hồi **fact đọc còn hiệu lực** sau restart, không phục hồi lệnh đang chạy hay WRITE. Bật từ cấu hình Python tin cậy, không nhận khóa hoặc file path qua HTTP. Xem [Checkpoint guide](docs/CHECKPOINT.md).

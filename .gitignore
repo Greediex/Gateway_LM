@@ -9,6 +9,7 @@ venv/
 .ruff_cache/
 graphify-out/
 runs/
+.gateway_state/
 models/
 captures/
 logs/

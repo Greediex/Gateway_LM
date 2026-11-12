@@ -19,13 +19,14 @@ from .planner import NodeState
 from .runner import GraphRunner
 from .state import CaseState
 from .task_decomposer import TaskDecomposer
+from .checkpoint import EvidenceCheckpoint
 
 
 class GoalAgent:
     """Bounded evidence-acquisition loop for one or many known output ports."""
 
     def __init__(self, registry=None, *, method="gos", max_calls=12,
-                 max_repairs=2, max_rounds=3, retrieval_k=4):
+                 max_repairs=2, max_rounds=3, retrieval_k=4, checkpoint=None):
         if method not in {"gos", "bm25"}:
             raise ValueError("invalid_goal_method")
         if any(type(n) is not int or n <= 0 for n in (max_calls, max_rounds, retrieval_k)):
@@ -38,6 +39,9 @@ class GoalAgent:
         self.max_repairs = max_repairs
         self.max_rounds = max_rounds
         self.retrieval_k = retrieval_k
+        if checkpoint is not None and not isinstance(checkpoint, EvidenceCheckpoint):
+            raise ValueError("checkpoint_must_be_trusted_store")
+        self.checkpoint = checkpoint
 
     def run(self, request: str, case: dict, *, goals: Sequence[str] | None = None,
             inventory=(), advisor=None):
@@ -95,6 +99,13 @@ class GoalAgent:
         if client_goals and not (state.target.get("selector") or state.target.get("client_id")):
             return self._result(goals, state, None, routing=routing,
                                 status="NEEDS_INPUT", reason="client_target_required")
+        if self.checkpoint is not None:
+            # Resume only signed, still-fresh observations under the same
+            # Registry/target/firmware/ACL. Running nodes never auto-resume.
+            self.checkpoint.restore(registry, state, request, goals)
+        if all(state.fact(goal) is not None for goal in goals):
+            return self._result(goals, state, None, routing=routing,
+                                status="RESOLVED", reason="verified_evidence_reused")
         if not any(key in case for key in ("world", "adapter", "live_reader")):
             return self._result(goals, state, None, routing=routing,
                                 status="INCONCLUSIVE", reason="observation_source_not_configured")
@@ -157,8 +168,13 @@ class GoalAgent:
             reason = "evidence_incomplete_replan"
         exhausted = True
         status = state.case_status(goals, exhausted=exhausted)
-        return self._result(goals, state, runner, routing=routing, status=status,
-                            reason=reason, trace=trace)
+        result = self._result(goals, state, runner, routing=routing, status=status,
+                              reason=reason, trace=trace)
+        if self.checkpoint is not None:
+            result["checkpoint_facts_saved"] = self.checkpoint.save(
+                registry, state, request, goals
+            )
+        return result
 
     @staticmethod
     def _result(goals, state, runner, *, routing, status, reason, trace=()):

@@ -20,7 +20,8 @@ remain snapshots, not refreshed production measurements.
 | Evidence-led RCA / claim engine | PARTIAL | Replay contracts only; no real network truth |
 | 22 Skills / 270 requirements | DESIGN / PARTIAL | Catalog presence does not mean 270 executable Functions |
 | Semantic vector + lexical + graph retrieval | PARTIAL | Lexical / GoS PPR present; no embedding/vector evidence |
-| Signed checkpoint + resume | NOT YET | Requires isolated trusted storage and explicit replay threat model |
+| HMAC-authenticated evidence checkpoint | DONE (read-only pilot) | `checkpoint.py`, `test_checkpoint` — fresh facts only, not running jobs/WRITE actions |
+| Full durable DAG/job recovery | NOT YET | Requires persistence of job receipts, idempotency and crash-safe external side effects |
 | OpenWrt firmware probes and verified adapters | BLOCKED ON HARDWARE | No firmware access or board-backed probe pass |
 | Edge/Cloud delegation and resource budgets | NOT YET | No measured cloud policy/Edge QNN performance |
 | Hardware latency / CPU / RAM / NPU test | BLOCKED ON HARDWARE | Must test target device |
