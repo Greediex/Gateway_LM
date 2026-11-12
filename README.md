@@ -66,6 +66,7 @@ GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh re
 - [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
 - [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
 - [Đối chiếu upstream và goal execution (opt-in)](docs/REFERENCE_IMPLEMENTATION.md)
+- [Bảng trạng thái task còn thiếu / hoàn thành](docs/TASK_STATUS.md)
 - [Quy tắc coding agent](AGENTS.md)
 - [Web UI và chế độ đo](docs/WEB_UI.md)
 - [Kết quả Graph v4 (ảnh chụp ngày 11/11/2026)](docs/GRAPH_V4_RESULT_VI.md)
@@ -90,3 +91,7 @@ Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra
 - LLM là advisor tùy chọn; Function execution, policy, evidence và claim vẫn được kiểm soát bởi Core.
 
 Đóng góp mới nên duy trì tương thích với API, schema và test hiện tại; tham khảo [AGENTS.md](AGENTS.md) và [Developer Guide](docs/DEVELOPER_GUIDE.md).
+
+## Phân rã câu hỏi có nhiều mục tiêu (experimental)
+
+Với Registry v0.1, ví dụ `python -m gateway_pilot.graph_v3.goal_agent --registry v01 --fixture GLM-04-0 --request "Kiểm tra trạng thái WAN và RAM" --method bm25`. Mỗi mệnh đề phải khớp một port đã đăng ký bằng `data/goal_aliases_v01.json`; mệnh đề thiếu rõ ràng hoặc có yêu cầu WRITE sẽ **không gọi Function nào**. [Các giới hạn](docs/TASK_STATUS.md).

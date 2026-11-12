@@ -5,6 +5,7 @@ from .planner import NodeState
 from .planning_stage import FunctionPlanner
 from .runner import GraphRunner
 from .routing import FunctionRouter
+from .selection import ReadySelector
 
 
 def acquire(case, registry, state, *, method="gos", k=4, max_calls=12, max_repairs=2,
@@ -52,8 +53,7 @@ def run_plan(runner, plan, goals, *, method="gos", k=4):
         retrieval = registry.retrieve(case['request'], goals, state, k=k, method=method, excluded=runner.excluded)
         # Rank the eligible READY set with actual upstream scores. Dependencies
         # remain hard constraints; graph rank never makes a blocked node ready.
-        preferred = min(ready, key=lambda n: (-retrieval['scores'].get('f:' + n.function_id, 0),
-                                              registry.objective(n.function_id), n.id))
+        preferred = ReadySelector.choose(ready, registry=registry, scores=retrieval['scores'])
         retrieval['ready_set'] = [n.id for n in ready]
         retrieval['selected_ready'] = preferred.id
         retrievals.append(retrieval)

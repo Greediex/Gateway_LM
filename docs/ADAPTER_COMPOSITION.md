@@ -37,7 +37,9 @@ python -m unittest discover -s tests -v
 
 ## Next changes (separate PRs)
 
-1. Normalize multi-output ToolResult and remove replay-specific logic from GraphRunner.
+1. Normalize multi-output ToolResult and remove replay-specific logic from GraphRunner — **DONE at pilot boundary**; hardware conformance pending.
 2. Connect read-only, independently probed OpenWrt Function implementations.
 3. Unify Fastpath/Resolver/ReAct execution and repair.
 4. Add firmware-specific capability catalogs and adapter conformance tests.
+
+See [Task status](TASK_STATUS.md) and [Runtime stages](RUNTIME_STAGES.md) for the newer code path.

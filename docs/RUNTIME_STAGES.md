@@ -72,7 +72,7 @@ end-to-end smoke results; do not claim hardware performance from those results.
 
 ## Still planned, not implemented here
 
-1. Typed multi-output `ToolResult` for hardware Adapters and per-port conformance.
+1. Typed multi-output `ToolResult`: **internal replay/interface tested**; hardware conformance still pending.
 2. OpenWrt read-only Function probes verified on actual board/firmware.
 3. General Goal/Skill/Function decomposition across new workflow families.
 4. Versioned Registry expansion toward 22 skills and 270 **requirements**
@@ -83,3 +83,5 @@ end-to-end smoke results; do not claim hardware performance from those results.
 ## Further implementation: structured Adapter results and registered multi-goal execution
 
 The opt-in `ToolResult` API supports verified multiple outputs and explicit tool errors; `GoalAgent` can dynamically compile registered output goals without a hard-coded Workflow ID. Neither path claims arbitrary-task planning or production OpenWrt support. See [upstream alignment and tests](REFERENCE_IMPLEMENTATION.md).
+
+Read the [active task status](TASK_STATUS.md) before interpreting this historical PR-02 scope as the current implementation state.

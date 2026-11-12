@@ -18,6 +18,7 @@ from .orchestrator import run_plan
 from .planner import NodeState
 from .runner import GraphRunner
 from .state import CaseState
+from .task_decomposer import TaskDecomposer
 
 
 class GoalAgent:
@@ -50,16 +51,40 @@ class GoalAgent:
         if goals is None:
             if not hasattr(registry, "workflows"):
                 raise PlanError("goal_inference_requires_versioned_catalog")
-            routed = route_turn(request, registry=registry, state=state,
-                                inventory=inventory, advisor=advisor)
-            routing = {"turn_type": routed["turn_type"], "action": routed["action"],
-                       "band": routed["band"], "reason": routed["reason"]}
-            hint = routed.get("plan_hint")
-            if routed["action"] != "RUN" or hint is None:
-                return self._result((), state, None, routing=routing,
-                                    status="NEEDS_INPUT" if routed["action"] == "ASK_USER"
-                                    else "BLOCKED", reason=routed["reason"])
-            goals = hint["goals"]
+            decomposition = TaskDecomposer(registry).decompose(request)
+            if decomposition.decision == "READY":
+                goals = decomposition.goals
+                routing = {
+                    "source": "registered_goal_aliases",
+                    "action": "RUN",
+                    "reason": decomposition.reason,
+                    "clauses": list(decomposition.clauses),
+                    "matched_goals": list(decomposition.goals),
+                }
+            elif decomposition.decision in {"NEEDS_INPUT", "BLOCKED"}:
+                routing = {
+                    "source": "registered_goal_aliases",
+                    "action": "ASK_USER" if decomposition.decision == "NEEDS_INPUT" else "REFUSE",
+                    "reason": decomposition.reason,
+                    "clauses": list(decomposition.clauses),
+                    "unresolved": list(decomposition.unresolved),
+                }
+                return self._result(
+                    (), state, None, routing=routing,
+                    status=decomposition.decision, reason=decomposition.reason,
+                )
+            else:
+                routed = route_turn(request, registry=registry, state=state,
+                                    inventory=inventory, advisor=advisor)
+                routing = {"turn_type": routed["turn_type"], "action": routed["action"],
+                           "band": routed["band"], "reason": routed["reason"],
+                           "source": "calibrated_workflow_router"}
+                hint = routed.get("plan_hint")
+                if routed["action"] != "RUN" or hint is None:
+                    return self._result((), state, None, routing=routing,
+                                        status="NEEDS_INPUT" if routed["action"] == "ASK_USER"
+                                        else "BLOCKED", reason=routed["reason"])
+                goals = hint["goals"]
         if isinstance(goals, (str, bytes)) or not isinstance(goals, Sequence):
             raise ValueError("invalid_goal_ports")
         goals = tuple(dict.fromkeys(goals))
