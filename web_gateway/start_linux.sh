@@ -7,4 +7,5 @@ if [[ -x .venv-graph/bin/python ]]; then
 elif [[ -x .venv/bin/python ]]; then
   PYTHON=".venv/bin/python"
 fi
-"$PYTHON" -m web_gateway.server "$@"
+# Linux laptop is the default; a later --source replay overrides it.
+"$PYTHON" -m web_gateway.server --source live "$@"

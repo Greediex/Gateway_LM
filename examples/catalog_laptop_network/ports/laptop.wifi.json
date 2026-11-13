@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "laptop.wifi",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "interface": {
+        "type": "string",
+        "maxLength": 15
+      },
+      "radio_enabled": {
+        "type": "boolean"
+      },
+      "associated": {
+        "type": "boolean"
+      },
+      "ssid": {
+        "type": "string",
+        "maxLength": 128
+      },
+      "bssid": {
+        "type": "string",
+        "maxLength": 128
+      },
+      "signal_pct": {
+        "type": "number",
+        "minimum": -1,
+        "maximum": 100
+      },
+      "channel": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1000
+      },
+      "frequency_mhz": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100000
+      },
+      "ap_rate_mbps": {
+        "type": "number",
+        "minimum": -1,
+        "maximum": 100000
+      }
+    },
+    "required": [
+      "interface",
+      "radio_enabled",
+      "associated",
+      "ssid",
+      "bssid",
+      "signal_pct",
+      "channel",
+      "frequency_mhz",
+      "ap_rate_mbps"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "linux_client/",
+  "untrusted_text": true
+}

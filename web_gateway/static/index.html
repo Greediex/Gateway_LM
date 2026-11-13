@@ -21,13 +21,13 @@
       <div class="side-scroll">
         <div class="side-section">
           <div class="side-heading">NGUỒN DỮ LIỆU</div>
-          <div class="select-wrap"><select id="sourceSelect" aria-label="Nguồn dữ liệu"><option value="live" disabled>Đo thật từ Windows</option><option value="replay" selected>Replay mô phỏng</option></select></div>
+          <div class="select-wrap"><select id="sourceSelect" aria-label="Nguồn dữ liệu"><option value="live" disabled>Đo thật từ máy này</option><option value="replay" selected>Replay mô phỏng</option></select></div>
           <div id="fixtureField">
             <div class="field-label">Tình huống mạng</div>
             <div class="select-wrap"><select id="fixtureSelect" aria-label="Chọn tình huống mạng"><option value="GLM-21-1">Đang tải dữ liệu...</option></select></div>
             <div class="fixture-note" id="fixtureNote">Tình huống mạng mô phỏng.</div>
           </div>
-          <div class="fixture-note" id="liveNote" hidden>Đo từ máy Windows đang dùng gateway mặc định.</div>
+          <div class="fixture-note" id="liveNote" hidden>Đo từ máy đang dùng gateway mặc định.</div>
         </div>
         <div class="divider"></div>
         <div class="side-section">
@@ -61,6 +61,13 @@
       </header>
       <div class="chat-scroll" id="chatScroll">
         <div class="chat-content">
+          <section class="network-overview" id="networkOverview" aria-labelledby="networkTitle" hidden>
+            <div class="network-heading"><div><div class="eyebrow">LINUX · PHÉP ĐO CHỈ ĐỌC</div><h2 id="networkTitle">Overview mạng laptop</h2></div><button class="light-btn" id="networkRefresh" type="button">Đo / Làm mới</button></div>
+            <p class="network-state" id="networkState" role="status">Chưa đo. Bấm Làm mới để thu bằng chứng.</p>
+            <div id="networkResults"></div>
+            <p class="network-note">Chỉ đo khi bấm nút. Internet được kiểm tra trên interface định tuyến thực tế; Wi-Fi có thể là interface khác. Signal % không phải RSSI dBm; tốc độ AP quảng bá không phải tốc độ tải Internet.</p>
+            <p class="network-note" id="routerHealth">Sức khỏe router: UNAVAILABLE — chưa có phép đo CPU/RAM/service trên router.</p>
+          </section>
           <div class="intro" id="intro">
             <div class="intro-orb"><div class="orb-inner">✳</div></div>
             <div class="eyebrow">GATEWAY LM · INTERACTIVE PLAYGROUND</div>
@@ -76,10 +83,11 @@
               <button class="suggestion" data-fixture="GLM-16-1" data-query="Kiểm tra CPU RAM và sức khỏe router hiện tại."><span class="s-icon i-green">▤</span><span>Router có đang quá tải?<small>Kiểm tra mức sử dụng tài nguyên</small></span><span class="arrow">↗</span></button>
             </div>
             <div class="suggestions" id="liveSuggestions" hidden>
+              <button class="suggestion" id="liveWifiSuggestion" data-query="Wi-Fi laptop có vấn đề gì?" hidden><span class="s-icon i-blue">⌁</span><span>Wi-Fi laptop có vấn đề gì?<small>Đọc Wi-Fi laptop và phân biệt tuyến Internet thực tế</small></span><span class="arrow">↗</span></button>
               <button class="suggestion" data-query="Mạng chất lượng thế nào?"><span class="s-icon i-blue">◎</span><span>Mạng chất lượng thế nào?<small>Đo độ trễ, mất gói và DNS</small></span><span class="arrow">↗</span></button>
               <button class="suggestion" data-query="Gateway hiện tại là gì?"><span class="s-icon i-blue">⌁</span><span>Gateway hiện tại là gì?<small>Đọc tuyến mặc định và ping gateway</small></span><span class="arrow">↗</span></button>
               <button class="suggestion" data-query="Kiểm tra Internet của máy này."><span class="s-icon i-purple">◎</span><span>Kiểm tra Internet<small>Ping gateway, IP Internet và kiểm tra DNS</small></span><span class="arrow">↗</span></button>
-              <button class="suggestion" data-query="Kiểm tra DNS từ máy Windows này."><span class="s-icon i-green">⌘</span><span>Kiểm tra DNS<small>Thử phân giải example.com từ Windows</small></span><span class="arrow">↗</span></button>
+              <button class="suggestion" id="liveDnsSuggestion" data-query="Kiểm tra DNS từ máy này."><span class="s-icon i-green">⌘</span><span>Kiểm tra DNS<small>Thử phân giải example.com từ máy này</small></span><span class="arrow">↗</span></button>
             </div>
           </div>
           <div id="messages" class="messages" aria-live="polite"></div>

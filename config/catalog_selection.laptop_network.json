@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "selection",
+  "functions": {
+    "clients.resolve": "5.0.0",
+    "client.ipv4": "5.0.0",
+    "laptop.route": "1.0.0",
+    "laptop.wifi": "1.0.0",
+    "laptop.gateway_probe": "1.0.0",
+    "laptop.internet_probe": "1.0.0",
+    "laptop.dns": "1.0.0"
+  },
+  "ports": {
+    "client.identity": "3.0.0",
+    "client.ipv4": "3.0.0",
+    "laptop.route": "1.0.0",
+    "laptop.wifi": "1.0.0",
+    "laptop.dns": "1.0.0",
+    "laptop.gateway_probe": "1.0.0",
+    "laptop.internet_probe": "1.0.0"
+  }
+}

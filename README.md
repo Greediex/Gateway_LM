@@ -1,161 +1,93 @@
-# Gateway LM — Network Operations & Intelligence
+# Gateway LM v2 — Laptop Network Assistant
 
-**Trạng thái:** pilot Gateway LM v0.1 (Graph v4), ưu tiên chẩn đoán dựa trên bằng chứng. Hiện có replay tổng hợp, chế độ đo một số chỉ số mạng từ Windows và thử nghiệm trợ lý Ollama cục bộ. **Chưa có OpenWrt Function được xác minh trên router thật; không phải agent triển khai sản phẩm hoặc hệ thống hỏi gì cũng làm được.**
+Nhánh phát triển: **[`v2`](https://github.com/Greediex/Gateway_LM/tree/v2)**. Pilot READ-only để kiểm tra mạng của laptop Linux, xem phép đo và evidence ngay trên Web UI. **FND-01 → FND-07 đã triển khai**: versioned catalog, trusted bindings, Feature Registry, runtime bridge và laptop dashboard.
 
-> Nhánh `refactor/gateway-lm-composite-adapter-pr01` được dùng để dọn dẹp và cải tiến từng bước. Không merge trực tiếp vào `main`. Composite Adapter giúp gán Function cho nhiều backend, nhưng chưa triển khai Function OpenWrt.
+Linux live đọc Wi-Fi hiện tại, IPv4/route, ping gateway/IP công cộng và DNS. Dữ liệu đi qua registered Functions → shared GraphRunner → Verifier → verified snapshot → rules/UI. Windows live và synthetic replay vẫn có chế độ riêng. Chưa nghiệm thu OpenWrt, WRITE hoặc NPU.
 
-## Bắt đầu nhanh
+## Chạy trên Linux
 
-**Windows PowerShell (Python 3.12):**
+Cần Python 3.12+, NetworkManager đang quản lý Wi-Fi, `nmcli`, `ip`, `ping`; DNS dùng `resolvectl`/systemd-resolved. Ubuntu thường cung cấp qua `network-manager`, `iproute2`, `iputils-ping`, `systemd-resolved`. Thiếu công cụ/quyền đọc sẽ báo thiếu phép đo, không tự cài hay đổi cấu hình mạng.
+
+```bash
+git clone --branch v2 --single-branch https://github.com/Greediex/Gateway_LM.git
+cd Gateway_LM
+python3 -m venv .venv-graph
+source .venv-graph/bin/activate
+python -m pip install -r requirements-react.txt
+python setup_upstream.py
+bash web_gateway/start_linux.sh
+```
+
+Mở **[http://127.0.0.1:8765](http://127.0.0.1:8765)**. Script Linux mặc định dùng **live**; chỉ lắng nghe localhost. `setup_upstream.py` tải và kiểm SHA-256 GoS/SkillDAG tại commits cố định. Không bỏ qua bước này khi clone mới.
+
+Nếu repo đã có sẵn:
+
+```bash
+git switch v2
+git pull --ff-only origin v2
+bash web_gateway/start_linux.sh
+```
+
+Có thể dùng `--port 8766` nếu cổng mặc định đang bận. Chọn đúng URL/cổng vừa in ở terminal.
+
+## Test ngay trên UI
+
+1. Giữ nguồn **Đo thật từ Linux**. Bấm **Làm mới** ở Tổng quan laptop để chạy các phép đo.
+2. Xem Wi-Fi association, signal **%**, channel/frequency và tốc độ AP quảng bá khi đọc được; mở từng mục để xem evidence ID, nguồn và thời gian.
+3. Xem interface route đang dùng. Nếu Wi-Fi và Ethernet/VPN cùng tồn tại, probe qua Ethernet/VPN **không** chứng minh Internet qua Wi-Fi.
+4. Thử chat: **“Wi-Fi laptop có vấn đề gì?”**, **“Gateway hiện tại là gì?”**, **“Kiểm tra Internet của máy này”**, **“Kiểm tra DNS”**.
+5. Snapshot có TTL 30 giây; khi hết hạn dashboard xóa số đo và yêu cầu **Làm mới**. Không tự chạy phép đo nền.
+
+Chưa có required evidence thì hiện INCOMPLETE; chưa có backend thì UNAVAILABLE. MEASURED cho biết phép đo hoàn thành, không phải chẩn đoán nguyên nhân hay lời bảo đảm mạng khỏe. Không phản hồi ICMP có thể do lọc ping. IP/DNS phản hồi chưa chứng minh truy cập web. Signal % không chuyển thành RSSI dBm; tốc độ AP quảng bá không phải throughput Internet. Router CPU/RAM/health luôn unavailable ở profile laptop.
+
+Linux live hiện dùng Core READ v0.2 với mục tiêu hữu hạn; UI tắt lựa chọn LLM/ReAct ở nguồn này. Các thử nghiệm LLM/GoS/ReAct cũ vẫn có ở replay/Windows theo khả năng backend.
+
+## Replay và Windows
+
+Replay tách biệt với laptop thật:
+
+```bash
+bash web_gateway/start_linux.sh --source replay
+# Hoặc chạy một câu hỏi synthetic từ CLI:
+.venv-graph/bin/python -m gateway_pilot.assistant \
+  --fixture GLM-21-1 --request 'Laptop An có wifi nhưng không vào Internet' --trace
+```
+
+Windows PowerShell:
 
 ```powershell
 py -3.12 -m venv .venv-graph
 .\.venv-graph\Scripts\python.exe -m pip install -r requirements-react.txt
 .\.venv-graph\Scripts\python.exe setup_upstream.py
-.\.venv-graph\Scripts\python.exe -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace
-.\web_gateway\start_windows.ps1
+.\web_gateway\start_windows.ps1 --source live
 ```
 
-**Ubuntu/Linux (Python 3.12):**
+Windows giữ route/ping/DNS cũ; dashboard Wi-Fi FND-07 dành cho Linux, không quảng bá phép đo chưa có trên Windows. [Hướng dẫn Web/API](docs/WEB_UI.md).
+
+## Kiểm thử và kiến trúc
 
 ```bash
-python3.12 -m venv .venv-graph
-source .venv-graph/bin/activate
-python -m pip install -r requirements-react.txt
-python setup_upstream.py
-python -m gateway_pilot.assistant --fixture GLM-04-0 --request "Check WAN" --trace
-bash web_gateway/start_linux.sh
+.venv-graph/bin/python -m scripts.check_project
+.venv-graph/bin/python -m unittest discover -s tests -v
 ```
 
-Web UI: `http://127.0.0.1:8765`. Lệnh `setup_upstream.py` lấy GoS/SkillDAG tại commit cố định và xác minh SHA-256; chạy lại sẽ xác minh checkout hiện có thay vì xóa thư mục upstream.
+Tests không tự probe mạng thật. Windows-only tests skip trên Linux; live laptop acceptance được ghi riêng. CI cho commit `v2` chạy bằng workflow_dispatch; [workflow](.github/workflows/composite-adapter-regression.yml).
 
-**Ví dụ client (replay):**
+| Đường dẫn | Nội dung |
+|---|---|
+| `catalog/`, `gateway_pilot/command_catalog/` | Contract v0.2, validator/builder và trusted runtime bridge |
+| `examples/catalog_laptop_network/`, `config/` | Profile laptop READ và approval pin đã review |
+| `gateway_pilot/adapters/linux_wifi.py` | Linux READ, không rescan/đổi kết nối |
+| `gateway_pilot/observability/`, `features/`, `application/` | Verified snapshot, rules và application service |
+| `gateway_pilot/graph_v3/` | Shared Compiler, Runner, Verifier và các pilot trước |
+| `web_gateway/` | Local HTTP API và dashboard/chat |
+| `data/`, `benchmarks/` | Baseline v0.1 và bộ dữ liệu frozen, giữ nguyên |
 
-```bash
-python -m gateway_pilot.assistant --fixture GLM-21-1 --request "Laptop An có wifi nhưng không vào Internet" --trace
-```
+- [FND-07 và cách nghiệm thu laptop](docs/LAPTOP_NETWORK_V2.md)
+- [Todo list](TODO.md) · [Trạng thái task](docs/TASK_STATUS.md) · [Docs index](docs/INDEX.md)
+- [Function Contract v0.2](docs/contracts/catalog-v02/README.md) · [Catalog tooling](docs/CATALOG_V02.md)
+- [Trusted runtime v0.2](docs/RUNTIME_V02.md) · [Feature Registry](docs/FEATURE_REGISTRY_V02.md)
+- [Developer guide](docs/DEVELOPER_GUIDE.md) · [Coding rules](AGENTS.md)
+- [Các thử nghiệm v0.1 và tài liệu cũ](docs/README_V01_DETAILS.md) · [TaskRuntime](docs/TASK_RUNTIME.md) · [Evidence RCA](docs/EVIDENCE_RCA.md)
 
-Dữ liệu trong ví dụ là **fixture mô phỏng**. Trạng thái `PARTIAL`/`INCONCLUSIVE` có nghĩa là chưa đủ bằng chứng, không phải chẩn đoán đã hoàn tất.
-
-## Kiểm thử
-
-```bash
-python -m scripts.check_project
-python -m unittest discover -s tests -v
-```
-
-GitHub Actions chạy các bước trên và smoke test CLI ngay trên nhánh refactor: [CI workflow](.github/workflows/composite-adapter-regression.yml). Các test web chỉ dành cho Windows được skip trên Linux. Các báo cáo nghiên cứu cũ **không được cập nhật số liệu một cách hồi tố**.
-
-## Bản đồ repository
-
-| Đường dẫn | Vai trò |
-| --- | --- |
-| `gateway_pilot/assistant.py` | Entry point hội thoại và Answer Composer |
-| `gateway_pilot/graph_v3/` | Routing/Planning/Execution/Verification stages; Contract, Registry, Retrieval, Compiler, Runner, Repair, State/Claims |
-| `gateway_pilot/adapters/` | Backend boundary, Replay/Windows/OpenWrt skeleton, Composite Adapter |
-| `web_gateway/` | HTTP server và giao diện thử nghiệm |
-| `data/`, `benchmarks/` | Registry, fixture, bộ đánh giá và manifest đã khóa |
-| `tests/` | Regression tests: `graph_v3/`, `web/` và baseline |
-| `docs/` | Kiến trúc, protocol, Web UI, báo cáo lịch sử trong `reports/` |
-| `scripts/` | Benchmark, phân tích và kiểm tra vệ sinh repository |
-
-## Tài liệu quan trọng
-
-- [Docs index — bắt đầu từ đây](docs/INDEX.md)
-- [Các lệnh benchmark/analysis mới](scripts/README.md)
-- [Developer guide: setup, test, bổ sung Function/Skill](docs/DEVELOPER_GUIDE.md)
-- [Runtime stages (Routing → Planning → Execution → Verification)](docs/RUNTIME_STAGES.md)
-- [Đối chiếu upstream và goal execution (opt-in)](docs/REFERENCE_IMPLEMENTATION.md)
-- [Hybrid Semantic Retrieval (opt-in, local-only)](docs/SEMANTIC_RETRIEVAL.md)
-- [Declarative Registry Extensions (read-only pilot)](docs/REGISTRY_EXTENSIONS.md)
-- [Bảng trạng thái task còn thiếu / hoàn thành](docs/TASK_STATUS.md)
-- [Quy tắc coding agent](AGENTS.md)
-- [Web UI và chế độ đo](docs/WEB_UI.md)
-- [Kết quả Graph v4 (ảnh chụp ngày 11/11/2026)](docs/GRAPH_V4_RESULT_VI.md)
-- [Kiến trúc tổng thể v0.1 (HTML)](docs/architecture/gateway-lm-v0.1-kien-truc.html)
-- [Nguồn paper, mức độ tích hợp và giấy phép](docs/PAPER_SOURCES.md)
-- [Composite Adapter refactor](docs/ADAPTER_COMPOSITION.md)
-- [README v0.1 đầy đủ trước cleanup — lưu trữ](docs/README_V01_DETAILS.md)
-
-## Goal execution (mới, trên replay)
-
-```bash
-python -m gateway_pilot.graph_v3.goal_agent --fixture GLM-04-0 --request "Check WAN and memory" --goals wan.status system.resources --method bm25
-```
-
-Lệnh trên kiểm chứng **measurement goals đã đăng ký**, không suy ra root-cause diagnosis. Có thể gọi tương đương qua `POST /api/goals` (replay-only; xem [Web UI](docs/WEB_UI.md)). Mọi Function vẫn phải qua Registry/permission/capability/Verifier. Xem [reference alignment](docs/REFERENCE_IMPLEMENTATION.md).
-
-## Những gì chưa hỗ trợ
-
-- Chưa có OpenWrt firmware probe/adapter production được xác minh.
-- Chưa có Task DAG tổng quát cho mọi yêu cầu mới, chưa có RCA trên dữ liệu mạng thật.
-- Những nghiệp vụ WRITE (QoS, firewall, internet block) trong replay **không** cho phép suy ra khả năng thay đổi router thật.
-- LLM là advisor tùy chọn; Function execution, policy, evidence và claim vẫn được kiểm soát bởi Core.
-
-Đóng góp mới nên duy trì tương thích với API, schema và test hiện tại; tham khảo [AGENTS.md](AGENTS.md) và [Developer Guide](docs/DEVELOPER_GUIDE.md).
-
-## Phân rã câu hỏi có nhiều mục tiêu (experimental)
-
-Với Registry v0.1, ví dụ `python -m gateway_pilot.graph_v3.goal_agent --registry v01 --fixture GLM-04-0 --request "Kiểm tra trạng thái WAN và RAM" --method bm25`. Mỗi mệnh đề phải khớp một port đã đăng ký bằng `data/goal_aliases_v01.json`; mệnh đề thiếu rõ ràng hoặc có yêu cầu WRITE sẽ **không gọi Function nào**. [Các giới hạn](docs/TASK_STATUS.md).
-
-## Evidence checkpoint (opt-in)
-
-Có `EvidenceCheckpoint` HMAC-SHA256 để phục hồi **fact đọc còn hiệu lực** sau restart, không phục hồi lệnh đang chạy hay WRITE. Bật từ cấu hình Python tin cậy, không nhận khóa hoặc file path qua HTTP. Xem [Checkpoint guide](docs/CHECKPOINT.md).
-
-## Ubus read-only integration (mock-only)
-
-Có `UbusReadAdapter` hỗ trợ transport injection và Function mapping đã được xác minh từ firmware. Test hiện tại dùng transport giả; **chưa có mapping OpenWrt nào được probe trên board thật**. Xem [OpenWrt Adapter](docs/OPENWRT_ADAPTER.md).
-
-## Hybrid Retrieval (opt-in, chưa đo chất lượng model)
-
-Thêm phương thức `--method hybrid --semantic-model-dir /path/to/local-model` cho `gateway_pilot.graph_v3.goal_agent`. Phải cung cấp một model embedding tải sẵn tại máy; không tự download, không nhận đường dẫn từ HTTP, và không chạy NPU tự động. BM25/GoS vẫn là baseline. [Hướng dẫn và giới hạn](docs/SEMANTIC_RETRIEVAL.md).
-
-## Thêm Skill/Function từ JSON (read-only pilot)
-
-`install_extension(registry, "examples/extensions/gateway_temperature_read.json")` đăng ký port, Skill và Function mới trong **bản Registry chạy trong RAM**, không sửa dữ liệu gốc. V0.1 luôn bắt đầu bằng `PROPOSED_NOT_VERIFIED`; cần xác minh firmware, gán Adapter và probe mới có thể thực thi. [Hướng dẫn](docs/REGISTRY_EXTENSIONS.md).
-
-## Retrieval evaluation (offline)
-
-`python -m scripts.analysis.evaluate_retrieval --input examples/evaluation/illustrative_retrieval.jsonl --split illustrative --methods bm25 gos --output runs/retrieval-eval-smoke.json` tạo báo cáo Recall@K/Precision@K/MRR và latency trên host. Dataset ví dụ chỉ để smoke test, **không phải kết quả nghiệm thu embedding thật**. [Hướng dẫn](docs/SEMANTIC_RETRIEVAL.md).
-
-## Bounded LLM proposal + Shared Execution Kernel
-
-GoalAgent hỗ trợ **opt-in** `BoundedGoalProposer`: LLM chỉ đề xuất output port đã được đăng ký và có quyền READ, không tự cấp quyền hay viết cấu hình. `orchestrator.run_plan` và `Diagnostic.run_resolver` dùng chung READY dispatch qua `execution_kernel.py`. Xem [hướng dẫn và giới hạn](docs/LLM_EXECUTION_POLICY.md).
-
-## RCA có bằng chứng (opt-in, replay pilot)
-
-`gateway_pilot.graph_v3.rca_agent.RCAAgent` chạy vòng lặp Claim UNKNOWN → chọn phép đo → GraphRunner/Verifier → đánh giá lại. Kết quả lỗi chỉ được trả về nếu thỏa mãn Claim có evidence ID hợp lệ; healthy đòi các fault Claim được loại trừ. Chưa có nghiệm thu router thật hoặc causal RCA. Xem [Evidence RCA](docs/EVIDENCE_RCA.md).
-
-## Edge–Cloud Delegation (policy + mock)
-
-`EdgeCloudPolicy` mặc định chọn Edge và **không gọi Cloud** nếu chưa có cấu hình, consent và budget hợp lệ. Chỉ gửi metric số/boolean từ gateway đã xác minh; phản hồi Cloud luôn là hypothesis chưa được chứng thực. Không có provider API thực trong repo. Xem [Edge Cloud Policy](docs/EDGE_CLOUD_POLICY.md).
-
-## RCA API (replay-only)
-
-`POST http://127.0.0.1:8765/api/rca` nhận `{"message":"WAN down","fixture_id":"GLM-01-0","workflow":"WF-018","method":"bm25"}`. Endpoint sử dụng đúng fixture trong repo, không chấp nhận adapter/world/permission từ HTTP, và báo kết quả theo Claim cùng evidence. Xem [Web UI](docs/WEB_UI.md).
-
-## Signed Job Journal (READ-only opt-in)
-
-`ReadOnlyJobJournal` lưu bằng chứng **thực thi** gồm node/revision/status/reason qua HMAC chain, không lưu raw request hay payload. Kết hợp `EvidenceCheckpoint` để phục hồi fact còn hạn sau restart. Không phải exactly-once WRITE, không tự retry job ngoại vi. Xem [Job Journal](docs/JOB_JOURNAL.md).
-
-## WRITE transaction safety (opt-in mock only)
-
-`SafeWriteTransaction` là state machine **mặc định tắt** cho thao tác cấu hình có phê duyệt. Gồm HMAC token theo Function/target/revision, nonce bền vững, snapshot, preview, read-back và rollback đã kiểm thử với driver giả. **Không mở WRITE trong Agent, Web hoặc trên OpenWrt thật**. Xem [WRITE Transactions](docs/WRITE_TRANSACTIONS.md).
-
-## Real integration and acceptance tools (not device-certified)
-
-- `OllamaGoalModel` can query a **local** Ollama server; `evaluate_goal_proposals.py` calibrates on dev only and reports on separate labeled test data. The example JSONL is **illustrative**, not held-out accuracy.
-- `UbusCliReadTransport` calls native `ubus` with argument lists, timeout and method discovery; firmware mappings/probes must still be verified on the actual board.
-- `audit_requirement_traceability.py` reports actual coverage: **8 skills, 17 registered Functions, 10/270 requirements linked** in current v0.1 catalog; none is firmware-probed.
-- `measure_gateway.py` captures /proc CPU/RAM/process RSS and actual /sys NPU when supplied on-device. GitHub CI only exercises host smoke and must **never** claim on-device acceptance.
-
-[Precise acceptance instructions](docs/ACCEPTANCE_9_TASKS.md).
-
-## Additional reliability integrations (opt-in)
-
-- `TaskRuntime`: one typed read-only `MEASURE` / `DIAGNOSE` phase contract, still preserves legacy workflow terminal policies.
-- `DurableWriteOutbox`: fsynced SQLite `PREPARED` → `IN_FLIGHT` receipts before `apply`; after crash, **readback-only** reconciliation; no automatic replay or exactly-once firmware claim.
-- `HTTPSHypothesisBackend`: trusted HTTPS allowlist, no redirects, strict aggregate-only input/output, no provider credentials in the repo.
-- `summarize_inference.py`: evaluates independently captured model TTFT/p50/p95, requires board report before hardware review.
-
-[Xem TaskRuntime](docs/TASK_RUNTIME.md), [WRITE](docs/WRITE_TRANSACTIONS.md), [Cloud](docs/EDGE_CLOUD_POLICY.md), [9-task acceptance](docs/ACCEPTANCE_9_TASKS.md).
+Để thêm Function/backend: khai báo contract, pin version, review binding, probe và test qua Core. Không đưa command/quyền/target từ chat hoặc HTTP xuống hệ điều hành. Những danh mục yêu cầu cũ không phải số lượng lệnh đã được nghiệm thu trên thiết bị.

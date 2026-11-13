@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "laptop.network.inspect",
+  "version": "1.0.0",
+  "name": "Local laptop network measurements",
+  "description": "READ measurements from one local Linux laptop, not router health.",
+  "requires": {},
+  "produces": {
+    "client.identity": "3.0.0",
+    "client.ipv4": "3.0.0",
+    "laptop.route": "1.0.0",
+    "laptop.wifi": "1.0.0",
+    "laptop.dns": "1.0.0",
+    "laptop.gateway_probe": "1.0.0",
+    "laptop.internet_probe": "1.0.0"
+  },
+  "completion_ports": {
+    "laptop.route": "1.0.0"
+  },
+  "function_refs": {
+    "clients.resolve": "5.0.0",
+    "client.ipv4": "5.0.0",
+    "laptop.route": "1.0.0",
+    "laptop.wifi": "1.0.0",
+    "laptop.gateway_probe": "1.0.0",
+    "laptop.internet_probe": "1.0.0",
+    "laptop.dns": "1.0.0"
+  },
+  "tags": [
+    "linux",
+    "laptop"
+  ]
+}

@@ -66,3 +66,5 @@ Shape/body và digests v0.1 không đổi. Checkpoint vẫn chỉ là trusted lo
 ```
 
 Focused tests chạy replay thật qua Core, negative gates, generic renamed Function + backend multi-output không sửa Runner, Feature availability và checkpoint same/changed registry. Laptop acceptance chỉ identity/IPv4, chưa Connectivity/Wi-Fi verified snapshot/UI FND-07. [Báo cáo local](reports/FND06_RUNTIME_MIGRATION_20261113.md).
+
+FND-07 đã bổ sung [laptop network profile, verified snapshot và UI](LAPTOP_NETWORK_V2.md); phạm vi nghiệm thu riêng trong tài liệu đó.

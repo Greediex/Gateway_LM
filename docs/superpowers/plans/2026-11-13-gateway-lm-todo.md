@@ -88,10 +88,10 @@ P0 = nền tảng và luồng READ đầu tiên từ laptop; P1 = giá trị ng�
 
 **Phụ thuộc:** GLM-01. **Thêm dự kiến:** `gateway_pilot/observability/{__init__,snapshot}.py`, `tests/observability/{__init__,test_snapshot}.py`. **Đối chiếu:** `graph_v3/state.py`, `verification.py`, `checkpoint.py`; nguồn ứng viên `network_ops/snapshot.py` trong ZIP.
 
-- [ ] Chỉ lấy fact từ `CaseState.fact()`; lưu evidence ID, source, scope, target, thời gian, thông tin freshness cần thiết.
-- [ ] Loại fact stale/sai target/sai provenance; replay chỉ bật bằng cấu hình test rõ ràng.
-- [ ] Quy định snapshot còn dùng được đến khi nào; kiểm tra lại freshness khi tiêu thụ snapshot giữ lâu, thay vì chỉ khi tạo.
-- [ ] Tránh mutation của giá trị lồng bên trong làm thay đổi snapshot đã phát hành; kiểm thử dữ liệu thiếu và dữ liệu bị sửa sau tạo.
+- [x] Chỉ lấy fact từ `CaseState.fact()`; lưu evidence ID, source, scope, target, thời gian, thông tin freshness cần thiết.
+- [x] Loại fact stale/sai target/sai provenance; replay chỉ bật bằng cấu hình test rõ ràng.
+- [x] Quy định snapshot còn dùng được đến khi nào; kiểm tra lại freshness khi tiêu thụ snapshot giữ lâu, thay vì chỉ khi tạo.
+- [x] Tránh mutation của giá trị lồng bên trong làm thay đổi snapshot đã phát hành; kiểm thử dữ liệu thiếu và dữ liệu bị sửa sau tạo.
 
 **Nghiệm thu:** Raw JSON/file offline không trở thành verified fact; snapshot quá hạn không tạo kết luận healthy; test gateway/client tách biệt.
 
@@ -99,10 +99,10 @@ P0 = nền tảng và luồng READ đầu tiên từ laptop; P1 = giá trị ng�
 
 **Phụ thuộc:** GLM-01; dùng GLM-03 cho các kết quả chẩn đoán sau đó. **Thêm dự kiến:** `gateway_pilot/features/{__init__,registry}.py`, `gateway_pilot/application/{__init__,feature_availability}.py`, `config/feature_flags.example.json`, `tests/features/{__init__,test_registry}.py`.
 
-- [ ] Khai báo feature ID/version, required/optional ports, READ permission, cấu hình bật/tắt bằng metadata tin cậy.
-- [ ] Tính `READY`, `DEGRADED`, `UNAVAILABLE`, `DISABLED` từ registry, adapter, capability, quyền và phạm vi; trả lý do cụ thể cho port thiếu/bị chặn.
-- [ ] Chốt rõ semantics: thiếu required port thì unavailable; thiếu optional port thì degraded; READY là khả năng thực hiện, không phải mạng đang khỏe.
-- [ ] Test ID trùng, port lạ, schema lỗi, thiếu quyền, probe fail, feature tắt; không dynamic import hay tự phê duyệt probe.
+- [x] Khai báo feature ID/version, required/optional ports, READ permission, cấu hình bật/tắt bằng metadata tin cậy.
+- [x] Tính `READY`, `DEGRADED`, `UNAVAILABLE`, `DISABLED` từ registry, adapter, capability, quyền và phạm vi; trả lý do cụ thể cho port thiếu/bị chặn.
+- [x] Chốt rõ semantics: thiếu required port thì unavailable; thiếu optional port thì degraded; READY là khả năng thực hiện, không phải mạng đang khỏe.
+- [x] Test ID trùng, port lạ, schema lỗi, thiếu quyền, probe fail, feature tắt; không dynamic import hay tự phê duyệt probe.
 
 **Nghiệm thu:** Manifest không thay đổi ACL/capability; trạng thái UI phản ánh đúng backend thực sự dùng được.
 
@@ -110,12 +110,12 @@ P0 = nền tảng và luồng READ đầu tiên từ laptop; P1 = giá trị ng�
 
 **Phụ thuộc:** GLM-03, GLM-04. **Thêm dự kiến:** `gateway_pilot/features/connectivity/{__init__,manifest.json,service.py,diagnostics.py,explanations.py}`, `features/gateway_health/` với cấu trúc tương ứng, `gateway_pilot/application/diagnose_network.py`, tests trong `tests/features/` và `tests/application/`.
 
-- [ ] Tái sử dụng rule phù hợp từ ZIP nhưng định nghĩa port client/laptop riêng cho route, probe và DNS; không gắn phép đo laptop vào port `wan.status` hay `system.resources` của gateway. Giữ diagnosis model dùng chung ở `features/contracts.py`.
-- [ ] Để Gateway Health CPU/RAM router ở trạng thái unavailable đến khi có backend router; CPU/RAM laptop nếu hiển thị phải ghi đúng thiết bị.
-- [ ] Service yêu cầu typed READ goals qua runtime hiện có; mọi execution đi qua `execute_ready_once` và `GraphRunner.step`.
-- [ ] Kết quả có status, code, evidence IDs, missing ports, lời giải thích và bước kiểm tra tiếp; không tự tạo causal claim.
-- [ ] Test laptop mất Wi-Fi, thiếu route, packet loss, DNS ambiguous, evidence thiếu/stale và happy path; rule CPU/RAM router vẫn có test riêng khi tích hợp router.
-- [ ] Chỉ thêm compatibility shim `network_ops` nếu thực sự nhập API đó để sử dụng; checkout hiện tại chưa có API này để phải duy trì.
+- [x] Tái sử dụng rule phù hợp từ ZIP nhưng định nghĩa port client/laptop riêng cho route, probe và DNS; không gắn phép đo laptop vào port `wan.status` hay `system.resources` của gateway. Giữ diagnosis model dùng chung ở `features/contracts.py`.
+- [x] Để Gateway Health CPU/RAM router ở trạng thái unavailable đến khi có backend router; CPU/RAM laptop nếu hiển thị phải ghi đúng thiết bị.
+- [x] Service yêu cầu typed READ goals qua runtime hiện có; mọi execution đi qua `execute_ready_once` và `GraphRunner.step`.
+- [x] Kết quả có status, code, evidence IDs, missing ports, lời giải thích và bước kiểm tra tiếp; không tự tạo causal claim.
+- [x] Test laptop mất Wi-Fi, thiếu route, packet loss, DNS ambiguous, evidence thiếu/stale và happy path; rule CPU/RAM router vẫn có test riêng khi tích hợp router.
+- [x] Chỉ thêm compatibility shim `network_ops` nếu thực sự nhập API đó để sử dụng; checkout hiện tại chưa có API này để phải duy trì.
 
 **Nghiệm thu:** Có luồng request → Core → verified snapshot → diagnosis trên replay gắn nhãn rõ; không import trực tiếp Ubus trong feature, không gọi adapter tắt qua Core.
 
@@ -123,14 +123,14 @@ P0 = nền tảng và luồng READ đầu tiên từ laptop; P1 = giá trị ng�
 
 **Phụ thuộc:** GLM-01, GLM-03, GLM-04, GLM-05. **Thêm dự kiến:** `gateway_pilot/adapters/linux_wifi.py`, `tests/adapters/test_linux_wifi.py`; contract/registry version mới cho client READ. **Đối chiếu/tái sử dụng:** `windows_live.py`, `live_intent.py`, `adapters/__init__.py`, `web_gateway/server.py`.
 
-- [ ] Kiểm tra interface Wi-Fi, NetworkManager và quyền đọc trên laptop. Môi trường khảo sát có `/usr/bin/nmcli` và `/usr/sbin/ip`, chưa thấy `iw`; việc có binary chưa chứng minh đang có kết nối Wi-Fi.
-- [ ] Đọc kết nối hiện tại bằng API/lệnh READ cố định: trạng thái association, SSID/BSSID, signal %, frequency/channel và link rate khi backend cung cấp. Giữ đơn vị gốc; signal % không tự đổi thành RSSI dBm. Không yêu cầu rescan hay thay đổi kết nối.
-- [ ] Đọc IP/default route và xác định interface thực dùng cho probe; khi Wi-Fi/Ethernet/VPN cùng tồn tại phải ghi rõ đường đo. Probe Internet đi qua Ethernet/VPN không chứng minh đường Wi-Fi hoạt động.
-- [ ] Thu latency/loss và DNS có timeout/budget; giữ target theo cấu hình tin cậy. Link rate không phải throughput Internet.
-- [ ] Đưa observation qua registered Function, shared execution kernel và Verifier; snapshot chấp nhận provenance Linux client đã cấu hình, scope/target là laptop. Không dựng fact trực tiếp từ output `nmcli`.
-- [ ] Cập nhật giới hạn `live` đang chỉ cho Windows ở Web/API và intent radio; giữ Windows route/ping/DNS hoạt động như cũ, chỉ quảng bá capability thực đã probe.
-- [ ] Test output có ký tự escape, thiếu metric, radio tắt, chưa associated, nhiều interface, route đổi giữa phép đo, timeout, JSON/schema lỗi và evidence stale.
-- [ ] Chạy live acceptance trên laptop, lưu OS/interface/backend version, thời gian và trace evidence; che định danh SSID/BSSID/IP khi tạo artifact chia sẻ.
+- [x] Kiểm tra interface Wi-Fi, NetworkManager và quyền đọc trên laptop. Môi trường khảo sát có `/usr/bin/nmcli` và `/usr/sbin/ip`, chưa thấy `iw`; việc có binary chưa chứng minh đang có kết nối Wi-Fi.
+- [x] Đọc kết nối hiện tại bằng API/lệnh READ cố định: trạng thái association, SSID/BSSID, signal %, frequency/channel và link rate khi backend cung cấp. Giữ đơn vị gốc; signal % không tự đổi thành RSSI dBm. Không yêu cầu rescan hay thay đổi kết nối.
+- [x] Đọc IP/default route và xác định interface thực dùng cho probe; khi Wi-Fi/Ethernet/VPN cùng tồn tại phải ghi rõ đường đo. Probe Internet đi qua Ethernet/VPN không chứng minh đường Wi-Fi hoạt động.
+- [x] Thu latency/loss và DNS có timeout/budget; giữ target theo cấu hình tin cậy. Link rate không phải throughput Internet.
+- [x] Đưa observation qua registered Function, shared execution kernel và Verifier; snapshot chấp nhận provenance Linux client đã cấu hình, scope/target là laptop. Không dựng fact trực tiếp từ output `nmcli`.
+- [x] Cập nhật giới hạn `live` đang chỉ cho Windows ở Web/API và intent radio; giữ Windows route/ping/DNS hoạt động như cũ, chỉ quảng bá capability thực đã probe.
+- [x] Test output có ký tự escape, thiếu metric, radio tắt, chưa associated, nhiều interface, route đổi giữa phép đo, timeout, JSON/schema lỗi và evidence stale.
+- [x] Chạy live acceptance trên laptop, lưu OS/interface/backend version, thời gian và trace evidence; che định danh SSID/BSSID/IP khi tạo artifact chia sẻ.
 
 **Nghiệm thu:** UI trả trạng thái Wi-Fi và kết quả kiểm tra Internet từ chính laptop với nguồn/đơn vị/thời gian chính xác; thiếu dữ liệu phải báo rõ. Không cần router credentials. Chưa có bảng client của AP, DHCP pool hay CPU/RAM router từ nguồn này.
 
@@ -151,10 +151,10 @@ P0 = nền tảng và luồng READ đầu tiên từ laptop; P1 = giá trị ng�
 
 **Phụ thuộc:** GLM-04, GLM-05; live mode chỉ sau GLM-06. **Sửa:** `web_gateway/server.py`, `web_gateway/static/{index.html,app.js,app.css}`, `tests/web/test_adapter.py`; **thêm dự kiến:** `tests/web/test_features.py`.
 
-- [ ] Hiển thị Wi-Fi laptop, Internet từ laptop, thời gian đo và feature availability; tách replay/Linux live/Windows live. Router health unavailable khi chưa có backend router.
-- [ ] Mỗi kết luận có evidence và hướng xử lý; phân biệt có lỗi, chưa đủ dữ liệu, chưa hỗ trợ và chưa chạy phép đo.
-- [ ] API dùng application service; không nhận adapter/profile/model path/quyền WRITE từ HTTP.
-- [ ] Test response/API isolation và kiểm trực quan các trạng thái loading, lỗi, thiếu dữ liệu, stale và thành công.
+- [x] Hiển thị Wi-Fi laptop, Internet từ laptop, thời gian đo và feature availability; tách replay/Linux live/Windows live. Router health unavailable khi chưa có backend router.
+- [x] Mỗi kết luận có evidence và hướng xử lý; phân biệt có lỗi, chưa đủ dữ liệu, chưa hỗ trợ và chưa chạy phép đo.
+- [x] API dùng application service; không nhận adapter/profile/model path/quyền WRITE từ HTTP.
+- [x] Test response/API isolation và kiểm trực quan các trạng thái loading, lỗi, thiếu dữ liệu, stale và thành công.
 
 **Nghiệm thu:** Không hiện healthy khi required measurement chưa có; người dùng đọc được vấn đề và bước tiếp theo mà không cần hiểu GraphRunner.
 

@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.2.0",
+  "allowed_probe_ids": [
+    "probe.linux.clients_resolve",
+    "probe.linux.client_ipv4",
+    "probe.linux.laptop_route",
+    "probe.linux.laptop_wifi",
+    "probe.linux.laptop_gateway_probe",
+    "probe.linux.laptop_internet_probe",
+    "probe.linux.laptop_dns"
+  ]
+}

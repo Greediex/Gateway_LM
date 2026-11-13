@@ -1,6 +1,8 @@
 # Gateway LM Web
 
-Giao diện chat gọi `gateway_pilot.workflow.diagnose()` của pilot hiện tại. Backend trả kết luận, các mục tiêu policy đã cân nhắc, tool calls, evidence và từng phiên bản DAG. Mọi kết quả đo dùng dữ liệu replay trên máy.
+**v2 / FND-07:** Linux live đã có dashboard Wi-Fi/Connectivity và verified snapshot. Chạy `bash web_gateway/start_linux.sh` (mặc định live), hoặc thêm `--source replay`. Xem [hướng dẫn laptop và API /api/network](LAPTOP_NETWORK_V2.md). Windows route/ping/DNS giữ flow cũ. Các phần replay/Windows bên dưới mô tả các flow đó.
+
+Giao diện chat gọi `gateway_pilot.workflow.diagnose()` của pilot hiện tại. Backend trả kết luận, các mục tiêu policy đã cân nhắc, tool calls, evidence và từng phiên bản DAG. Các ví dụ fixture bên dưới dùng dữ liệu replay; Linux/Windows live đọc máy đang chạy server.
 
 Chạy từ thư mục gốc repository trên Windows:
 
@@ -29,7 +31,7 @@ Chế độ **LangGraph ReAct** dùng `StateGraph`, `ToolNode` và mã định t
 - **Runbook RAG** truy xuất tài liệu hướng dẫn. Kết luận chẩn đoán dựa trên evidence của lượt chạy.
 - **LLM suy luận** bật mặc định trên giao diện ReAct với model Ollama local `qwen3:1.7b`. LLM hỗ trợ nhận diện yêu cầu khi luật chưa xác định được luồng. Khi có nhiều phép đo độc lập hoặc phép đo vừa lỗi, LLM có thể đề xuất bước tiếp theo và ghi giả thuyết kèm mã bằng chứng. Gateway kiểm đề xuất và tự đánh giá kết luận từ bằng chứng đo được.
 
-Web giữ một phiên (`session_id`, trong bộ nhớ, hết hạn sau 15 phút): khi bị hỏi lại thiết bị, chỉ cần trả lời tên thiết bị; server chạy tiếp đúng Case đang chờ và dùng lại fact gateway còn hạn, không ghép chuỗi câu hỏi. Đổi tình huống thì bắt đầu Case mới. Replay đi qua `ReplayAdapter`; Function có probe hỏng không vào kế hoạch. Tab **Contracts** hiển thị Contract 0/A/B/C, lịch sử revision kèm toán tử repair và route (fastpath/resolver). Server chỉ nghe trên loopback và phục vụ replay chỉ đọc. Hai tình huống so sánh của web tạo từ fixture gốc trong bộ nhớ, giữ nguyên dữ liệu benchmark đã khóa.
+Web giữ một phiên (`session_id`, trong bộ nhớ, hết hạn sau 15 phút): khi bị hỏi lại thiết bị, chỉ cần trả lời tên thiết bị; server chạy tiếp đúng Case đang chờ và dùng lại fact gateway còn hạn, không ghép chuỗi câu hỏi. Đổi tình huống thì bắt đầu Case mới. Replay đi qua `ReplayAdapter`; Function có probe hỏng không vào kế hoạch. Tab **Contracts** hiển thị Contract 0/A/B/C, lịch sử revision kèm toán tử repair và route (fastpath/resolver). Server chỉ nghe trên loopback, giữ nguồn replay/live tách biệt và chỉ đọc. Hai tình huống so sánh của web tạo từ fixture gốc trong bộ nhớ, giữ nguyên dữ liệu benchmark đã khóa.
 
 `GET /api/config` trả danh sách fixture và trạng thái phụ thuộc. `POST /api/chat` nhận JSON, ví dụ:
 

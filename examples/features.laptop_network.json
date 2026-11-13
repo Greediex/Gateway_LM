@@ -1,0 +1,42 @@
+{
+  "schema_version": "0.2.0",
+  "features": [
+    {
+      "schema_version": "0.2.0",
+      "kind": "feature",
+      "feature_id": "network.laptop.connectivity",
+      "version": "1.0.0",
+      "name": "Kết nối từ laptop",
+      "description": "Kết nối từ laptop",
+      "scope": "client",
+      "permission": "network.read",
+      "risk": "READ_ONLY",
+      "required_ports": {
+        "laptop.route": "1.0.0",
+        "client.ipv4": "3.0.0"
+      },
+      "optional_ports": {
+        "laptop.gateway_probe": "1.0.0",
+        "laptop.internet_probe": "1.0.0",
+        "laptop.dns": "1.0.0"
+      }
+    },
+    {
+      "schema_version": "0.2.0",
+      "kind": "feature",
+      "feature_id": "network.laptop.wifi",
+      "version": "1.0.0",
+      "name": "Wi-Fi laptop",
+      "description": "Wi-Fi laptop",
+      "scope": "client",
+      "permission": "network.read",
+      "risk": "READ_ONLY",
+      "required_ports": {
+        "laptop.wifi": "1.0.0"
+      },
+      "optional_ports": {
+        "laptop.route": "1.0.0"
+      }
+    }
+  ]
+}

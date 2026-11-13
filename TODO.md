@@ -14,18 +14,18 @@ Backlog khảo sát ngày **13/11/2026**, dựa trên nhánh `refactor/gateway-l
 - [x] **FND-04:** Trusted Adapter Binding và conformance; replay/laptop trước, OpenWrt sau — [hướng dẫn](docs/ADAPTER_BINDINGS_V02.md), [nghiệm thu](docs/reports/FND04_BINDINGS_CONFORMANCE_20261113.md).
 - [x] **FND-05:** Feature Registry dùng Catalog và availability theo target (GLM-04) — [hướng dẫn](docs/FEATURE_REGISTRY_V02.md), [nghiệm thu](docs/reports/FND05_FEATURE_REGISTRY_20261113.md).
 - [x] **FND-06:** Migration, compatibility view, policy v0.2 và regression v0.1.
-- [ ] **FND-07:** Connectivity/Wi-Fi laptop → verified snapshot → UI (GLM-03/05/06/07).
+- [x] **FND-07:** Connectivity/Wi-Fi laptop → verified snapshot → UI (GLM-03/05/06/07).
 
 Các task GLM bên dưới giữ mã cũ để tra cứu; không phải một luồng mở rộng chạy trước Foundation. GLM-01 là prerequisite baseline, sửa lỗi và kiểm thử thiết yếu vẫn được thực hiện.
 
 - [ ] **P0 / GLM-01:** Thiết lập môi trường đúng lockfile, bootstrap upstream và xác lập regression baseline.
 - [ ] **P1 / GLM-02:** Hardening CompositeAdapter và giới hạn I/O Ubus, tích hợp ZIP có chọn lọc.
-- [ ] **P0 / GLM-03:** Verified snapshot, provenance, scope và freshness.
+- [x] **P0 / GLM-03:** Verified snapshot, provenance, scope và freshness.
 - [ ] **P0 / GLM-04:** Feature manifest, registry và availability.
-- [ ] **P0 / GLM-05:** Connectivity phía laptop qua execution core; Gateway Health chờ backend router.
-- [ ] **P0 / GLM-06:** Đọc Wi-Fi thật từ laptop Linux, route/ping/DNS với client scope và evidence.
+- [x] **P0 / GLM-05:** Connectivity phía laptop qua execution core; Gateway Health chờ backend router.
+- [x] **P0 / GLM-06:** Đọc Wi-Fi thật từ laptop Linux, route/ping/DNS với client scope và evidence.
 - [ ] **P1 / GLM-06R:** Firmware profile/conformance và nghiệm thu READ trên router ở giai đoạn sau.
-- [ ] **P1 / GLM-07:** Dashboard Tổng quan + Chẩn đoán, thể hiện evidence và dữ liệu thiếu.
+- [x] **P1 / GLM-07:** Dashboard Tổng quan + Chẩn đoán, thể hiện evidence và dữ liệu thiếu.
 - [ ] **P1 / GLM-08:** Wi-Fi, Devices, DHCP với client scope đúng.
 - [ ] **P1 / GLM-09:** History/Alerts, dedup, freshness và giới hạn tổng tài nguyên.
 - [ ] **P1 / GLM-10:** Benchmark độc lập cho diagnosis, LLM/retrieval và tài nguyên.
@@ -49,3 +49,5 @@ Trạng thái các khả năng đã có: [TASK_STATUS](docs/TASK_STATUS.md). Kh�
 **Kiểm chứng FND-05:** 16 feature tests pass; full regression 578 tests: 573 pass, 5 Windows-only skip. Bốn trạng thái availability được kiểm bằng synthetic Core snapshots; preview thật UNAVAILABLE/RUNTIME_NOT_CONNECTED tới khi có FND-06, không lấy conformance làm capability.
 
 **FND-06:** [Runtime migration](docs/RUNTIME_V02.md) và [local acceptance](docs/reports/FND06_RUNTIME_MIGRATION_20261113.md). Trusted v0.2 READ qua shared Core, scoped support leases, compatibility view và checkpoint pins; FND-07 laptop snapshot/UI còn pending.
+
+**FND-07:** [Laptop live + verified snapshot + UI](docs/LAPTOP_NETWORK_V2.md), [local acceptance](docs/reports/FND07_LAPTOP_NETWORK_20261113.md). Linux profile 7 READ Functions; route thực và Wi-Fi tách biệt, snapshot TTL, router health unavailable. README cập nhật chạy/test v2.

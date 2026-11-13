@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
+import shutil
 import sys
 import traceback
 from collections import defaultdict, deque
@@ -115,6 +117,9 @@ def _status():
               "skill_context_available": False, "react_available": False,
               "llm_optional": True, "direct_router_access": False, "windows_live_available": os.name == "nt",
               "message": "Đang kiểm tra Gateway LM backend"}
+    status.update(linux_live_available=platform.system() == "Linux" and bool(shutil.which("nmcli") and shutil.which("ip")),
+                  live_platform="Windows" if os.name == "nt" else "Linux")
+    status["live_available"] = status["windows_live_available"] or status["linux_live_available"]
     try:
         count = len(fixture_catalog())
         from gateway_pilot.workflow import workflow_registry
@@ -156,8 +161,8 @@ def analyze(payload: dict):
     if source_mode not in ("replay", "live"):
         raise ValueError("Nguồn dữ liệu chỉ hỗ trợ live hoặc replay")
     live = source_mode == "live"
-    if live and os.name != "nt":
-        raise ValueError("Chế độ đo từ máy hiện tại yêu cầu Windows")
+    if live and os.name != "nt" and platform.system() != "Linux":
+        raise ValueError("Live yêu cầu Linux hoặc Windows")
     fixture_id = "WINDOWS-LIVE" if live else payload.get("fixture_id", DEFAULT_FIXTURE)
     if not live:
         cases = fixture_catalog()
@@ -172,6 +177,14 @@ def analyze(payload: dict):
     session_id = payload.get("session_id")
     if session_id is not None and (not isinstance(session_id, str) or not 1 <= len(session_id) <= 64):
         raise ValueError("session_id không hợp lệ")
+
+    if live and platform.system() == "Linux" and os.name != "nt":
+        forbidden = {"adapter", "backend", "world", "permissions", "capabilities", "profile", "command",
+                     "interface", "target", "registry", "goals", "model_path", "approved_digest"}
+        if forbidden.intersection(payload):
+            raise ValueError("Không nhận cấu hình backend/target/quyền từ HTTP")
+        from gateway_pilot.application.diagnose_network import chat_linux
+        return chat_linux(message.strip(), method=method)
 
     # Important: never pass gold labels, template names or hidden world to the
     # planner/model directly. replay_from_fixture returns adapter inventory.
@@ -417,14 +430,14 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/health":
             status = _status()
             if getattr(self.server, "default_source", "replay") == "live":
-                status["mode"] = "windows_live"
+                status["mode"] = "windows_live" if os.name == "nt" else "linux_live"
             return self._json(status)
         if path == "/api/config":
             try:
                 status = _status()
                 default_source = getattr(self.server, "default_source", "replay")
                 if default_source == "live":
-                    status["mode"] = "windows_live"
+                    status["mode"] = "windows_live" if os.name == "nt" else "linux_live"
                 return self._json({"status": status, "fixtures": fixture_summaries(),
                                    "default_fixture_id": DEFAULT_FIXTURE,
                                    "default_source": default_source,
@@ -461,7 +474,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         endpoint = urlparse(self.path).path
-        if endpoint not in ("/api/chat", "/api/goals", "/api/rca"):
+        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network"):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -473,6 +486,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": "Request JSON quá lớn hoặc rỗng"}, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
         try:
             data = json.loads(self.rfile.read(length))
+            if endpoint == "/api/network":
+                if type(data) is not dict or data:
+                    raise ValueError("Network API chỉ nhận JSON object rỗng; cấu hình lấy từ server")
+                if platform.system() != "Linux" or os.name == "nt" or getattr(self.server, "default_source", "replay") != "live":
+                    raise ValueError("Network overview chỉ có trong Linux live mode")
+                from gateway_pilot.application.diagnose_network import diagnose_network
+                return self._json(diagnose_network())
             if isinstance(data, dict):
                 data.setdefault("source_mode", getattr(self.server, "default_source", "replay"))
             result = (analyze_goals(data) if endpoint == "/api/goals" else
@@ -491,21 +511,21 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Gateway LM local web chat (synthetic replay)")
+    parser = argparse.ArgumentParser(description="Gateway LM v2 local laptop live / replay")
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--host", default="127.0.0.1", help="Mặc định chỉ truy cập từ máy này")
     parser.add_argument("--source", choices=("replay", "live"), default="replay")
     args = parser.parse_args()
     if args.host not in ("127.0.0.1", "localhost"):
         parser.error("Chỉ cho phép localhost")
-    if args.source == "live" and os.name != "nt":
-        parser.error("Nguồn live yêu cầu Windows")
+    if args.source == "live" and os.name != "nt" and platform.system() != "Linux":
+        parser.error("Nguồn live yêu cầu Linux hoặc Windows")
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
     with ThreadingHTTPServer((args.host, args.port), Handler) as httpd:
         httpd.default_source = args.source
         print(f"Gateway LM Web: http://{args.host}:{httpd.server_port}")
         print(_status()["message"])
-        print("Nguồn mặc định: đo từ Windows." if args.source == "live" else "Nguồn mặc định: synthetic replay.")
+        print("Nguồn mặc định: đo từ " + ("Windows." if os.name == "nt" else "Linux laptop.") if args.source == "live" else "Nguồn mặc định: synthetic replay.")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
