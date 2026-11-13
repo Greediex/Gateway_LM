@@ -1,0 +1,23 @@
+{
+  "functions": {
+    "client.dns": "2bd024404d1f2e425d0a7bb1f65e54093da84c57535986f2d540925482ea0ac7",
+    "client.ipv4": "e0e90eacf618ad1e220ddc1463e38381969ede904b082903a618dc0cfa5d7b0a",
+    "client.probe": "a77a0cfe118b6b443567b9edc2c3d04478302c846e71167d6c6b0287f5492bb0",
+    "clients.resolve": "96ea12020c510e12cdc8ae1d62c57b5d03787bc4677bb5bcd1c9f249e1cbb8b5",
+    "dhcp.leases": "f3c3ba8643c8a75efc4df2016db1f4993096e9c15b1dd34e48181a2687742ea9",
+    "dhcp.pool": "412c514d28e8e707cc492d0d1959acac4d71dee1f8a0acf524a617013c7e6ee2",
+    "dhcp.service": "74ce06d3d0af3ba98c74a248212690aa713add4fb50a04cc66418d84e49d2955",
+    "dns.apply": "eb0d80b1c228a68cbbc4547b66e4de82d8f9518bb74ab35763aaf7cafa86964f",
+    "dns.config": "5dac0c49c5dd6d7eb4a4247029acf5ec44c83515607ced81bca7f7a68e0deb15",
+    "dns.probe": "ccf1826ac305b97c34b498c89939e77ad4c70b337a817b5f6f489c299fdb918b",
+    "qos.apply": "a200e6dc55e56908e999fb7cf9bcf538903607a2fe4f5650f71f9c8fc1592fdb",
+    "system.logs": "9c10e7d3618858a450eb25dca13145b6daef0c4a1a30d915d5e60c21125fb9f3",
+    "system.resources": "09d0be6d5373dac2faf41b46ee4903414c5e4790bd1e39962479268b10fcb062",
+    "wan.probe": "ebb1ac5b289c2e48f313bc65648bb9017d90514ee1314081890694a212646e05",
+    "wan.routes": "39acdaf4585af3a1506852ea0b327bc0e58d2874e16645a0184c9c0591ed1bdb",
+    "wan.status": "ff78df956562bce1188b341349aefbafdabae2c15c43224129dbc1b71f723d35",
+    "wifi.station": "3c8ede3f46be970bee834c098a2e9516c473c07530fbf2a89aff7a171a95de7d"
+  },
+  "registry_sha256": "5bc7dc133aa5e2bb0d6a834a9e531612f3cecdcc052c8b971f88eab940c0039a",
+  "source_commit": "3fd196fd47b492cb3036b4db100d654d9461c002"
+}

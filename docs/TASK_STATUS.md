@@ -59,3 +59,7 @@ hardware claims require board-backed evidence, not generic simulations.
 ## Nine-workstream acceptance protocol
 
 See [ACCEPTANCE_9_TASKS.md](ACCEPTANCE_9_TASKS.md) for model/calibration, 270-requirement traceability, OpenWrt Ubus, on-device metrics, Cloud and WRITE sign-off gates. A green CI does not complete board-backed tasks.
+
+## Foundation update — 2026-11-13
+
+FND-01 **DONE (metadata/local validation only)**: [Function/Port/exact-selection schema v0.2](contracts/catalog-v02/README.md), bounded standalone validator, 17 contract/compatibility tests. Full local regression: 519 tests, 514 pass, 5 Windows-only skips; v0.1 registry/digests unchanged. [Acceptance report](reports/FND01_CONTRACT_V02_20261113.md). No v0.2 runtime loader/builder or new executable capability; later Foundation gates remain pending. No new GitHub CI URL or device acceptance.

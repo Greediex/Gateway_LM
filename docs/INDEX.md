@@ -69,3 +69,10 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 **Chưa chứng minh trên thiết bị thật:** OpenWrt Function, NPU deployment, Task DAG tổng quát, RCA thật, cấu hình router WRITE.
 
 Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor thay vì cộng số liệu giữa các báo cáo lịch sử.
+
+## Foundation v0.2
+
+- [FND-01: Function Contract v0.2 — chuẩn và mapping](contracts/catalog-v02/README.md).
+- [FND-01: kết quả nghiệm thu local](reports/FND01_CONTRACT_V02_20261113.md).
+- [Foundation design và FND-01 đến FND-07](superpowers/specs/2026-11-13-command-catalog-v02-design.md).
+- [Todo triển khai](../TODO.md).

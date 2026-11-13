@@ -1,0 +1,597 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM v0.2 contract metadata",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/function"
+    },
+    {
+      "$ref": "#/$defs/port"
+    },
+    {
+      "$ref": "#/$defs/selection"
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$(?![\\s\\S])",
+      "maxLength": 100
+    },
+    "segment": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$(?![\\s\\S])",
+      "maxLength": 64
+    },
+    "field": {
+      "type": "string",
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*(\\.[a-zA-Z_][a-zA-Z0-9_]*)*$(?![\\s\\S])",
+      "maxLength": 128
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "\\S"
+    },
+    "skill_id": {
+      "type": "string",
+      "maxLength": 100,
+      "anyOf": [
+        {
+          "$ref": "#/$defs/id"
+        },
+        {
+          "pattern": "^SK[0-9]{2}$(?![\\s\\S])"
+        }
+      ]
+    },
+    "port_map": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {
+        "$ref": "#/$defs/id"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/version"
+      }
+    },
+    "data_schema": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "object",
+            "array",
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "null"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "\\S"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "\\S"
+        },
+        "properties": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/property"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/data_schema"
+          }
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/property"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "additionalProperties": {
+          "type": "boolean"
+        },
+        "enum": {
+          "type": "array",
+          "items": {},
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "const": {},
+        "minimum": {
+          "type": "number"
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65536
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65536
+        },
+        "items": {
+          "$ref": "#/$defs/data_schema"
+        },
+        "minItems": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "format": {
+          "enum": [
+            "ipv4",
+            "ipv6",
+            "hostname",
+            "date-time"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "object"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "properties",
+              "required",
+              "additionalProperties"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "array"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "items",
+              "maxItems"
+            ]
+          }
+        }
+      ]
+    },
+    "closed_schema": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/data_schema"
+        },
+        {
+          "type": "object",
+          "required": [
+            "properties",
+            "required",
+            "additionalProperties"
+          ],
+          "properties": {
+            "type": {
+              "const": "object"
+            },
+            "additionalProperties": {
+              "const": false
+            }
+          }
+        }
+      ]
+    },
+    "function": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.2.0"
+        },
+        "kind": {
+          "const": "function"
+        },
+        "function_id": {
+          "$ref": "#/$defs/id"
+        },
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "domain": {
+          "$ref": "#/$defs/segment"
+        },
+        "skill_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "skill_id": {
+                "$ref": "#/$defs/skill_id"
+              },
+              "version": {
+                "$ref": "#/$defs/version"
+              }
+            },
+            "required": [
+              "skill_id",
+              "version"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "lifecycle": {
+          "enum": [
+            "PROPOSED",
+            "IMPLEMENTED",
+            "VERIFIED",
+            "DEPRECATED",
+            "RETIRED"
+          ]
+        },
+        "inputs": {
+          "$ref": "#/$defs/port_map"
+        },
+        "outputs": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/port_map"
+            },
+            {
+              "minProperties": 1
+            }
+          ]
+        },
+        "scope": {
+          "enum": [
+            "gateway",
+            "client"
+          ]
+        },
+        "risk": {
+          "enum": [
+            "READ_ONLY",
+            "PROBE",
+            "WRITE"
+          ]
+        },
+        "permission": {
+          "enum": [
+            "network.read",
+            "system.read",
+            "network.write"
+          ]
+        },
+        "arguments_schema": {
+          "$ref": "#/$defs/closed_schema"
+        },
+        "argument_sources": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": {
+            "$ref": "#/$defs/property"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "$ref": "#/$defs/id"
+              },
+              {
+                "$ref": "#/$defs/field"
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "port": {
+                "$ref": "#/$defs/id"
+              },
+              "field": {
+                "type": "string",
+                "maxLength": 128
+              },
+              "op": {
+                "enum": [
+                  "exists",
+                  "eq",
+                  "gt",
+                  "ge",
+                  "lt",
+                  "le"
+                ]
+              },
+              "value": {}
+            },
+            "required": [
+              "port",
+              "field",
+              "op",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "order_after": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60000
+        },
+        "retry": {
+          "type": "object",
+          "properties": {
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            }
+          },
+          "required": [
+            "max_attempts"
+          ],
+          "additionalProperties": false
+        },
+        "ttl_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 86400
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60000
+        },
+        "capability_probe": {
+          "$ref": "#/$defs/id"
+        },
+        "verifier": {
+          "const": "schema_scope_provenance_freshness/v3"
+        },
+        "on_unknown": {
+          "const": "BLOCK_AND_REQUEST_EVIDENCE"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "\\S"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "function_id",
+        "version",
+        "description",
+        "domain",
+        "skill_refs",
+        "lifecycle",
+        "inputs",
+        "outputs",
+        "scope",
+        "risk",
+        "permission",
+        "arguments_schema",
+        "argument_sources",
+        "preconditions",
+        "order_after",
+        "effects",
+        "timeout_ms",
+        "retry",
+        "ttl_seconds",
+        "cost",
+        "latency_ms",
+        "capability_probe",
+        "verifier",
+        "on_unknown"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "risk": {
+                "const": "WRITE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "permission": {
+                "const": "network.write"
+              },
+              "retry": {
+                "properties": {
+                  "max_attempts": {
+                    "const": 1
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "permission": {
+                "enum": [
+                  "network.read",
+                  "system.read"
+                ]
+              },
+              "effects": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "port": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.2.0"
+        },
+        "kind": {
+          "const": "port"
+        },
+        "port_id": {
+          "$ref": "#/$defs/id"
+        },
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "scope": {
+          "enum": [
+            "gateway",
+            "client"
+          ]
+        },
+        "schema": {
+          "$ref": "#/$defs/closed_schema"
+        },
+        "provenance": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9_-]*(?:/[a-z0-9_-]+)*/$(?![\\s\\S])"
+        },
+        "untrusted_text": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "port_id",
+        "version",
+        "scope",
+        "schema",
+        "provenance",
+        "untrusted_text"
+      ],
+      "additionalProperties": false
+    },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.2.0"
+        },
+        "kind": {
+          "const": "selection"
+        },
+        "functions": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 10000,
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/version"
+          }
+        },
+        "ports": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 10000,
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/version"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "functions",
+        "ports"
+      ],
+      "additionalProperties": false
+    },
+    "property": {
+      "type": "string",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$(?![\\s\\S])",
+      "maxLength": 64
+    }
+  }
+}

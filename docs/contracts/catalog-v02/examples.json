@@ -1,0 +1,141 @@
+{
+  "function": {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "client.wifi.read",
+    "version": "1.0.0",
+    "description": "Read the current Wi-Fi association of the selected laptop.",
+    "domain": "wifi",
+    "skill_refs": [
+      {
+        "skill_id": "network.wifi.inspect",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {
+      "client.identity": "1.0.0"
+    },
+    "outputs": {
+      "client.wifi.link": "1.0.0"
+    },
+    "scope": "client",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "client_id"
+      ],
+      "additionalProperties": false
+    },
+    "argument_sources": {
+      "client_id": [
+        "client.identity",
+        "client_id"
+      ]
+    },
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 10,
+    "cost": 1,
+    "latency_ms": 10,
+    "capability_probe": "linux.wifi.read",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "wifi",
+      "laptop"
+    ]
+  },
+  "port": {
+    "schema_version": "0.2.0",
+    "kind": "port",
+    "port_id": "client.wifi.link",
+    "version": "1.0.0",
+    "scope": "client",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "associated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "associated"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": "linux_client/",
+    "untrusted_text": false
+  },
+  "selection": {
+    "schema_version": "0.2.0",
+    "kind": "selection",
+    "functions": {
+      "client.wifi.read": "1.0.0"
+    },
+    "ports": {
+      "client.identity": "1.0.0",
+      "client.wifi.link": "1.0.0"
+    }
+  },
+  "gateway_multi_output": {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "gateway.health.read",
+    "version": "1.0.0",
+    "description": "Illustrative gateway multi-output metadata; not a verified device Function.",
+    "domain": "system",
+    "skill_refs": [
+      {
+        "skill_id": "SK01",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "gateway.cpu": "1.0.0",
+      "gateway.memory": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "system.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 10,
+    "cost": 1,
+    "latency_ms": 10,
+    "capability_probe": "replay.health.read",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "illustrative"
+    ]
+  }
+}
