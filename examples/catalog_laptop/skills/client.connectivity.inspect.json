@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "client.connectivity.inspect",
+  "version": "2.0.0",
+  "name": "Inspect the local Linux client IPv4 state",
+  "description": "Local Linux client READ metadata only; no runtime capability.",
+  "requires": {
+    "client.identity": "3.0.0"
+  },
+  "produces": {
+    "client.ipv4": "3.0.0"
+  },
+  "completion_ports": {
+    "client.ipv4": "3.0.0"
+  },
+  "function_refs": {
+    "client.ipv4": "5.0.0"
+  },
+  "tags": [
+    "laptop",
+    "read",
+    "unverified"
+  ]
+}

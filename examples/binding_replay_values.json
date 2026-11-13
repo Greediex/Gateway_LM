@@ -1,0 +1,19 @@
+{
+  "clients.resolve": {
+    "client.identity": {
+      "client_id": "synthetic-client"
+    }
+  },
+  "client.ipv4": {
+    "client.ipv4": {
+      "configured": true,
+      "address": "192.0.2.10"
+    }
+  },
+  "wifi.station": {
+    "wifi.station": {
+      "associated": true,
+      "rssi_dbm": -60
+    }
+  }
+}

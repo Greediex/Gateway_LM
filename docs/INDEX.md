@@ -82,3 +82,6 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 
 - [FND-03: Catalog Validator/Builder, CLI và benchmark](CATALOG_V02.md).
 - [FND-03: kết quả nghiệm thu local](reports/FND03_CATALOG_BUILDER_20261113.md).
+
+- [FND-04: trusted binding và READ conformance](ADAPTER_BINDINGS_V02.md).
+- [FND-04: kết quả nghiệm thu local](reports/FND04_BINDINGS_CONFORMANCE_20261113.md).

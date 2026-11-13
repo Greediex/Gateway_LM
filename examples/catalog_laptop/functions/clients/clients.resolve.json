@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "function",
+  "function_id": "clients.resolve",
+  "version": "5.0.0",
+  "description": "Read only the operator-selected local Linux client identity.",
+  "domain": "clients",
+  "skill_refs": [
+    {
+      "skill_id": "client.identity.inspect",
+      "version": "2.0.0"
+    }
+  ],
+  "lifecycle": "PROPOSED",
+  "inputs": {},
+  "outputs": {
+    "client.identity": "3.0.0"
+  },
+  "scope": "client",
+  "risk": "READ_ONLY",
+  "permission": "network.read",
+  "arguments_schema": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "argument_sources": {},
+  "preconditions": [],
+  "order_after": [],
+  "effects": [],
+  "timeout_ms": 2000,
+  "retry": {
+    "max_attempts": 1
+  },
+  "ttl_seconds": 30,
+  "cost": 1.0,
+  "latency_ms": 1.0,
+  "capability_probe": "probe.linux.clients_resolve",
+  "verifier": "schema_scope_provenance_freshness/v3",
+  "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+  "tags": [
+    "laptop",
+    "read",
+    "unverified"
+  ]
+}

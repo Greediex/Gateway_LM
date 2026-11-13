@@ -81,12 +81,13 @@ def build_registry(catalog: dict, selection: dict, policy: dict,
         },
     }
     artifact["content_digest"] = digest(artifact)
-    _verify_registry(artifact, policy)
+    verify_registry(artifact, policy)
     _publish(output, canonical_bytes(artifact))
     return artifact
 
 
-def _verify_registry(artifact: dict, policy: dict) -> None:
+def verify_registry(artifact: dict, policy: dict) -> None:
+    """Verify a metadata object against trusted policy, without enabling it."""
     fields = {"format", "schema_version", "execution_enabled", "selection", "functions",
               "ports", "skills", "indexes", "manifest", "content_digest"}
     require(set(artifact) == fields and artifact["format"] == FORMAT
@@ -143,7 +144,7 @@ def _verify_registry(artifact: dict, policy: dict) -> None:
 def read_registry(path: str | Path, policy: dict) -> dict:
     """Read and revalidate metadata integrity. Hashes are not signatures."""
     artifact = read_json(path, max_bytes=MAX_CATALOG_BYTES)
-    _verify_registry(artifact, policy)
+    verify_registry(artifact, policy)
     return artifact
 
 

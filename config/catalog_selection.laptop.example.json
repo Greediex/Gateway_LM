@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "selection",
+  "functions": {
+    "clients.resolve": "5.0.0",
+    "client.ipv4": "5.0.0"
+  },
+  "ports": {
+    "client.identity": "3.0.0",
+    "client.ipv4": "3.0.0"
+  }
+}

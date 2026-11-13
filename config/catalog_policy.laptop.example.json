@@ -1,0 +1,7 @@
+{
+  "schema_version": "0.2.0",
+  "allowed_probe_ids": [
+    "probe.linux.clients_resolve",
+    "probe.linux.client_ipv4"
+  ]
+}

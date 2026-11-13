@@ -1,0 +1,67 @@
+{
+  "protocol": "fnd04-read-conformance/v1",
+  "replay": {
+    "data_kind": "synthetic_replay",
+    "reports": [
+      {
+        "protocol": "binding-conformance/v1",
+        "binding_id": "replay.clients.resolve",
+        "status": "CONFORMANT",
+        "reason": "conformance_pass",
+        "source": "synthetic_replay/binding_v1",
+        "sample_digest": "6182b66871ff717e5db28465b1b24d6351e87473663e6f32a3e9e74a8c25d284",
+        "execution_enabled": false,
+        "evidence_admitted": false
+      },
+      {
+        "protocol": "binding-conformance/v1",
+        "binding_id": "replay.client.ipv4",
+        "status": "CONFORMANT",
+        "reason": "conformance_pass",
+        "source": "synthetic_replay/binding_v1",
+        "sample_digest": "17cb5601460f5a2fc244f13fe9c77475a9200a5cefeb0f724ca20a6ef228e028",
+        "execution_enabled": false,
+        "evidence_admitted": false
+      },
+      {
+        "protocol": "binding-conformance/v1",
+        "binding_id": "replay.wifi.station",
+        "status": "CONFORMANT",
+        "reason": "conformance_pass",
+        "source": "synthetic_replay/binding_v1",
+        "sample_digest": "719386c0b4b9b4184259f0d078ae82cc07d1772b7b1786c82f9bb893d9f532d1",
+        "execution_enabled": false,
+        "evidence_admitted": false
+      }
+    ]
+  },
+  "laptop": {
+    "data_kind": "live_linux_client_conformance",
+    "wireless_interface_selected": true,
+    "reports": [
+      {
+        "protocol": "binding-conformance/v1",
+        "binding_id": "laptop.clients.resolve",
+        "status": "CONFORMANT",
+        "reason": "conformance_pass",
+        "source": "linux_client/binding_v1",
+        "sample_digest": "4697c5e3836e4ebb056bee96636088194ede1635dac796c617dcb4c7128196bc",
+        "execution_enabled": false,
+        "evidence_admitted": false
+      },
+      {
+        "protocol": "binding-conformance/v1",
+        "binding_id": "laptop.client.ipv4",
+        "status": "CONFORMANT",
+        "reason": "conformance_pass",
+        "source": "linux_client/binding_v1",
+        "sample_digest": "d14659bd677afbd1d6044f43191f8ce86f59d7f589e18a287f1f6930113f0400",
+        "execution_enabled": false,
+        "evidence_admitted": false
+      }
+    ],
+    "wifi_station_supported": false
+  },
+  "execution_enabled": false,
+  "evidence_admitted": false
+}

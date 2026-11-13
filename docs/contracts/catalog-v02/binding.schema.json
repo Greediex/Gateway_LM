@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Gateway LM trusted READ binding declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "binding_id",
+    "function_id",
+    "function_version",
+    "function_digest",
+    "registry_digest",
+    "backend_id",
+    "backend_revision",
+    "source",
+    "scope",
+    "target_id",
+    "environment_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "binding_id": {
+      "$ref": "#/$defs/id"
+    },
+    "function_id": {
+      "$ref": "#/$defs/id"
+    },
+    "function_version": {
+      "$ref": "#/$defs/version"
+    },
+    "function_digest": {
+      "$ref": "#/$defs/hash"
+    },
+    "registry_digest": {
+      "$ref": "#/$defs/hash"
+    },
+    "backend_id": {
+      "$ref": "#/$defs/id"
+    },
+    "backend_revision": {
+      "$ref": "#/$defs/version"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9_-]*(/[a-z0-9_-]+)+$(?![\\s\\S])"
+    },
+    "scope": {
+      "enum": [
+        "client",
+        "gateway"
+      ]
+    },
+    "target_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^\\S+$(?![\\s\\S])"
+    },
+    "environment_id": {
+      "$ref": "#/$defs/hash"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$(?![\\s\\S])",
+      "maxLength": 100
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$(?![\\s\\S])"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    }
+  }
+}

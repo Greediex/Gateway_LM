@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.2.0",
+  "bindings": [
+    {
+      "schema_version": "0.2.0",
+      "binding_id": "replay.clients.resolve",
+      "function_id": "clients.resolve",
+      "function_version": "4.0.0",
+      "function_digest": "2994b80ebbe4d89b9d8a36f552db3fb22b47561f74445e22a9eaf2cd28b7eaf8",
+      "registry_digest": "25e1503989939061d3a9f33ef18b6760af32cb087c2e9ef99fb89560d177f65f",
+      "backend_id": "replay.seed",
+      "backend_revision": "1.0.0",
+      "source": "synthetic_replay/binding_v1",
+      "scope": "client",
+      "target_id": "synthetic-client",
+      "environment_id": "859a0e29ecd6bb1aedc8b0324a9494a19b2a43512593f8572aac881999402d29"
+    },
+    {
+      "schema_version": "0.2.0",
+      "binding_id": "replay.client.ipv4",
+      "function_id": "client.ipv4",
+      "function_version": "4.0.0",
+      "function_digest": "87ea2c8ece122fe4e5dd6c69579821bdf72306d66c35cbf4380cfa1907b58e15",
+      "registry_digest": "25e1503989939061d3a9f33ef18b6760af32cb087c2e9ef99fb89560d177f65f",
+      "backend_id": "replay.seed",
+      "backend_revision": "1.0.0",
+      "source": "synthetic_replay/binding_v1",
+      "scope": "client",
+      "target_id": "synthetic-client",
+      "environment_id": "859a0e29ecd6bb1aedc8b0324a9494a19b2a43512593f8572aac881999402d29"
+    },
+    {
+      "schema_version": "0.2.0",
+      "binding_id": "replay.wifi.station",
+      "function_id": "wifi.station",
+      "function_version": "4.0.0",
+      "function_digest": "c11f7b724207ae836f6fa7807212f3ec739e86a30bced933338924c51a28a732",
+      "registry_digest": "25e1503989939061d3a9f33ef18b6760af32cb087c2e9ef99fb89560d177f65f",
+      "backend_id": "replay.seed",
+      "backend_revision": "1.0.0",
+      "source": "synthetic_replay/binding_v1",
+      "scope": "client",
+      "target_id": "synthetic-client",
+      "environment_id": "859a0e29ecd6bb1aedc8b0324a9494a19b2a43512593f8572aac881999402d29"
+    }
+  ]
+}

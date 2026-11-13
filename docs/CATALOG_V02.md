@@ -128,3 +128,7 @@ Mặc định 10/100/1.000 Functions, mỗi Function có một Port và một Sk
 Đo source load, validate, build (gồm validation lặp và publication), verified read, bytes artifact và peak RSS. Discovery/closure đo 25 samples trong cùng process; OS/disk cache không được flush. Runtime compile và on-device CPU/NPU **không đo**. Dữ liệu là synthetic metadata, không phải 1.000 lệnh thực hoặc benchmark embedding độc lập.
 
 Budget chốt trước lần chạy: validate/read ≤30 giây mỗi size, build ≤60 giây, peak RSS ≤512 MiB, closure p95 ≤100 ms; worker timeout 180 giây. Budget này chỉ là gate phát triển trên host, chưa phải SLA router. Report chứa host/Python, protocol `catalog-scale/v1`, số liệu và budgets_met; command exit 1 nếu vượt budget. Worker fail bất thường không được báo thành công.
+
+## Bổ sung FND-04
+
+[Trusted binding và conformance](ADAPTER_BINDINGS_V02.md) dùng declarations riêng, pin artifact digest để tránh circular hash, approval pins từ trusted startup và backend objects từ Python. Public `verify_registry(artifact, policy)` expose helper integrity cũ, không đổi format/digest. Catalog report vẫn metadata-only/binding_count=0 vì bindings không được auto-nạp vào runtime. [Catalog laptop riêng](../examples/catalog_laptop/README.md) giữ provenance live khác replay; FND-06 tiếp tục bridge.
