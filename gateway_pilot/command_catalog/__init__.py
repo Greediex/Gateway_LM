@@ -1,1 +1,1 @@
-"""Development-time catalog contracts; no runtime loader or authorization."""
+"""Data-only catalog tooling; no adapter execution or runtime authorization."""

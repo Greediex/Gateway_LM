@@ -116,3 +116,7 @@ Tiếp theo FND-02 chuyển tập READ nhỏ theo domain; FND-03 xử lý parser
 [Catalog theo domain](../../../catalog/README.md) là tập READ seed độc lập với ví dụ FND-01. Kind `skill` có ID/version, name/description, `requires`, `produces`, `completion_ports` (port ID → exact version), `function_refs` (Function ID → exact version) và optional tags. Tối đa 64 refs mỗi map, produces/function_refs không rỗng; name 1–120 ký tự. Completion ports phải có cùng ID/version trong produces.
 
 Skill không có permission, status, capability hoặc executable source. `validate_contract` kiểm shape và reference cục bộ của completion ports; seed tests kiểm tham chiếu xuyên các file đã đưa vào repo. Generic resolution/cycle validation và registry builder vẫn ở FND-03.
+
+## Bổ sung FND-03: Catalog tooling
+
+[Validator/Builder và CLI](../../CATALOG_V02.md) đã triển khai strict parsing, cross-reference/schema/scope/dependency checks, exact selection, deterministic artifact và verified metadata read. API `validate_contract` ở tài liệu này vẫn chỉ kiểm từng document. File build policy chứa probe-name vocabulary, không cấp capability. Profile build hiện READ_ONLY, scope-local, chưa có workflow/binding/runtime bridge. [Nghiệm thu](../../reports/FND03_CATALOG_BUILDER_20261113.md).

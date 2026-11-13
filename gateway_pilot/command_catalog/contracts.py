@@ -1,7 +1,7 @@
 """Validate one v0.2 metadata contract without loading a registry or backend.
 
-This establishes the document boundary only. Cross-document references,
-bindings, capability attestations and execution policy belong to later gates.
+This establishes the document boundary only. Cross-document checks live in
+validator.py; binding, capability attestation and execution policy stay separate.
 """
 from __future__ import annotations
 

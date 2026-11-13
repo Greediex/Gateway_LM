@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.2.0",
+  "allowed_probe_ids": [
+    "probe.replay.clients_resolve",
+    "probe.replay.client_ipv4",
+    "probe.replay.wifi_station"
+  ]
+}

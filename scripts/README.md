@@ -39,3 +39,7 @@ python -m scripts.check_project
 python -m scripts.benchmarks.run_function_selection --help
 python -m scripts.analysis.audit_html --help
 ```
+
+## Catalog metadata v0.2 (FND-03)
+
+`python -m scripts.catalog validate/build/report` kiểm và build READ metadata; xem [hướng dẫn](../docs/CATALOG_V02.md) cho arguments. `python -m scripts.analysis.benchmark_catalog --output runs/catalog-v02/scale.json` chạy synthetic 10/100/1,000 trên host Linux/macOS, không đo router/NPU hoặc cấp quyền chạy Function.

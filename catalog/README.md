@@ -10,11 +10,11 @@ Catalog metadata schema **0.2.0**, bổ sung ngày 13/11/2026 trên nhánh `v2`.
 | `wifi` / `wifi.station` | 4.0.0 | `client.identity` 2.0.0 | `wifi.station` 2.0.0 | `client.connectivity.inspect` 1.0.0 |
 | `lan` / `client.ipv4` | 4.0.0 | `client.identity` 2.0.0 | `client.ipv4` 2.0.0 | `client.connectivity.inspect` 1.0.0 |
 
-Các file nằm trong `functions/<domain>/`, `ports/`, `skills/`; một file cho mỗi contract. Filename dùng ID, version nằm trong nội dung; khi cần nhiều version cùng ID, FND-03 phải quy định layout có version trước khi thêm bản thứ hai. Domain là metadata tổ chức/tìm kiếm, không phải quyền. Không tạo thư mục workflow/binding rỗng khi chưa có tài liệu phù hợp để đưa vào.
+Các file nằm trong `functions/<domain>/`, `ports/`, `skills/`; một file cho mỗi contract. Filename dùng ID, version nằm trong nội dung; khi cần nhiều version cùng ID, dùng `<id>@<version>.json` theo [layout FND-03](../docs/CATALOG_V02.md). Domain là metadata tổ chức/tìm kiếm, không phải quyền. Không tạo thư mục workflow/binding rỗng khi chưa có tài liệu phù hợp để đưa vào.
 
 Hai Function Wi-Fi/IPv4 dùng chung **một port identity** và **một Skill connectivity**. Identity có đúng một producer trong seed. Không nhân bản schema identity trong các domain hoặc tạo adapter riêng cho từng feature.
 
-[Exact selection mẫu](../config/catalog_selection.example.json) pin đúng 3 Function/3 Port ở trên. Skill versions được pin qua `skill_refs`; Skill `function_refs` cũng tham chiếu chính xác ngược lại. Selection là metadata ví dụ cho Builder FND-03, không phải cấu hình bật runtime hiện tại.
+[Exact selection mẫu](../config/catalog_selection.example.json) pin đúng 3 Function/3 Port ở trên. Skill versions được pin qua `skill_refs`; Skill `function_refs` cũng tham chiếu chính xác ngược lại. Selection được Builder FND-03 sử dụng để tạo artifact metadata, không phải cấu hình bật runtime hiện tại.
 
 ## Chuyển từ v0.1 và quản lý thay đổi
 
@@ -40,7 +40,7 @@ FND-02 bổ sung kind `skill` vào [schema Contract 0.2.0](../docs/contracts/cat
 
 Skill gồm `skill_id`, exact `version`, `name`, `description`, các map `requires`/`produces`/`completion_ports` (port ID → version) và `function_refs` (Function ID → version); `tags` tùy chọn. `produces` và `function_refs` không rỗng. Completion ports phải là tập con **đúng version** của produces. Không có permission, executable source, WRITE set, probe result hoặc runtime capability trong Skill metadata.
 
-API `validate_contract` kiểm shape và completion-port consistency của từng Skill. Nó vẫn không resolve toàn catalog. [Seed tests](../tests/catalog/test_seed_catalog.py) kiểm tĩnh tập đã đưa vào repo: uniqueness, domain, exact refs, scope, argument field type, chia sẻ port/Skill, version migration và selection coverage. Đây không phải generic catalog loader/validator dành cho arbitrary files; FND-03 sẽ xây cơ chế đó cùng parser chống duplicate JSON keys, full graph/cycle checks, deterministic build và report.
+API `validate_contract` kiểm shape và completion-port consistency của từng Skill. Nó vẫn không resolve toàn catalog. [Seed tests](../tests/catalog/test_seed_catalog.py) kiểm tĩnh tập đã đưa vào repo: uniqueness, domain, exact refs, scope, argument field type, chia sẻ port/Skill, version migration và selection coverage. Đây là tests tĩnh của seed. [Tooling FND-03](../docs/CATALOG_V02.md) bổ sung strict loader, cross-reference/dependency checks, deterministic build và report với profile READ scope-local.
 
 ## Kiểm tra
 
@@ -52,3 +52,7 @@ API `validate_contract` kiểm shape và completion-port consistency của từn
 ```
 
 Số lượng: **3 Function contracts, 3 Port contracts, 2 Skill contracts**; đây không phải 3 lệnh được phép thực thi trên laptop/router. Không sửa GraphRunner, policy hoặc Function catalog v0.1 trong FND-02.
+
+## Tooling FND-03
+
+[CLI validate/build/report](../docs/CATALOG_V02.md) đã có. Vocabulary probe IDs nằm ở [policy mẫu](../config/catalog_policy.example.json), không phải probe approval. Builder output ở `runs/`, luôn `execution_enabled:false`; không auto-bind/nạp vào Core và không thay thế registry v0.1. [Scale report synthetic](../docs/reports/FND03_CATALOG_BUILDER_20261113.md) không phải on-device acceptance.

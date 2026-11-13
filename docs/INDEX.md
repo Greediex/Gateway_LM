@@ -79,3 +79,6 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 
 - [FND-02: catalog READ theo domain](../catalog/README.md).
 - [FND-02: kết quả nghiệm thu local](reports/FND02_READ_SEED_CATALOG_20261113.md).
+
+- [FND-03: Catalog Validator/Builder, CLI và benchmark](CATALOG_V02.md).
+- [FND-03: kết quả nghiệm thu local](reports/FND03_CATALOG_BUILDER_20261113.md).
