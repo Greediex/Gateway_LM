@@ -24,7 +24,7 @@ def index_documents(catalog: dict) -> dict:
     return result
 
 
-def dependency_witness(functions: dict) -> tuple[list, dict]:
+def dependency_witness(functions: dict, *, allow_partial: bool = False) -> tuple[list, dict]:
     """AND input ports, OR producers, AND ORDER constraints; no recursive DFS.
 
     An input becomes available when a producer can be scheduled. Alternative
@@ -58,7 +58,8 @@ def dependency_witness(functions: dict) -> tuple[list, dict]:
                 pending[consumer] -= 1
                 if pending[consumer] == 0:
                     heapq.heappush(ready, consumer)
-    require(len(ordered) == len(functions), "dependency_cycle_or_unreachable")
+    if not allow_partial:
+        require(len(ordered) == len(functions), "dependency_cycle_or_unreachable")
     return ordered, dependencies
 
 

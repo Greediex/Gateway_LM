@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.2.0",
+  "features": [
+    {
+      "schema_version": "0.2.0",
+      "kind": "feature",
+      "feature_id": "network.client.connectivity",
+      "version": "2.0.0",
+      "name": "Thông tin IPv4 laptop",
+      "description": "Thông tin IPv4 laptop của client được chọn, từ các phép đo READ được hỗ trợ.",
+      "scope": "client",
+      "permission": "network.read",
+      "risk": "READ_ONLY",
+      "required_ports": {
+        "client.identity": "3.0.0",
+        "client.ipv4": "3.0.0"
+      },
+      "optional_ports": {}
+    }
+  ]
+}

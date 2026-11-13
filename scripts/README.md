@@ -43,3 +43,7 @@ python -m scripts.analysis.audit_html --help
 ## Catalog metadata v0.2 (FND-03)
 
 `python -m scripts.catalog validate/build/report` kiểm và build READ metadata; xem [hướng dẫn](../docs/CATALOG_V02.md) cho arguments. `python -m scripts.analysis.benchmark_catalog --output runs/catalog-v02/scale.json` chạy synthetic 10/100/1,000 trên host Linux/macOS, không đo router/NPU hoặc cấp quyền chạy Function.
+
+## Feature metadata preview (FND-05)
+
+`python -m scripts.features --registry runs/catalog-v02/registry.json` kiểm Feature manifests/flags và hiển thị availability chưa nối Core. Preview không nhận runtime capabilities từ JSON và không probe thiết bị; xem [hướng dẫn](../docs/FEATURE_REGISTRY_V02.md).

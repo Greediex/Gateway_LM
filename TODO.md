@@ -12,7 +12,7 @@ Backlog khảo sát ngày **13/11/2026**, dựa trên nhánh `refactor/gateway-l
 - [x] **FND-02:** Catalog theo domain với tập READ nhỏ, giữ dữ liệu v0.1 — [catalog](catalog/README.md), [nghiệm thu](docs/reports/FND02_READ_SEED_CATALOG_20261113.md).
 - [x] **FND-03:** Catalog Validator/Builder, deterministic artifact, CLI validate/build/report và benchmark synthetic — [hướng dẫn](docs/CATALOG_V02.md), [nghiệm thu](docs/reports/FND03_CATALOG_BUILDER_20261113.md).
 - [x] **FND-04:** Trusted Adapter Binding và conformance; replay/laptop trước, OpenWrt sau — [hướng dẫn](docs/ADAPTER_BINDINGS_V02.md), [nghiệm thu](docs/reports/FND04_BINDINGS_CONFORMANCE_20261113.md).
-- [ ] **FND-05:** Feature Registry dùng Catalog và availability theo target (GLM-04).
+- [x] **FND-05:** Feature Registry dùng Catalog và availability theo target (GLM-04) — [hướng dẫn](docs/FEATURE_REGISTRY_V02.md), [nghiệm thu](docs/reports/FND05_FEATURE_REGISTRY_20261113.md).
 - [ ] **FND-06:** Migration, compatibility view, policy v0.2 và regression v0.1.
 - [ ] **FND-07:** Connectivity/Wi-Fi laptop → verified snapshot → UI (GLM-03/05/06/07).
 
@@ -45,3 +45,5 @@ Trạng thái các khả năng đã có: [TASK_STATUS](docs/TASK_STATUS.md). Kh�
 **Kiểm chứng FND-03:** 43 catalog tests pass; full regression 545 tests: 540 pass, 5 Windows-only skip. Synthetic 10/100/1.000 đạt budget; 1.000 Function build 10,996s, peak RSS 57,34 MiB. Đây là metadata tooling; chưa có executable runtime v0.2.
 
 **Kiểm chứng FND-04:** 17 adapter tests pass; full regression 562 tests: 557 pass, 5 Windows-only skip. Replay 3/3 và laptop live identity/IPv4 2/2 CONFORMANT; provider chưa đọc RSSI dBm. Không admit facts hoặc cấp runtime capability trước FND-06.
+
+**Kiểm chứng FND-05:** 16 feature tests pass; full regression 578 tests: 573 pass, 5 Windows-only skip. Bốn trạng thái availability được kiểm bằng synthetic Core snapshots; preview thật UNAVAILABLE/RUNTIME_NOT_CONNECTED tới khi có FND-06, không lấy conformance làm capability.

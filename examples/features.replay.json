@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.2.0",
+  "features": [
+    {
+      "schema_version": "0.2.0",
+      "kind": "feature",
+      "feature_id": "network.client.connectivity",
+      "version": "1.0.0",
+      "name": "Thông tin kết nối client",
+      "description": "Thông tin kết nối client của client được chọn, từ các phép đo READ được hỗ trợ.",
+      "scope": "client",
+      "permission": "network.read",
+      "risk": "READ_ONLY",
+      "required_ports": {
+        "client.identity": "2.0.0",
+        "client.ipv4": "2.0.0"
+      },
+      "optional_ports": {
+        "wifi.station": "2.0.0"
+      }
+    },
+    {
+      "schema_version": "0.2.0",
+      "kind": "feature",
+      "feature_id": "network.client.wifi",
+      "version": "1.0.0",
+      "name": "Thông tin Wi-Fi client",
+      "description": "Thông tin Wi-Fi client của client được chọn, từ các phép đo READ được hỗ trợ.",
+      "scope": "client",
+      "permission": "network.read",
+      "risk": "READ_ONLY",
+      "required_ports": {
+        "wifi.station": "2.0.0"
+      },
+      "optional_ports": {
+        "client.ipv4": "2.0.0"
+      }
+    }
+  ]
+}

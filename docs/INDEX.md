@@ -85,3 +85,6 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 
 - [FND-04: trusted binding và READ conformance](ADAPTER_BINDINGS_V02.md).
 - [FND-04: kết quả nghiệm thu local](reports/FND04_BINDINGS_CONFORMANCE_20261113.md).
+
+- [FND-05: Feature Registry và advisory availability](FEATURE_REGISTRY_V02.md).
+- [FND-05: kết quả nghiệm thu local](reports/FND05_FEATURE_REGISTRY_20261113.md).
