@@ -76,3 +76,6 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 - [FND-01: kết quả nghiệm thu local](reports/FND01_CONTRACT_V02_20261113.md).
 - [Foundation design và FND-01 đến FND-07](superpowers/specs/2026-11-13-command-catalog-v02-design.md).
 - [Todo triển khai](../TODO.md).
+
+- [FND-02: catalog READ theo domain](../catalog/README.md).
+- [FND-02: kết quả nghiệm thu local](reports/FND02_READ_SEED_CATALOG_20261113.md).

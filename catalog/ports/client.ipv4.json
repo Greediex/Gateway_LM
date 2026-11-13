@@ -1,0 +1,27 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "client.ipv4",
+  "version": "2.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "address": {
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 128
+      },
+      "configured": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "address",
+      "configured"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

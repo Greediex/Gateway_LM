@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "selection",
+  "functions": {
+    "client.ipv4": "4.0.0",
+    "clients.resolve": "4.0.0",
+    "wifi.station": "4.0.0"
+  },
+  "ports": {
+    "client.identity": "2.0.0",
+    "client.ipv4": "2.0.0",
+    "wifi.station": "2.0.0"
+  }
+}

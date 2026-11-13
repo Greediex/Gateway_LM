@@ -9,7 +9,7 @@ Backlog khảo sát ngày **13/11/2026**, dựa trên nhánh `refactor/gateway-l
 **Thứ tự mới theo yêu cầu Foundation:** chuẩn hóa Contract/Catalog trước khi mở rộng tính năng; Wi-Fi laptop là ca kiểm chứng đầu tiên sau nền tảng. [Thiết kế Foundation v0.2 để review](docs/superpowers/specs/2026-11-13-command-catalog-v02-design.md).
 
 - [x] **FND-01:** Chuẩn hóa Function Contract v0.2, ID/version/ref, digest và test vectors — [chuẩn](docs/contracts/catalog-v02/README.md), [nghiệm thu](docs/reports/FND01_CONTRACT_V02_20261113.md).
-- [ ] **FND-02:** Catalog theo domain với tập READ nhỏ, giữ dữ liệu v0.1.
+- [x] **FND-02:** Catalog theo domain với tập READ nhỏ, giữ dữ liệu v0.1 — [catalog](catalog/README.md), [nghiệm thu](docs/reports/FND02_READ_SEED_CATALOG_20261113.md).
 - [ ] **FND-03:** Catalog Validator/Builder, deterministic artifact, CLI validate/build/report và benchmark synthetic.
 - [ ] **FND-04:** Trusted Adapter Binding và conformance; replay/laptop trước, OpenWrt sau.
 - [ ] **FND-05:** Feature Registry dùng Catalog và availability theo target (GLM-04).
@@ -39,3 +39,5 @@ Các task GLM bên dưới giữ mã cũ để tra cứu; không phải một lu
 **Kiểm chứng FND-01:** đã tạo `.venv-graph` đúng lockfile và bootstrap upstream có xác minh SHA. Full regression: **519 tests, 514 pass, 5 skip Windows, 0 fail/error**; 17 tests catalog mới pass. Project check PASS; 31 baseline file hashes và 17 digest v0.1 giữ nguyên. Hai replay smoke WAN/client có answer. Chưa có CI URL mới hoặc hardware acceptance. Lỗi thiếu upstream lúc khảo sát ban đầu đã được giải quyết trong môi trường venv.
 
 Trạng thái các khả năng đã có: [TASK_STATUS](docs/TASK_STATUS.md). Không coi task trong backlog là đã được triển khai.
+
+**Kiểm chứng FND-02:** 3 Function / 3 Port / 2 Skill, 24 catalog tests pass; toàn repo 526 tests: 521 pass, 5 Windows-only skip, 0 fail/error. Dữ liệu/benchmark v0.1 và 17 runtime digests giữ nguyên; chưa thêm executable binding.

@@ -1,0 +1,27 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "client.connectivity.inspect",
+  "version": "1.0.0",
+  "name": "Inspect client Wi-Fi and IPv4",
+  "description": "Inspect client Wi-Fi and IPv4 using declared READ contracts; metadata only.",
+  "requires": {
+    "client.identity": "2.0.0"
+  },
+  "produces": {
+    "wifi.station": "2.0.0",
+    "client.ipv4": "2.0.0"
+  },
+  "completion_ports": {
+    "wifi.station": "2.0.0",
+    "client.ipv4": "2.0.0"
+  },
+  "function_refs": {
+    "wifi.station": "4.0.0",
+    "client.ipv4": "4.0.0"
+  },
+  "tags": [
+    "read",
+    "seed"
+  ]
+}

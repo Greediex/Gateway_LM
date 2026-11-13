@@ -27,7 +27,7 @@ validate_contract(document)  # dict đã parse; trả None hoặc raise PlanErro
 
 ## Quy tắc định danh và reference
 
-- `schema_version` luôn là `0.2.0`; `kind` là `function`, `port` hoặc `selection`.
+- `schema_version` luôn là `0.2.0`; `kind` là `function`, `port`, `selection`; FND-02 bổ sung `skill` theo cùng chuẩn metadata.
 - Function/Port ID gồm ít nhất hai segment chữ thường, phân cách dấu chấm; mỗi segment bắt đầu bằng chữ, phần sau có chữ/số/underscore; tối đa 100 ký tự. Không có `@version` trong ID.
 - Version là SemVer chính xác `major.minor.patch`, có thể có prerelease/build metadata đúng cú pháp. Không nhận `latest`, `v1.0.0`, range hoặc numeric component có leading zero. Prerelease version hợp lệ về metadata không tự được chọn để triển khai.
 - `skill_refs` là danh sách `{skill_id, version}`. Skill mới dùng ID namespaced; `SKxx` được giữ cho migration. Một Function không tham chiếu hai version cùng Skill ID.
@@ -110,3 +110,9 @@ Catalog/source/artifact digest là khái niệm riêng, chưa tạo ở gate nà
 FND-01 hoàn tất khi schema self-check, positive/negative vectors, compatibility digests và full regression qua môi trường chuẩn đều đạt. Các hợp đồng ví dụ không phải executable commands và không phải bộ catalog đã resolve.
 
 Tiếp theo FND-02 chuyển tập READ nhỏ theo domain; FND-03 xử lý parser, dangling references, scope/type xuyên document, duplicate ID/version, dependency DAG, registry build và index. FND-04/06 bổ sung binding/capability/policy và runtime bridge. Không mở WRITE hay truy cập router để hoàn thành FND-01.
+
+## Bổ sung FND-02: Skill metadata và catalog seed
+
+[Catalog theo domain](../../../catalog/README.md) là tập READ seed độc lập với ví dụ FND-01. Kind `skill` có ID/version, name/description, `requires`, `produces`, `completion_ports` (port ID → exact version), `function_refs` (Function ID → exact version) và optional tags. Tối đa 64 refs mỗi map, produces/function_refs không rỗng; name 1–120 ký tự. Completion ports phải có cùng ID/version trong produces.
+
+Skill không có permission, status, capability hoặc executable source. `validate_contract` kiểm shape và reference cục bộ của completion ports; seed tests kiểm tham chiếu xuyên các file đã đưa vào repo. Generic resolution/cycle validation và registry builder vẫn ở FND-03.

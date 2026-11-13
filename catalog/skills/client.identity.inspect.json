@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "client.identity.inspect",
+  "version": "1.0.0",
+  "name": "Identify the selected client",
+  "description": "Identify the selected client using declared READ contracts; metadata only.",
+  "requires": {},
+  "produces": {
+    "client.identity": "2.0.0"
+  },
+  "completion_ports": {
+    "client.identity": "2.0.0"
+  },
+  "function_refs": {
+    "clients.resolve": "4.0.0"
+  },
+  "tags": [
+    "read",
+    "seed"
+  ]
+}

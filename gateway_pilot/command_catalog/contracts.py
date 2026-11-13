@@ -93,6 +93,10 @@ def validate_contract(document: dict) -> None:
         _VALIDATOR.validate(document)
         if document["kind"] == "port":
             _payload_schema(document["schema"])
+        elif document["kind"] == "skill":
+            _require(all(document["produces"].get(pid) == version
+                         for pid, version in document["completion_ports"].items()),
+                     "skill_completion_port")
         elif document["kind"] == "function":
             _payload_schema(document["arguments_schema"])
             properties = document["arguments_schema"]["properties"]

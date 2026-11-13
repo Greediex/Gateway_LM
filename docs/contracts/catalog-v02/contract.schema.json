@@ -10,6 +10,9 @@
     },
     {
       "$ref": "#/$defs/selection"
+    },
+    {
+      "$ref": "#/$defs/skill"
     }
   ],
   "$defs": {
@@ -592,6 +595,83 @@
       "type": "string",
       "pattern": "^[A-Za-z_][A-Za-z0-9_]*$(?![\\s\\S])",
       "maxLength": 64
+    },
+    "skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.2.0"
+        },
+        "kind": {
+          "const": "skill"
+        },
+        "skill_id": {
+          "$ref": "#/$defs/skill_id"
+        },
+        "version": {
+          "$ref": "#/$defs/version"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "requires": {
+          "$ref": "#/$defs/port_map"
+        },
+        "produces": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/port_map"
+            },
+            {
+              "minProperties": 1
+            }
+          ]
+        },
+        "completion_ports": {
+          "$ref": "#/$defs/port_map"
+        },
+        "function_refs": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/port_map"
+            },
+            {
+              "minProperties": 1
+            }
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "\\S"
+          },
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "skill_id",
+        "version",
+        "name",
+        "description",
+        "requires",
+        "produces",
+        "completion_ports",
+        "function_refs"
+      ]
     }
   }
 }
