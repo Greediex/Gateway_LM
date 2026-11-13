@@ -161,6 +161,8 @@ def new_state(case, registry):
 
 
 def bind_and_gate(fid, arguments, state, registry):
+    if getattr(registry, "contract_format", None) == "v0.2":
+        return registry.bind_and_gate(fid, arguments, state)
     if fid not in registry.functions:
         raise PlanError("unknown_function")
     f = registry.functions[fid]
@@ -200,6 +202,8 @@ def bind_and_gate(fid, arguments, state, registry):
 
 def execute(fid, args, state, case, registry):
     """Collect and record a single-output observation after checking the read gate."""
+    if getattr(registry, "contract_format", None) == "v0.2":
+        raise PlanError("v02_requires_typed_core_execution")
     bound = bind_and_gate(fid, args, state, registry)
     state.attempts[fid] += 1
     state.executed.append({"function_id": fid, "arguments": bound})

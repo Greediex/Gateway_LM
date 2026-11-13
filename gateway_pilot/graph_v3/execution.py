@@ -18,6 +18,10 @@ class InvocationExecutor:
         case = runner.case
         live = "live_reader" in case
         adapter = case.get("adapter")
+        if getattr(runner.registry, "contract_format", None) == "v0.2":
+            runtime = getattr(runner.registry, "runtime", None)
+            if runtime is None or adapter is not runtime:
+                raise PlanError("v02_requires_trusted_runtime_adapter")
         # The adapter is a trusted service object; no fixture data can supply
         # or complete an adapter's missing outputs.
         local_case = case if live else {

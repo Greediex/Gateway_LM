@@ -13,7 +13,7 @@ Backlog khảo sát ngày **13/11/2026**, dựa trên nhánh `refactor/gateway-l
 - [x] **FND-03:** Catalog Validator/Builder, deterministic artifact, CLI validate/build/report và benchmark synthetic — [hướng dẫn](docs/CATALOG_V02.md), [nghiệm thu](docs/reports/FND03_CATALOG_BUILDER_20261113.md).
 - [x] **FND-04:** Trusted Adapter Binding và conformance; replay/laptop trước, OpenWrt sau — [hướng dẫn](docs/ADAPTER_BINDINGS_V02.md), [nghiệm thu](docs/reports/FND04_BINDINGS_CONFORMANCE_20261113.md).
 - [x] **FND-05:** Feature Registry dùng Catalog và availability theo target (GLM-04) — [hướng dẫn](docs/FEATURE_REGISTRY_V02.md), [nghiệm thu](docs/reports/FND05_FEATURE_REGISTRY_20261113.md).
-- [ ] **FND-06:** Migration, compatibility view, policy v0.2 và regression v0.1.
+- [x] **FND-06:** Migration, compatibility view, policy v0.2 và regression v0.1.
 - [ ] **FND-07:** Connectivity/Wi-Fi laptop → verified snapshot → UI (GLM-03/05/06/07).
 
 Các task GLM bên dưới giữ mã cũ để tra cứu; không phải một luồng mở rộng chạy trước Foundation. GLM-01 là prerequisite baseline, sửa lỗi và kiểm thử thiết yếu vẫn được thực hiện.
@@ -47,3 +47,5 @@ Trạng thái các khả năng đã có: [TASK_STATUS](docs/TASK_STATUS.md). Kh�
 **Kiểm chứng FND-04:** 17 adapter tests pass; full regression 562 tests: 557 pass, 5 Windows-only skip. Replay 3/3 và laptop live identity/IPv4 2/2 CONFORMANT; provider chưa đọc RSSI dBm. Không admit facts hoặc cấp runtime capability trước FND-06.
 
 **Kiểm chứng FND-05:** 16 feature tests pass; full regression 578 tests: 573 pass, 5 Windows-only skip. Bốn trạng thái availability được kiểm bằng synthetic Core snapshots; preview thật UNAVAILABLE/RUNTIME_NOT_CONNECTED tới khi có FND-06, không lấy conformance làm capability.
+
+**FND-06:** [Runtime migration](docs/RUNTIME_V02.md) và [local acceptance](docs/reports/FND06_RUNTIME_MIGRATION_20261113.md). Trusted v0.2 READ qua shared Core, scoped support leases, compatibility view và checkpoint pins; FND-07 laptop snapshot/UI còn pending.

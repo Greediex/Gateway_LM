@@ -131,6 +131,12 @@ class BindingSelection:
             owners.add(fid)
         self._selected = MappingProxyType(selected)
 
+    def registry_digest(self) -> str:
+        return self._artifact["content_digest"]
+
+    def binding_ids(self) -> dict[str, str]:
+        return {binding["function_id"]: bid for bid, (binding, _) in self._selected.items()}
+
     def assignments(self) -> dict[str, str]:
         return {binding["function_id"]: binding["backend_id"] for binding, _ in self._selected.values()}
 

@@ -75,7 +75,9 @@ class SeedCatalogTests(unittest.TestCase):
         for f in self.functions:
             self.assertEqual(f["risk"], "READ_ONLY")
             self.assertEqual(f["permission"], "network.read")
-            self.assertEqual(f["lifecycle"], "PROPOSED")
+            self.assertEqual(f["lifecycle"], "IMPLEMENTED")
+            self.assertNotIn("status", f)
+            self.assertNotIn("adapter", f)
             self.assertEqual(f["effects"], [])
         self.assertTrue(all(p["provenance"] == "synthetic_replay/" for p in self.ports))
         self.assertFalse((CATALOG / "bindings").exists())

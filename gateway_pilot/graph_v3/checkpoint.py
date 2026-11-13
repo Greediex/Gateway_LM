@@ -49,7 +49,7 @@ class EvidenceCheckpoint:
 
     @classmethod
     def _binding(cls, registry, state, request, goals):
-        return {
+        binding = {
             "request": request,
             "goals": list(goals),
             "registry": cls._fingerprint(registry),
@@ -61,6 +61,19 @@ class EvidenceCheckpoint:
             "capabilities": sorted(state.capabilities),
             "permissions": sorted(state.permissions),
         }
+        if getattr(registry, "contract_format", None) == "v0.2":
+            runtime = getattr(registry, "runtime", None)
+            if runtime is None:
+                raise PlanError("checkpoint_v02_runtime_required")
+            binding["v02_runtime"] = runtime.checkpoint_binding()
+        return binding
+
+    @classmethod
+    def _stored_fields(cls, registry):
+        if getattr(registry, "contract_format", None) == "v0.2":
+            return cls.STORED_FIELDS + ("contract_digest", "function_version",
+                                        "metadata_function_digest", "environment_id")
+        return cls.STORED_FIELDS
 
     def save(self, registry, state, request: str, goals):
         if not isinstance(request, str) or not goals:
@@ -79,7 +92,7 @@ class EvidenceCheckpoint:
             age = e.get("age_s", 0) + delta
             if not math.isfinite(age) or age >= e["ttl_s"]:
                 continue
-            row = {key: copy.deepcopy(e.get(key)) for key in self.STORED_FIELDS}
+            row = {key: copy.deepcopy(e.get(key)) for key in self._stored_fields(registry)}
             row["age_s"] = age
             evidence.append(row)
         body = {
@@ -144,7 +157,7 @@ class EvidenceCheckpoint:
         seen = {e["id"] for e in state.evidence}
         from .contracts import validate
         for item in rows:
-            if not isinstance(item, dict) or set(item) != set(self.STORED_FIELDS):
+            if not isinstance(item, dict) or set(item) != set(self._stored_fields(registry)):
                 raise PlanError("checkpoint_invalid_evidence")
             port = registry.ports.get(item["port"])
             function = registry.functions.get(item["function_id"])
@@ -168,6 +181,15 @@ class EvidenceCheckpoint:
             e = copy.deepcopy(item)
             e["age_s"] = age + elapsed
             pending.append(e)
+        if getattr(registry, "contract_format", None) == "v0.2":
+            candidate = copy.copy(state)
+            candidate.evidence = copy.deepcopy(state.evidence)
+            trial = copy.deepcopy(pending)
+            for e in trial:
+                candidate.evidence.append(e)
+                candidate.record(e)
+            if any(not candidate.usable(e, registry.ports[e["port"]]) for e in trial):
+                raise PlanError("checkpoint_evidence_unusable")
         # Restore after all contract-shape checks: failures do not partially
         # mutate CaseState. CaseState itself verifies target/scope/freshness.
         for e in pending:

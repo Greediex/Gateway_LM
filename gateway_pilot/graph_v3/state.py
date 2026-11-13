@@ -62,8 +62,12 @@ class CaseState(State):
         if getattr(self.registry, "contract_format", None) == "v0.1":
             safe = (self.registry.contract_allowed(function) and
                     (function.risk != "PROBE" or function.id in self.probe_capabilities))
+        elif getattr(self.registry, "contract_format", None) == "v0.2":
+            runtime = getattr(self.registry, "runtime", None)
+            safe = (self.registry.contract_allowed(function) and runtime is not None
+                    and runtime.allowed(function, self))
         else:
-            safe = function.risk == "READ"
+            safe = getattr(self.registry, "contract_format", None) is None and function.risk == "READ"
         return (function.id in self.capabilities and function.id in self.registry.legacy.functions and safe and
                 function.permission in self.permissions)
 
@@ -72,6 +76,18 @@ class CaseState(State):
         return e if e is not None and self.usable(e, port) else None
 
     def usable(self, e, port):
+        if getattr(self.registry, "contract_format", None) == "v0.2":
+            function = self.registry.functions.get(e.get("function_id"))
+            if (function is None or port.name not in function.outputs
+                    or not self.registry.contract_allowed(function)
+                    or e.get("contract_digest") != function.digest()
+                    or e.get("function_version") != function.version
+                    or e.get("metadata_function_digest") != function.metadata_digest
+                    or e.get("environment_id") != self.config_version
+                    or function.permission not in self.permissions
+                    or type(e.get("ttl_s")) not in (int, float)
+                    or not 0 < e["ttl_s"] <= function.ttl_seconds):
+                return False
         if (e.get("_invalidated") or e.get("status") != "OK"
                 or not str(e.get("source", "")).startswith(port.provenance)):
             return False

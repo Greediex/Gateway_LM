@@ -11,7 +11,7 @@
       "version": "1.0.0"
     }
   ],
-  "lifecycle": "PROPOSED",
+  "lifecycle": "IMPLEMENTED",
   "inputs": {},
   "outputs": {
     "client.identity": "2.0.0"

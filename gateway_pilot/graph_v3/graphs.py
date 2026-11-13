@@ -345,8 +345,12 @@ class GraphRegistry:
 
     def contract_allowed(self, function):
         """v0.1 status/risk gate; legacy policy remains in CaseState.allowed."""
-        if getattr(self, "contract_format", None) != "v0.1":
-            return True
+        format_ = getattr(self, "contract_format", None)
+        if format_ == "v0.2":
+            return (function.risk == "READ_ONLY" and function.lifecycle in {"IMPLEMENTED", "VERIFIED"}
+                    and self._contract_pins.get(function.id) == function.digest())
+        if format_ != "v0.1":
+            return format_ is None
         return (function.risk in {"READ_ONLY", "PROBE"} and
                 (function.status == "PROBED_OK" or
                  (function.status == "REPLAY_ONLY" and

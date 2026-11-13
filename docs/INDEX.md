@@ -88,3 +88,5 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 
 - [FND-05: Feature Registry và advisory availability](FEATURE_REGISTRY_V02.md).
 - [FND-05: kết quả nghiệm thu local](reports/FND05_FEATURE_REGISTRY_20261113.md).
+
+- [FND-06: Catalog v0.2 → Core READ runtime](RUNTIME_V02.md) và [local acceptance](reports/FND06_RUNTIME_MIGRATION_20261113.md).

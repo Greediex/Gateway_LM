@@ -25,7 +25,7 @@ Snapshot được pin registry digest, target/environment (`TargetContext`), exa
 
 Mỗi `FunctionCapability` có Function ID/exact version, metadata Function digest và một trong AVAILABLE/UNSUPPORTED/UNVERIFIED/PERMISSION_DENIED/TEMPORARILY_UNAVAILABLE. Không nhận report `CONFORMANT` làm capability. Snapshot immutable, tối đa 10.000 Function entries duy nhất, TTL >0 và ≤60 giây, timestamps hữu hạn và không quá 1e12 seconds. Snapshot chưa đến hiệu lực/hết hạn, sai version/digest/registry/context/permissions/policy hoặc có Function lạ đều fail closed.
 
-Đây là in-process advisory input, không phải bearer token hay JSON credential. Không có API deserialize capabilities từ file/HTTP/LLM. Tạo được Python object không phải proof đã probe thiết bị: caller phải là Core service tin cậy, tự kiểm effective ACL/capability. FND-06 mới cung cấp producer nối runtime thật. FND-04 conformance samples không được tự chuyển thành AVAILABLE.
+Đây là in-process advisory input, không phải bearer token hay JSON credential. Không có API deserialize capabilities từ file/HTTP/LLM. Tạo được Python object không phải proof đã probe thiết bị: caller phải là Core service tin cậy, tự kiểm effective ACL/capability. [FND-06 runtime](RUNTIME_V02.md) cung cấp producer qua `ReadRuntime.probe()` và giữ support khác measurement evidence. FND-04 conformance samples không được tự chuyển thành AVAILABLE.
 
 ## Bốn trạng thái
 
@@ -66,6 +66,6 @@ Sau khi build registry theo [Catalog guide](CATALOG_V02.md):
 .venv-graph/bin/python -m scripts.features --registry runs/fnd-05/laptop-registry.json --policy config/catalog_policy.laptop.example.json --manifests examples/features.laptop.json --flags config/feature_flags.laptop.example.json
 ```
 
-Preview dùng synthetic target/policy context để xem metadata; `runtime_connected:false`, không có option cấp/inject capabilities. Enabled entries mặc định UNAVAILABLE vì chưa nối FND-06, disabled entries vẫn DISABLED. CLI không đọc interface hoặc probe mạng.
+Preview dùng synthetic target/policy context để xem metadata; `runtime_connected:false`, không có option cấp/inject capabilities. Enabled entries trong CLI mặc định UNAVAILABLE vì CLI metadata không nối runtime, disabled entries vẫn DISABLED. CLI không đọc interface hoặc probe mạng.
 
-[Báo cáo nghiệm thu](reports/FND05_FEATURE_REGISTRY_20261113.md) phân biệt tests dùng synthetic Core snapshots với trạng thái chưa nối runtime hiện tại.
+[Báo cáo nghiệm thu](reports/FND05_FEATURE_REGISTRY_20261113.md) phân biệt tests dùng synthetic Core snapshots với trạng thái chưa nối runtime tại gate FND-05. FND-06 đã thêm explicit Core composition root; CLI vẫn metadata-only.

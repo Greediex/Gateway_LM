@@ -1,6 +1,6 @@
 # Gateway LM — READ seed catalog (FND-02)
 
-Catalog metadata schema **0.2.0**, bổ sung ngày 13/11/2026 trên nhánh `v2`. Đây là tập READ nhỏ để kiểm chứng cách tổ chức theo domain và exact references. Không được runtime tự quét/nạp, chưa có executable binding hoặc capability mới.
+Catalog metadata schema **0.2.0**, bổ sung ngày 13/11/2026 trên nhánh `v2`. Đây là tập READ nhỏ để kiểm chứng cách tổ chức theo domain và exact references. Runtime không tự quét/nạp. FND-06 thêm [trusted READ bridge](../docs/RUNTIME_V02.md): approved artifact/bindings và support probes riêng mới cho phép thực thi.
 
 ## Danh mục
 
@@ -27,10 +27,10 @@ Nguồn tham khảo là `data/registry_v01.json` ở base commit `d0983fa`. File
 | Port payload | `additionalProperties:true` | Object đóng; string có length bounds; client ID không rỗng |
 | Arguments | Có các optional fields dùng chung cho nhiều Function | Resolver zero-argument; Wi-Fi/IPv4 chỉ nhận `client_id` từ identity fact |
 | Skills | `SK01`, `SK02`, `SK03` 0.1.0 trong baseline | Hai Skill mới namespaced version 1.0.0, không đổi tên/ghi đè Skill baseline |
-| Runtime status | Các Function mẫu v0.1 là `REPLAY_ONLY` | Lifecycle `PROPOSED`; không copy `status` hoặc adapter approval |
+| Runtime status | Các Function mẫu v0.1 là `REPLAY_ONLY` | Lifecycle `IMPLEMENTED` từ FND-06; không copy `status` hoặc adapter approval |
 | Provenance | `synthetic_replay/` | Vẫn `synthetic_replay/`, không được gắn nhãn laptop/router live |
 
-Field schema của seed dựa trên các port cũ, nhưng không được công bố là drop-in compatible. Dữ liệu cũ có extra properties hoặc client ID rỗng có thể không đạt schema mới. Không upgrade evidence/digest cũ sang version mới. Các metadata probe IDs được giữ để trace về thiết kế replay; chúng chưa được resolve/approve cho v0.2.
+Field schema của seed dựa trên các port cũ, nhưng không được công bố là drop-in compatible. Dữ liệu cũ có extra properties hoặc client ID rỗng có thể không đạt schema mới. Không upgrade evidence/digest cũ sang version mới. Các metadata probe IDs được giữ để trace về thiết kế replay; chúng được đối chiếu implementation ở trusted binding/runtime; tên probe trong metadata tự nó không cấp quyền.
 
 Port `wifi.station` giữ **RSSI dBm**. Giá trị signal % của `nmcli` không thỏa hợp đồng này; không đổi phần trăm thành dBm. Khi làm laptop live, cần backend thực cung cấp dBm hoặc một contract riêng biểu diễn signal %/metric chưa hỗ trợ. `client.ipv4.address` cho phép empty string để biểu diễn trạng thái chưa có địa chỉ, giữ field `configured` riêng; schema không phải kết luận Internet hoạt động.
 

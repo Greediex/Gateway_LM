@@ -1,6 +1,6 @@
 # Gateway LM v2 — Foundation: Versioned Function Catalog
 
-**Trạng thái:** FND-01 đã triển khai theo yêu cầu trực tiếp ngày 13/11/2026; [chuẩn schema 0.2.0 và mapping](../../contracts/catalog-v02/README.md) là tài liệu chi tiết cho gate này. Các gate tiếp theo còn ở mức thiết kế; chưa triển khai runtime loader v0.2. **Ngày:** 13/11/2026. **Checkout đối chiếu:** `3fd196f`, nhánh `refactor/gateway-lm-composite-adapter-pr01`.
+**Trạng thái:** FND-01 đã triển khai theo yêu cầu trực tiếp ngày 13/11/2026; [chuẩn schema 0.2.0 và mapping](../../contracts/catalog-v02/README.md) là tài liệu chi tiết cho gate này. FND-02 đến FND-06 đã triển khai theo yêu cầu tiếp nối; [runtime READ v0.2](../../RUNTIME_V02.md) pin catalog/bindings và dùng Core hiện có. FND-07 laptop snapshot/UI còn pending. **Ngày:** 13/11/2026. **Checkout đối chiếu:** `3fd196f`, nhánh `refactor/gateway-lm-composite-adapter-pr01`.
 
 **Yêu cầu mới:** Xây nền quản lý hàng trăm/hàng nghìn Function trước khi tiếp tục mở rộng tính năng. Nguồn người dùng: `/home/nangtuan/.codex/attachments/04a396f1-4c76-498a-afde-1caae47917b9/Pasted text.txt`.
 
