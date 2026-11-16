@@ -93,6 +93,6 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 
 - [FND-07: Laptop network live, verified snapshot và UI](LAPTOP_NETWORK_V2.md) · [local acceptance](reports/FND07_LAPTOP_NETWORK_20261113.md).
 
-- [Roadmap NEXT-01…12 sau Foundation](NEXT_ROADMAP_V2.md): RCA/LLM, catalog/mock, device scope, history/alerts và evaluation; firmware acceptance để sau.
+- [Roadmap hiện hành: chạy catalog 120 Skill (CAT-01…03 + NEXT-01…12)](NEXT_ROADMAP_V2.md): RCA/LLM, catalog/mock, device scope, history/alerts và evaluation; firmware acceptance để sau.
 
 - [120-Skill expansion pack: proposal catalog, offline dashboard và Core replay](skill_expansion/README.md) · [integration acceptance](reports/SKILL_EXPANSION_INTEGRATION_20261113.md).
