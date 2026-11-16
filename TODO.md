@@ -1,48 +1,43 @@
-# Gateway LM v2 — TODO chạy catalog 120 Skill
+# Gateway LM v2 — TODO hiện hành
 
-Cập nhật **16/11/2026**, nhánh **`v2`**, dựa trên integration pack đã tích hợp tại `46ba358`. Đây là backlog hiện hành thay cho danh sách Foundation/GLM cũ. [Dependency và nghiệm thu chi tiết](docs/NEXT_ROADMAP_V2.md).
+Cập nhật **16/11/2026**, nhánh **v2**, baseline code **`f7389fb`**.
 
-## Nền tảng đã có
+**Mục tiêu:** hoàn thiện chất lượng luồng hỏi → LLM tra catalog/chọn nhiều Skill → ReadSession/GraphRunner → Verifier → RCAAgent → chọn tiếp hoặc trả lời. Tận dụng các thành phần đã có, ưu tiên chạy tốt trên laptop.
 
-- [x] Core READ v0.2, trusted binding/capability gates, Verifier và verified snapshot.
-- [x] Linux laptop live + Web UI; profile riêng có 7 READ Functions.
-- [x] Import và kiểm tra gói: 120 Skill thiết kế, 206 edges, 72 PROPOSED READ contracts; 72/72 synthetic Core smokes pass.
+## Đã có
 
-120 Skill gồm 8 legacy references +112 proposals; 40 Skill đề xuất chưa có direct READ Function. 203 cạnh chưa duyệt ngữ nghĩa. Con số 270 là requirements. [Guide của gói mới](docs/skill_expansion/README.md) · [Acceptance](docs/reports/SKILL_EXPANSION_INTEGRATION_20261113.md).
+- [x] Catalog 120 Skill thiết kế, mapping/availability và deployment READ có version/approval pins.
+- [x] Linux laptop live: 8 Functions; SK01/A08 scope local và 6 action laptop riêng. Replay B02/B03/B05 tách nguồn.
+- [x] Shared ReadSession, GraphRunner/Verifier, evidence có TTL, context/ACL/budget gates và tái sử dụng dữ liệu còn hạn.
+- [x] Chat LLM local tự tra catalog, chọn/phối hợp Skill, nhận evidence và đánh giá từ RCAAgent trong cùng phiên.
+- [x] Web chat/Trace, launcher thủ công, CLI/API; README và nghiệm thu Qwen thật trên laptop.
 
-## P0 — Đưa gói mới vào luồng chạy
+**Phạm vi đã xác minh:** 120 hàng thiết kế không đồng nghĩa 120 Skill chạy được. Live hiện có 2 mapping thiết kế local + 6 action laptop; 118 thiết kế còn UNAVAILABLE. Source 72 READ contracts vẫn PROPOSED, 203 cạnh đề xuất chưa được duyệt. [Trạng thái và bằng chứng](docs/TASK_STATUS.md).
 
-- [x] **CAT-01 — Chốt profile và mapping chạy:** phân loại đủ 120 Skill; chọn tập READ đầu tiên theo domain/scope; resolve Function/Port/version/completion và dependency; chỉ đưa cạnh đã review vào execution policy.
-- [x] **CAT-02 — Registry và replay runtime dùng chung:** tạo deployment selection/policy và reviewed replay artifact/bindings; chạy tập đã chọn qua `RuntimeSkillBridge → ReadRuntime → GraphRunner → Verifier` trong cùng phiên, thay vì chỉ smoke từng Function trong TemporaryDirectory. Source PROPOSED và profile live giữ riêng.
-- [x] **CAT-03 — Cho người dùng chọn và chạy Skill:** thêm CLI/API và màn hình catalog trong Web hiện có; tìm/lọc theo domain, hiển thị availability/reason, chọn Skill đã được runtime cấp READ; trả evidence, target/source/time/TTL và missing data. Replay phải có nhãn rõ; chưa có backend thì UNAVAILABLE.
+## P0 — Hoàn thiện luồng chat trên laptop
 
-**Mốc chạy đầu tiên:** chọn một Skill trong UI → đúng registry/binding/context → Core → verified evidence/snapshot → kết quả có thể kiểm tra. Không bật đồng loạt 120 Skill chỉ nhờ metadata.
+- [ ] **CHAT-01 — Bao phủ đủ ý định người dùng.** Kiểm tra câu hỏi đơn, nhiều yêu cầu, câu hỏi tiếp nối và yêu cầu có phần chưa hỗ trợ. LLM phải phối hợp thêm Skill/evidence khi còn thiếu; hoàn tất một Skill không được coi là hoàn tất cả câu hỏi. **Nghiệm thu:** trả lời đúng trọng tâm từng phần, hoặc chỉ rõ phần chưa xác minh; giữ khả năng dùng facts còn hạn từ lượt trước.
+- [ ] **CHAT-02 — Xử lý evidence hết hạn trong lúc suy luận.** Làm rõ điều kiện đo lại/hỏi lại khi model chậm hoặc context thay đổi; mọi lần đo lại vẫn qua ReadSession và budget hiện có. **Nghiệm thu:** không trả số đo/Claim hết hạn, không tăng TTL để che độ trễ, không mất kết quả đã xác minh còn dùng được.
+- [ ] **CHAT-03 — Dừng và xử lý lỗi nhất quán.** Hoàn thiện các tình huống timeout, output model sai, mất capability, không có tiến triển, vòng chọn lặp và hết budget; chỉ dùng phương án READ thay thế đã được đăng ký/cấp quyền. **Nghiệm thu:** dừng hữu hạn, lý do rõ, không fallback live sang replay, không báo hoàn thành khi thiếu dữ liệu.
+- [ ] **PERF-01 — Đo và giảm độ trễ thực tế.** Profile riêng thời gian tra catalog, inference, probe/Function, Verifier và RCA; tối ưu prompt/cache còn hợp lệ và lời gọi trùng. Kiểm giới hạn đồng thời, output, timeout và giải phóng phiên. **Nghiệm thu:** có số đo cold/warm, p50/p95, tool calls và tài nguyên laptop trước/sau; không bỏ gates để tăng tốc.
+- [ ] **EVAL-01 — Đánh giá độc lập trước khi mở rộng.** Tạo bộ câu hỏi và replay có nhãn, tách dev/test trước khi tune; gồm đa ý định, ngoài khả năng, evidence cũ, sai scope, lỗi tool và prompt injection. **Nghiệm thu:** báo Skill/Function selection, độ đầy đủ câu trả lời, RCA/abstention, proposal sai, calls và latency; phân biệt rõ test double, Qwen thật, replay và live. Các ví dụ nghiệm thu hiện có chưa phải holdout benchmark.
 
-## P0 — Chẩn đoán và mở rộng theo gói mới
+## P1 — Hoàn thiện khả năng và trải nghiệm hiện có
 
-- [ ] **NEXT-01:** Nối RCAAgent/Claim Engine vào Core READ v0.2 và kết quả chạy Skill từ CAT-02/03.
-- [ ] **NEXT-02:** Chọn phép đo thích ứng từ Claim/evidence còn thiếu; giữ budget, repair và điều kiện dừng.
-- [ ] **NEXT-03:** Nối LLM Goal Proposal có kiểm soát, chỉ đề xuất registered READ goals trong profile đang được cấp quyền.
-- [ ] **NEXT-04:** Hoàn thiện semantic contracts Wi-Fi, Devices, DHCP từ 72 proposals; định nghĩa workflow/Claim cho các Skill composite trong nhóm 40 còn thiếu, không tạo Function giả để đủ số lượng.
-- [ ] **NEXT-05:** Nối các contract đã review vào UbusRead/CompositeAdapter bằng replay/mock; exact mapping, normalization và capability gates.
-- [ ] **NEXT-10:** Chốt baseline/dataset/labels/dev-test split trước khi tune; đánh giá Skill/Function selection, RCA, LLM, abstention, tool calls và latency p50/p95.
+- [ ] **DATA-01 — Rà soát dữ liệu laptop còn thiếu.** Đối chiếu từng Skill với nguồn đọc thật đang khả dụng; ghi rõ RSSI/SNR, roaming/history và dữ liệu nào chỉ có từ AP/router. **Nghiệm thu:** có mapping nguồn/đơn vị/scope/TTL và gap cụ thể; signal % không thay RSSI/SNR, throughput không suy từ tốc độ AP quảng bá.
+- [ ] **DATA-02 — Hoàn thiện catalog theo batch có nguồn dữ liệu.** Review semantic contracts/workflows/Claims của Wi-Fi, Devices, DHCP; dùng lại Registry, adapter và Claim Engine. Skill composite cần workflow/evidence hợp lệ; chỉ đưa cạnh đã review vào execution. **Nghiệm thu:** mỗi batch có exact mapping, schema/binding tests và acceptance riêng; không tạo Function giả để đủ 120 hay nâng PROPOSED thành capability tự động.
+- [ ] **UI-01 — Làm rõ kết quả và tiến trình chat.** Rút gọn câu trả lời đúng câu hỏi; hiển thị đang suy luận/đo, Skill đã chọn, phần còn thiếu và bước tiếp theo. Giữ chi tiết evidence, thời gian/TTL, RCA và điều kiện dừng trong Trace. **Nghiệm thu:** người dùng phân biệt được phép đo hoàn thành, chẩn đoán chưa đủ dữ liệu và phiên hết hạn; không cần đọc tên kỹ thuật để biết phải làm gì tiếp.
 
-**Tiến độ nối luồng laptop:** NEXT-01/02/03 đã có chat LLM tra toàn catalog, chọn nhiều Skill, dùng shared ReadSession và RCAAgent đánh giá/đề xuất evidence tiếp theo. Declared Claims hiện chỉ cho phép đo laptop, không chứng minh causal RCA hay hỗ trợ router. Các task NEXT vẫn giữ unchecked cho phạm vi mở rộng. [Luồng tích hợp](docs/LLM_SKILL_CHAT.md).
+## Để sau mốc laptop
 
-## P1 — Thiết bị, dữ liệu dài hạn và vận hành
+- Adapter OpenWrt/Ubus và chọn thiết bị Client–AP–Router: chỉ mở batch đã có mapping/backend được review, nghiệm thu mock và firmware thật riêng.
+- History bền, Monitoring/Alerts/Incident: triển khai theo nhu cầu sau khi luồng chat và đánh giá laptop ổn định; dùng lại snapshot/checkpoint/journal hiện có.
+- WRITE không thuộc mốc READ này; vẫn giữ cơ chế kiểm soát hiện có.
 
-- [ ] **NEXT-06:** Resolve target và quan hệ Client–AP–Router bằng evidence; không trộn dữ liệu khác thiết bị/scope.
-- [ ] **NEXT-07:** History có quota/retention, version/context pins; evidence lịch sử không tự thành fact hiện tại.
-- [ ] **NEXT-08:** Monitoring/Alerts/Incident dựa trên verified evidence; dedup/debounce, UNKNOWN và recovery rõ ràng.
-- [ ] **NEXT-09:** Mở rộng UI cho RCA, Devices, History và Alerts theo application API đã hoàn thành; tái sử dụng catalog launcher CAT-03.
-- [ ] **NEXT-11:** Giới hạn tài nguyên/output bytes, timeout/cancellation và lỗi Ubus; phần cần cho mock acceptance đi trước NEXT-05.
+## Thứ tự và điều kiện chốt
 
-## Để sau
+**CHAT-01 → CHAT-02/CHAT-03 → EVAL-01 → DATA-02**. PERF-01 thực hiện cùng các task chat; DATA-01 cung cấp danh sách gap cho DATA-02; UI-01 bám các trạng thái API đã chốt.
 
-- [ ] **NEXT-12:** Nghiệm thu READ trên OpenWrt firmware thật khi có thiết bị, mapping/profile và phạm vi vận hành rõ; mock/CI không thay hardware acceptance.
+Mỗi task phải có kết quả kiểm tra phù hợp, negative paths và giới hạn được ghi rõ; giữ frozen data/benchmark và contracts v0.1. Execution tiếp tục qua shared Core/Verifier. Chỉ đánh dấu hoàn tất trong phạm vi đã nghiệm thu, không suy từ CI/replay sang hỗ trợ firmware.
 
-**Thứ tự bắt đầu:** `CAT-01 → CAT-02 → CAT-03 → NEXT-01 → NEXT-02 → NEXT-03`. NEXT-10 chuẩn bị baseline từ CAT-01; NEXT-04 làm theo domain và song song với RCA, NEXT-11 hỗ trợ NEXT-05. Các task chưa thực hiện đều giữ unchecked.
-
-**Gate mỗi task:** kiểm metadata và negative paths, project check, regression phù hợp, không đổi frozen data/digests v0.1; kết quả thực thi phải qua shared Core và Verifier. WRITE không thuộc backlog chạy gói này.
-
-**CAT-01 đã chốt:** [profile và review](docs/skill_expansion/CAT01_PROFILES.md), [coverage JSON](docs/reports/CAT01_PROFILE_COVERAGE_20261116.json). Batch B02/B03/B05, 3 Function/3 Port. CAT-02/CAT-03 đã có reviewed replay deployment, shared Core session và launcher CLI/API/Web. Nghiệm thu laptop-first: SK01/A08 scope local + 6 action laptop; 118 Skill thiết kế còn UNAVAILABLE trong live. [Hướng dẫn và giới hạn](docs/LAPTOP_SKILL_LAUNCHER.md).
+[Luồng LLM–Skill–RCA](docs/LLM_SKILL_CHAT.md) · [Launcher/session](docs/LAPTOP_SKILL_LAUNCHER.md) · [Nghiệm thu local](docs/reports/LLM_SKILL_CHAT_ACCEPTANCE_20261116.json)

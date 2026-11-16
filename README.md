@@ -118,7 +118,7 @@ Tests không tự probe mạng thật. Windows-only tests skip trên Linux; live
 | `data/`, `benchmarks/` | Baseline v0.1 và bộ dữ liệu frozen, giữ nguyên |
 
 - [FND-07 và cách nghiệm thu laptop](docs/LAPTOP_NETWORK_V2.md)
-- [TODO hiện hành: chạy catalog 120 Skill](TODO.md) · [Trạng thái task](docs/TASK_STATUS.md) · [Docs index](docs/INDEX.md)
+- [TODO hiện hành: hoàn thiện chat LLM–Skill–RCA](TODO.md) · [Trạng thái task](docs/TASK_STATUS.md) · [Docs index](docs/INDEX.md)
 - [Function Contract v0.2](docs/contracts/catalog-v02/README.md) · [Catalog tooling](docs/CATALOG_V02.md)
 - [Trusted runtime v0.2](docs/RUNTIME_V02.md) · [Feature Registry](docs/FEATURE_REGISTRY_V02.md)
 - [Developer guide](docs/DEVELOPER_GUIDE.md) · [Coding rules](AGENTS.md)
