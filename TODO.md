@@ -4,6 +4,10 @@ Cập nhật **16/11/2026**, nhánh **v2**, baseline code **`f7389fb`**.
 
 **Mục tiêu:** hoàn thiện chất lượng luồng hỏi → LLM tra catalog/chọn nhiều Skill → ReadSession/GraphRunner → Verifier → RCAAgent → chọn tiếp hoặc trả lời. Tận dụng các thành phần đã có, ưu tiên chạy tốt trên laptop.
 
+## Quy tắc cập nhật
+
+**Chỉ dùng file `TODO.md` ở gốc repo để ghi kế hoạch, backlog, checklist và tiến độ công việc.** Mỗi lần cập nhật phải sửa trực tiếp file này, giữ mã task còn hiệu lực và bỏ mục cũ/trùng. Không tạo file kế hoạch mới theo ngày/task hoặc sao chép danh sách việc sang roadmap/status/worklog khác, kể cả khi workflow/skill gợi ý tạo file riêng. Chỉ tách sang file khác khi người dùng yêu cầu rõ ràng. Tài liệu kỹ thuật và báo cáo nghiệm thu chỉ mô tả thiết kế/kết quả, không chứa backlog song song.
+
 ## Đã có
 
 - [x] Catalog 120 Skill thiết kế, mapping/availability và deployment READ có version/approval pins.
@@ -12,7 +16,7 @@ Cập nhật **16/11/2026**, nhánh **v2**, baseline code **`f7389fb`**.
 - [x] Chat LLM local tự tra catalog, chọn/phối hợp Skill, nhận evidence và đánh giá từ RCAAgent trong cùng phiên.
 - [x] Web chat/Trace, launcher thủ công, CLI/API; README và nghiệm thu Qwen thật trên laptop.
 
-**Phạm vi đã xác minh:** 120 hàng thiết kế không đồng nghĩa 120 Skill chạy được. Live hiện có 2 mapping thiết kế local + 6 action laptop; 118 thiết kế còn UNAVAILABLE. Source 72 READ contracts vẫn PROPOSED, 203 cạnh đề xuất chưa được duyệt. [Trạng thái và bằng chứng](docs/TASK_STATUS.md).
+**Phạm vi đã xác minh:** 120 hàng thiết kế không đồng nghĩa 120 Skill chạy được. Live hiện có 2 mapping thiết kế local + 6 action laptop; 118 thiết kế còn UNAVAILABLE. Source 72 READ contracts vẫn PROPOSED, 203 cạnh đề xuất chưa được duyệt. [Bằng chứng nghiệm thu](docs/reports/LLM_SKILL_CHAT_ACCEPTANCE_20261116.json).
 
 ## P0 — Hoàn thiện luồng chat trên laptop
 

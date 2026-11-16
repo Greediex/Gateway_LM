@@ -2,6 +2,10 @@
 
 Applies to this repository. These are engineering rules, **not credentials or model prompts**.
 
+## Task tracking
+
+- For any plan, backlog, checklist or progress update, follow **[TODO.md — Quy tắc cập nhật](TODO.md#quy-tắc-cập-nhật)**. Update that root file in place, including when a skill suggests a separate plan artifact; create another tracking file only when the user explicitly requests it.
+
 ## Scope and honesty
 - Target branch for cleanup work: `refactor/gateway-lm-composite-adapter-pr01`. Never edit/merge `main` without explicit approval.
 - Treat this as an evidence-driven **pilot**. Do not claim firmware/NPU deployment or arbitrary-task ability without actual measurements.
