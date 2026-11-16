@@ -34,3 +34,7 @@ Conformance/mock/replay không phải firmware acceptance. Muốn chạy thiết
 ```
 
 [Acceptance trong checkout v2](../reports/SKILL_EXPANSION_INTEGRATION_20261113.md) tách kết quả thực đo ở repo khỏi báo cáo offline đi kèm ZIP. Không chạy installer/generator của tài liệu đính kèm; chỉ code đã review được import, dữ liệu baseline/frozen giữ nguyên.
+
+## CAT-01 đã chốt
+
+[Profile Wi-Fi gateway replay](CAT01_PROFILES.md) chọn B02/B03/B05 và xuất coverage/gaps cho đủ 120 mapping. `python -m scripts.skill_profiles` kiểm pinned metadata và tạo artifact/report; chưa tạo runtime binding hay launcher (CAT-02/03).

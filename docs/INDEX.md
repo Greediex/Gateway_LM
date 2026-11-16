@@ -96,3 +96,5 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 - [Roadmap hiện hành: chạy catalog 120 Skill (CAT-01…03 + NEXT-01…12)](NEXT_ROADMAP_V2.md): RCA/LLM, catalog/mock, device scope, history/alerts và evaluation; firmware acceptance để sau.
 
 - [120-Skill expansion pack: proposal catalog, offline dashboard và Core replay](skill_expansion/README.md) · [integration acceptance](reports/SKILL_EXPANSION_INTEGRATION_20261113.md).
+
+- [CAT-01: mapping 120 Skill và profile READ đầu tiên](skill_expansion/CAT01_PROFILES.md) · [acceptance](reports/CAT01_PROFILES_20261116.md).

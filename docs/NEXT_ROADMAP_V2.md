@@ -12,14 +12,14 @@ Integration pack tại `46ba358` cung cấp 120 Skill thiết kế, 206 relation
 
 ## Ba task bắt buộc để chạy gói mới
 
-### CAT-01 — Profile, mapping và dependency
+### CAT-01 — Profile, mapping và dependency (DONE metadata)
 
 **Tận dụng:** `skill_expansion/{catalog,repo_audit,edge_gate}.py`, mapping 120 Skill, catalog validator/builder.
 
-- [ ] Kiểm đủ 120 mapping: legacy reference, direct READ proposal, composite/workflow; ghi rõ gap thay vì gán capability giả.
-- [ ] Chọn batch READ đầu tiên, chia profile theo domain/scope/backend. Pin Function/Port/Skill versions và completion ports; kiểm producer dependency, identity và target.
-- [ ] Review semantic/typed witnesses cho các edge cần dùng. Soft retrieval affinity không được đổi thành DATA/STATE/ORDER chỉ vì có trong graph đề xuất.
-- [ ] Xuất coverage/missing report: declared, selected, replay-verified và live-verified là các số riêng.
+- [x] Kiểm đủ 120 mapping: legacy reference, direct READ proposal, composite/workflow; ghi rõ gap thay vì gán capability giả.
+- [x] Chọn batch READ đầu tiên, chia profile theo domain/scope/backend. Pin Function/Port/Skill versions và completion ports; kiểm producer dependency, identity và target.
+- [x] Review semantic/typed witnesses cho các edge cần dùng. Soft retrieval affinity không được đổi thành DATA/STATE/ORDER chỉ vì có trong graph đề xuất.
+- [x] Xuất coverage/missing report: declared, selected, replay-verified và live-verified là các số riêng.
 
 **Nghiệm thu:** selection tái tạo được, builder pass, unknown/dangling/cross-scope/ambiguous mapping bị chặn. Không yêu cầu duyệt cả 203 cạnh mới được chạy batch nhỏ; chỉ cạnh đã review mới ảnh hưởng execution.
 
@@ -73,3 +73,5 @@ Integration pack tại `46ba358` cung cấp 120 Skill thiết kế, 206 relation
 5. **NEXT-12** để sau; không thao tác firmware/router khi chưa có thiết bị và phạm vi rõ.
 
 Mỗi task phải có positive/negative checks và regression phù hợp, giữ frozen baselines/17 v0.1 Function digests, chỉ một shared execution Core. Không thêm WRITE hoặc nhận quyền từ JSON/model. Chỉ đánh dấu task khi có implementation và acceptance; tài liệu kế hoạch này không kích hoạt capability.
+
+CAT-01: [profile/review đã triển khai](skill_expansion/CAT01_PROFILES.md), [machine-readable coverage](reports/CAT01_PROFILE_COVERAGE_20261116.json); runtime approvals/session vẫn thuộc CAT-02.

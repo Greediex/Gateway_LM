@@ -12,7 +12,7 @@ Cập nhật **16/11/2026**, nhánh **`v2`**, dựa trên integration pack đã 
 
 ## P0 — Đưa gói mới vào luồng chạy
 
-- [ ] **CAT-01 — Chốt profile và mapping chạy:** phân loại đủ 120 Skill; chọn tập READ đầu tiên theo domain/scope; resolve Function/Port/version/completion và dependency; chỉ đưa cạnh đã review vào execution policy.
+- [x] **CAT-01 — Chốt profile và mapping chạy:** phân loại đủ 120 Skill; chọn tập READ đầu tiên theo domain/scope; resolve Function/Port/version/completion và dependency; chỉ đưa cạnh đã review vào execution policy.
 - [ ] **CAT-02 — Registry và replay runtime dùng chung:** tạo deployment selection/policy và reviewed replay artifact/bindings; chạy tập đã chọn qua `RuntimeSkillBridge → ReadRuntime → GraphRunner → Verifier` trong cùng phiên, thay vì chỉ smoke từng Function trong TemporaryDirectory. Source PROPOSED và profile live giữ riêng.
 - [ ] **CAT-03 — Cho người dùng chọn và chạy Skill:** thêm CLI/API và màn hình catalog trong Web hiện có; tìm/lọc theo domain, hiển thị availability/reason, chọn Skill đã được runtime cấp READ; trả evidence, target/source/time/TTL và missing data. Replay phải có nhãn rõ; chưa có backend thì UNAVAILABLE.
 
@@ -42,3 +42,5 @@ Cập nhật **16/11/2026**, nhánh **`v2`**, dựa trên integration pack đã 
 **Thứ tự bắt đầu:** `CAT-01 → CAT-02 → CAT-03 → NEXT-01 → NEXT-02 → NEXT-03`. NEXT-10 chuẩn bị baseline từ CAT-01; NEXT-04 làm theo domain và song song với RCA, NEXT-11 hỗ trợ NEXT-05. Các task chưa thực hiện đều giữ unchecked.
 
 **Gate mỗi task:** kiểm metadata và negative paths, project check, regression phù hợp, không đổi frozen data/digests v0.1; kết quả thực thi phải qua shared Core và Verifier. WRITE không thuộc backlog chạy gói này.
+
+**CAT-01 đã chốt:** [profile và review](docs/skill_expansion/CAT01_PROFILES.md), [coverage JSON](docs/reports/CAT01_PROFILE_COVERAGE_20261116.json). Batch B02/B03/B05, 3 Function/3 Port, metadata-only; runtime/session và launcher tiếp tục CAT-02/CAT-03.

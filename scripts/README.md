@@ -47,3 +47,7 @@ python -m scripts.analysis.audit_html --help
 ## Feature metadata preview (FND-05)
 
 `python -m scripts.features --registry runs/catalog-v02/registry.json` kiểm Feature manifests/flags và hiển thị availability chưa nối Core. Preview không nhận runtime capabilities từ JSON và không probe thiết bị; xem [hướng dẫn](../docs/FEATURE_REGISTRY_V02.md).
+
+### Skill profile selection (CAT-01, metadata only)
+
+`python -m scripts.skill_profiles --registry-output runs/skill-profiles/wifi_gateway_replay_v1.registry.json` validates the pinned profile and prints coverage/gaps for all 120 mappings. It never probes or executes a backend. [Guide](../docs/skill_expansion/CAT01_PROFILES.md).
