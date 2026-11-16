@@ -78,6 +78,19 @@ def composition(mode: str, *, backend=None, clock=time.monotonic):
     runtime=ReadRuntime(artifact,policy,approved_digest=approved['registry_digest'],selection=selection,context=context,
                         permissions=frozenset({'network.read'}),
                         policy_context_id=digest({'principal':'localhost-skill-operator','mode':mode,'revision':1}),clock=clock)
+    if mode == 'live':
+        from ..graph_v3.claims import ClaimBook
+        diagnostics = read_json(ROOT/'config/skill_launcher/live.diagnostics.json')
+        require(diagnostics.get('format') == 'gateway-lm.laptop-diagnostics/v1'
+                and digest(diagnostics) == approved['diagnostics_digest'], 'skill_diagnostics_pin')
+        require(set(diagnostics['skill_workflows']) == set(actions)
+                and all(set(ids) <= set(diagnostics['workflows']) for ids in diagnostics['skill_workflows'].values()),
+                'skill_diagnostic_membership')
+        runtime.registry.required_skill_phrases = diagnostics['required_skill_phrases']
+        runtime.registry.skill_workflows = diagnostics['skill_workflows']
+        runtime.registry.workflows = diagnostics['workflows']
+        runtime.registry.claim_book = ClaimBook(diagnostics['claims'], runtime.registry.ports,
+                                                diagnostics['workflows'])
     design=SkillCatalog.load()
     native=[Skill(id=a['skill_id'],name_vi=a['name'],domain=a['domain'],domain_name='Local laptop actions',priority='P0',
                   catalog_status='PROPOSED',kind='Local READ',scope='client',planned_backend='Local Linux',

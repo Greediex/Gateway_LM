@@ -5,7 +5,8 @@
     "actions_digest": "808660094e8b6bb7d41165fee251e8e356a74734f73f8a7f210d63e5aca24f16",
     "backend_id": "linux.laptop.skills",
     "backend_revision": "2.0.0",
-    "source": "linux_client/skill_laptop_v1"
+    "source": "linux_client/skill_laptop_v1",
+    "diagnostics_digest": "e91ef84c9227867039a010f737ee3ebc7df43c2f9a600061b04de149404aeec3"
   },
   "replay": {
     "registry_digest": "60c65d844e4b620eeb8393a5a8b78224b65e3f88a27e558de9f95b716fc971a8",

@@ -27,6 +27,8 @@ Cập nhật **16/11/2026**, nhánh **`v2`**, dựa trên integration pack đã 
 - [ ] **NEXT-05:** Nối các contract đã review vào UbusRead/CompositeAdapter bằng replay/mock; exact mapping, normalization và capability gates.
 - [ ] **NEXT-10:** Chốt baseline/dataset/labels/dev-test split trước khi tune; đánh giá Skill/Function selection, RCA, LLM, abstention, tool calls và latency p50/p95.
 
+**Tiến độ nối luồng laptop:** NEXT-01/02/03 đã có chat LLM tra toàn catalog, chọn nhiều Skill, dùng shared ReadSession và RCAAgent đánh giá/đề xuất evidence tiếp theo. Declared Claims hiện chỉ cho phép đo laptop, không chứng minh causal RCA hay hỗ trợ router. Các task NEXT vẫn giữ unchecked cho phạm vi mở rộng. [Luồng tích hợp](docs/LLM_SKILL_CHAT.md).
+
 ## P1 — Thiết bị, dữ liệu dài hạn và vận hành
 
 - [ ] **NEXT-06:** Resolve target và quan hệ Client–AP–Router bằng evidence; không trộn dữ liệu khác thiết bị/scope.

@@ -124,6 +124,18 @@ class RCAAgent:
         self.method, self.max_calls, self.max_rounds = method, max_calls, max_rounds
         self.max_repairs, self.retrieval_k = max_repairs, retrieval_k
 
+    def assess_session(self, session, *, workflows):
+        """Assess existing verified READ facts; never create another Runner or call tools."""
+        from ..command_catalog.session import ReadSession
+        if type(session) is not ReadSession or session.runtime.registry is not self.registry:
+            raise PlanError("rca_session_registry_mismatch")
+        if (type(workflows) not in (list, tuple) or len(workflows) > 16
+                or any(type(w) is not str or w not in self.registry.workflows for w in workflows)):
+            raise PlanError("rca_session_workflows")
+        with session._lock:
+            session.refresh()
+            return [EvidenceRCA(self.registry, wid).assess(session.state) for wid in workflows]
+
     def run(self, request: str, case: dict, *, workflow: str):
         if not isinstance(request, str) or not request.strip() or not isinstance(case, dict):
             raise ValueError("invalid_rca_request")

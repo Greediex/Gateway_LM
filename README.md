@@ -45,7 +45,17 @@ Phiên tối đa 5 phút, 24 tool calls, 64 plans; tái sử dụng evidence cò
 
 Chưa có required evidence thì hiện INCOMPLETE; chưa có backend thì UNAVAILABLE. MEASURED cho biết phép đo hoàn thành, không phải chẩn đoán nguyên nhân hay lời bảo đảm mạng khỏe. Không phản hồi ICMP có thể do lọc ping. IP/DNS phản hồi chưa chứng minh truy cập web. Signal % không chuyển thành RSSI dBm; tốc độ AP quảng bá không phải throughput Internet. Router CPU/RAM/health luôn unavailable ở profile laptop.
 
-Linux live hiện dùng Core READ v0.2 với mục tiêu hữu hạn; UI tắt lựa chọn LLM/ReAct ở nguồn này. Các thử nghiệm LLM/GoS/ReAct cũ vẫn có ở replay/Windows theo khả năng backend.
+Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLauncher/ReadSession → GraphRunner/Verifier → RCAAgent → LLM**. Model local tự chọn và phối hợp ID Skill được hỗ trợ; Core giữ quyền chạy và bằng chứng. RCA đánh giá trong cùng phiên, không tạo Runner khác. Khi đã đủ phép đo trong scope đã chọn, LLM chọn finding để trả lời; khi thiếu dữ liệu, có thể chọn tiếp trong budget. [Chi tiết và giới hạn](docs/LLM_SKILL_CHAT.md).
+
+Cần Ollama đang chạy và model local `qwen3:1.7b` đã có sẵn:
+
+```bash
+ollama serve
+# Terminal khác:
+bash web_gateway/start_linux.sh
+```
+
+Model cấu hình ở server qua `GATEWAY_LM_CHAT_MODEL`, không nhận model/endpoint tùy ý từ HTTP. Model không sẵn sàng thì báo rõ và không âm thầm dùng rules. Tắt **LLM suy luận** để dùng chat rules cũ. Các thử nghiệm LLM/GoS/ReAct cũ vẫn có ở replay/Windows.
 
 ## Replay và Windows
 

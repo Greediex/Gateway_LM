@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-16",
+  "mode": "live Linux laptop",
+  "model": "qwen3:1.7b",
+  "kind": "Illustrative local acceptance; not independent holdout/quality benchmark",
+  "privacy": "No IP/MAC/SSID, raw facts or captures committed",
+  "cases": [
+    {
+      "request": "Kiểm tra DNS từ laptop này.",
+      "calls": 3,
+      "case_status": "MEASURED",
+      "stop_reason": "model_answer",
+      "skill_runs": [
+        {
+          "skill_id": "laptop.dns.inspect",
+          "status": "MEASURED",
+          "calls_this_run": 3,
+          "reused_ports": [],
+          "missing_ports": []
+        }
+      ],
+      "unavailable_skills": [],
+      "elapsed_s": 34.45,
+      "rca_count": 2
+    },
+    {
+      "request": "Wi-Fi và gateway laptop hiện thế nào?",
+      "calls": 4,
+      "case_status": "MEASURED",
+      "stop_reason": "model_answer",
+      "skill_runs": [
+        {
+          "skill_id": "laptop.wifi.inspect",
+          "status": "MEASURED",
+          "calls_this_run": 3,
+          "reused_ports": [],
+          "missing_ports": []
+        },
+        {
+          "skill_id": "laptop.gateway.inspect",
+          "status": "MEASURED",
+          "calls_this_run": 1,
+          "reused_ports": [
+            "laptop.route"
+          ],
+          "missing_ports": []
+        }
+      ],
+      "unavailable_skills": [],
+      "elapsed_s": 32.89,
+      "rca_count": 3
+    },
+    {
+      "request": "Đọc RSSI và SNR Wi-Fi laptop.",
+      "calls": 3,
+      "case_status": "PARTIAL",
+      "stop_reason": "model_answer",
+      "skill_runs": [
+        {
+          "skill_id": "laptop.wifi.inspect",
+          "status": "MEASURED",
+          "calls_this_run": 3,
+          "reused_ports": [],
+          "missing_ports": []
+        }
+      ],
+      "unavailable_skills": [
+        "B04"
+      ],
+      "elapsed_s": 26.49,
+      "rca_count": 1
+    }
+  ],
+  "freshness_limit": "A separate loaded CPU trial exceeded evidence TTL and correctly abstained; no TTL extension. Latency depends on CPU/cache/load.",
+  "browser": "Local browser verified chat automatically selected Wi-Fi+gateway; Skill calls, verified evidence and RCA visible in Trace."
+}

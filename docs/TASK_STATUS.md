@@ -83,3 +83,7 @@ CAT-01 **DONE (metadata profile/mapping)**: [guide](skill_expansion/CAT01_PROFIL
 ## Laptop-first launcher — 2026-11-16
 
 CAT-02/CAT-03: bounded shared READ sessions, separately pinned live/replay deployments and CLI/API/Web selection implemented. Live profile has 8 Functions, SK01/A08 local mappings and 6 namespaced laptop actions; 118 design Skills remain unavailable. Replay first batch B02/B03/B05 remains synthetic. Source 72 proposals and 203 unreviewed relations remain unchanged. See [launcher](LAPTOP_SKILL_LAUNCHER.md). This does not complete NEXT-01–12 or firmware acceptance.
+
+## LLM Skill chat — 2026-11-16
+
+Connected the existing catalog/SkillLauncher/ReadSession/GraphRunner/Verifier/RCAAgent in Linux chat. Bounded local model selection, shared facts, scoped Claim assessment and question-focused finding selection; no new executor or architecture. Live router coverage remains unchanged. See [integration](LLM_SKILL_CHAT.md).

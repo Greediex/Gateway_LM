@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+from dataclasses import asdict
 from threading import RLock
 
 from ..adapters.bindings import require
@@ -52,7 +53,11 @@ class ReadSession:
             binding, metadata, ports, backend = rt._selection.checked_binding(
                 bid, rt.context, frozenset({"network.read", "system.read"}) | rt.permissions)
             bindings.append((fid, bid, digest(binding), digest(metadata), digest(ports), id(backend)))
-        return (id(rt.registry), id(rt._selection), id(rt._clock), id(rt._wall_clock),
+        book = getattr(rt.registry, 'claim_book', None)
+        diagnostics = (digest(rt.registry.workflows), digest(getattr(rt.registry, 'skill_workflows', {})),
+                       digest(getattr(rt.registry, 'required_skill_phrases', {})),
+                       digest([asdict(c) for c in book.claims.values()]) if book else None)
+        return (diagnostics, id(rt.registry), id(rt._selection), id(rt._clock), id(rt._wall_clock),
                 rt.registry.contract_format, rt.registry.gs.version, digest(rt.registry.skills),
                 rt.context, rt.permissions,
                 copy.deepcopy(rt.checkpoint_binding()), rt._selection.registry_digest(),
@@ -86,14 +91,10 @@ class ReadSession:
                 raise
             raise PlanError("binding_v02:session_context_check_failed") from exc
 
-    def execute(self, goals, *, request="READ selected catalog ports"):
-        """Compile each request against fresh capabilities and shared verified facts."""
+    def refresh(self):
+        """Refresh capabilities and revoke cached facts before assessment/export."""
         with self._lock:
             self._validate()
-            require(type(request) is str and 0 < len(request) <= 4096, "runtime_request")
-            require(type(goals) in (tuple, list) and 0 < len(goals) <= 256
-                    and all(type(g) is str for g in goals), "session_goals")
-            require(len(self.runner.plans) < self._max_plans, "session_plan_budget")
             try:
                 snapshot = self.runtime.probe()
             except Exception:
@@ -103,6 +104,17 @@ class ReadSession:
             self.state.invalidate({e["id"] for e in self.state.evidence
                                    if e.get("function_id") in unavailable})
             self._validate()
+            return snapshot
+
+    def execute(self, goals, *, request="READ selected catalog ports"):
+        """Compile each request against fresh capabilities and shared verified facts."""
+        with self._lock:
+            self._validate()
+            require(type(request) is str and 0 < len(request) <= 4096, "runtime_request")
+            require(type(goals) in (tuple, list) and 0 < len(goals) <= 256
+                    and all(type(g) is str for g in goals), "session_goals")
+            require(len(self.runner.plans) < self._max_plans, "session_plan_budget")
+            self.refresh()
             self.runner.case["request"] = request
             plan = self.runner.compiler().compile(tuple(goals), self.state)
             # The duplicate guard is per plan; only nodes that require new

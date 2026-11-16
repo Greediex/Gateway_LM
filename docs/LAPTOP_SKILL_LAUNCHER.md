@@ -43,3 +43,7 @@ Live A08 dùng association/BSSID thực từ NetworkManager, contract v2 có dep
 [Biên bản đã bỏ định danh mạng](reports/LAPTOP_SKILL_ACCEPTANCE_20261116.json): 8/8 lựa chọn live MEASURED, tổng 8 tool calls trong một phiên; 5 lượt tiếp theo tái sử dụng evidence nên thêm 0 calls. Replay B02/B03/B05: 3/3 MEASURED, synthetic_only=true. Trình duyệt localhost đã khởi tạo/lọc/chọn/chạy network action và hiển thị đúng đường đo Ethernet khác Wi-Fi. Đây là một lần kiểm tra local, không phải đo hiệu năng hay nghiệm thu firmware.
 
 Validation: full unittest discovery **718 tests, 713 pass, 5 Windows-only skips**; `scripts.check_project`, JavaScript syntax/lifecycle harness và independent review đạt. Frozen `data/`/`benchmarks/` không đổi. CI cho commit được ghi tại lịch sử Actions trên nhánh v2.
+
+## Chat tự chọn Skill
+
+Đã nối [LLM Skill chat](LLM_SKILL_CHAT.md) vào chat Linux; không cần chọn Skill thủ công. Launcher vẫn dùng để kiểm tra từng capability. Chat và launcher dùng cùng ứng dụng/session primitives; phiên Web được tạo riêng để tránh trộn lịch sử.

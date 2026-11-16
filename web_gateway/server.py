@@ -183,6 +183,9 @@ def analyze(payload: dict):
                      "interface", "target", "registry", "goals", "model_path", "approved_digest"}
         if forbidden.intersection(payload):
             raise ValueError("Không nhận cấu hình backend/target/quyền từ HTTP")
+        if payload.get("with_llm") is True:
+            from gateway_pilot.application.skill_chat import CHAT
+            return CHAT.chat(message.strip(), session_id=session_id)
         from gateway_pilot.application.diagnose_network import chat_linux
         return chat_linux(message.strip(), method=method)
 
@@ -530,7 +533,11 @@ class Handler(BaseHTTPRequestHandler):
                       analyze_rca(data) if endpoint == "/api/rca" else analyze(data))
             return self._json(result)
         except ValueError as exc:
-            return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            from gateway_pilot.application.skill_launcher import SkillSessionError
+            code = (HTTPStatus.GONE if isinstance(exc, SkillSessionError) and str(exc) == "session_expired" else
+                    HTTPStatus.TOO_MANY_REQUESTS if isinstance(exc, SkillSessionError) and str(exc) == "session_capacity_limit" else
+                    HTTPStatus.BAD_REQUEST)
+            return self._json({"error": str(exc)}, code)
         except (RuntimeError, ImportError, OSError, KeyError) as exc:
             return self._json({"error": f"Không chạy được backend ({type(exc).__name__}).",
                                "hint": "Kiểm tra dữ liệu replay và các dependency của chế độ đang chọn."},

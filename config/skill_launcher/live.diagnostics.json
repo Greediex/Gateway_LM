@@ -1,0 +1,349 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "workflows": {
+    "LAPTOP-WIFI": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "wifi_not_associated",
+        "wifi_associated_observed"
+      ]
+    },
+    "LAPTOP-ROUTE": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "ipv4_route_absent",
+        "ipv4_route_observed"
+      ]
+    },
+    "LAPTOP-GATEWAY": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "gateway_icmp_loss_observed",
+        "gateway_icmp_responded"
+      ]
+    },
+    "LAPTOP-INTERNET": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "internet_icmp_loss_observed",
+        "internet_icmp_responded"
+      ]
+    },
+    "LAPTOP-DNS": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "dns_not_resolved",
+        "dns_resolved_observed"
+      ]
+    },
+    "LAPTOP-CONNECTIVITY": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "connectivity_route_absent",
+        "connectivity_icmp_loss",
+        "connectivity_dns_unresolved",
+        "connectivity_probes_responded"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "wifi_not_associated",
+      "diagnosis": "wifi_not_associated",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.wifi",
+          "field": "associated",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "wifi_not_associated",
+      "workflow": "LAPTOP-WIFI"
+    },
+    {
+      "claim_id": "wifi_associated_observed",
+      "diagnosis": "wifi_associated_observed",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.wifi",
+          "field": "associated",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "wifi_associated_observed",
+      "workflow": "LAPTOP-WIFI"
+    },
+    {
+      "claim_id": "ipv4_route_absent",
+      "diagnosis": "ipv4_route_absent",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.route",
+          "field": "has_route",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ipv4_route_absent",
+      "workflow": "LAPTOP-ROUTE"
+    },
+    {
+      "claim_id": "ipv4_route_observed",
+      "diagnosis": "ipv4_route_observed",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.route",
+          "field": "has_route",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "ipv4_route_observed",
+      "workflow": "LAPTOP-ROUTE"
+    },
+    {
+      "claim_id": "gateway_icmp_loss_observed",
+      "diagnosis": "gateway_icmp_loss_observed",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.gateway_probe",
+          "field": "loss_pct",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "gateway_icmp_loss_observed",
+      "workflow": "LAPTOP-GATEWAY"
+    },
+    {
+      "claim_id": "gateway_icmp_responded",
+      "diagnosis": "gateway_icmp_responded",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.gateway_probe",
+          "field": "loss_pct",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "gateway_icmp_responded",
+      "workflow": "LAPTOP-GATEWAY"
+    },
+    {
+      "claim_id": "internet_icmp_loss_observed",
+      "diagnosis": "internet_icmp_loss_observed",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.internet_probe",
+          "field": "loss_pct",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "internet_icmp_loss_observed",
+      "workflow": "LAPTOP-INTERNET"
+    },
+    {
+      "claim_id": "internet_icmp_responded",
+      "diagnosis": "internet_icmp_responded",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.internet_probe",
+          "field": "loss_pct",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "internet_icmp_responded",
+      "workflow": "LAPTOP-INTERNET"
+    },
+    {
+      "claim_id": "dns_not_resolved",
+      "diagnosis": "dns_not_resolved",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.dns",
+          "field": "resolved",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "dns_not_resolved",
+      "workflow": "LAPTOP-DNS"
+    },
+    {
+      "claim_id": "dns_resolved_observed",
+      "diagnosis": "dns_resolved_observed",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.dns",
+          "field": "resolved",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "dns_resolved_observed",
+      "workflow": "LAPTOP-DNS"
+    },
+    {
+      "claim_id": "connectivity_route_absent",
+      "diagnosis": "connectivity_route_absent",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.route",
+          "field": "has_route",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "route_absent",
+      "workflow": "LAPTOP-CONNECTIVITY"
+    },
+    {
+      "claim_id": "connectivity_icmp_loss",
+      "diagnosis": "connectivity_icmp_loss",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.internet_probe",
+          "field": "loss_pct",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "icmp_loss",
+      "workflow": "LAPTOP-CONNECTIVITY"
+    },
+    {
+      "claim_id": "connectivity_dns_unresolved",
+      "diagnosis": "connectivity_dns_unresolved",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.dns",
+          "field": "resolved",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "dns_unresolved",
+      "workflow": "LAPTOP-CONNECTIVITY"
+    },
+    {
+      "claim_id": "connectivity_probes_responded",
+      "diagnosis": "connectivity_probes_responded",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.route",
+          "field": "has_route",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "laptop.internet_probe",
+          "field": "loss_pct",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "laptop.dns",
+          "field": "resolved",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "probes_responded",
+      "workflow": "LAPTOP-CONNECTIVITY"
+    }
+  ],
+  "skill_workflows": {
+    "laptop.network.inspect": [
+      "LAPTOP-WIFI",
+      "LAPTOP-ROUTE",
+      "LAPTOP-GATEWAY",
+      "LAPTOP-INTERNET",
+      "LAPTOP-DNS",
+      "LAPTOP-CONNECTIVITY"
+    ],
+    "laptop.wifi.inspect": [
+      "LAPTOP-WIFI"
+    ],
+    "laptop.route.inspect": [
+      "LAPTOP-ROUTE"
+    ],
+    "laptop.gateway.inspect": [
+      "LAPTOP-ROUTE",
+      "LAPTOP-GATEWAY"
+    ],
+    "laptop.dns.inspect": [
+      "LAPTOP-ROUTE",
+      "LAPTOP-DNS"
+    ],
+    "laptop.ipv4.inspect": [],
+    "SK01": [],
+    "A08": []
+  },
+  "required_skill_phrases": {
+    "B04": [
+      "rssi",
+      "snr"
+    ],
+    "B07": [
+      "roaming"
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const state = { connected: false, busy: false, method: 'bm25', fixtures: [], tab: 'timeline', result: null, planIndex: null,
-                sessionId: null, turns: 0, livePlatform: 'Windows', linuxLiveAvailable: false, networkRequest: 0 };
+                sessionId: null, turns: 0, chatGeneration: 0, livePlatform: 'Windows', linuxLiveAvailable: false, networkRequest: 0 };
 const normalize = (s) => String(s ?? '');
 const n = (tag, cls, content) => { const el = document.createElement(tag); if(cls)el.className=cls;if(content!==undefined)el.textContent=normalize(content);return el;};
 const fmt = obj => JSON.stringify(obj, null, 2);
@@ -11,8 +11,10 @@ function setMethod(m){state.method=m;document.querySelectorAll('.seg').forEach(b
 function showIntro(yes){$('intro').hidden=!yes;$('intro').style.display=yes?'':'none';}
 function scrollBottom(){requestAnimationFrame(()=>$('chatScroll').scrollTo({top:$('chatScroll').scrollHeight,behavior:'smooth'}));}
 function setTab(tab){state.tab=tab;document.querySelectorAll('.trace-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));renderInspector();}
-function clearChat(){state.turns=0;state.result=null;state.sessionId=null;$('messages').replaceChildren();showIntro(true);['statCalls','statEvidence','statRepairs','statSkills'].forEach(x=>$(x).textContent='—');$('inspectorContent').innerHTML='<div class="empty-inspect"><div class="wireframe-icon">◎</div><h3>Chưa có lượt chạy</h3><p>Gửi một câu hỏi để xem Agent chọn function nào, thu evidence gì và lập kế hoạch ra sao.</p><div class="ghost-rows"><span></span><span></span><span></span></div></div>';}
+function releaseChatSession(){if(state.sessionId && state.result?.catalog_total){fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:state.sessionId})}).catch(()=>{});}state.sessionId=null;}
+function clearChat(){state.chatGeneration++;releaseChatSession();state.turns=0;state.result=null;state.sessionId=null;$('messages').replaceChildren();showIntro(true);['statCalls','statEvidence','statRepairs','statSkills'].forEach(x=>$(x).textContent='—');$('inspectorContent').innerHTML='<div class="empty-inspect"><div class="wireframe-icon">◎</div><h3>Chưa có lượt chạy</h3><p>Gửi một câu hỏi để xem Agent chọn function nào, thu evidence gì và lập kế hoạch ra sao.</p><div class="ghost-rows"><span></span><span></span><span></span></div></div>';}
 function updateSource() {
+  state.chatGeneration++; releaseChatSession();
   const live = $('sourceSelect').value === 'live';
   const platform = state.livePlatform;
   const linuxLive = live && state.linuxLiveAvailable && platform === 'Linux';
@@ -45,17 +47,17 @@ function updateSource() {
   }
   state.linuxControls = linuxLive;
   policy.disabled = linuxLive;
-  policy.querySelector('option[value=dynamic]').textContent = linuxLive ? 'Core READ v0.2' : 'Dynamic Agent';
+  policy.querySelector('option[value=dynamic]').textContent = linuxLive ? 'LLM → Skills → Core v0.2' : 'Dynamic Agent';
   policy.querySelector('option[value=react]').disabled = linuxLive || !state.reactAvailable;
   policy.querySelector('option[value=core]').disabled = live;
-  $('llmToggle').disabled = linuxLive;
+  $('llmToggle').disabled = false;
   $('modelName').disabled = linuxLive;
   $('bm25Btn').disabled = linuxLive;
   $('gosBtn').disabled = linuxLive || !state.gosAvailable;
-  $('methodNote').textContent = linuxLive ? 'Core READ v0.2 · phép đo đã đăng ký' : state.gosAvailable ? 'GoS đã sẵn sàng.' : 'GoS chưa sẵn sàng; có thể thử BM25.';
+  $('methodNote').textContent = linuxLive ? 'LLM local tra catalog · Core READ v0.2' : state.gosAvailable ? 'GoS đã sẵn sàng.' : 'GoS chưa sẵn sàng; có thể thử BM25.';
   if (linuxLive) {
     policy.value = 'dynamic';
-    $('llmToggle').checked = false;
+    $('llmToggle').checked = true;
   } else if (live && policy.value === 'core') {
     policy.value = state.reactAvailable ? 'react' : 'dynamic';
   }
@@ -194,12 +196,40 @@ source.value = config.default_source === 'live' && liveAvailable ? 'live' : 'rep
 updateSource();}catch(e){state.connected=false;$('healthText').textContent='Backend chưa kết nối';$('healthText').parentElement.classList.add('offline');toast('Cần chạy python -m web_gateway.server trong Gateway_LM để gửi câu hỏi thật.');}}
 function renderFixtures(){let el=$('fixtureSelect');el.replaceChildren();let current='';for(let f of state.fixtures){if(f.group!==current){current=f.group;let g=n('optgroup');g.label=current;el.appendChild(g);}let option=n('option','',f.label);option.value=f.id;el.appendChild(option);}if(!state.fixtures.length){let op=n('option','','Cần khởi động backend');op.value='GLM-21-1';el.appendChild(op);return;}setFixture(state.fixtures.some(x=>x.id==='GLM-21-1')?'GLM-21-1':state.fixtures[0].id);}
 function message(kind,text,label,status){const item=n('div','message '+kind);let avatar=n('div','message-avatar '+(kind==='user'?'user-avatar':''),kind==='user'?'U':'✳');let bubble=n('div','bubble');let lbl=n('div','message-label',label|| (kind==='user'?'BẠN':'GATEWAY LM'));if(status){let st=n('span','answer-status '+(status==='PARTIAL'||status==='INCONCLUSIVE'?'partial':status==='BLOCKED'||status==='NEEDS_INPUT'?'blocked':''),status);lbl.appendChild(st);}bubble.appendChild(lbl);bubble.appendChild(n('div','bubble-body',text));if(kind==='assistant')item.appendChild(avatar);item.appendChild(bubble);if(kind==='user')item.appendChild(avatar);$('messages').appendChild(item);scrollBottom();return bubble;}
-function enrichMessage(bubble,result){let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? 'Core READ v0.2' : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',result.method.toUpperCase()],['LLM',result.llm_advisor_used?`${result.advice.length + Number(result.intake?.source === 'llm')} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}bubble.appendChild(meta);
+function enrichMessage(bubble,result){let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',result.method.toUpperCase()],['LLM',result.llm_advisor_used?`${result.advice.length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection)} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}bubble.appendChild(meta);
 if(result.runbooks?.length){let d=n('details','runbook-wrapper');d.appendChild(n('summary','','Runbook được truy xuất ('+result.runbooks.length+')'));for(let book of result.runbooks){let card=n('div','runbook-card');card.appendChild(n('b','',book.title+' · '+book.id));card.appendChild(n('div','',book.text));d.appendChild(card);}bubble.appendChild(d);}
 let allWarnings=[...(result.warnings||[])];if(result.action==='ASK_USER'&&result.diagnosis==='target_ambiguous'){allWarnings.push('Bạn có thể trả lời câu hỏi bổ sung ngay ở ô chat; phiên làm việc giữ nguyên Case đang chờ.');}if(allWarnings.length){bubble.appendChild(n('div','warnings',allWarnings.join('\n')));}
 const p=n('div','inspector-note',result.notice);p.style.marginTop='12px';bubble.appendChild(p);}
-async function send(override){if(state.busy)return;let input=override??$('userInput').value.trim();if(!input)return;if(!state.connected){toast('Backend chưa kết nối. Hãy chạy web_gateway.server trong thư mục Gateway_LM.');return;}showIntro(false);$('userInput').value='';updateInput();message('user',input);setBusy(true);try{const payload={message:input,session_id:state.sessionId||undefined,source_mode:$('sourceSelect').value,fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,with_skill_context:!$('skillToggle').disabled&&$('skillToggle').checked,with_guide:!$('guideToggle').disabled&&$('guideToggle').checked,with_llm:!$('llmToggle').disabled&&$('llmToggle').checked,model:$('modelName').value.trim()||'qwen3:1.7b'};let response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});let data=await response.json();if(!response.ok)throw Error(data.error+(data.hint?'\n'+data.hint:''));state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;state.sessionId=data.session_id||null;state.turns++;let answer=data.answer||'Không có câu trả lời';let bubble=message('assistant',answer,'GATEWAY LM · '+data.fixture,data.case_status);enrichMessage(bubble,data);renderInspector();updateStats(data); }catch(err){message('assistant','Không chạy được bộ chẩn đoán: '+err.message,'LỖI BACKEND','BLOCKED');toast(err.message);}finally{setBusy(false);scrollBottom();}}
-function updateStats(r){$('statCalls').textContent=String(r.calls??'—');$('statEvidence').textContent=String(r.evidence?.length??0);$('statRepairs').textContent=String(r.repairs??0);$('statSkills').textContent=String(r.stages?.length??0);}
+async function send(override) {
+  if(state.busy)return;
+  const input=override??$('userInput').value.trim();
+  if(!input)return;
+  if(!state.connected){toast('Backend chưa kết nối. Hãy chạy web_gateway.server trong thư mục Gateway_LM.');return;}
+  const generation=state.chatGeneration;
+  showIntro(false);$('userInput').value='';updateInput();message('user',input);setBusy(true);
+  try {
+    const payload={message:input,session_id:state.sessionId||undefined,source_mode:$('sourceSelect').value,
+      fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,
+      with_skill_context:!$('skillToggle').disabled&&$('skillToggle').checked,
+      with_guide:!$('guideToggle').disabled&&$('guideToggle').checked,
+      with_llm:!$('llmToggle').disabled&&$('llmToggle').checked,model:$('modelName').value.trim()||'qwen3:1.7b'};
+    const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await response.json();
+    if(generation!==state.chatGeneration){
+      if(data.catalog_total && data.session_id) fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:data.session_id})}).catch(()=>{});
+      return;
+    }
+    if(response.status===410) state.sessionId=null;
+    if(!response.ok)throw Error(data.error+(response.status===410?' · Phiên cũ đã hết hạn; gửi lại câu hỏi để tạo phiên mới.':data.hint?'\n'+data.hint:''));
+    state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
+    state.sessionId=data.session_id||null;state.turns++;
+    const bubble=message('assistant',data.answer||'Không có câu trả lời','GATEWAY LM · '+data.fixture,data.case_status);
+    enrichMessage(bubble,data);renderInspector();updateStats(data);
+  } catch(err) {
+    if(generation===state.chatGeneration){message('assistant','Không chạy được bộ chẩn đoán: '+err.message,'LỖI BACKEND','BLOCKED');toast(err.message);}
+  } finally {setBusy(false);scrollBottom();}
+}
+function updateStats(r){$('statCalls').textContent=String(r.calls??'—');$('statEvidence').textContent=String(r.evidence?.length??0);$('statRepairs').textContent=String(r.repairs??0);$('statSkills').textContent=String(r.skill_runs?.length??r.stages?.length??0);}
 function renderInspector(){let content=$('inspectorContent');if(!state.result)return;let r=state.result;content.replaceChildren();let top=n('div','trace-overview');top.appendChild(n('span','','LAST RUN · '+r.fixture_id));top.appendChild(n('h3','',r.fixture));top.appendChild(n('p','',r.workflow+' · '+r.method.toUpperCase()+' · '+r.calls+' calls · '+r.repairs+' repairs'));content.appendChild(top);
 if(state.tab==='timeline')renderTimeline(content,r);else if(state.tab==='evidence')renderEvidence(content,r);else if(state.tab==='contracts')renderContracts(content,r);else renderDAG(content,r);}
 function renderContracts(content,r){content.appendChild(n('p','inspector-note','Route: '+(r.route||'—')+' · '+(r.decision_source||'')));let hist=n('div','kv-body',(r.revisions||[]).map(x=>'Revision '+x.revision+': '+(x.operators||[]).join(' → ')).join(String.fromCharCode(10))||'Không có kế hoạch.');content.appendChild(n('h4','','Lịch sử revision và toán tử repair'));content.appendChild(hist);const c=r.contracts||{};[['c0','Contract 0 · Retrieval → Resolver'],['a','Contract A · Planner → Runner'],['b','Contract B · Runner → Evidence'],['c','Contract C · Evidence → Planner']].forEach(([k,label])=>{let d=n('details','');d.appendChild(n('summary','',label));let pre=n('pre','kv-body',JSON.stringify(c[k]??null,null,2));d.appendChild(pre);content.appendChild(d);});}
@@ -261,7 +291,7 @@ function renderReasoning(section, result) {
 
 function renderTimeline(content, result) {
   const understand = processStep(content,1,'🧠 Bộ hiểu yêu cầu','Người dùng đang gặp vấn đề gì, trên thiết bị nào?');
-  const workflows = {'LAPTOP-NETWORK':'Mạng từ laptop Linux','WF-INTERNET':'Không vào Internet từ thiết bị','WF-018':'Kết nối WAN',
+  const workflows = {'LAPTOP-SKILL-CHAT':'LLM → Skills → ReadSession → RCA', 'LAPTOP-NETWORK':'Mạng từ laptop Linux','WF-INTERNET':'Không vào Internet từ thiết bị','WF-018':'Kết nối WAN',
     'WF-023':'Phân giải tên miền (DNS)','WF-024':'Cấp địa chỉ IP (DHCP)',
     'WF-039':'Sức khỏe hệ thống','WF-WRITE':'Yêu cầu thay đổi cấu hình',
     'LIVE-GATEWAY':'Gateway mặc định','LIVE-INTERNET':'Kết nối IPv4 từ laptop',
@@ -278,6 +308,10 @@ function renderTimeline(content, result) {
   const decide = processStep(content,2,'🎯 Bộ quyết định kiểm tra','Tôi đã biết gì và cần kiểm tra điều gì tiếp theo?');
   renderReasoning(decide,result);
   renderPolicy(decide,result);
+  for (const run of result.skill_runs || []) {
+    decide.appendChild(n('p','',`${run.skill_id} · ${run.status} · ${run.calls_this_run} calls · reuse: ${(run.reused_ports || []).join(', ') || 'không'}`));
+  }
+  if (result.stop_reason) decide.appendChild(n('small','',`Điều kiện dừng: ${result.stop_reason}`));
 
   const prepare = processStep(content,3,'🧩 Bộ chuẩn bị thao tác','Cần dùng những function nào và gọi theo thứ tự nào?');
   for (const plan of result.plans || []) {
@@ -308,6 +342,10 @@ function renderTimeline(content, result) {
     NEEDS_INPUT:'Cần người dùng bổ sung',INCONCLUSIVE:'Chưa đủ bằng chứng',BLOCKED:'Yêu cầu bị chặn'};
   assess.appendChild(n('strong','',verdicts[result.case_status] || result.case_status));
   assess.appendChild(n('p','',result.answer));
+  for (const row of result.rca_assessments || []) {
+    const details=n('details','kv'); details.appendChild(n('summary','kv-header',`${row.workflow}: ${row.decision}`));
+    details.appendChild(n('pre','kv-body',fmt(row))); assess.appendChild(details);
+  }
   if (result.evidence_ids?.length) {
     assess.appendChild(n('small','',`Bằng chứng dùng để kết luận: ${result.evidence_ids.join(', ')}`));
   }
@@ -330,9 +368,9 @@ let wrap=n('div','dag-canvas');wrap.appendChild(svg);content.appendChild(wrap);c
 function updateInput(){let ta=$('userInput');$('charCount').textContent=ta.value.length+'/2000';ta.style.height='auto';ta.style.height=Math.min(135,Math.max(34,ta.scrollHeight))+'px';$('sendBtn').disabled=state.busy||!ta.value.trim();}
 $('sendBtn').addEventListener('click',()=>send());$('userInput').addEventListener('input',updateInput);$('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('clearBtn').addEventListener('click',clearChat);
 $('sourceSelect').addEventListener('change',updateSource);
-$('fixtureSelect').addEventListener('change',()=>{state.sessionId=null;fixtureNote();});$('llmToggle').addEventListener('change',e=>{ $('modelField').hidden=!e.target.checked; });document.querySelectorAll('.seg').forEach(b=>b.addEventListener('click',()=>setMethod(b.dataset.method)));
+$('fixtureSelect').addEventListener('change',()=>{releaseChatSession();fixtureNote();});$('llmToggle').addEventListener('change',e=>{ $('modelField').hidden=!e.target.checked; });document.querySelectorAll('.seg').forEach(b=>b.addEventListener('click',()=>setMethod(b.dataset.method)));
 document.querySelectorAll('.trace-tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
-document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',()=>{state.sessionId=null;setFixture(b.dataset.fixture);send(b.dataset.query);}));
+document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',()=>{releaseChatSession();setFixture(b.dataset.fixture);send(b.dataset.query);}));
 $('menuBtn').addEventListener('click',()=>{$('sidebar').classList.toggle('open');$('inspector').classList.remove('open')});$('traceBtn').addEventListener('click',()=>{$('inspector').classList.toggle('open');$('sidebar').classList.remove('open')});
 $('chatScroll').addEventListener('click',()=>{$('sidebar').classList.remove('open');$('inspector').classList.remove('open')});
 loadConfig();updateInput();

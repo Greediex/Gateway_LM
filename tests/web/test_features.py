@@ -67,10 +67,19 @@ class LaptopHTTPTests(unittest.TestCase):
 
     def test_chat_forwards_only_bounded_request_and_registered_method(self):
         with patch("gateway_pilot.application.diagnose_network.chat_linux", return_value={"answer": "verified"}) as chat:
-            status, result = self.post({"message": "  Wi-Fi thế nào?  ", "method": "bm25", "with_llm": True,
+            status, result = self.post({"message": "  Wi-Fi thế nào?  ", "method": "bm25", "with_llm": False,
                                         "model": "ignored", "fixture_id": "ignored"}, "/api/chat")
         self.assertEqual((status, result), (200, {"answer": "verified"}))
         chat.assert_called_once_with("Wi-Fi thế nào?", method="bm25")
+
+    def test_live_llm_routes_to_existing_skill_session_with_server_model(self):
+        with patch("gateway_pilot.application.skill_chat.CHAT") as chat:
+            chat.chat.return_value={"answer":"verified","catalog_total":120}
+            status,result=self.post({"message":"  Wi-Fi thế nào?  ","with_llm":True,
+                                     "session_id":"a"*32,"model":"untrusted-ignored"},"/api/chat")
+        self.assertEqual(status,200)
+        self.assertEqual(result["catalog_total"],120)
+        chat.chat.assert_called_once_with("Wi-Fi thế nào?",session_id="a"*32)
 
     def test_chat_rejects_backend_target_permissions_and_commands(self):
         with patch("gateway_pilot.application.diagnose_network.chat_linux") as chat:
