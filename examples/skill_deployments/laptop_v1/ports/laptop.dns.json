@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "laptop.dns",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "string",
+        "const": "example.com",
+        "maxLength": 128
+      },
+      "resolved": {
+        "type": "boolean"
+      },
+      "interface": {
+        "type": "string",
+        "maxLength": 15
+      }
+    },
+    "required": [
+      "query",
+      "resolved",
+      "interface"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "linux_client/",
+  "untrusted_text": false
+}

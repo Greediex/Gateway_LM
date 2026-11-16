@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "SK01",
+  "version": "2.0.0",
+  "name": "SK01 · Định danh laptop hiện tại",
+  "description": "Local laptop READ action; measurement completion is not causal RCA.",
+  "requires": {},
+  "produces": {
+    "client.identity": "3.0.0"
+  },
+  "completion_ports": {
+    "client.identity": "3.0.0"
+  },
+  "function_refs": {
+    "clients.resolve": "5.0.0"
+  },
+  "tags": [
+    "laptop",
+    "live",
+    "read"
+  ]
+}

@@ -1,0 +1,88 @@
+"""Pinned, operator-reviewed deployment sources for the Skill launcher."""
+from __future__ import annotations
+
+import copy
+import functools
+import time
+
+from ..core import ROOT
+from ..adapters.bindings import BindingSelection, TargetContext, binding_digest, declare_binding, require
+from ..adapters.laptop_skills import LaptopSkillBackend
+from ..command_catalog.builder import build_registry
+from ..command_catalog.loader import load_catalog,read_json,digest
+from ..command_catalog.runtime import ReadRuntime
+from .catalog import SkillCatalog,Skill
+from .profiles import load_bundle,validate_profile
+from .replay_backend import StrictSkillReplayBackend
+from .runtime_bridge import RuntimeSkillBridge
+
+
+@functools.lru_cache(maxsize=2)
+def deployment(mode: str):
+    require(mode in {'live','replay'},'skill_mode')
+    folder='laptop_v1' if mode=='live' else 'wifi_replay_v1'
+    config=ROOT/'config/skill_launcher'
+    approvals=read_json(config/'approvals.json')
+    require(approvals['format']=='gateway-lm.skill-launcher-approval/v1','skill_approval_format')
+    approved=approvals[mode]
+    catalog=load_catalog(ROOT/'examples/skill_deployments'/folder)
+    policy=read_json(config/(mode+'.policy.json'))
+    selection=read_json(config/(mode+'.selection.json'))
+    actions_doc=read_json(config/(mode+'.actions.json'))
+    require(actions_doc['format']=='gateway-lm.skill-actions/v1' and actions_doc['mode']==mode
+            and digest(actions_doc)==approved['actions_digest'],'skill_actions_pin')
+    artifact=build_registry(catalog,selection,policy,ROOT/'runs/skill-launcher'/(mode+'.registry.json'))
+    require(artifact['content_digest']==approved['registry_digest'],'skill_deployment_pin')
+    skills={s['skill_id']:s for s in artifact['skills']}
+    ports={p['port_id']:p for p in artifact['ports']}
+    actions={}
+    fields={'skill_id','runtime_skill_id','version','name','domain','kind','scope','required_ports','optional_ports','limitations'}
+    for action in actions_doc['actions']:
+        require(type(action) is dict and set(action)==fields and action['kind'] in {'design','laptop'},'skill_action_fields')
+        sid=action['skill_id'];rid=action['runtime_skill_id']
+        require(sid not in actions and rid in skills and action['version']==skills[rid]['version']
+                and action['required_ports']==skills[rid]['completion_ports'],'skill_action_contract')
+        require(not set(action['required_ports']) & set(action['optional_ports']),'skill_port_roles')
+        for pid,version in {**action['required_ports'],**action['optional_ports']}.items():
+            require(pid in ports and ports[pid]['version']==version and ports[pid]['scope']==action['scope'],'skill_port_scope')
+        actions[sid]=copy.deepcopy(action)
+    if mode=='replay':
+        profile=read_json(ROOT/'config/skill_profiles/wifi_gateway_replay_v1.json')
+        validate_profile(profile,load_bundle())
+        require(digest(profile)==approved['cat01_profile_digest'],'skill_cat01_drift')
+    return artifact,policy,approved,actions
+
+
+def composition(mode: str, *, backend=None, clock=time.monotonic):
+    artifact,policy,approved,actions=deployment(mode)
+    if mode=='live':
+        backend=LaptopSkillBackend() if backend is None else backend
+        require(getattr(backend,'revision',None)==approved['backend_revision'] and getattr(backend,'source',None)==approved['source'],'skill_provider_pin')
+        context=TargetContext('client',backend.client_id,backend.environment_id)
+        context_valid=lambda: backend.environment_id==context.environment_id
+    else:
+        fixture=read_json(ROOT/'data/skill_expansion_v1/replay_fixtures_v2.json',max_bytes=1048576)
+        values={f['function_id']:fixture[f['function_id']] for f in artifact['functions']}
+        backend=StrictSkillReplayBackend(artifact['functions'],artifact['ports'],values) if backend is None else backend
+        require(getattr(backend,'revision',None)==approved['backend_revision'] and getattr(backend,'source',None)==approved['source'],'skill_provider_pin')
+        environment=digest({'registry':artifact['content_digest'],'fixtures':backend._fixture})
+        context=TargetContext('gateway','synthetic-skill-gateway',environment)
+        context_valid=lambda: digest({'registry':artifact['content_digest'],'fixtures':backend._fixture})==environment
+    require(backend.revision==approved['backend_revision'] and backend.source==approved['source'],'skill_provider_pin')
+    rows=[declare_binding(artifact,f['function_id'],'launcher.'+f['function_id'],approved['backend_id'],backend,context)
+          for f in artifact['functions']]
+    # Only this reviewed local composition root creates context-bound READ bindings.
+    # No request supplies a backend, target, permissions, schema or approval value.
+    selection=BindingSelection(artifact,policy,rows,approved_digests=frozenset(binding_digest(b) for b in rows),
+                               backends={approved['backend_id']:backend},context=context)
+    runtime=ReadRuntime(artifact,policy,approved_digest=approved['registry_digest'],selection=selection,context=context,
+                        permissions=frozenset({'network.read'}),
+                        policy_context_id=digest({'principal':'localhost-skill-operator','mode':mode,'revision':1}),clock=clock)
+    design=SkillCatalog.load()
+    native=[Skill(id=a['skill_id'],name_vi=a['name'],domain=a['domain'],domain_name='Local laptop actions',priority='P0',
+                  catalog_status='PROPOSED',kind='Local READ',scope='client',planned_backend='Local Linux',
+                  notes='Separate laptop action, not a fulfilled router Skill.',source=None,runtime_status='NOT_BOUND')
+            for a in actions.values() if a['kind']=='laptop']
+    bridge=RuntimeSkillBridge(runtime,SkillCatalog([*design.skills.values(),*native],design.relations))
+    session=runtime.open_session(max_calls=24,ttl_s=300,max_plans=64,context_valid=context_valid)
+    return {'runtime':runtime,'session':session,'bridge':bridge,'actions':actions,'context_valid':context_valid,'backend':backend}

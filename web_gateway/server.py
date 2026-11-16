@@ -20,7 +20,7 @@ from functools import lru_cache
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 PROJECT_DIR = Path(__file__).resolve().parent
 DEFAULT_REPO = PROJECT_DIR.parent
@@ -427,6 +427,17 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         path = urlparse(self.path).path
+        if path == "/api/skills":
+            try:
+                from gateway_pilot.application.skill_launcher import LAUNCHER
+                query = parse_qs(urlparse(self.path).query, keep_blank_values=True)
+                if set(query) - {"mode"} or len(query.get("mode", ["live"])) != 1:
+                    raise ValueError("Chỉ nhận một mode live hoặc replay")
+                return self._json(LAUNCHER.catalog(query.get("mode", ["live"])[0]))
+            except ValueError as exc:
+                return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+            except (RuntimeError, ImportError, OSError, KeyError):
+                return self._json({"error": "Skill deployment unavailable"}, HTTPStatus.SERVICE_UNAVAILABLE)
         if path == "/api/health":
             status = _status()
             if getattr(self.server, "default_source", "replay") == "live":
@@ -474,7 +485,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         endpoint = urlparse(self.path).path
-        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network"):
+        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network", "/api/skills/session", "/api/skills/run", "/api/skills/close"):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -486,6 +497,26 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": "Request JSON quá lớn hoặc rỗng"}, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
         try:
             data = json.loads(self.rfile.read(length))
+            if endpoint.startswith("/api/skills/"):
+                from gateway_pilot.application.skill_launcher import LAUNCHER, SkillSessionError
+                fields = {"/api/skills/session": {"mode"},
+                          "/api/skills/run": {"session_id", "skill_id"},
+                          "/api/skills/close": {"session_id"}}[endpoint]
+                if type(data) is not dict or set(data) != fields:
+                    raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
+                try:
+                    if endpoint.endswith("/session"):
+                        result = LAUNCHER.create_session(data["mode"])
+                    elif endpoint.endswith("/close"):
+                        result = LAUNCHER.close(data["session_id"])
+                    else:
+                        result = LAUNCHER.run(data["session_id"], data["skill_id"])
+                except SkillSessionError as exc:
+                    reason = str(exc)
+                    code = (HTTPStatus.GONE if reason == "session_expired" else
+                            HTTPStatus.TOO_MANY_REQUESTS if reason == "session_capacity_limit" else HTTPStatus.BAD_REQUEST)
+                    return self._json({"error": reason, "reason": reason}, code)
+                return self._json(result)
             if endpoint == "/api/network":
                 if type(data) is not dict or data:
                     raise ValueError("Network API chỉ nhận JSON object rỗng; cấu hình lấy từ server")

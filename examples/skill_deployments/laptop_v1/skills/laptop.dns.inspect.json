@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "laptop.dns.inspect",
+  "version": "1.0.0",
+  "name": "Phân giải DNS từ laptop",
+  "description": "Local laptop READ action; measurement completion is not causal RCA.",
+  "requires": {},
+  "produces": {
+    "laptop.dns": "1.0.0",
+    "laptop.route": "1.0.0",
+    "client.identity": "3.0.0"
+  },
+  "completion_ports": {
+    "laptop.route": "1.0.0",
+    "laptop.dns": "1.0.0"
+  },
+  "function_refs": {
+    "laptop.dns": "1.0.0",
+    "laptop.route": "1.0.0",
+    "clients.resolve": "5.0.0"
+  },
+  "tags": [
+    "laptop",
+    "live",
+    "read"
+  ]
+}

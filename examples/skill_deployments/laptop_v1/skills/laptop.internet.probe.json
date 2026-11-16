@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "laptop.internet.probe",
+  "version": "1.0.0",
+  "name": "Internal public-IP probe",
+  "description": "Dependency/optional measurement only; not a design catalog capability.",
+  "requires": {
+    "client.identity": "3.0.0",
+    "laptop.route": "1.0.0"
+  },
+  "produces": {
+    "laptop.internet_probe": "1.0.0"
+  },
+  "completion_ports": {
+    "laptop.internet_probe": "1.0.0"
+  },
+  "function_refs": {
+    "laptop.internet_probe": "1.0.0"
+  },
+  "tags": [
+    "internal",
+    "read",
+    "laptop"
+  ]
+}

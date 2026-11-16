@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.client_association",
+  "version": "2.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "associated": {
+        "type": "boolean"
+      },
+      "access_point_id": {
+        "type": "string",
+        "maxLength": 128
+      }
+    },
+    "required": [
+      "associated",
+      "access_point_id"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "linux_client/",
+  "untrusted_text": true
+}

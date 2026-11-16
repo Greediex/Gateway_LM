@@ -336,3 +336,195 @@ document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',(
 $('menuBtn').addEventListener('click',()=>{$('sidebar').classList.toggle('open');$('inspector').classList.remove('open')});$('traceBtn').addEventListener('click',()=>{$('inspector').classList.toggle('open');$('sidebar').classList.remove('open')});
 $('chatScroll').addEventListener('click',()=>{$('sidebar').classList.remove('open');$('inspector').classList.remove('open')});
 loadConfig();updateInput();
+
+// The launcher owns its mode, session and evidence independently of diagnostic chat.
+(() => {
+  const ui = id => document.getElementById(id);
+  const launcher = {mode:'live', rows:[], selected:null, session:null, busy:false,
+    generation:0, resultDeadline:null, sessionDeadline:null, timer:null, history:[]};
+  const runnable = row => ['READY','DEGRADED'].includes(row?.availability);
+  const describe = value => typeof value === 'string' ? value : JSON.stringify(value ?? null, null, 2);
+  const scope = row => describe(row.runtime_scope ?? 'chưa xác minh');
+  function status(message) { ui('skillSessionState').textContent = message; }
+  function controls() {
+    ui('skillInitialize').disabled = launcher.busy;
+    const row = launcher.rows.find(item => item.skill_id === launcher.selected);
+    ui('skillRun').disabled = launcher.busy || !launcher.session || !runnable(row);
+    ui('skillSelection').textContent = row
+      ? `${row.skill_id} · ${row.kind === 'laptop' ? 'Action laptop riêng' : 'Skill thiết kế'} · ${row.availability} · Scope: ${scope(row)} · ${row.reason || 'Không có lý do bổ sung.'}`
+      : 'Chọn một Skill để xem phạm vi và lý do hỗ trợ.';
+  }
+  function renderCatalog() {
+    const query = ui('skillSearch').value.trim().toLocaleLowerCase();
+    const domain = ui('skillDomain').value;
+    const supported = ui('skillSupported').value === 'supported';
+    const rows = launcher.rows.filter(row => (!domain || row.domain === domain) &&
+      (!supported || runnable(row)) && [row.skill_id,row.name,row.reason].some(value => normalize(value).toLocaleLowerCase().includes(query)));
+    const box = ui('skillCatalog'); box.replaceChildren();
+    for (const kind of ['design','laptop']) {
+      const group = rows.filter(row => row.kind === kind);
+      if (!group.length) continue;
+      box.appendChild(n('h3','skill-group-title',kind === 'laptop' ? 'Action laptop · namespace riêng, không tính hoàn thành 120 thiết kế' : 'Danh mục 120 Skill thiết kế'));
+      for (const row of group) {
+        const button = n('button', 'skill-row'); button.type = 'button';
+        button.setAttribute('aria-pressed',String(launcher.selected === row.skill_id));
+        button.appendChild(n('strong','',`${row.skill_id} · ${row.name}`));
+        button.appendChild(n('span',runnable(row) ? 'skill-ready' : 'network-warning',`${row.availability} · ${row.domain}`));
+        button.appendChild(n('small','',`${row.reason || 'Chưa có lý do bổ sung.'} · Scope: ${scope(row)}`));
+        button.addEventListener('click',() => { launcher.selected = row.skill_id; renderCatalog(); });
+        box.appendChild(button);
+      }
+    }
+    if (!rows.length) box.appendChild(n('p','network-note','Không có Skill phù hợp bộ lọc.'));
+    controls();
+  }
+  function acceptCatalog(catalog) {
+    if (catalog.mode !== launcher.mode || !Array.isArray(catalog.rows)) throw new Error('Danh mục trả về sai nguồn hoặc sai định dạng.');
+    launcher.rows = catalog.rows;
+    const currentDomain = ui('skillDomain').value;
+    ui('skillDomain').replaceChildren();
+    const all = n('option','','Tất cả domain'); all.value = ''; ui('skillDomain').appendChild(all);
+    for (const domain of [...new Set(launcher.rows.map(row => row.domain))].sort()) {
+      const option = n('option','',domain); option.value = domain; ui('skillDomain').appendChild(option);
+    }
+    if (launcher.rows.some(row => row.domain === currentDomain)) ui('skillDomain').value = currentDomain;
+    const counts = Object.entries(catalog.counts || {}).map(([key,value]) => `${key}: ${describe(value)}`).join(' · ');
+    ui('skillCatalogCounts').textContent = `${catalog.design_total} Skill thiết kế + ${catalog.native_total} action laptop riêng. ${counts}`;
+    renderCatalog();
+  }
+  async function request(path, body) {
+    const response = await fetch(path, body === undefined ? {} : {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    let data;
+    try { data = await response.json(); } catch (_) { throw new Error(`HTTP ${response.status}: phản hồi không phải JSON.`); }
+    if (!response.ok) {
+      const error = new Error(describe(data.reason || data.error || data.detail || `HTTP ${response.status}`));
+      error.sessionExpired = [404,409,410].includes(response.status) || /session.*(expir|invalid|unknown)|reinit/i.test(describe(data));
+      throw error;
+    }
+    return data;
+  }
+  function closeSession(sessionId) {
+    if (!sessionId) return;
+    // Best-effort resource cleanup; never re-adopt a session if its close fails.
+    request('/api/skills/close',{session_id:sessionId}).catch(() => {});
+  }
+  // Cap a monotonic countdown by both the supplied TTL and the absolute expiry.
+  function deadline(ttl, absolute) {
+    let remaining = typeof ttl === 'number' && Number.isFinite(ttl) ? Math.max(0, ttl * 1000) : 0;
+    if (absolute !== undefined && absolute !== null) {
+      const date = new Date(absolute).getTime();
+      remaining = Number.isFinite(date) ? Math.min(remaining, Math.max(0,date - Date.now())) : 0;
+    }
+    return performance.now() + remaining;
+  }
+  function clearResult(message) {
+    launcher.resultDeadline = null;
+    ui('skillResult').replaceChildren();
+    if (message) ui('skillResult').appendChild(n('p','network-warning',message));
+  }
+  function expire() {
+    if (launcher.session && performance.now() >= launcher.sessionDeadline) {
+      launcher.session = null; launcher.sessionDeadline = null;
+      clearResult('Phiên hết hạn · đã xóa số đo. Khởi tạo phiên để chạy tiếp.');
+      status('SESSION EXPIRED · Cần khởi tạo lại.'); controls();
+    }
+    if (launcher.resultDeadline !== null && performance.now() >= launcher.resultDeadline) {
+      clearResult('STALE · Đã xóa các fact hết TTL. Chạy Skill để đo lại; lịch sử chỉ lưu tham chiếu lượt chạy.');
+    }
+  }
+  function renderHistory() {
+    ui('skillHistoryCount').textContent = launcher.history.length;
+    ui('skillHistory').replaceChildren();
+    for (const item of launcher.history) ui('skillHistory').appendChild(n('li','',item));
+  }
+  function renderResult(result) {
+    const box = ui('skillResult'); box.replaceChildren();
+    box.appendChild(n('h3','',`${result.skill_id} · ${result.status}`));
+    box.appendChild(n('p','network-warning',result.synthetic_only ? 'REPLAY · CHỈ DỮ LIỆU MÔ PHỎNG · không phải số đo laptop/router thật.' : 'LIVE · phép đo Linux laptop thật, theo scope của từng fact.'));
+    box.appendChild(n('p','',result.summary || result.reason || 'Chưa có kết luận.'));
+    if (result.reason && result.reason !== result.summary) box.appendChild(n('p','network-note',result.reason));
+    box.appendChild(n('p','network-note',`Nguồn: ${result.mode} · Calls lượt này / tổng: ${result.calls_this_run} / ${result.calls_total} · Tái sử dụng: ${(result.reused_ports || []).join(', ') || 'không'} · Evidence: ${(result.evidence_ids || []).join(', ') || 'không'}`));
+    const snapshot = result.snapshot || {};
+    launcher.resultDeadline = Object.keys(snapshot.facts || {}).length ? deadline(snapshot.expires_in_s,snapshot.expires_at) : null;
+    for (const [port,fact] of Object.entries(snapshot.facts || {})) {
+      launcher.resultDeadline = Math.min(launcher.resultDeadline,deadline(fact.expires_in_s));
+      const detail = n('details','network-fact'); detail.appendChild(n('summary','',port));
+      detail.appendChild(n('pre','skill-fact',describe({value:fact.value,source:fact.source,target:fact.target,scope:fact.scope,
+        observed_at:fact.observed_at,evidence_id:fact.evidence_id,expires_in_s:fact.expires_in_s})));
+      box.appendChild(detail);
+    }
+    box.appendChild(n('p','network-note',`Snapshot TTL: ${snapshot.expires_in_s ?? 0}s · Hết hạn: ${snapshot.expires_at || 'chưa xác minh'}`));
+    const missing = [...new Set([...(result.missing_ports || []),...(snapshot.missing_ports || [])])];
+    if (missing.length) box.appendChild(n('p','network-warning',`Chưa có port: ${missing.join(', ')}`));
+    for (const limitation of result.limitations || []) box.appendChild(n('p','network-warning',describe(limitation)));
+    if (result.steps?.length) {
+      const steps = n('details','network-fact'); steps.appendChild(n('summary','','Các bước thực thi'));
+      steps.appendChild(n('pre','skill-fact',describe(result.steps))); box.appendChild(steps);
+    }
+    launcher.history.unshift(`${new Date().toLocaleTimeString('vi-VN')} · ${result.mode} · ${result.skill_id} · ${result.status} · Calls ${result.calls_this_run}/${result.calls_total} · Evidence ${(result.evidence_ids || []).join(', ') || 'không'} · tham chiếu lịch sử, không khẳng định số đo còn mới`);
+    launcher.history = launcher.history.slice(0,30); renderHistory(); expire();
+  }
+  async function loadCatalog() {
+    const generation = launcher.generation;
+    try {
+      const catalog = await request(`/api/skills?mode=${encodeURIComponent(launcher.mode)}`);
+      if (generation !== launcher.generation) return;
+      acceptCatalog(catalog); status('Chưa khởi tạo phiên. Danh mục không chạy phép đo.');
+    } catch (error) { if (generation === launcher.generation) status(`Không tải được danh mục: ${error.message}`); }
+  }
+  function resetMode() {
+    closeSession(launcher.session);
+    launcher.generation++; launcher.mode = ui('skillSource').value;
+    launcher.session = null; launcher.sessionDeadline = null; launcher.rows = []; launcher.selected = null; launcher.busy = false;
+    launcher.history = []; clearResult(); renderHistory(); renderCatalog();
+    ui('skillCatalogCounts').textContent = '';
+    ui('skillSourceNotice').textContent = launcher.mode === 'replay'
+      ? 'REPLAY FIRST BATCH · chỉ mô phỏng B02/B03/B05; không chứng minh laptop hoặc router thật.'
+      : 'LIVE · phép đo thật trên Linux laptop. SK01/A08 chỉ có scope local; action laptop riêng không hoàn thành 120 Skill thiết kế.';
+    status('Đang tải danh mục; chưa có phiên, chưa đo.'); loadCatalog();
+  }
+  ui('skillInitialize').addEventListener('click',async () => {
+    const generation = ++launcher.generation;
+    closeSession(launcher.session);
+    let createdSession = null;
+    launcher.busy = true; launcher.session = null; launcher.sessionDeadline = null;
+    launcher.history = []; clearResult(); renderHistory(); controls(); status('Đang khởi tạo phiên READ; chưa chạy Skill.');
+    try {
+      const result = await request('/api/skills/session',{mode:launcher.mode});
+      createdSession = result.session_id;
+      if (generation !== launcher.generation) { closeSession(createdSession); return; }
+      if (result.mode !== launcher.mode || !result.session_id) throw new Error('Phiên trả về sai nguồn hoặc thiếu ID.');
+      acceptCatalog(result.catalog);
+      launcher.session = result.session_id; launcher.sessionDeadline = deadline(result.expires_in_s);
+      status(`Phiên ${result.mode} đã khởi tạo · TTL ${result.expires_in_s}s. Chọn Skill rồi bấm Chạy.`); expire();
+    } catch (error) {
+      closeSession(createdSession);
+      if (generation === launcher.generation) status(`Không khởi tạo được phiên: ${error.message}`);
+    }
+    finally { if (generation === launcher.generation) { launcher.busy = false; controls(); } }
+  });
+  ui('skillRun').addEventListener('click',async () => {
+    expire();
+    const row = launcher.rows.find(item => item.skill_id === launcher.selected);
+    if (launcher.busy || !launcher.session || !runnable(row)) return;
+    const generation = launcher.generation, session = launcher.session, skillId = row.skill_id;
+    launcher.busy = true; controls(); clearResult(); status(`Đang chạy ${skillId} · ${launcher.mode} · Scope: ${scope(row)}`);
+    try {
+      const result = await request('/api/skills/run',{session_id:session,skill_id:skillId});
+      if (generation !== launcher.generation || session !== launcher.session) return;
+      if (result.mode !== launcher.mode || result.session_id !== session || result.skill_id !== skillId || result.synthetic_only !== (launcher.mode === 'replay')) throw new Error('Kết quả sai phiên, Skill hoặc nguồn; không hiển thị evidence.');
+      status(`${skillId} · ${result.status} · ${launcher.mode}.`); renderResult(result);
+    } catch (error) {
+      if (generation !== launcher.generation) return;
+      clearResult();
+      if (error.sessionExpired) { launcher.session = null; launcher.sessionDeadline = null; }
+      status(`Lỗi: ${error.message}${error.sessionExpired ? ' · Cần khởi tạo lại phiên.' : ''}`);
+    } finally { if (generation === launcher.generation) { launcher.busy = false; expire(); controls(); } }
+  });
+  ui('skillSource').addEventListener('change',resetMode);
+  for (const id of ['skillSearch','skillDomain','skillSupported']) ui(id).addEventListener(id === 'skillSearch' ? 'input' : 'change',renderCatalog);
+  document.addEventListener('visibilitychange',expire);
+  window.addEventListener('focus',expire);
+  launcher.timer = setInterval(expire,1000);
+  loadCatalog();
+})();

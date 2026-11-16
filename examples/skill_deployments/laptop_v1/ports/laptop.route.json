@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "laptop.route",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "has_route": {
+        "type": "boolean"
+      },
+      "interface": {
+        "type": "string",
+        "maxLength": 15
+      },
+      "source_ipv4": {
+        "type": "string",
+        "maxLength": 15
+      },
+      "gateway": {
+        "type": "string",
+        "maxLength": 15
+      },
+      "resolver_fingerprint": {
+        "type": "string",
+        "maxLength": 64
+      }
+    },
+    "required": [
+      "has_route",
+      "interface",
+      "source_ipv4",
+      "gateway",
+      "resolver_fingerprint"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "linux_client/",
+  "untrusted_text": false
+}

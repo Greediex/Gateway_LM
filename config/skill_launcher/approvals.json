@@ -1,0 +1,18 @@
+{
+  "format": "gateway-lm.skill-launcher-approval/v1",
+  "live": {
+    "registry_digest": "f956ee8831d1b4f11c65a3a2569f5b469814205ab49dbcd3c88d482d92e48ffd",
+    "actions_digest": "808660094e8b6bb7d41165fee251e8e356a74734f73f8a7f210d63e5aca24f16",
+    "backend_id": "linux.laptop.skills",
+    "backend_revision": "2.0.0",
+    "source": "linux_client/skill_laptop_v1"
+  },
+  "replay": {
+    "registry_digest": "60c65d844e4b620eeb8393a5a8b78224b65e3f88a27e558de9f95b716fc971a8",
+    "actions_digest": "aae44b5fde6d35dba16542afeb862de3cd64e044a719a0579e9d0b3773d9faf7",
+    "backend_id": "expansion.synthetic_replay",
+    "backend_revision": "0.2.0",
+    "source": "synthetic_replay/skill_expansion_v2",
+    "cat01_profile_digest": "9b3d15ed7dc9d3e1e55f439397e9793982d6d1a276d3309016cb661ddce94862"
+  }
+}

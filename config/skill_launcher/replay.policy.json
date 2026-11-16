@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.2.0",
+  "allowed_probe_ids": [
+    "probe.expansion.airtime_usage",
+    "probe.expansion.radio_health",
+    "probe.expansion.ssid_config"
+  ]
+}

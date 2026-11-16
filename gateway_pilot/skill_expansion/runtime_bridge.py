@@ -26,7 +26,7 @@ class RuntimeSkillBridge:
 
     @staticmethod
     def _runtime_id(sid: str) -> str:
-        return sid if sid.startswith('SK') else 'gateway.'+sid.lower()
+        return sid if sid.startswith('SK') or '.' in sid else 'gateway.'+sid.lower()
 
     def plan(self, sid: str, *, snapshot=None) -> SkillReadPlan:
         if sid not in self.catalog.skills:
@@ -68,9 +68,14 @@ class RuntimeSkillBridge:
         goals.update(completion)
         return SkillReadPlan(sid,rid,tuple(sorted(functions)),tuple(sorted(goals)))
 
-    def execute(self, sid: str, *, snapshot, max_calls: int=12):
+    def execute(self, sid: str, *, snapshot, max_calls: int=12, session=None):
         """Always enters the existing `ReadRuntime.execute` -> GraphRunner path."""
         plan=self.plan(sid,snapshot=snapshot)
         if type(max_calls) is not int or not 1<=max_calls<=64:
             raise ValueError('invalid_call_budget')
+        if session is not None:
+            from ..command_catalog.session import ReadSession
+            if type(session) is not ReadSession or session.runtime is not self.runtime:
+                raise SkillNotReady('runtime_session_mismatch')
+            return session.execute(plan.goals, request=f'Approved skill READ: {plan.runtime_skill_id}')
         return self.runtime.execute(plan.goals, request=f'Approved skill READ: {plan.runtime_skill_id}',max_calls=max_calls)

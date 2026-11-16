@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "selection",
+  "functions": {
+    "expansion.airtime_usage": "1.0.0",
+    "expansion.radio_health": "1.0.0",
+    "expansion.ssid_config": "1.0.0"
+  },
+  "ports": {
+    "expansion.airtime_usage": "1.0.0",
+    "expansion.radio_health": "1.0.0",
+    "expansion.ssid_config": "1.0.0"
+  }
+}

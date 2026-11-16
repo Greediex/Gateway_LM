@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "laptop.network.inspect",
+  "version": "1.0.0",
+  "name": "Tổng quan mạng laptop",
+  "description": "Local laptop READ action; measurement completion is not causal RCA.",
+  "requires": {},
+  "produces": {
+    "laptop.route": "1.0.0",
+    "client.ipv4": "3.0.0",
+    "laptop.wifi": "1.0.0",
+    "client.identity": "3.0.0"
+  },
+  "completion_ports": {
+    "client.ipv4": "3.0.0",
+    "laptop.route": "1.0.0",
+    "laptop.wifi": "1.0.0"
+  },
+  "function_refs": {
+    "laptop.route": "1.0.0",
+    "client.ipv4": "5.0.0",
+    "laptop.wifi": "1.0.0",
+    "clients.resolve": "5.0.0"
+  },
+  "tags": [
+    "laptop",
+    "live",
+    "read"
+  ]
+}

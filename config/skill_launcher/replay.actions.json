@@ -1,0 +1,54 @@
+{
+  "format": "gateway-lm.skill-actions/v1",
+  "mode": "replay",
+  "actions": [
+    {
+      "skill_id": "B02",
+      "runtime_skill_id": "gateway.b02",
+      "version": "1.0.0",
+      "name": "Trạng thái radio và SSID",
+      "domain": "B",
+      "kind": "design",
+      "scope": "gateway",
+      "required_ports": {
+        "expansion.radio_health": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic fixture only; no hardware acceptance."
+      ]
+    },
+    {
+      "skill_id": "B03",
+      "runtime_skill_id": "gateway.b03",
+      "version": "1.0.0",
+      "name": "Kiểm tra cấu hình SSID",
+      "domain": "B",
+      "kind": "design",
+      "scope": "gateway",
+      "required_ports": {
+        "expansion.ssid_config": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic fixture only; no hardware acceptance."
+      ]
+    },
+    {
+      "skill_id": "B05",
+      "runtime_skill_id": "gateway.b05",
+      "version": "1.0.0",
+      "name": "Theo dõi airtime và sử dụng kênh",
+      "domain": "B",
+      "kind": "design",
+      "scope": "gateway",
+      "required_ports": {
+        "expansion.airtime_usage": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic fixture only; no hardware acceptance."
+      ]
+    }
+  ]
+}

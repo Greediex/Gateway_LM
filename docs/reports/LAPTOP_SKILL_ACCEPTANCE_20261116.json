@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-16",
+  "live": [
+    {
+      "skill_id": "SK01",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 1,
+      "calls_total": 1,
+      "missing_ports": [],
+      "reused_ports": []
+    },
+    {
+      "skill_id": "A08",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 1,
+      "calls_total": 2,
+      "missing_ports": [],
+      "reused_ports": []
+    },
+    {
+      "skill_id": "laptop.network.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 6,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": []
+    },
+    {
+      "skill_id": "laptop.wifi.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 0,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": [
+        "laptop.route",
+        "laptop.wifi"
+      ]
+    },
+    {
+      "skill_id": "laptop.ipv4.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 0,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": [
+        "client.ipv4"
+      ]
+    },
+    {
+      "skill_id": "laptop.route.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 0,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": [
+        "laptop.route"
+      ]
+    },
+    {
+      "skill_id": "laptop.gateway.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 0,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": [
+        "laptop.gateway_probe",
+        "laptop.route"
+      ]
+    },
+    {
+      "skill_id": "laptop.dns.inspect",
+      "status": "MEASURED",
+      "synthetic_only": false,
+      "calls_this_run": 0,
+      "calls_total": 8,
+      "missing_ports": [],
+      "reused_ports": [
+        "laptop.dns",
+        "laptop.route"
+      ]
+    }
+  ],
+  "replay": [
+    {
+      "skill_id": "B02",
+      "status": "MEASURED",
+      "synthetic_only": true,
+      "calls_this_run": 1,
+      "calls_total": 1,
+      "missing_ports": [],
+      "reused_ports": []
+    },
+    {
+      "skill_id": "B03",
+      "status": "MEASURED",
+      "synthetic_only": true,
+      "calls_this_run": 1,
+      "calls_total": 2,
+      "missing_ports": [],
+      "reused_ports": []
+    },
+    {
+      "skill_id": "B05",
+      "status": "MEASURED",
+      "synthetic_only": true,
+      "calls_this_run": 1,
+      "calls_total": 3,
+      "missing_ports": [],
+      "reused_ports": []
+    }
+  ],
+  "privacy": "Only counts/status recorded; no network identifiers or captures",
+  "live_availability": {
+    "READY": 8,
+    "UNAVAILABLE": 118
+  },
+  "replay_availability": {
+    "UNAVAILABLE": 117,
+    "READY": 3
+  }
+}

@@ -61,6 +61,23 @@
       </header>
       <div class="chat-scroll" id="chatScroll">
         <div class="chat-content">
+          <section class="skill-launcher" id="skillLauncher" aria-labelledby="skillLauncherTitle">
+            <div class="network-heading"><div><div class="eyebrow">SKILL CATALOG · CORE READ SESSION</div><h2 id="skillLauncherTitle">Chọn Skill trên laptop</h2></div><button class="light-btn" id="skillInitialize" type="button">Khởi tạo phiên</button></div>
+            <p class="network-note">120 Skill thiết kế và 6 action laptop riêng biệt. Danh mục không chạy phép đo; chỉ đo khi bấm Chạy Skill. Cấu hình chat bên trái không điều khiển phiên này.</p>
+            <div class="skill-filters">
+              <label>Nguồn phiên<select id="skillSource"><option value="live">Live · Linux laptop thật</option><option value="replay">Replay · first batch mô phỏng</option></select></label>
+              <label>Tìm Skill<input id="skillSearch" type="search" placeholder="ID, tên hoặc lý do" maxlength="200"></label>
+              <label>Domain<select id="skillDomain"><option value="">Tất cả domain</option></select></label>
+              <label>Hiển thị<select id="skillSupported"><option value="all">Tất cả</option><option value="supported">Có thể chạy trong phiên</option></select></label>
+            </div>
+            <p id="skillSourceNotice" class="network-warning">Live · phép đo thật trên Linux laptop; không thay số đo thiếu bằng replay.</p>
+            <p id="skillCatalogCounts" class="network-note"></p>
+            <p id="skillSessionState" class="network-state" role="status" aria-live="polite">Đang tải danh mục; chưa có phiên, chưa đo.</p>
+            <div class="skill-catalog" id="skillCatalog" aria-label="Danh mục Skill"></div>
+            <div class="skill-run-bar"><p id="skillSelection" class="network-note">Chọn một Skill để xem phạm vi và lý do hỗ trợ.</p><button class="light-btn" id="skillRun" type="button" disabled>Chạy Skill đã chọn</button></div>
+            <div id="skillResult" aria-live="polite"></div>
+            <details class="skill-history"><summary>Lịch sử phiên hiện tại · <span id="skillHistoryCount">0</span> lượt</summary><ol id="skillHistory"></ol></details>
+          </section>
           <section class="network-overview" id="networkOverview" aria-labelledby="networkTitle" hidden>
             <div class="network-heading"><div><div class="eyebrow">LINUX · PHÉP ĐO CHỈ ĐỌC</div><h2 id="networkTitle">Overview mạng laptop</h2></div><button class="light-btn" id="networkRefresh" type="button">Đo / Làm mới</button></div>
             <p class="network-state" id="networkState" role="status">Chưa đo. Bấm Làm mới để thu bằng chứng.</p>

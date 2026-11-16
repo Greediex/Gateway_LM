@@ -32,6 +32,11 @@ Có thể dùng `--port 8766` nếu cổng mặc định đang bận. Chọn đ�
 
 ## Test ngay trên UI
 
+Ở **Chọn Skill trên laptop**: bấm **Khởi tạo phiên** → lọc **Có thể chạy trong phiên** → chọn Skill → **Chạy Skill đã chọn**. Màn hình có 120 hàng thiết kế cùng lý do availability và 6 action laptop riêng. Profile live hiện hỗ trợ **SK01/A08 local + 6 action laptop**, không đồng nghĩa hoàn thành 120 Skill. Chọn nguồn riêng **Replay first batch** để thử B02/B03/B05 bằng fixture synthetic.
+
+Phiên tối đa 5 phút, 24 tool calls, 64 plans; tái sử dụng evidence còn hạn qua cùng Core. Đổi mạng/context hoặc mất capability yêu cầu khởi tạo lại. Lịch sử trên UI chỉ là tham chiếu trong phiên, chưa lưu bền. [Hướng dẫn launcher và giới hạn](docs/LAPTOP_SKILL_LAUNCHER.md).
+
+
 1. Giữ nguồn **Đo thật từ Linux**. Bấm **Làm mới** ở Tổng quan laptop để chạy các phép đo.
 2. Xem Wi-Fi association, signal **%**, channel/frequency và tốc độ AP quảng bá khi đọc được; mở từng mục để xem evidence ID, nguồn và thời gian.
 3. Xem interface route đang dùng. Nếu Wi-Fi và Ethernet/VPN cùng tồn tại, probe qua Ethernet/VPN **không** chứng minh Internet qua Wi-Fi.
@@ -72,6 +77,15 @@ Windows giữ route/ping/DNS cũ; dashboard Wi-Fi FND-07 dành cho Linux, không
 .venv-graph/bin/python -m gateway_pilot.skill_expansion.cli validate
 .venv-graph/bin/python -m gateway_pilot.skill_expansion.cli search 'wifi không có internet' --include-proposed
 .venv-graph/bin/python -m scripts.core_replay_smoke_v2 --synthetic-only --all
+```
+
+CLI cùng luồng Core:
+
+```bash
+python -m scripts.skills list --mode live
+python -m scripts.skills run laptop.network.inspect --mode live
+python -m scripts.skills run A08 --mode live
+python -m scripts.skills run B02 --mode replay
 ```
 
 ## Kiểm thử và kiến trúc

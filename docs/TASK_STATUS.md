@@ -79,3 +79,7 @@ FND-07 **DONE (Linux laptop demo)**: [guide](LAPTOP_NETWORK_V2.md), 7 registered
 **120-Skill expansion addon — integrated, metadata/synthetic only:** [guide](skill_expansion/README.md), 120 design Skills (8 legacy references + 112 proposals), 206 edge records (203 unapproved proposals) và 72 PROPOSED READ contracts. Opt-in preview/audit + existing Core replay bridge; no automatic production graph merge/backend approval. [Acceptance](reports/SKILL_EXPANSION_INTEGRATION_20261113.md). NEXT roadmap vẫn pending.
 
 CAT-01 **DONE (metadata profile/mapping)**: [guide](skill_expansion/CAT01_PROFILES.md), full 120 mapping audit, pinned B02/B03/B05 gateway synthetic selection, reproducible official-builder artifact, explicit client/composite gaps and 203 unapplied graph proposals. [Acceptance](reports/CAT01_PROFILES_20261116.md). Runtime/session and launcher remain CAT-02/CAT-03.
+
+## Laptop-first launcher — 2026-11-16
+
+CAT-02/CAT-03: bounded shared READ sessions, separately pinned live/replay deployments and CLI/API/Web selection implemented. Live profile has 8 Functions, SK01/A08 local mappings and 6 namespaced laptop actions; 118 design Skills remain unavailable. Replay first batch B02/B03/B05 remains synthetic. Source 72 proposals and 203 unreviewed relations remain unchanged. See [launcher](LAPTOP_SKILL_LAUNCHER.md). This does not complete NEXT-01–12 or firmware acceptance.

@@ -143,6 +143,11 @@ class ReadRuntime:
             self._leases.pop(fid, None)
             raise
 
+    def open_session(self, **options):
+        """Open a bounded operator-owned shared Core READ case."""
+        from .session import ReadSession
+        return ReadSession(self, **options)
+
     def execute(self, goals, *, request="READ selected catalog ports", max_calls=12):
         """One case, standard compiler/Runner/verifier; no workflow-specific path."""
         case, state = self.new_case(request)

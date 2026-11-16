@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b03",
+  "version": "1.0.0",
+  "name": "Kiểm tra cấu hình SSID",
+  "description": "Design proposal only: Kiểm tra cấu hình SSID",
+  "requires": {},
+  "produces": {
+    "expansion.ssid_config": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.ssid_config": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.ssid_config": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}
