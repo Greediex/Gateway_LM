@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h03",
+  "version": "1.0.0",
+  "name": "Theo dõi dung lượng và wear lưu trữ",
+  "description": "Design proposal only: Theo dõi dung lượng và wear lưu trữ",
+  "requires": {},
+  "produces": {
+    "expansion.storage_health": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.storage_health": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.storage_health": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.d03",
+  "version": "1.0.0",
+  "name": "Theo dõi vòng đời DHCP lease",
+  "description": "Design proposal only: Theo dõi vòng đời DHCP lease",
+  "requires": {},
+  "produces": {
+    "expansion.dhcp_lease_events": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.dhcp_lease_events": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.dhcp_lease_events": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

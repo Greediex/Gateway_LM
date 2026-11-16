@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b08",
+  "version": "1.0.0",
+  "name": "Chẩn đoán mesh/backhaul",
+  "description": "Design proposal only: Chẩn đoán mesh/backhaul",
+  "requires": {},
+  "produces": {
+    "expansion.mesh_backhaul": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.mesh_backhaul": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.mesh_backhaul": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

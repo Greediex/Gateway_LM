@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b04",
+  "version": "1.0.0",
+  "name": "Đánh giá RSSI/SNR/chất lượng liên kết",
+  "description": "Design proposal only: Đánh giá RSSI/SNR/chất lượng liên kết",
+  "requires": {},
+  "produces": {
+    "expansion.wireless_signal": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wireless_signal": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wireless_signal": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

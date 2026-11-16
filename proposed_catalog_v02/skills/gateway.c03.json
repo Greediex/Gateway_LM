@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c03",
+  "version": "1.0.0",
+  "name": "Bảng MAC/FDB của switch",
+  "description": "Design proposal only: Bảng MAC/FDB của switch",
+  "requires": {},
+  "produces": {
+    "expansion.switch_fdb": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.switch_fdb": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.switch_fdb": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

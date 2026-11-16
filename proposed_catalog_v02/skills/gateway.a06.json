@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.a06",
+  "version": "1.0.0",
+  "name": "Đối chiếu IP–MAC–hostname",
+  "description": "Design proposal only: Đối chiếu IP–MAC–hostname",
+  "requires": {},
+  "produces": {
+    "expansion.identity_consistency": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.identity_consistency": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.identity_consistency": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

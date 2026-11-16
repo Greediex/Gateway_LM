@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.j02",
+  "version": "1.0.0",
+  "name": "Xác minh định tuyến qua VPN",
+  "description": "Design proposal only: Xác minh định tuyến qua VPN",
+  "requires": {},
+  "produces": {
+    "expansion.vpn_routes": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.vpn_routes": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.vpn_routes": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

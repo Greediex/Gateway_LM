@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.rf_environment",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "channel": {
+        "type": "integer"
+      },
+      "neighbor_bss_count": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "channel",
+      "neighbor_bss_count"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

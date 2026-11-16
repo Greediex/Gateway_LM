@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e02",
+  "version": "1.0.0",
+  "name": "Theo dõi vật lý/link WAN",
+  "description": "Design proposal only: Theo dõi vật lý/link WAN",
+  "requires": {},
+  "produces": {
+    "expansion.wan_link": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wan_link": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wan_link": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

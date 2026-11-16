@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c02",
+  "version": "1.0.0",
+  "name": "Lỗi RX/TX và tốc độ liên kết",
+  "description": "Design proposal only: Lỗi RX/TX và tốc độ liên kết",
+  "requires": {},
+  "produces": {
+    "expansion.ethernet_counters": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.ethernet_counters": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.ethernet_counters": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

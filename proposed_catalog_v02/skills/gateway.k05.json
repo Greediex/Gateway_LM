@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.k05",
+  "version": "1.0.0",
+  "name": "Dựng timeline sự cố",
+  "description": "Design proposal only: Dựng timeline sự cố",
+  "requires": {},
+  "produces": {
+    "expansion.incident_events": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.incident_events": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.incident_events": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

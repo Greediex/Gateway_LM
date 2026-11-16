@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.f06",
+  "version": "1.0.0",
+  "name": "Kiểm tra trạng thái DNSSEC",
+  "description": "Design proposal only: Kiểm tra trạng thái DNSSEC",
+  "requires": {},
+  "produces": {
+    "expansion.dnssec": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.dnssec": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.dnssec": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

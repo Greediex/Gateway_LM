@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c01",
+  "version": "1.0.0",
+  "name": "Trạng thái cổng Ethernet",
+  "description": "Design proposal only: Trạng thái cổng Ethernet",
+  "requires": {},
+  "produces": {
+    "expansion.ethernet_ports": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.ethernet_ports": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.ethernet_ports": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

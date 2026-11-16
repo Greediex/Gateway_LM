@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.temperature",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "celsius": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "celsius"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

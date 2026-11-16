@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.device_inventory",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "devices_count": {
+        "type": "integer"
+      },
+      "segment": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "devices_count",
+      "segment"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

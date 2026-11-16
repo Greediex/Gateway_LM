@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.g04",
+  "version": "1.0.0",
+  "name": "Thống kê lưu lượng từng interface",
+  "description": "Design proposal only: Thống kê lưu lượng từng interface",
+  "requires": {},
+  "produces": {
+    "expansion.traffic_counters": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.traffic_counters": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.traffic_counters": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

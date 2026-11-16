@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.d02",
+  "version": "1.0.0",
+  "name": "Theo dõi vùng cấp phát DHCP",
+  "description": "Design proposal only: Theo dõi vùng cấp phát DHCP",
+  "requires": {},
+  "produces": {
+    "expansion.dhcp_pool": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.dhcp_pool": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.dhcp_pool": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

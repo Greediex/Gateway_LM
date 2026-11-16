@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.g05",
+  "version": "1.0.0",
+  "name": "Xác định điểm tiêu thụ băng thông",
+  "description": "Design proposal only: Xác định điểm tiêu thụ băng thông",
+  "requires": {},
+  "produces": {
+    "expansion.bandwidth_usage": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.bandwidth_usage": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.bandwidth_usage": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

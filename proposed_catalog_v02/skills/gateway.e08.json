@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e08",
+  "version": "1.0.0",
+  "name": "Kiểm chứng reachability thượng nguồn",
+  "description": "Design proposal only: Kiểm chứng reachability thượng nguồn",
+  "requires": {},
+  "produces": {
+    "expansion.upstream_probe": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.upstream_probe": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.upstream_probe": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

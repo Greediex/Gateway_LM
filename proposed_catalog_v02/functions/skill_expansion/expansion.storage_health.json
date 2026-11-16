@@ -1,0 +1,46 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "function",
+  "function_id": "expansion.storage_health",
+  "version": "1.0.0",
+  "description": "Synthetic READ observation for Theo dõi dung lượng và wear lưu trữ. Not a live router function.",
+  "domain": "skill_expansion",
+  "skill_refs": [
+    {
+      "skill_id": "gateway.h03",
+      "version": "1.0.0"
+    }
+  ],
+  "lifecycle": "PROPOSED",
+  "inputs": {},
+  "outputs": {
+    "expansion.storage_health": "1.0.0"
+  },
+  "scope": "gateway",
+  "risk": "READ_ONLY",
+  "permission": "system.read",
+  "arguments_schema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false,
+    "required": []
+  },
+  "argument_sources": {},
+  "preconditions": [],
+  "order_after": [],
+  "effects": [],
+  "timeout_ms": 2000,
+  "retry": {
+    "max_attempts": 1
+  },
+  "ttl_seconds": 30,
+  "cost": 1.0,
+  "latency_ms": 0.0,
+  "capability_probe": "probe.expansion.storage_health",
+  "verifier": "schema_scope_provenance_freshness/v3",
+  "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+  "tags": [
+    "synthetic_replay",
+    "proposal"
+  ]
+}

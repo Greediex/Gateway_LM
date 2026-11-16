@@ -1,0 +1,14 @@
+{
+  "branch": "v2",
+  "source_workbook": "GatewayLM_120_Skills_Graph_Proposal.xlsx",
+  "source_rows": 207,
+  "unique_relations": 206,
+  "duplicates_removed": [
+    {
+      "source": "N04",
+      "target": "N02",
+      "type": "composes_with"
+    }
+  ],
+  "warning": "Design metadata only, no runtime capability or approval."
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.roaming_events",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "roam_count": {
+        "type": "integer"
+      },
+      "last_ap_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "roam_count",
+      "last_ap_id"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

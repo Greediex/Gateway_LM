@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.l01",
+  "version": "1.0.0",
+  "name": "Khám phá topology theo dữ liệu quan sát",
+  "description": "Design proposal only: Khám phá topology theo dữ liệu quan sát",
+  "requires": {},
+  "produces": {
+    "expansion.topology_inventory": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.topology_inventory": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.topology_inventory": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

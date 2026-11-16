@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.f08",
+  "version": "1.0.0",
+  "name": "Chẩn đoán đồng bộ giờ NTP",
+  "description": "Design proposal only: Chẩn đoán đồng bộ giờ NTP",
+  "requires": {},
+  "produces": {
+    "expansion.ntp_sync": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.ntp_sync": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.ntp_sync": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

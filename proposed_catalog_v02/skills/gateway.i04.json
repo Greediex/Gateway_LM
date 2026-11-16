@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.i04",
+  "version": "1.0.0",
+  "name": "Kiểm tra chuẩn mã hóa Wi-Fi",
+  "description": "Design proposal only: Kiểm tra chuẩn mã hóa Wi-Fi",
+  "requires": {},
+  "produces": {
+    "expansion.wifi_security": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wifi_security": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wifi_security": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

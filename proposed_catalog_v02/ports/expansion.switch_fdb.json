@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.switch_fdb",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "mac_entries": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "mac_entries"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

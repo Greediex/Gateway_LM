@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.queue_delay",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "queue_delay_ms": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "queue_delay_ms"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

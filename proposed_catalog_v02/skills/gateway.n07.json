@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.n07",
+  "version": "1.0.0",
+  "name": "Xác minh rollback/readback",
+  "description": "Design proposal only: Xác minh rollback/readback",
+  "requires": {},
+  "produces": {
+    "expansion.rollback_readback": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.rollback_readback": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.rollback_readback": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

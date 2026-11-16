@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.n04",
+  "version": "1.0.0",
+  "name": "Phát hiện configuration drift",
+  "description": "Design proposal only: Phát hiện configuration drift",
+  "requires": {},
+  "produces": {
+    "expansion.config_drift": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.config_drift": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.config_drift": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

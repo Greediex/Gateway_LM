@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.j07",
+  "version": "1.0.0",
+  "name": "Chẩn đoán policy-based routing",
+  "description": "Design proposal only: Chẩn đoán policy-based routing",
+  "requires": {},
+  "produces": {
+    "expansion.policy_routes": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.policy_routes": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.policy_routes": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

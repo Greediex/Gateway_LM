@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.wan_link",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "link_up": {
+        "type": "boolean"
+      },
+      "uptime_seconds": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "link_up",
+      "uptime_seconds"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

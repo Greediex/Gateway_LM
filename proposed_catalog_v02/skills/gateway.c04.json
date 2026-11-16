@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c04",
+  "version": "1.0.0",
+  "name": "Sức khỏe bridge",
+  "description": "Design proposal only: Sức khỏe bridge",
+  "requires": {},
+  "produces": {
+    "expansion.bridge_health": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.bridge_health": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.bridge_health": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

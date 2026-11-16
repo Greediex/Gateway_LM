@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.device_vendor",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "oui_vendor": {
+        "type": "string"
+      },
+      "oui_known": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "oui_vendor",
+      "oui_known"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b02",
+  "version": "1.0.0",
+  "name": "Trạng thái radio và SSID",
+  "description": "Design proposal only: Trạng thái radio và SSID",
+  "requires": {},
+  "produces": {
+    "expansion.radio_health": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.radio_health": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.radio_health": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

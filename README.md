@@ -64,6 +64,16 @@ py -3.12 -m venv .venv-graph
 
 Windows giữ route/ping/DNS cũ; dashboard Wi-Fi FND-07 dành cho Linux, không quảng bá phép đo chưa có trên Windows. [Hướng dẫn Web/API](docs/WEB_UI.md).
 
+## Catalog mở rộng 120 Skill (opt-in)
+
+Đã tích hợp pack **120 Skill thiết kế, 206 quan hệ và 72 READ contract PROPOSED**. Đây là metadata/replay để phát triển tiếp; không tự thêm capability cho laptop/router hoặc duyệt 203 cạnh đề xuất. [Hướng dẫn, dashboard offline và kiểm chứng](docs/skill_expansion/README.md).
+
+```bash
+.venv-graph/bin/python -m gateway_pilot.skill_expansion.cli validate
+.venv-graph/bin/python -m gateway_pilot.skill_expansion.cli search 'wifi không có internet' --include-proposed
+.venv-graph/bin/python -m scripts.core_replay_smoke_v2 --synthetic-only --all
+```
+
 ## Kiểm thử và kiến trúc
 
 ```bash

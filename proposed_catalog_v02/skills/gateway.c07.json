@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c07",
+  "version": "1.0.0",
+  "name": "Kiểm tra STP/RSTP",
+  "description": "Design proposal only: Kiểm tra STP/RSTP",
+  "requires": {},
+  "produces": {
+    "expansion.stp_status": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.stp_status": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.stp_status": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

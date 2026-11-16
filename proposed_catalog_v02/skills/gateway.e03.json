@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e03",
+  "version": "1.0.0",
+  "name": "Xác minh default route WAN",
+  "description": "Design proposal only: Xác minh default route WAN",
+  "requires": {},
+  "produces": {
+    "expansion.wan_routes": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wan_routes": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wan_routes": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

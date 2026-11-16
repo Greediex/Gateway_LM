@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h08",
+  "version": "1.0.0",
+  "name": "Đánh giá sẵn sàng cập nhật firmware",
+  "description": "Design proposal only: Đánh giá sẵn sàng cập nhật firmware",
+  "requires": {},
+  "produces": {
+    "expansion.firmware_info": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.firmware_info": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.firmware_info": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

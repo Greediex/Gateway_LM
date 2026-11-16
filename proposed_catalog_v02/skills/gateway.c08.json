@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.c08",
+  "version": "1.0.0",
+  "name": "Phát hiện bất tương thích MTU",
+  "description": "Design proposal only: Phát hiện bất tương thích MTU",
+  "requires": {},
+  "produces": {
+    "expansion.mtu_status": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.mtu_status": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.mtu_status": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

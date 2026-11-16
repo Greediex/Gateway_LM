@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.dhcp_pool",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "free_addresses": {
+        "type": "integer"
+      },
+      "used_addresses": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "free_addresses",
+      "used_addresses"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

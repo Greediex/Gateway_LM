@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h04",
+  "version": "1.0.0",
+  "name": "Phân tích log kernel và hệ thống",
+  "description": "Design proposal only: Phân tích log kernel và hệ thống",
+  "requires": {},
+  "produces": {
+    "expansion.system_events": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.system_events": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.system_events": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

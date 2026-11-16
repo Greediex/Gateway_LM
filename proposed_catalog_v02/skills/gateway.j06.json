@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.j06",
+  "version": "1.0.0",
+  "name": "Kiểm tra IPv6 qua VPN",
+  "description": "Design proposal only: Kiểm tra IPv6 qua VPN",
+  "requires": {},
+  "produces": {
+    "expansion.vpn_ipv6": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.vpn_ipv6": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.vpn_ipv6": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

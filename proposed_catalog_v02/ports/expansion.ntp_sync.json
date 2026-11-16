@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.ntp_sync",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "synchronized": {
+        "type": "boolean"
+      },
+      "offset_ms": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "synchronized",
+      "offset_ms"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

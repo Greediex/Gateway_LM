@@ -92,3 +92,7 @@ Xem kết quả kiểm thử mới nhất trong workflow của nhánh refactor t
 - [FND-06: Catalog v0.2 → Core READ runtime](RUNTIME_V02.md) và [local acceptance](reports/FND06_RUNTIME_MIGRATION_20261113.md).
 
 - [FND-07: Laptop network live, verified snapshot và UI](LAPTOP_NETWORK_V2.md) · [local acceptance](reports/FND07_LAPTOP_NETWORK_20261113.md).
+
+- [Roadmap NEXT-01…12 sau Foundation](NEXT_ROADMAP_V2.md): RCA/LLM, catalog/mock, device scope, history/alerts và evaluation; firmware acceptance để sau.
+
+- [120-Skill expansion pack: proposal catalog, offline dashboard và Core replay](skill_expansion/README.md) · [integration acceptance](reports/SKILL_EXPANSION_INTEGRATION_20261113.md).

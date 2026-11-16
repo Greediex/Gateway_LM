@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.n03",
+  "version": "1.0.0",
+  "name": "Snapshot cấu hình (READ)",
+  "description": "Design proposal only: Snapshot cấu hình (READ)",
+  "requires": {},
+  "produces": {
+    "expansion.config_snapshot": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.config_snapshot": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.config_snapshot": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

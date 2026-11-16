@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.i02",
+  "version": "1.0.0",
+  "name": "Kiểm tra dịch vụ/cổng phơi lộ",
+  "description": "Design proposal only: Kiểm tra dịch vụ/cổng phơi lộ",
+  "requires": {},
+  "produces": {
+    "expansion.exposed_services": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.exposed_services": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.exposed_services": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

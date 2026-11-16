@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.d05",
+  "version": "1.0.0",
+  "name": "Phân tích ARP/neighbor cache",
+  "description": "Design proposal only: Phân tích ARP/neighbor cache",
+  "requires": {},
+  "produces": {
+    "expansion.neighbor_table": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.neighbor_table": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.neighbor_table": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

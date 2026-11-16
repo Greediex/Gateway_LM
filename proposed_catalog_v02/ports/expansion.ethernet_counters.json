@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.ethernet_counters",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "rx_errors": {
+        "type": "integer"
+      },
+      "tx_errors": {
+        "type": "integer"
+      },
+      "link_mbps": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "rx_errors",
+      "tx_errors",
+      "link_mbps"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

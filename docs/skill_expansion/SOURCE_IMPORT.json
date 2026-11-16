@@ -1,0 +1,13 @@
+{
+  "source_zip": "GatewayLM_v2_120Skills_Integration_Pack.zip",
+  "sha256": "5a23c641f8a176f1042bffaad730472f774b049fc396e38ad9393d9ec92c91e0",
+  "source_internal_checksums_verified": 262,
+  "initial_imported_code_data_test_files": 239,
+  "adaptations": [
+    "72 arguments_schema required=[]",
+    "Core-verified client identity dependency in disposable synthetic smoke only"
+  ],
+  "source_reports_are_not_repo_acceptance": true,
+  "live_bindings_added": 0,
+  "edges_auto_approved": 0
+}

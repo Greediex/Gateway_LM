@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.f02",
+  "version": "1.0.0",
+  "name": "So sánh chất lượng DNS resolver",
+  "description": "Design proposal only: So sánh chất lượng DNS resolver",
+  "requires": {},
+  "produces": {
+    "expansion.dns_resolvers": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.dns_resolvers": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.dns_resolvers": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

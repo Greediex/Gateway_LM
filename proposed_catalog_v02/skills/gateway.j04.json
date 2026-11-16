@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.j04",
+  "version": "1.0.0",
+  "name": "Kiểm tra reachability của VPN peer",
+  "description": "Design proposal only: Kiểm tra reachability của VPN peer",
+  "requires": {},
+  "produces": {
+    "expansion.vpn_peers": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.vpn_peers": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.vpn_peers": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

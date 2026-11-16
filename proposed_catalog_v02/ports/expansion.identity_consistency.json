@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.identity_consistency",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "ip_mac_consistent": {
+        "type": "boolean"
+      },
+      "hostname_conflict": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "ip_mac_consistent",
+      "hostname_conflict"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

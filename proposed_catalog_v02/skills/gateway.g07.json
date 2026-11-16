@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.g07",
+  "version": "1.0.0",
+  "name": "Kiểm tra chính sách QoS/SQM",
+  "description": "Design proposal only: Kiểm tra chính sách QoS/SQM",
+  "requires": {},
+  "produces": {
+    "expansion.qos_policy": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.qos_policy": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.qos_policy": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.i06",
+  "version": "1.0.0",
+  "name": "Xác minh phân đoạn mạng/VLAN",
+  "description": "Design proposal only: Xác minh phân đoạn mạng/VLAN",
+  "requires": {},
+  "produces": {
+    "expansion.vlan_segmentation": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.vlan_segmentation": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.vlan_segmentation": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

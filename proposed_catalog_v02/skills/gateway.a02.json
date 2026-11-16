@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.a02",
+  "version": "1.0.0",
+  "name": "Kiểm kê thiết bị trong mạng",
+  "description": "Design proposal only: Kiểm kê thiết bị trong mạng",
+  "requires": {},
+  "produces": {
+    "expansion.device_inventory": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.device_inventory": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.device_inventory": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

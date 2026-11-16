@@ -1,0 +1,9 @@
+{
+  "total_skills": 120,
+  "read_proposal_functions": 72,
+  "measurement_skill_count": 72,
+  "skill_without_new_read_function": 40,
+  "legacy_skill_count": 8,
+  "schema_version": "0.2.0",
+  "status": "UNAPPROVED_REPLAY_ONLY"
+}

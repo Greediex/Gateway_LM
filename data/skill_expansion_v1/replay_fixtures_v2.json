@@ -1,0 +1,426 @@
+{
+  "expansion.device_inventory": {
+    "expansion.device_inventory": {
+      "devices_count": 1,
+      "segment": "demo"
+    }
+  },
+  "expansion.device_vendor": {
+    "expansion.device_vendor": {
+      "oui_vendor": "demo",
+      "oui_known": false
+    }
+  },
+  "expansion.identity_consistency": {
+    "expansion.identity_consistency": {
+      "ip_mac_consistent": false,
+      "hostname_conflict": false
+    }
+  },
+  "expansion.client_association": {
+    "expansion.client_association": {
+      "associated": false,
+      "access_point_id": "demo"
+    }
+  },
+  "expansion.radio_health": {
+    "expansion.radio_health": {
+      "radio_up": true,
+      "channel": 0,
+      "band": "demo"
+    }
+  },
+  "expansion.ssid_config": {
+    "expansion.ssid_config": {
+      "ssid_present": true,
+      "ssid": "demo"
+    }
+  },
+  "expansion.wireless_signal": {
+    "expansion.wireless_signal": {
+      "rssi_dbm": 0.0,
+      "snr_db": 0.0
+    }
+  },
+  "expansion.airtime_usage": {
+    "expansion.airtime_usage": {
+      "channel_utilization_pct": 10.0
+    }
+  },
+  "expansion.rf_environment": {
+    "expansion.rf_environment": {
+      "channel": 0,
+      "neighbor_bss_count": 1
+    }
+  },
+  "expansion.roaming_events": {
+    "expansion.roaming_events": {
+      "roam_count": 1,
+      "last_ap_id": "demo"
+    }
+  },
+  "expansion.mesh_backhaul": {
+    "expansion.mesh_backhaul": {
+      "backhaul_up": true,
+      "link_quality_pct": 10.0
+    }
+  },
+  "expansion.ethernet_ports": {
+    "expansion.ethernet_ports": {
+      "port_count": 1,
+      "active_count": 1
+    }
+  },
+  "expansion.ethernet_counters": {
+    "expansion.ethernet_counters": {
+      "rx_errors": 0,
+      "tx_errors": 0,
+      "link_mbps": 0
+    }
+  },
+  "expansion.switch_fdb": {
+    "expansion.switch_fdb": {
+      "mac_entries": 0
+    }
+  },
+  "expansion.bridge_health": {
+    "expansion.bridge_health": {
+      "bridge_up": true,
+      "member_ports": 0
+    }
+  },
+  "expansion.vlan_membership": {
+    "expansion.vlan_membership": {
+      "vlan_count": 1,
+      "invalid_memberships": 0
+    }
+  },
+  "expansion.stp_status": {
+    "expansion.stp_status": {
+      "stp_enabled": true,
+      "topology_changes": 0
+    }
+  },
+  "expansion.mtu_status": {
+    "expansion.mtu_status": {
+      "mtu_bytes": 0,
+      "mismatch_detected": true
+    }
+  },
+  "expansion.dhcp_pool": {
+    "expansion.dhcp_pool": {
+      "free_addresses": 0,
+      "used_addresses": 0
+    }
+  },
+  "expansion.dhcp_lease_events": {
+    "expansion.dhcp_lease_events": {
+      "active_leases": 1,
+      "expired_leases": 0
+    }
+  },
+  "expansion.neighbor_table": {
+    "expansion.neighbor_table": {
+      "neighbor_count": 1,
+      "failed_entries": 0
+    }
+  },
+  "expansion.ipv6_ra": {
+    "expansion.ipv6_ra": {
+      "router_advertisements": false,
+      "prefix_count": 1
+    }
+  },
+  "expansion.dhcpv6": {
+    "expansion.dhcpv6": {
+      "server_enabled": true,
+      "leases_count": 1
+    }
+  },
+  "expansion.wan_link": {
+    "expansion.wan_link": {
+      "link_up": true,
+      "uptime_seconds": 0
+    }
+  },
+  "expansion.wan_routes": {
+    "expansion.wan_routes": {
+      "default_route": false,
+      "default_route_count": 1
+    }
+  },
+  "expansion.wan_access": {
+    "expansion.wan_access": {
+      "protocol": "demo-synthetic",
+      "session_connected": false
+    }
+  },
+  "expansion.nat_state": {
+    "expansion.nat_state": {
+      "nat_enabled": true,
+      "cgnat_suspected": false
+    }
+  },
+  "expansion.multiwan_state": {
+    "expansion.multiwan_state": {
+      "uplinks": 0,
+      "healthy_uplinks": 1
+    }
+  },
+  "expansion.wan_events": {
+    "expansion.wan_events": {
+      "disconnect_events": 0,
+      "observation_window_s": 0
+    }
+  },
+  "expansion.upstream_probe": {
+    "expansion.upstream_probe": {
+      "reachable": true,
+      "loss_pct": 10.0
+    }
+  },
+  "expansion.dns_resolvers": {
+    "expansion.dns_resolvers": {
+      "resolver_count": 1,
+      "healthy_count": 1
+    }
+  },
+  "expansion.dns_cache": {
+    "expansion.dns_cache": {
+      "cache_hits": 0,
+      "cache_misses": 0
+    }
+  },
+  "expansion.split_dns": {
+    "expansion.split_dns": {
+      "zones": 0,
+      "conflicts": 0
+    }
+  },
+  "expansion.dhcp_dns": {
+    "expansion.dhcp_dns": {
+      "resolver_option_present": true
+    }
+  },
+  "expansion.dnssec": {
+    "expansion.dnssec": {
+      "dnssec_enabled": true,
+      "validation_failures": 0
+    }
+  },
+  "expansion.encrypted_dns": {
+    "expansion.encrypted_dns": {
+      "dot_enabled": true,
+      "doh_enabled": true
+    }
+  },
+  "expansion.ntp_sync": {
+    "expansion.ntp_sync": {
+      "synchronized": true,
+      "offset_ms": 10.0
+    }
+  },
+  "expansion.latency_loss": {
+    "expansion.latency_loss": {
+      "latency_ms": 10.0,
+      "packet_loss_pct": 10.0
+    }
+  },
+  "expansion.network_jitter": {
+    "expansion.network_jitter": {
+      "jitter_ms": 10.0
+    }
+  },
+  "expansion.traffic_counters": {
+    "expansion.traffic_counters": {
+      "rx_bytes": 0,
+      "tx_bytes": 0
+    }
+  },
+  "expansion.bandwidth_usage": {
+    "expansion.bandwidth_usage": {
+      "rx_mbps": 0.0,
+      "tx_mbps": 0.0
+    }
+  },
+  "expansion.queue_delay": {
+    "expansion.queue_delay": {
+      "queue_delay_ms": 10.0
+    }
+  },
+  "expansion.qos_policy": {
+    "expansion.qos_policy": {
+      "sqm_enabled": true,
+      "configured_rate_mbps": 0.0
+    }
+  },
+  "expansion.services_health": {
+    "expansion.services_health": {
+      "running_services": 0,
+      "failed_services": 0
+    }
+  },
+  "expansion.storage_health": {
+    "expansion.storage_health": {
+      "used_pct": 10.0,
+      "wear_pct": 10.0
+    }
+  },
+  "expansion.system_events": {
+    "expansion.system_events": {
+      "error_count": 1,
+      "warning_count": 1
+    }
+  },
+  "expansion.temperature": {
+    "expansion.temperature": {
+      "celsius": 10.0
+    }
+  },
+  "expansion.driver_status": {
+    "expansion.driver_status": {
+      "driver_errors": 0
+    }
+  },
+  "expansion.reboot_events": {
+    "expansion.reboot_events": {
+      "boot_count": 1,
+      "crash_count": 1
+    }
+  },
+  "expansion.firmware_info": {
+    "expansion.firmware_info": {
+      "version": "demo-synthetic",
+      "free_storage_mb": 0.0
+    }
+  },
+  "expansion.firewall_audit": {
+    "expansion.firewall_audit": {
+      "rules_count": 1,
+      "invalid_rules": 0
+    }
+  },
+  "expansion.exposed_services": {
+    "expansion.exposed_services": {
+      "listening_services": 0,
+      "exposed_services": 0
+    }
+  },
+  "expansion.guest_isolation": {
+    "expansion.guest_isolation": {
+      "enabled": true
+    }
+  },
+  "expansion.wifi_security": {
+    "expansion.wifi_security": {
+      "auth_mode": "demo",
+      "encryption_enabled": true
+    }
+  },
+  "expansion.admin_access": {
+    "expansion.admin_access": {
+      "remote_admin_enabled": true,
+      "mfa_configured": false
+    }
+  },
+  "expansion.vlan_segmentation": {
+    "expansion.vlan_segmentation": {
+      "segments": 0,
+      "policy_violations": 0
+    }
+  },
+  "expansion.config_compliance": {
+    "expansion.config_compliance": {
+      "checks_passed": 0,
+      "checks_failed": 0
+    }
+  },
+  "expansion.vpn_tunnel": {
+    "expansion.vpn_tunnel": {
+      "tunnel_up": true,
+      "peer_count": 1
+    }
+  },
+  "expansion.vpn_routes": {
+    "expansion.vpn_routes": {
+      "expected_routes": 0,
+      "missing_routes": 0
+    }
+  },
+  "expansion.vpn_peers": {
+    "expansion.vpn_peers": {
+      "peers_reachable": 0,
+      "peers_unreachable": 0
+    }
+  },
+  "expansion.vpn_ipv6": {
+    "expansion.vpn_ipv6": {
+      "ipv6_enabled": true,
+      "route_present": true
+    }
+  },
+  "expansion.policy_routes": {
+    "expansion.policy_routes": {
+      "routing_rules": 0,
+      "unresolved_rules": 0
+    }
+  },
+  "expansion.remote_access": {
+    "expansion.remote_access": {
+      "service_enabled": true,
+      "connections": 0
+    }
+  },
+  "expansion.evidence_history": {
+    "expansion.evidence_history": {
+      "samples": 0,
+      "window_seconds": 0
+    }
+  },
+  "expansion.incident_events": {
+    "expansion.incident_events": {
+      "incident_events": 0,
+      "open_incidents": 0
+    }
+  },
+  "expansion.topology_inventory": {
+    "expansion.topology_inventory": {
+      "node_count": 1,
+      "edge_count": 1
+    }
+  },
+  "expansion.topology_associations": {
+    "expansion.topology_associations": {
+      "known_associations": 0,
+      "unresolved_clients": 0
+    }
+  },
+  "expansion.gateway_links": {
+    "expansion.gateway_links": {
+      "known_gateways": 0,
+      "reachable_gateways": 0
+    }
+  },
+  "expansion.subnet_inventory": {
+    "expansion.subnet_inventory": {
+      "subnet_count": 1,
+      "vlan_count": 1
+    }
+  },
+  "expansion.config_snapshot": {
+    "expansion.config_snapshot": {
+      "snapshot_available": false,
+      "configuration_revision": "demo"
+    }
+  },
+  "expansion.config_drift": {
+    "expansion.config_drift": {
+      "drift_count": 1
+    }
+  },
+  "expansion.rollback_readback": {
+    "expansion.rollback_readback": {
+      "expected_match": true
+    }
+  }
+}

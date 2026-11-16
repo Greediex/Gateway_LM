@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.k01",
+  "version": "1.0.0",
+  "name": "Lịch sử Verified Evidence",
+  "description": "Design proposal only: Lịch sử Verified Evidence",
+  "requires": {},
+  "produces": {
+    "expansion.evidence_history": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.evidence_history": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.evidence_history": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

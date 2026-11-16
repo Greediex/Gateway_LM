@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.remote_access",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "service_enabled": {
+        "type": "boolean"
+      },
+      "connections": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "service_enabled",
+      "connections"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e04",
+  "version": "1.0.0",
+  "name": "Chẩn đoán PPPoE/DHCP upstream",
+  "description": "Design proposal only: Chẩn đoán PPPoE/DHCP upstream",
+  "requires": {},
+  "produces": {
+    "expansion.wan_access": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wan_access": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wan_access": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

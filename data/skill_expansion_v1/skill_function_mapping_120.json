@@ -1,0 +1,2651 @@
+[
+  {
+    "skill_id": "SK01",
+    "catalog_skill_id": "SK01",
+    "name_vi": "Xác định client đích",
+    "domain": "A",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "A02",
+    "catalog_skill_id": "gateway.a02",
+    "name_vi": "Kiểm kê thiết bị trong mạng",
+    "domain": "A",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.device_inventory"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "A03",
+    "catalog_skill_id": "gateway.a03",
+    "name_vi": "Chuẩn hóa và gộp định danh thiết bị",
+    "domain": "A",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory",
+      "expansion.identity_consistency"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "A04",
+    "catalog_skill_id": "gateway.a04",
+    "name_vi": "Nhận diện hãng từ MAC/OUI",
+    "domain": "A",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.device_vendor"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_vendor"
+    ],
+    "evidence_scope_set": [
+      "client"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "A05",
+    "catalog_skill_id": "gateway.a05",
+    "name_vi": "Phân loại loại thiết bị",
+    "domain": "A",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory",
+      "expansion.device_vendor"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "A06",
+    "catalog_skill_id": "gateway.a06",
+    "name_vi": "Đối chiếu IP–MAC–hostname",
+    "domain": "A",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.identity_consistency"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.identity_consistency"
+    ],
+    "evidence_scope_set": [
+      "client"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "A07",
+    "catalog_skill_id": "gateway.a07",
+    "name_vi": "Theo dõi vòng đời thiết bị",
+    "domain": "A",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "A08",
+    "catalog_skill_id": "gateway.a08",
+    "name_vi": "Theo dõi thiết bị gắn với AP",
+    "domain": "A",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.client_association"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.client_association"
+    ],
+    "evidence_scope_set": [
+      "client"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "SK02",
+    "catalog_skill_id": "SK02",
+    "name_vi": "Chẩn đoán kết nối Wi-Fi",
+    "domain": "B",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B02",
+    "catalog_skill_id": "gateway.b02",
+    "name_vi": "Trạng thái radio và SSID",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.radio_health"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.radio_health"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B03",
+    "catalog_skill_id": "gateway.b03",
+    "name_vi": "Kiểm tra cấu hình SSID",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.ssid_config"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ssid_config"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B04",
+    "catalog_skill_id": "gateway.b04",
+    "name_vi": "Đánh giá RSSI/SNR/chất lượng liên kết",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wireless_signal"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wireless_signal"
+    ],
+    "evidence_scope_set": [
+      "client"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B05",
+    "catalog_skill_id": "gateway.b05",
+    "name_vi": "Theo dõi airtime và sử dụng kênh",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.airtime_usage"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.airtime_usage"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B06",
+    "catalog_skill_id": "gateway.b06",
+    "name_vi": "Phân tích nhiễu và trùng kênh",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.rf_environment"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.rf_environment"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B07",
+    "catalog_skill_id": "gateway.b07",
+    "name_vi": "Chẩn đoán roaming",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.roaming_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.roaming_events"
+    ],
+    "evidence_scope_set": [
+      "client"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "B08",
+    "catalog_skill_id": "gateway.b08",
+    "name_vi": "Chẩn đoán mesh/backhaul",
+    "domain": "B",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.mesh_backhaul"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.mesh_backhaul"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C01",
+    "catalog_skill_id": "gateway.c01",
+    "name_vi": "Trạng thái cổng Ethernet",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.ethernet_ports"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ethernet_ports"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C02",
+    "catalog_skill_id": "gateway.c02",
+    "name_vi": "Lỗi RX/TX và tốc độ liên kết",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.ethernet_counters"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ethernet_counters"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C03",
+    "catalog_skill_id": "gateway.c03",
+    "name_vi": "Bảng MAC/FDB của switch",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.switch_fdb"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.switch_fdb"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C04",
+    "catalog_skill_id": "gateway.c04",
+    "name_vi": "Sức khỏe bridge",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.bridge_health"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.bridge_health"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C05",
+    "catalog_skill_id": "gateway.c05",
+    "name_vi": "Phân tích membership VLAN",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vlan_membership"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vlan_membership"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C06",
+    "catalog_skill_id": "gateway.c06",
+    "name_vi": "Phát hiện dấu hiệu vòng lặp L2",
+    "domain": "C",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ethernet_counters",
+      "expansion.bridge_health",
+      "expansion.stp_status"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "C07",
+    "catalog_skill_id": "gateway.c07",
+    "name_vi": "Kiểm tra STP/RSTP",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.stp_status"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.stp_status"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "C08",
+    "catalog_skill_id": "gateway.c08",
+    "name_vi": "Phát hiện bất tương thích MTU",
+    "domain": "C",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.mtu_status"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.mtu_status"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "SK03",
+    "catalog_skill_id": "SK03",
+    "name_vi": "Chẩn đoán DHCP và IPv4",
+    "domain": "D",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D02",
+    "catalog_skill_id": "gateway.d02",
+    "name_vi": "Theo dõi vùng cấp phát DHCP",
+    "domain": "D",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dhcp_pool"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dhcp_pool"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D03",
+    "catalog_skill_id": "gateway.d03",
+    "name_vi": "Theo dõi vòng đời DHCP lease",
+    "domain": "D",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dhcp_lease_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dhcp_lease_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D04",
+    "catalog_skill_id": "gateway.d04",
+    "name_vi": "Phát hiện xung đột địa chỉ IP",
+    "domain": "D",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.identity_consistency",
+      "expansion.dhcp_lease_events",
+      "expansion.neighbor_table"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "D05",
+    "catalog_skill_id": "gateway.d05",
+    "name_vi": "Phân tích ARP/neighbor cache",
+    "domain": "D",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.neighbor_table"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.neighbor_table"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D06",
+    "catalog_skill_id": "gateway.d06",
+    "name_vi": "Chẩn đoán IPv6 RA/SLAAC",
+    "domain": "D",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.ipv6_ra"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ipv6_ra"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D07",
+    "catalog_skill_id": "gateway.d07",
+    "name_vi": "Chẩn đoán DHCPv6",
+    "domain": "D",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dhcpv6"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dhcpv6"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "D08",
+    "catalog_skill_id": "gateway.d08",
+    "name_vi": "Xác minh subnet/prefix/gateway",
+    "domain": "D",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ipv6_ra",
+      "expansion.wan_routes",
+      "expansion.dhcp_pool"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "SK04",
+    "catalog_skill_id": "SK04",
+    "name_vi": "Chẩn đoán kết nối WAN",
+    "domain": "E",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E02",
+    "catalog_skill_id": "gateway.e02",
+    "name_vi": "Theo dõi vật lý/link WAN",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wan_link"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_link"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E03",
+    "catalog_skill_id": "gateway.e03",
+    "name_vi": "Xác minh default route WAN",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wan_routes"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_routes"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E04",
+    "catalog_skill_id": "gateway.e04",
+    "name_vi": "Chẩn đoán PPPoE/DHCP upstream",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wan_access"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_access"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E05",
+    "catalog_skill_id": "gateway.e05",
+    "name_vi": "Phát hiện NAT/CGNAT",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.nat_state"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.nat_state"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E06",
+    "catalog_skill_id": "gateway.e06",
+    "name_vi": "Chẩn đoán multi-WAN/failover",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.multiwan_state"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.multiwan_state"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E07",
+    "catalog_skill_id": "gateway.e07",
+    "name_vi": "Phân tích WAN chập chờn",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wan_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "E08",
+    "catalog_skill_id": "gateway.e08",
+    "name_vi": "Kiểm chứng reachability thượng nguồn",
+    "domain": "E",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.upstream_probe"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.upstream_probe"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "SK05",
+    "catalog_skill_id": "SK05",
+    "name_vi": "Chẩn đoán phân giải DNS",
+    "domain": "F",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F02",
+    "catalog_skill_id": "gateway.f02",
+    "name_vi": "So sánh chất lượng DNS resolver",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dns_resolvers"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dns_resolvers"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F03",
+    "catalog_skill_id": "gateway.f03",
+    "name_vi": "Theo dõi trạng thái DNS cache",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dns_cache"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dns_cache"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F04",
+    "catalog_skill_id": "gateway.f04",
+    "name_vi": "Chẩn đoán split-horizon DNS",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.split_dns"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.split_dns"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F05",
+    "catalog_skill_id": "gateway.f05",
+    "name_vi": "Kiểm tra DNS option từ DHCP",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dhcp_dns"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dhcp_dns"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F06",
+    "catalog_skill_id": "gateway.f06",
+    "name_vi": "Kiểm tra trạng thái DNSSEC",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.dnssec"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dnssec"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F07",
+    "catalog_skill_id": "gateway.f07",
+    "name_vi": "Quan sát cấu hình DoT/DoH",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.encrypted_dns"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.encrypted_dns"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "F08",
+    "catalog_skill_id": "gateway.f08",
+    "name_vi": "Chẩn đoán đồng bộ giờ NTP",
+    "domain": "F",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.ntp_sync"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.ntp_sync"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G01",
+    "catalog_skill_id": "gateway.g01",
+    "name_vi": "Độ trễ và mất gói",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.latency_loss"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.latency_loss"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G02",
+    "catalog_skill_id": "gateway.g02",
+    "name_vi": "Phân tích jitter",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.network_jitter"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.network_jitter"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G03",
+    "catalog_skill_id": "gateway.g03",
+    "name_vi": "Đánh giá throughput có kiểm soát",
+    "domain": "G",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.traffic_counters",
+      "expansion.bandwidth_usage"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "G04",
+    "catalog_skill_id": "gateway.g04",
+    "name_vi": "Thống kê lưu lượng từng interface",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.traffic_counters"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.traffic_counters"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G05",
+    "catalog_skill_id": "gateway.g05",
+    "name_vi": "Xác định điểm tiêu thụ băng thông",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.bandwidth_usage"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.bandwidth_usage"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G06",
+    "catalog_skill_id": "gateway.g06",
+    "name_vi": "Phân tích bufferbloat",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.queue_delay"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.queue_delay"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G07",
+    "catalog_skill_id": "gateway.g07",
+    "name_vi": "Kiểm tra chính sách QoS/SQM",
+    "domain": "G",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.qos_policy"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.qos_policy"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "G08",
+    "catalog_skill_id": "gateway.g08",
+    "name_vi": "Khoanh vùng tắc nghẽn",
+    "domain": "G",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.latency_loss",
+      "expansion.bandwidth_usage",
+      "expansion.queue_delay",
+      "expansion.wan_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "SK08",
+    "catalog_skill_id": "SK08",
+    "name_vi": "Sức khỏe tài nguyên gateway",
+    "domain": "H",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H02",
+    "catalog_skill_id": "gateway.h02",
+    "name_vi": "Tình trạng dịch vụ và tiến trình",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.services_health"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.services_health"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H03",
+    "catalog_skill_id": "gateway.h03",
+    "name_vi": "Theo dõi dung lượng và wear lưu trữ",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.storage_health"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.storage_health"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H04",
+    "catalog_skill_id": "gateway.h04",
+    "name_vi": "Phân tích log kernel và hệ thống",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.system_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.system_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H05",
+    "catalog_skill_id": "gateway.h05",
+    "name_vi": "Giám sát nhiệt độ thiết bị",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.temperature"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.temperature"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H06",
+    "catalog_skill_id": "gateway.h06",
+    "name_vi": "Kiểm tra driver/interface",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.driver_status"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.driver_status"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H07",
+    "catalog_skill_id": "gateway.h07",
+    "name_vi": "Phân tích reboot/crash",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.reboot_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.reboot_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "H08",
+    "catalog_skill_id": "gateway.h08",
+    "name_vi": "Đánh giá sẵn sàng cập nhật firmware",
+    "domain": "H",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.firmware_info"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.firmware_info"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I01",
+    "catalog_skill_id": "gateway.i01",
+    "name_vi": "Kiểm tra chính sách firewall (READ)",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.firewall_audit"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.firewall_audit"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I02",
+    "catalog_skill_id": "gateway.i02",
+    "name_vi": "Kiểm tra dịch vụ/cổng phơi lộ",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.exposed_services"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.exposed_services"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I03",
+    "catalog_skill_id": "gateway.i03",
+    "name_vi": "Đánh giá guest/client isolation",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.guest_isolation"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.guest_isolation"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I04",
+    "catalog_skill_id": "gateway.i04",
+    "name_vi": "Kiểm tra chuẩn mã hóa Wi-Fi",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.wifi_security"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wifi_security"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I05",
+    "catalog_skill_id": "gateway.i05",
+    "name_vi": "Kiểm tra cấu hình xác thực quản trị",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.admin_access"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.admin_access"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I06",
+    "catalog_skill_id": "gateway.i06",
+    "name_vi": "Xác minh phân đoạn mạng/VLAN",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vlan_segmentation"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vlan_segmentation"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "I07",
+    "catalog_skill_id": "gateway.i07",
+    "name_vi": "Phát hiện bất thường client có giải thích",
+    "domain": "I",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory",
+      "expansion.exposed_services",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "I08",
+    "catalog_skill_id": "gateway.i08",
+    "name_vi": "Kiểm toán tuân thủ cấu hình",
+    "domain": "I",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.config_compliance"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_compliance"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J01",
+    "catalog_skill_id": "gateway.j01",
+    "name_vi": "Kiểm tra sức khỏe VPN tunnel",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vpn_tunnel"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_tunnel"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J02",
+    "catalog_skill_id": "gateway.j02",
+    "name_vi": "Xác minh định tuyến qua VPN",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vpn_routes"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_routes"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J03",
+    "catalog_skill_id": "gateway.j03",
+    "name_vi": "Phân tích dấu hiệu DNS leak",
+    "domain": "J",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_routes",
+      "expansion.dns_resolvers",
+      "expansion.encrypted_dns"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "J04",
+    "catalog_skill_id": "gateway.j04",
+    "name_vi": "Kiểm tra reachability của VPN peer",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vpn_peers"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_peers"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J05",
+    "catalog_skill_id": "gateway.j05",
+    "name_vi": "Chẩn đoán VPN site-to-site",
+    "domain": "J",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_tunnel",
+      "expansion.vpn_routes",
+      "expansion.vpn_peers"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "J06",
+    "catalog_skill_id": "gateway.j06",
+    "name_vi": "Kiểm tra IPv6 qua VPN",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.vpn_ipv6"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.vpn_ipv6"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J07",
+    "catalog_skill_id": "gateway.j07",
+    "name_vi": "Chẩn đoán policy-based routing",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.policy_routes"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.policy_routes"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "J08",
+    "catalog_skill_id": "gateway.j08",
+    "name_vi": "Chẩn đoán truy cập từ xa",
+    "domain": "J",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.remote_access"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.remote_access"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "K01",
+    "catalog_skill_id": "gateway.k01",
+    "name_vi": "Lịch sử Verified Evidence",
+    "domain": "K",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.evidence_history"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "K02",
+    "catalog_skill_id": "gateway.k02",
+    "name_vi": "Phân tích xu hướng theo thời gian",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history",
+      "expansion.incident_events",
+      "expansion.wan_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "K03",
+    "catalog_skill_id": "gateway.k03",
+    "name_vi": "Quy tắc tạo cảnh báo",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history",
+      "expansion.incident_events",
+      "expansion.latency_loss"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "K04",
+    "catalog_skill_id": "gateway.k04",
+    "name_vi": "Chống cảnh báo trùng",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.incident_events",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "K05",
+    "catalog_skill_id": "gateway.k05",
+    "name_vi": "Dựng timeline sự cố",
+    "domain": "K",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.incident_events"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.incident_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "K06",
+    "catalog_skill_id": "gateway.k06",
+    "name_vi": "Phát hiện khoảng mất kết nối",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history",
+      "expansion.wan_events",
+      "expansion.upstream_probe"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "K07",
+    "catalog_skill_id": "gateway.k07",
+    "name_vi": "Xác minh trạng thái phục hồi",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history",
+      "expansion.upstream_probe",
+      "expansion.latency_loss"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "K08",
+    "catalog_skill_id": "gateway.k08",
+    "name_vi": "Chính sách TTL và lưu trữ lịch sử",
+    "domain": "K",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "L01",
+    "catalog_skill_id": "gateway.l01",
+    "name_vi": "Khám phá topology theo dữ liệu quan sát",
+    "domain": "L",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.topology_inventory"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_inventory"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "L02",
+    "catalog_skill_id": "gateway.l02",
+    "name_vi": "Ánh xạ client–AP–router",
+    "domain": "L",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.topology_associations"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_associations"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "L03",
+    "catalog_skill_id": "gateway.l03",
+    "name_vi": "Ánh xạ uplink/gateway",
+    "domain": "L",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.gateway_links"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.gateway_links"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "L04",
+    "catalog_skill_id": "gateway.l04",
+    "name_vi": "Truy vết đường đi của client",
+    "domain": "L",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_inventory",
+      "expansion.topology_associations",
+      "expansion.gateway_links"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "L05",
+    "catalog_skill_id": "gateway.l05",
+    "name_vi": "Bản đồ subnet/VLAN",
+    "domain": "L",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.subnet_inventory"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.subnet_inventory"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "L06",
+    "catalog_skill_id": "gateway.l06",
+    "name_vi": "Tổng hợp sức khỏe theo site",
+    "domain": "L",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_inventory",
+      "expansion.services_health",
+      "expansion.wan_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "L07",
+    "catalog_skill_id": "gateway.l07",
+    "name_vi": "So sánh nhiều gateway",
+    "domain": "L",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.gateway_links",
+      "expansion.wan_events",
+      "expansion.upstream_probe"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "L08",
+    "catalog_skill_id": "gateway.l08",
+    "name_vi": "Ước lượng phạm vi ảnh hưởng sự cố",
+    "domain": "L",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_inventory",
+      "expansion.topology_associations",
+      "expansion.wan_events",
+      "expansion.incident_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "SK09",
+    "catalog_skill_id": "SK09",
+    "name_vi": "Tương quan và kiểm chứng bằng chứng",
+    "domain": "M",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "M02",
+    "catalog_skill_id": "gateway.m02",
+    "name_vi": "Xếp hạng giả thuyết RCA",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.upstream_probe",
+      "expansion.latency_loss",
+      "expansion.dns_resolvers",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M03",
+    "catalog_skill_id": "gateway.m03",
+    "name_vi": "Nhận diện bằng chứng còn thiếu",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_inventory",
+      "expansion.upstream_probe",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M04",
+    "catalog_skill_id": "gateway.m04",
+    "name_vi": "Chọn phép đo bổ sung thích ứng",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.upstream_probe",
+      "expansion.radio_health",
+      "expansion.latency_loss",
+      "expansion.dns_resolvers"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M05",
+    "catalog_skill_id": "gateway.m05",
+    "name_vi": "Phân biệt quan sát và nguyên nhân",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.evidence_history",
+      "expansion.upstream_probe",
+      "expansion.latency_loss"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M06",
+    "catalog_skill_id": "gateway.m06",
+    "name_vi": "Chẩn đoán đối chiếu nhiều nguồn",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.upstream_probe",
+      "expansion.radio_health",
+      "expansion.dns_resolvers",
+      "expansion.latency_loss"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M07",
+    "catalog_skill_id": "gateway.m07",
+    "name_vi": "Liên kết sự cố nhiều thiết bị",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.topology_associations",
+      "expansion.incident_events",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "M08",
+    "catalog_skill_id": "gateway.m08",
+    "name_vi": "Giải thích kết luận kèm evidence ID",
+    "domain": "M",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.incident_events",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "SK13",
+    "catalog_skill_id": "SK13",
+    "name_vi": "Áp dụng và xác minh cấu hình có phê duyệt",
+    "domain": "N",
+    "proposal_mode": "LEGACY_DISCOVER_FROM_REPO",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [],
+    "evidence_scope_set": [],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "N02",
+    "catalog_skill_id": "gateway.n02",
+    "name_vi": "Phân tích tác động trước thay đổi",
+    "domain": "N",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_snapshot",
+      "expansion.config_drift",
+      "expansion.firewall_audit"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "N03",
+    "catalog_skill_id": "gateway.n03",
+    "name_vi": "Snapshot cấu hình (READ)",
+    "domain": "N",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.config_snapshot"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_snapshot"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "N04",
+    "catalog_skill_id": "gateway.n04",
+    "name_vi": "Phát hiện configuration drift",
+    "domain": "N",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.config_drift"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_drift"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "N05",
+    "catalog_skill_id": "gateway.n05",
+    "name_vi": "Theo dõi phê duyệt thay đổi",
+    "domain": "N",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_snapshot"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "N06",
+    "catalog_skill_id": "gateway.n06",
+    "name_vi": "Lập kế hoạch dry-run",
+    "domain": "N",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_snapshot",
+      "expansion.config_drift",
+      "expansion.firewall_audit"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "N07",
+    "catalog_skill_id": "gateway.n07",
+    "name_vi": "Xác minh rollback/readback",
+    "domain": "N",
+    "proposal_mode": "PROPOSED_READ_METADATA",
+    "declared_v02_function_refs": [
+      "expansion.rollback_readback"
+    ],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.rollback_readback"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": false
+  },
+  {
+    "skill_id": "N08",
+    "catalog_skill_id": "gateway.n08",
+    "name_vi": "Hướng dẫn khắc phục không tự WRITE",
+    "domain": "N",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.config_snapshot",
+      "expansion.incident_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O01",
+    "catalog_skill_id": "gateway.o01",
+    "name_vi": "Điều tra client có Wi-Fi nhưng mất Internet",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.client_association",
+      "expansion.radio_health",
+      "expansion.dhcp_lease_events",
+      "expansion.upstream_probe",
+      "expansion.dns_resolvers"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O02",
+    "catalog_skill_id": "gateway.o02",
+    "name_vi": "Điều tra Wi-Fi chậm",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.radio_health",
+      "expansion.wireless_signal",
+      "expansion.airtime_usage",
+      "expansion.latency_loss",
+      "expansion.bandwidth_usage",
+      "expansion.queue_delay"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O03",
+    "catalog_skill_id": "gateway.o03",
+    "name_vi": "Điều tra mạng chập chờn",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_events",
+      "expansion.roaming_events",
+      "expansion.latency_loss",
+      "expansion.evidence_history"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O04",
+    "catalog_skill_id": "gateway.o04",
+    "name_vi": "Điều tra lỗi DNS theo thiết bị",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.dns_resolvers",
+      "expansion.dns_cache",
+      "expansion.split_dns",
+      "expansion.dhcp_lease_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O05",
+    "catalog_skill_id": "gateway.o05",
+    "name_vi": "Điều tra IoT/camera mất kết nối",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.client_association",
+      "expansion.radio_health",
+      "expansion.guest_isolation",
+      "expansion.dhcp_lease_events"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O06",
+    "catalog_skill_id": "gateway.o06",
+    "name_vi": "Điều tra gọi video/VoIP giật",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.latency_loss",
+      "expansion.network_jitter",
+      "expansion.bandwidth_usage",
+      "expansion.queue_delay",
+      "expansion.wireless_signal"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O07",
+    "catalog_skill_id": "gateway.o07",
+    "name_vi": "Điều tra mất Internet diện rộng",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.wan_link",
+      "expansion.wan_routes",
+      "expansion.wan_events",
+      "expansion.upstream_probe",
+      "expansion.incident_events"
+    ],
+    "evidence_scope_set": [
+      "gateway"
+    ],
+    "cross_scope_aggregation": false,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  },
+  {
+    "skill_id": "O08",
+    "catalog_skill_id": "gateway.o08",
+    "name_vi": "Điều tra bất thường nhiều client",
+    "domain": "O",
+    "proposal_mode": "NO_DIRECT_READ_FUNCTION",
+    "declared_v02_function_refs": [],
+    "requires_operator_review": true,
+    "runtime_enabled": false,
+    "comment": "Function mapping is not capability; runtime selection must derive from approved Core registry.",
+    "suggested_evidence_functions": [
+      "expansion.device_inventory",
+      "expansion.client_association",
+      "expansion.topology_associations",
+      "expansion.incident_events",
+      "expansion.wan_events"
+    ],
+    "evidence_scope_set": [
+      "client",
+      "gateway"
+    ],
+    "cross_scope_aggregation": true,
+    "suggestions_are_bindings": false,
+    "requires_claim_or_workflow_definition": true,
+    "notes": "Only recommended supporting evidence: cannot complete Skill from fixture alone."
+  }
+]

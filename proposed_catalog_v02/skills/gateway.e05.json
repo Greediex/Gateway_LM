@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e05",
+  "version": "1.0.0",
+  "name": "Phát hiện NAT/CGNAT",
+  "description": "Design proposal only: Phát hiện NAT/CGNAT",
+  "requires": {},
+  "produces": {
+    "expansion.nat_state": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.nat_state": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.nat_state": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

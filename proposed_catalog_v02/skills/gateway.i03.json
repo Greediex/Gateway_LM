@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.i03",
+  "version": "1.0.0",
+  "name": "Đánh giá guest/client isolation",
+  "description": "Design proposal only: Đánh giá guest/client isolation",
+  "requires": {},
+  "produces": {
+    "expansion.guest_isolation": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.guest_isolation": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.guest_isolation": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

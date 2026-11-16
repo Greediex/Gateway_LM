@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b06",
+  "version": "1.0.0",
+  "name": "Phân tích nhiễu và trùng kênh",
+  "description": "Design proposal only: Phân tích nhiễu và trùng kênh",
+  "requires": {},
+  "produces": {
+    "expansion.rf_environment": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.rf_environment": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.rf_environment": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

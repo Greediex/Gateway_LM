@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.d06",
+  "version": "1.0.0",
+  "name": "Chẩn đoán IPv6 RA/SLAAC",
+  "description": "Design proposal only: Chẩn đoán IPv6 RA/SLAAC",
+  "requires": {},
+  "produces": {
+    "expansion.ipv6_ra": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.ipv6_ra": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.ipv6_ra": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

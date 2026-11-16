@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e06",
+  "version": "1.0.0",
+  "name": "Chẩn đoán multi-WAN/failover",
+  "description": "Design proposal only: Chẩn đoán multi-WAN/failover",
+  "requires": {},
+  "produces": {
+    "expansion.multiwan_state": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.multiwan_state": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.multiwan_state": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

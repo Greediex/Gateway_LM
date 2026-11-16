@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h07",
+  "version": "1.0.0",
+  "name": "Phân tích reboot/crash",
+  "description": "Design proposal only: Phân tích reboot/crash",
+  "requires": {},
+  "produces": {
+    "expansion.reboot_events": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.reboot_events": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.reboot_events": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

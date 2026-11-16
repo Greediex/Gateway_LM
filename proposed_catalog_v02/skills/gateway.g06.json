@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.g06",
+  "version": "1.0.0",
+  "name": "Phân tích bufferbloat",
+  "description": "Design proposal only: Phân tích bufferbloat",
+  "requires": {},
+  "produces": {
+    "expansion.queue_delay": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.queue_delay": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.queue_delay": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

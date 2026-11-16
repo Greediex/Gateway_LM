@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.wireless_signal",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "rssi_dbm": {
+        "type": "number"
+      },
+      "snr_db": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "rssi_dbm",
+      "snr_db"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

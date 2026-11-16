@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.i08",
+  "version": "1.0.0",
+  "name": "Kiểm toán tuân thủ cấu hình",
+  "description": "Design proposal only: Kiểm toán tuân thủ cấu hình",
+  "requires": {},
+  "produces": {
+    "expansion.config_compliance": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.config_compliance": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.config_compliance": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.l05",
+  "version": "1.0.0",
+  "name": "Bản đồ subnet/VLAN",
+  "description": "Design proposal only: Bản đồ subnet/VLAN",
+  "requires": {},
+  "produces": {
+    "expansion.subnet_inventory": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.subnet_inventory": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.subnet_inventory": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.l02",
+  "version": "1.0.0",
+  "name": "Ánh xạ client–AP–router",
+  "description": "Design proposal only: Ánh xạ client–AP–router",
+  "requires": {},
+  "produces": {
+    "expansion.topology_associations": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.topology_associations": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.topology_associations": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.stp_status",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "stp_enabled": {
+        "type": "boolean"
+      },
+      "topology_changes": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "stp_enabled",
+      "topology_changes"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

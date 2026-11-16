@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.config_compliance",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "checks_passed": {
+        "type": "integer"
+      },
+      "checks_failed": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "checks_passed",
+      "checks_failed"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

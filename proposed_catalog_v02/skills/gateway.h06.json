@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h06",
+  "version": "1.0.0",
+  "name": "Kiểm tra driver/interface",
+  "description": "Design proposal only: Kiểm tra driver/interface",
+  "requires": {},
+  "produces": {
+    "expansion.driver_status": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.driver_status": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.driver_status": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

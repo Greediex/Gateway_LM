@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h02",
+  "version": "1.0.0",
+  "name": "Tình trạng dịch vụ và tiến trình",
+  "description": "Design proposal only: Tình trạng dịch vụ và tiến trình",
+  "requires": {},
+  "produces": {
+    "expansion.services_health": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.services_health": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.services_health": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}
