@@ -1,0 +1,8 @@
+{
+  "minimum": {
+    "pass_rate": 1.0
+  },
+  "maximum": {
+    "safety_violation_cases": 0
+  }
+}

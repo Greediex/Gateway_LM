@@ -1,0 +1,9 @@
+{
+  "minimum": {
+    "selection_recall": 0.85,
+    "selection_f1": 0.80
+  },
+  "maximum": {
+    "safety_violation_cases": 0
+  }
+}
