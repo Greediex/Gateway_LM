@@ -6,9 +6,9 @@ Luồng thực tế: `/api/chat` (Linux, with_llm=true) → `SkillChat` → `Oll
 
 ## Cách chạy và hỏi
 
-Dùng hướng dẫn Linux trong README; chạy Ollama với `qwen3:1.7b` đã có sẵn, rồi mở Web. Chat Linux bật LLM mặc định. Ví dụ: “Gateway laptop là gì?”, “Kiểm tra DNS”, “Wi-Fi và gateway hiện thế nào?”. Nút chọn Skill thủ công vẫn là công cụ kiểm tra riêng, không cần dùng trước khi chat.
+Dùng hướng dẫn Linux trong README; chạy Ollama với `qwen3:4b` đã có sẵn, rồi mở Web. Chat Linux bật LLM mặc định. Ví dụ: “Gateway laptop là gì?”, “Kiểm tra DNS”, “Wi-Fi và gateway hiện thế nào?”. Nút chọn Skill thủ công vẫn là công cụ kiểm tra riêng, không cần dùng trước khi chat.
 
-Cùng `session_id` giữ state/runner/budget và evidence còn hạn qua nhiều câu hỏi. Đổi source/xóa chat/chọn gợi ý mới sẽ giải phóng phiên trước. HTTP 410 xóa handle cũ; gửi lại để tạo phiên mới. Model/endpoint cấu hình bởi server (`GATEWAY_LM_CHAT_MODEL`, mặc định `qwen3:1.7b`, loopback Ollama), model name từ request không được dùng cho luồng này.
+Cùng `session_id` giữ state/runner/budget và evidence còn hạn qua nhiều câu hỏi. Đổi source/xóa chat/chọn gợi ý mới sẽ giải phóng phiên trước. HTTP 410 xóa handle cũ; gửi lại để tạo phiên mới. Model/endpoint cấu hình bởi server (`GATEWAY_LM_CHAT_MODEL`, mặc định `qwen3:4b`, loopback Ollama), model name từ request không được dùng cho luồng này.
 
 ## Vai trò từng thành phần
 
@@ -23,7 +23,7 @@ Cùng `session_id` giữ state/runner/budget và evidence còn hạn qua nhiều
 
 ## Giới hạn
 
-Mặc định tối đa 4 vòng lập kế hoạch mỗi lượt (vòng cuối chỉ kết thúc), tối đa 3 Skill/batch; tầng trả lời có tối đa 2 lượt gọi bổ sung, mỗi lượt tối đa 12 giây và không vượt thời gian còn lại; budget session giữ nguyên 300s/24 calls/64 plans. Lượt hỏi có deadline 120s; khởi tạo model và inference nhận timeout không vượt thời gian còn lại (mỗi RPC tối đa 60s). Chat RPC giới hạn response 64KiB, model metadata 1MiB. Local model có xác minh parameter count ≤3B; không tải model hoặc gọi cloud tự động. Một model request và một lượt hỏi mỗi phiên được xử lý đồng thời; HTTP 429/409 báo bận, không xếp hàng vô hạn.
+Mặc định tối đa 4 vòng lập kế hoạch mỗi lượt (vòng cuối chỉ kết thúc), tối đa 3 Skill/batch; tầng trả lời có tối đa 2 lượt gọi bổ sung, mỗi lượt tối đa 12 giây và không vượt thời gian còn lại; budget session giữ nguyên 300s/24 calls/64 plans. Lượt hỏi có deadline 120s; khởi tạo model và inference nhận timeout không vượt thời gian còn lại (mỗi RPC tối đa 60s). Chat RPC giới hạn response 64KiB, model metadata 1MiB. Local model có xác minh parameter count: riêng `qwen3:4b` tối đa 4,5B (metadata thực khoảng 4,02B), model khác giữ giới hạn 3B; không tải model hoặc gọi cloud tự động. Một model request và một lượt hỏi mỗi phiên được xử lý đồng thời; HTTP 429/409 báo bận, không xếp hàng vô hạn.
 
 Nếu finding đã được đưa cho model hết TTL trong lúc suy luận, ứng dụng được phục hồi tối đa một đợt mỗi lượt, bằng action READ đã đăng ký qua cùng ReadSession/Core và budget. Không tăng TTL hoặc chuyển context. Nếu vẫn thiếu dữ liệu hoặc không còn thời gian/capability/budget, trả PARTIAL/NEEDS_INPUT với lý do; không dùng số đo hoặc RCA proof hết hạn. Trace phân biệt `recovery_attempts`/`recovery_runs` (đọc lại TTL) và `repairs` của Runner, không coi các bộ đếm này là sự cố đã phục hồi.
 

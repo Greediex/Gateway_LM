@@ -19,7 +19,9 @@ from .grounded_answer import compose_answer, diagnostic_request, produce_grounde
 
 def local_model(*, timeout=60):
     # Trusted startup environment only; HTTP/model text cannot set endpoint/model.
-    return OllamaGoalModel(os.environ.get('GATEWAY_LM_CHAT_MODEL', 'qwen3:1.7b'), timeout=timeout)
+    name = os.environ.get('GATEWAY_LM_CHAT_MODEL', 'qwen3:4b')
+    limit = 4_500_000_000 if name == 'qwen3:4b' else 3_000_000_000
+    return OllamaGoalModel(name, timeout=timeout, max_parameters=limit)
 
 
 def findings(view: dict) -> dict:

@@ -51,11 +51,12 @@ Mặc định mỗi lượt có tối đa 4 vòng lựa chọn và deadline 120 
 
 Câu hỏi như “kiểm tra SSID” chỉ hiển thị SSID. Câu hỏi chẩn đoán có nhận định và giới hạn riêng; “Đã có số đo” không đồng nghĩa đã chẩn đoán hay khắc phục. Cùng model local có thể chọn field và cách diễn đạt bằng placeholder trong tối đa hai lượt bổ sung, với hậu kiểm evidence sau suy luận; lỗi/timeout/dữ liệu cũ dùng fallback từ facts còn hạn. Chi tiết kỹ thuật nằm trong “Chi tiết phép đo” và Trace.
 
-Cần Ollama đang chạy và model local `qwen3:1.7b` đã có sẵn:
+Chat laptop mặc định dùng `qwen3:4b`. Cần Ollama đang chạy và tải model trước:
 
 ```bash
 ollama serve
 # Terminal khác:
+ollama pull qwen3:4b
 bash web_gateway/start_linux.sh
 ```
 

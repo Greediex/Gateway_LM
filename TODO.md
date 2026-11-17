@@ -35,6 +35,10 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 - **Laptop live:** [API thực với Qwen](docs/reports/P0_LAPTOP_LIVE_20261117.json), DNS và Wi-Fi+gateway đều MEASURED, chỉ chọn finding đúng câu hỏi, evidence còn hạn; lần lượt **43,17s/7 calls** và **23,13s/3 calls**, lượt thứ hai có một đợt đọc lại TTL. Phiên kiểm tra đã đóng; raw SSID/BSSID/IP chỉ lưu trong `runs/` bị Git bỏ qua. Hai ví dụ này không phải benchmark hoặc nghiệm thu firmware. Web thử tại `http://127.0.0.1:8767/`.
 
 
+## Chuyển model theo yêu cầu
+
+- [x] Chuyển chat laptop mặc định sang `qwen3:4b`; đã tải Q4_K_M và xác minh 4.022.468.096 parameters, giữ kiểm tra model local và parameter count. Regression 788 tests: 783 pass, 5 Windows skips; hygiene đạt. Lượt API cold chạm timeout 60s, đang kiểm tra warm; chưa kết luận chất lượng/latency tốt hơn. Kết quả 1.7B trước đây vẫn là baseline cũ, không suy thành chất lượng 4B.
+
 ## Đã sửa câu trả lời theo grounded patch
 
 Phạm vi đã được yêu cầu: sửa CHAT-01/UI-01 trong luồng hiện có; không cài AgentLoop/CapabilityRegistry thứ hai. Giữ nguyên dữ liệu/nhãn EVAL1000 và các kết quả baseline; lượt Qwen dài chưa khởi chạy.
