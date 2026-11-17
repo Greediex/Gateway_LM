@@ -78,6 +78,11 @@
     "skip_reason": "Windows-only paths",
     "presentation": "PASS",
     "hygiene": "PASS",
-    "review": "No blocking findings after scope/deadline/lock and persistence budget fixes; component tests use doubles except illustrative live measurements."
+    "review": "No blocking findings after scope/deadline/lock and persistence budget fixes; component tests use doubles except illustrative live measurements.",
+    "ci": {
+      "head_sha": "e1c741c24397cc56d5eb8ef99b1ac547ae086737",
+      "url": "https://github.com/Greediex/Gateway_LM/actions/runs/44061522852",
+      "conclusion": "success"
+    }
   }
 }
