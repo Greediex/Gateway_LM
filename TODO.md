@@ -37,7 +37,7 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 
 ## Chuyển model theo yêu cầu
 
-- [x] Chuyển chat laptop mặc định sang `qwen3:4b`; đã tải Q4_K_M và xác minh 4.022.468.096 parameters, giữ kiểm tra model local và parameter count. Regression 788 tests: 783 pass, 5 Windows skips; hygiene đạt. Lượt API cold chạm timeout 60s, đang kiểm tra warm; chưa kết luận chất lượng/latency tốt hơn. Kết quả 1.7B trước đây vẫn là baseline cũ, không suy thành chất lượng 4B.
+- [x] Chuyển chat laptop mặc định sang `qwen3:4b`; đã tải Q4_K_M và xác minh 4.022.468.096 parameters, giữ kiểm tra model local và parameter count. Regression 788 tests: 783 pass, 5 Windows skips; hygiene đạt. Lượt API cold chạm timeout 60s; lượt warm với Qwen 4B thật đạt MEASURED/model_answer, trả đúng phạm vi SSID, 72,79s, 4 model calls và 6 READ calls. Đây là một ví dụ live, chưa chứng minh chất lượng/latency tốt hơn. [CI runtime 555f2e2](https://github.com/Greediex/Gateway_LM/actions/runs/44051845760) đang chạy. Kết quả 1.7B trước đây vẫn là baseline cũ, không suy thành chất lượng 4B.
 
 ## Đã sửa câu trả lời theo grounded patch
 
