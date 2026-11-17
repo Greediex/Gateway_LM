@@ -37,7 +37,7 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 
 ## Nối graph truy xuất vào chat
 
-- [x] Dùng BM25 + graph diffusion có sẵn (trọng số 0,30) để xếp hạng ứng viên catalog trong chat; giữ mọi Skill laptop khả dụng trong prompt. Ghi method/điểm lexical/graph vào trace; cạnh PROPOSED chỉ hỗ trợ liên quan, không cấp quyền hay biến thành phụ thuộc thực thi. Đã kiểm chứng ứng viên graph-only được đưa vào prompt và Skill UNAVAILABLE vẫn bị chặn. [So sánh 283 câu catalog dev](docs/reports/CHAT_GRAPH_RETRIEVAL_DEV_20261117.json): recall@6 BM25 56,24% → graph 57,13%, không phải điểm Qwen/E2E. API DNS laptop thật + Qwen 4B đạt MEASURED, 101,54s, 3 model calls/6 READ calls, trace có bm25_graph. Full regression 790 tests: 785 pass/5 Windows skips, hygiene đạt. Chờ CI cho commit tích hợp; CHAT-01 vẫn mở.
+- [x] Dùng BM25 + graph diffusion có sẵn (trọng số 0,30) để xếp hạng ứng viên catalog trong chat; giữ mọi Skill laptop khả dụng trong prompt. Ghi method/điểm lexical/graph vào trace; cạnh PROPOSED chỉ hỗ trợ liên quan, không cấp quyền hay biến thành phụ thuộc thực thi. Đã kiểm chứng ứng viên graph-only được đưa vào prompt và Skill UNAVAILABLE vẫn bị chặn. [So sánh 283 câu catalog dev](docs/reports/CHAT_GRAPH_RETRIEVAL_DEV_20261117.json): recall@6 BM25 56,24% → graph 57,13%, không phải điểm Qwen/E2E. API DNS laptop thật + Qwen 4B đạt MEASURED, 101,54s, 3 model calls/6 READ calls, trace có bm25_graph. Full regression 790 tests: 785 pass/5 Windows skips, hygiene đạt. [CI runtime 2a30bf9 đã đạt](https://github.com/Greediex/Gateway_LM/actions/runs/44053090402); code đã đẩy v2 và server đã nạp bản mới. CHAT-01 vẫn mở.
 
 ## Chuyển model theo yêu cầu
 
