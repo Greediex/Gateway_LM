@@ -49,6 +49,8 @@ Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLaunc
 
 Mặc định mỗi lượt có tối đa 4 vòng lựa chọn và deadline 120 giây. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
 
+Câu hỏi như “kiểm tra SSID” chỉ hiển thị SSID. Câu hỏi chẩn đoán có nhận định và giới hạn riêng; “Đã có số đo” không đồng nghĩa đã chẩn đoán hay khắc phục. Cùng model local có thể chọn field và cách diễn đạt bằng placeholder trong tối đa hai lượt bổ sung, với hậu kiểm evidence sau suy luận; lỗi/timeout/dữ liệu cũ dùng fallback từ facts còn hạn. Chi tiết kỹ thuật nằm trong “Chi tiết phép đo” và Trace.
+
 Cần Ollama đang chạy và model local `qwen3:1.7b` đã có sẵn:
 
 ```bash

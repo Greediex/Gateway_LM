@@ -14,6 +14,7 @@ from ..graph_v3.task_decomposer import TaskDecomposer
 from ..observability.snapshot import VerifiedSnapshot
 from ..workflow import normalize
 from .skill_launcher import LAUNCHER, SkillSessionError
+from .grounded_answer import compose_answer, diagnostic_request, produce_grounded_answer, assessment_summary
 
 
 def local_model(*, timeout=60):
@@ -173,6 +174,7 @@ class SkillChat:
                      if rows[skill]['availability']=='UNAVAILABLE' and any(_phrase(normalized,p) for p in phrases)]
         attempted,runs,advice,selected,assessments=[],[],[],[],[]
         rejections,recovery_attempts,model_calls=0,0,0
+        model=None
         recovery_runs=[];feedback=None;seen=set();reason='round_budget_exhausted';ready=False
         def coverage(facts):
             missing=sorted(set(goals)-set(facts))
@@ -297,29 +299,70 @@ class SkillChat:
             except (RuntimeError,ValueError,TypeError,PlanError):
                 if session.closed:raise SkillSessionError('session_expired')
                 reason='read_execution_unavailable' if ready else 'model_unavailable'
+        def answer_ports(snapshot, proposed):
+            current=findings(snapshot)
+            ports=[p for p in proposed if p in current]
+            if not blocked and not custom_target and (ports or runs):
+                ports=list(dict.fromkeys([*ports,*(p for p in goals if p in current)]))
+            if not ports and runs:
+                ports=list(dict.fromkeys(p for r in runs for p in r['snapshot']['facts'] if p in current))[:4]
+            return [p for p in ports if p in goals] if goals else ports
+
+        draft=None
+        draft_proofs={}
+        answer_calls=0
+        synthesis={'used_llm':False,'reason':'renderer','calls':0}
+        if (reason=='model_answer' and check_deadline()
+                and os.environ.get('GATEWAY_LM_ANSWER_SYNTHESIS','1').lower() not in {'0','off','false','no'}
+                and callable(getattr(model,'complete_answer',None))):
+            before_answer=view()
+            ports=answer_ports(before_answer,selected)
+            answer_budget=min(24,deadline-self.clock(),session.expires_at-runtime._clock())
+            if ports and min(before_answer['facts'][p]['expires_in_s'] for p in ports)>answer_budget+1:
+                draft_proofs={p:before_answer['facts'][p]['evidence_id'] for p in ports}
+                def completion(payload):
+                    nonlocal model_calls,answer_calls
+                    fresh=view(refresh=False)
+                    if any(fresh['facts'].get(p,{}).get('evidence_id')!=eid for p,eid in draft_proofs.items()):
+                        raise RuntimeError('answer_evidence_changed')
+                    remaining=min(deadline-self.clock(),session.expires_at-runtime._clock())
+                    if remaining<=0:raise TimeoutError('answer_deadline_exhausted')
+                    model_calls+=1
+                    answer_calls+=1
+                    return timed('inference',model.complete_answer,payload,timeout=min(12,remaining))
+                # Deliberately outside the entry lock: close/context invalidation
+                # must remain possible while an untrusted model is running.
+                draft=produce_grounded_answer(request,ports,before_answer['facts'],
+                                               findings(before_answer),completion)
+                synthesis.update(used_llm=draft.used_llm,reason=draft.reason,
+                                 draft_reason=draft.reason,calls=answer_calls)
+            elif ports:
+                synthesis['reason']='insufficient_freshness_window'
+
         with entry['lock']:
+            view(refresh=False)
             if assessments:assessments=assess([a['workflow'] for a in assessments])
             final=view(refresh=not bool(assessments))
-            expired=set(selected)-set(final['facts'])
+            expired=(set(selected)|set(draft_proofs))-set(final['facts'])
             if expired and not recovery_attempts and not blocked and not custom_target:
                 recover(expired)
                 if assessments:assessments=assess([a['workflow'] for a in assessments])
                 final=view(refresh=not bool(assessments))
             if set(selected)-set(final['facts']):reason='evidence_expired_during_answer'
             current=findings(final)
-            selected=[p for p in selected if p in current]
-            # Complete known question parts from current verified facts, not stale copies or another inference.
-            if not blocked and not custom_target and (selected or runs):
-                selected=list(dict.fromkeys([*selected,*(p for p in goals if p in current)]))
-            if not selected and runs:
-                selected=list(dict.fromkeys(p for r in runs for p in r['snapshot']['facts'] if p in current))[:4]
-            if goals:
-                # Dependency measurements stay in Trace; the answer follows the requested scope.
-                selected=[p for p in selected if p in goals]
+            selected=answer_ports(final,selected)
+            if not check_deadline():reason='turn_deadline_exhausted'
             cov=coverage(final['facts'])
             if not cov['complete'] and reason=='model_answer':reason='incomplete_coverage' if goals else 'intent_scope_unconfirmed'
             chosen={p:final['facts'][p] for p in selected}
-            answer='\n'.join(current[p]['text'] for p in selected)
+            answer=compose_answer(request,selected,final['facts'],current)
+            if draft:
+                final_proofs={p:final['facts'][p]['evidence_id'] for p in selected}
+                if (draft_proofs==final_proofs and check_deadline()
+                        and set(draft.evidence_ids)=={f['evidence_id'] for f in chosen.values()}):
+                    answer=draft.answer
+                else:
+                    synthesis.update(used_llm=False,reason='evidence_changed_or_deadline')
             if unavailable:answer+='\n'+'\n'.join(f"{rows[s]['name']}: chưa chạy được trên laptop ({rows[s]['reason']})." for s in unavailable)
             if cov['missing_ports'] and not blocked and not custom_target:
                 answer+='\nChưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.'
@@ -338,10 +381,16 @@ class SkillChat:
                 status='MEASURED' if cov['complete'] and reason=='model_answer' else 'PARTIAL'
                 wifi=final['facts'].get('laptop.wifi',{}).get('value',{})
                 route=final['facts'].get('laptop.route',{}).get('value',{})
-                if wifi and route.get('has_route') and route['interface']!=wifi['interface']:
+                diagnostic=diagnostic_request(request)
+                if diagnostic and 'laptop.wifi' in chosen and wifi and route.get('has_route') and route['interface']!=wifi['interface']:
                     answer+=f"\nĐường đo mạng qua {route['interface']}, khác Wi-Fi {wifi['interface']}; chưa chứng minh Internet qua Wi-Fi."
-                if any(p in chosen for p in ('laptop.internet_probe','laptop.dns')):
+                    chosen['laptop.route']=final['facts']['laptop.route']
+                if diagnostic and any(p in chosen for p in ('laptop.internet_probe','laptop.dns')):
                     answer+='\nICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.'
+                if diagnostic:
+                    assessment=assessment_summary(chosen,assessments)
+                    if assessment:answer=assessment+'\n'+answer
+                    answer+='\nChưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
                 if reason!='model_answer':
                     messages={'incomplete_coverage':'Còn phần yêu cầu chưa đủ bằng chứng',
                               'intent_scope_unconfirmed':'Chưa xác định đủ phạm vi câu hỏi',
@@ -389,6 +438,9 @@ class SkillChat:
                     'rca_assessments':assessments,'stop_reason':reason,'unavailable_skills':unavailable,'coverage':cov,
                     'recovery_attempts':recovery_attempts,'recovery_runs':recovery_runs,'proposal_rejections':rejections,
                     'model_calls':model_calls,'timings_ms':timings,
+                    'answer_synthesis':synthesis,
+                    'answer_kind':'diagnostic' if diagnostic_request(request) else 'lookup',
+                    'diagnostic_status':'INCONCLUSIVE' if diagnostic_request(request) else None,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
                     'llm_advisor_used':bool(advice),'runbooks':[],'warnings':[],
                     'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'}

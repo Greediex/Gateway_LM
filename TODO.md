@@ -35,6 +35,19 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 - **Laptop live:** [API thực với Qwen](docs/reports/P0_LAPTOP_LIVE_20261117.json), DNS và Wi-Fi+gateway đều MEASURED, chỉ chọn finding đúng câu hỏi, evidence còn hạn; lần lượt **43,17s/7 calls** và **23,13s/3 calls**, lượt thứ hai có một đợt đọc lại TTL. Phiên kiểm tra đã đóng; raw SSID/BSSID/IP chỉ lưu trong `runs/` bị Git bỏ qua. Hai ví dụ này không phải benchmark hoặc nghiệm thu firmware. Web thử tại `http://127.0.0.1:8767/`.
 
 
+## Đang sửa câu trả lời theo grounded patch
+
+Phạm vi đã được yêu cầu: sửa CHAT-01/UI-01 trong luồng hiện có; không cài AgentLoop/CapabilityRegistry thứ hai. Giữ nguyên dữ liệu/nhãn EVAL1000 và các kết quả baseline; lượt Qwen dài chưa khởi chạy.
+
+- [x] Tái hiện SSID bị lẫn BSSID/route, số đo hết hạn sau synthesis và nhãn field sai; thêm regression với Core thật, model/provider giả.
+- [x] Tích hợp field projection và hai bước LLM chọn evidence/diễn đạt; chỉ nhận câu có quan hệ field–giá trị được đối chiếu, còn lại fallback. Cùng local model, deadline/model slot/response limits; không gọi tool từ tầng trả lời.
+- [x] Kiểm lại snapshot/context sau synthesis; bỏ draft khi evidence hết hạn/đổi ID, dùng lại phục hồi một đợt hiện có và dựng fallback từ facts mới. Export đúng evidence IDs, số RPC và lý do fallback.
+- [ ] Đưa metadata vào details đóng mặc định; phân biệt đã đo với chưa đủ chẩn đoán. Kiểm regression, API/Qwen và trình duyệt; cập nhật README, đẩy v2/CI. Sau khi cố định code mới tiếp tục EVAL1000.
+
+**Kết quả sửa hiện tại:** các regression Core thật/provider-model giả đã đạt, gồm expiry ở cả hai lượt synthesis, thiếu cửa sổ TTL, deadline, đóng phiên và đổi nhãn SSID thành BSSID. Full local 787 tests đạt: 782 pass, 5 Windows skips; chờ CI cuối xác nhận đúng commit. DOM test dùng hàm render production đã đạt; UI thực đã hiển thị “Chưa đủ chẩn đoán” và details đóng. Qwen thật đã diễn đạt SSID bằng placeholder trong thử nghiệm synthetic; [lookup laptop thật](docs/reports/GROUNDED_ANSWER_LIVE_20261117.json) trả SSID đúng scope, proof còn hạn, 44,21s/7 READ calls, 2 lượt model lập kế hoạch, bỏ synthesis vì TTL không đủ; không coi đây là benchmark hoặc cam kết giảm latency. Các kết quả P0/Qwen 11/14 ở trên vẫn là baseline cũ, không nâng thành điểm của bản sửa này.
+
+**EVAL1000:** giữ nguyên 13 file của ZIP (SHA ZIP `11acea741da2b033496fb41b44442ad9e4e12e359f305b90e8bfa9a2aa913d20`), dataset SHA `a90e39c13250ed7cdfb548816311c527e308da17edb8066c43483b6ce4259cc5`. Validate 1000 cases/1017 turns/120 design IDs và 23/23 unit tests đạt; đã có test adapter để CI chạy các kiểm tra offline này. Baseline trên runtime `1d41b4c`: retrieval 390/390 cases đã chạy, strict exact-pass 0% do luôn trả top-5 so với gold 1–3; precision/recall 16,97%/51,28%, không phải điểm LLM. Fault 290/290 đã chạy: 49,66% pass theo rubric, 0 case scorer gắn cờ safety; giữ nguyên kết quả fail để audit, không sửa label. Có cả hạn chế fixture DNS chưa available và guard scope bắt nhầm câu phủ định, không được quy mọi fail là lỗi TTL. Qwen catalog dev smoke 1 case đã chạy (~81,5s, fail), chưa phải full; toàn bộ catalog-LLM/E2E Qwen dài chưa khởi chạy trong lúc sửa/runtime chưa cố định. Kết quả riêng nằm trong `runs/eval1000/`, không commit raw output và không trộn ba track thành accuracy chung.
+
 ## P1 — Hoàn thiện khả năng và trải nghiệm hiện có
 
 - [ ] **DATA-01 — Rà soát dữ liệu laptop còn thiếu.** Đối chiếu từng Skill với nguồn đọc thật đang khả dụng; ghi rõ RSSI/SNR, roaming/history và dữ liệu nào chỉ có từ AP/router. **Nghiệm thu:** có mapping nguồn/đơn vị/scope/TTL và gap cụ thể; signal % không thay RSSI/SNR, throughput không suy từ tốc độ AP quảng bá.

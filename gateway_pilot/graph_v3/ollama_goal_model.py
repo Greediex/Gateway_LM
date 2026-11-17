@@ -182,3 +182,21 @@ class OllamaGoalModel:
                 'skill_ids':output['ids'] if output['decision']=='measure' else [],
                 'finding_ids':output['ids'] if output['decision']=='answer' else [],
                 'unavailable_ids':output['ids'] if output['decision']=='clarify' else []}
+
+    def complete_answer(self, payload: dict, *, timeout: float) -> str:
+        """Same verified local model, bounded transport, no tools or targets."""
+        if (type(payload) is not dict or set(payload)!={'messages','format'}
+                or type(payload['messages']) is not list or len(payload['messages'])!=2
+                or type(timeout) not in (int,float) or not math.isfinite(timeout) or timeout<=0
+                or len(json.dumps(payload,ensure_ascii=False).encode())>32768):
+            raise ValueError('invalid_answer_payload')
+        reply=http_json(self.endpoint,'chat',{
+            'model':self.model,'stream':False,'think':False,
+            'messages':payload['messages'],'format':payload['format'],
+            'options':{'temperature':0,'seed':42,'num_ctx':6144,'num_predict':256,
+                       'num_thread':4,'num_gpu':0},'keep_alive':'10m'},
+            timeout=min(self.timeout,timeout),max_bytes=65536)
+        content=reply.get('message',{}).get('content')
+        if type(content) is not str or len(content)>8192:
+            raise ValueError('invalid_answer_output')
+        return content

@@ -376,7 +376,8 @@
         "radio",
         "tin hieu",
         "song wifi",
-        "ket noi khong day"
+        "ket noi khong day",
+        "bssid"
       ],
       "ports": [
         "laptop.wifi"
@@ -451,7 +452,6 @@
       "title": "AP của laptop",
       "phrases": [
         "ap nao",
-        "bssid",
         "diem phat nao",
         "access point"
       ],

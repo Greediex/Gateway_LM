@@ -93,7 +93,7 @@ class P0ChatTests(unittest.TestCase):
         value=r['snapshot']['facts']['laptop.wifi']['value']
         self.assertEqual(r['case_status'],'MEASURED')
         self.assertIn(value['ssid'],r['answer'])
-        self.assertIn('kênh '+str(value['channel']),r['answer'])
+        self.assertIn('Kênh: '+str(value['channel']),r['answer'])
 
     def test_model_dependency_finding_does_not_expand_dns_answer_scope(self):
         chat,_=self.chat([choice(skills=['laptop.dns.inspect']),

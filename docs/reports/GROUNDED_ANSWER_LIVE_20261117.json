@@ -1,0 +1,49 @@
+{
+  "scope": "Real Qwen plus physical local laptop; one illustrative lookup, not a benchmark.",
+  "runtime_base_commit": "1d41b4c0dafca2db53badb34dc25a7cbed8f43f0",
+  "source_sha256": {
+    "gateway_pilot/application/skill_chat.py": "61d49fc541ac6941072efe70ce168024e0f2aa5984a5a640053ab89a2533b336",
+    "gateway_pilot/application/grounded_answer.py": "3ccd594ab106cd5f5eec04107314392d01884f2c9ec9321e05b0e0f992255c1f",
+    "gateway_pilot/graph_v3/ollama_goal_model.py": "0973e02a1dc52858079ec1fa6daf29dfa11a78d95902601b7df90bace92a97bf",
+    "config/skill_launcher/live.diagnostics.json": "a5a1e5fe3b6080f0459a154940efc1d0a50bb9f9d7decc432f404d10d52ba2b2"
+  },
+  "question": "kiểm tra ssid",
+  "elapsed_s": 44.20911212300052,
+  "case_status": "MEASURED",
+  "calls": 7,
+  "model_calls": 2,
+  "answer_synthesis": {
+    "used_llm": false,
+    "reason": "insufficient_freshness_window",
+    "calls": 0
+  },
+  "focused_ssid_only": true,
+  "selected_ports": [
+    "laptop.wifi"
+  ],
+  "fresh_proofs": true,
+  "raw_identifiers_committed": false,
+  "validation": {
+    "local_full_tests": 787,
+    "local_pass": 782,
+    "windows_only_skips": 5,
+    "pack_offline_tests": 23,
+    "node_presentation_check": "PASS",
+    "browser_diagnostic_badge": "Chưa đủ chẩn đoán",
+    "browser_details_collapsed_observed": true,
+    "screenshot_committed": false
+  },
+  "controlled_real_answer_model_test": {
+    "scope": "Real Qwen answer generation inside real Core/Verifier with synthetic provider and SCRIPTED planning; not whole-LLM or hardware acceptance.",
+    "answer": "SSID hiện tại là Synthetic test AP.",
+    "elapsed_s": 10.864597781997873,
+    "case_status": "MEASURED",
+    "answer_synthesis": {
+      "used_llm": true,
+      "reason": "grounded_natural",
+      "calls": 2,
+      "draft_reason": "grounded_natural"
+    },
+    "fresh_proofs": true
+  }
+}
