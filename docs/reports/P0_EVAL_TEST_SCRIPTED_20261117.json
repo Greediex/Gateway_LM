@@ -1,0 +1,118 @@
+{
+  "benchmark": "skill_chat_v1",
+  "manifest_sha256": "7f6bfa9b3b65737ba20d1cb0bf7f96ef6c582255358107f3abf393101e7c9072",
+  "split_sha256": "f604503f2fd8aab50dfc60607e3b1b081b8b050f73df45aa400fba5ddac330a8",
+  "split": "test",
+  "runtime_commit": "b64cbe82645de81516210af72b485bf669c65ae7",
+  "runtime_skill_chat_sha256": "5755ed226d04912b3265014b54c946af9c1c9b90b9dd80e127d43b59a289a3d6",
+  "model_mode": "test_double",
+  "model": "scripted-lexical-double-v1",
+  "provider_mode": "synthetic_replay",
+  "runtime_profile": "live_laptop_contracts",
+  "os_measurement": false,
+  "router_measurement": false,
+  "label_provenance": "Agent-authored semantic scope, coverage, abstention and minimal selection obligations; not human-reviewed, external holdout or network-ground-truth labels. Frozen before runtime edits.",
+  "cases": 12,
+  "turns": 14,
+  "request_success_rate": 1.0,
+  "reported_runtime_goals": 15,
+  "reported_runtime_satisfied_goals": 13,
+  "reported_runtime_complete_rate": 0.6428571428571429,
+  "skill_selection": {
+    "tp": 12,
+    "fp": 1,
+    "fn": 0,
+    "precision": 0.9230769230769231,
+    "recall": 1.0
+  },
+  "function_selection": {
+    "tp": 29,
+    "fp": 3,
+    "fn": 0,
+    "precision": 0.90625,
+    "recall": 1.0
+  },
+  "semantic_answer_obligations": 14,
+  "semantic_answer_covered": 12,
+  "answer_coverage": 0.8571428571428571,
+  "answer_complete_rate": 0.8571428571428571,
+  "abstention_accuracy": 0.7857142857142857,
+  "root_cause_abstention_accuracy": 1.0,
+  "rca_proof_valid_rate": 1.0,
+  "rca_true_claims": 15,
+  "rca_invalid_true_claims": 0,
+  "rca_turns_with_true_claims": 8,
+  "invalid_proposals": 0,
+  "proposals": 24,
+  "proposal_rejections": 0,
+  "advice_count": 24,
+  "advice_accepted": 24,
+  "coverage_feedback_rejections": 0,
+  "tool_calls": 32,
+  "call_bounds_pass_rate": 0.8571428571428571,
+  "ttl_recovery_attempts": 0,
+  "runner_repairs": 0,
+  "ttl_recovery_runs": 0,
+  "total_recovery_attempts": 0,
+  "stage_timings_ms": {
+    "catalog": {
+      "observed_turns": 14,
+      "sum": 5.194747000132338,
+      "p50": 0.35962099991593277,
+      "p95": 0.591169000017544
+    },
+    "execution": {
+      "observed_turns": 14,
+      "sum": 482.1203249998689,
+      "p50": 35.18663600016225,
+      "p95": 79.0586399998574
+    },
+    "inference": {
+      "observed_turns": 14,
+      "sum": 1.044221000483958,
+      "p50": 0.07370000002993038,
+      "p95": 0.12063900021530571
+    },
+    "probe": {
+      "observed_turns": 14,
+      "sum": 637.1358630008217,
+      "p50": 48.505529000522074,
+      "p95": 53.066044999013684
+    },
+    "rca": {
+      "observed_turns": 14,
+      "sum": 177.86820699984673,
+      "p50": 18.08086099981665,
+      "p95": 20.172151000224403
+    },
+    "setup": {
+      "observed_turns": 14,
+      "sum": 2283.540200999596,
+      "p50": 190.77848599999925,
+      "p95": 202.43255600007615
+    },
+    "total": {
+      "observed_turns": 14,
+      "sum": 3602.3567539996293,
+      "p50": 282.559640999807,
+      "p95": 326.75914199990075
+    }
+  },
+  "latency_ms": {
+    "p50": 282.8150850000384,
+    "p95": 327.07985999968514
+  },
+  "runtime_errors": 0,
+  "limits": [
+    "Generated semantic fixture, no external human validation.",
+    "Scripted selection is integration evidence only.",
+    "Selection metrics score executed skill_runs and attempted timeline function IDs.",
+    "Real inference time counts against TTL; stale scenarios also advance the clock 31 seconds.",
+    "Coverage checks selected verified ports, not prose semantics.",
+    "Synthetic latency is not live-device latency.",
+    "TTL recovery attempts and runner repairs are separate; their sum is not verified incident recovery.",
+    "Reported runtime goals are telemetry, separate from frozen semantic answer obligations.",
+    "Stage timings use runtime instrumentation; execution includes Core/Verifier costs.",
+    "Frozen exact call bounds may overestimate retries; failures are retained, never relabeled."
+  ]
+}

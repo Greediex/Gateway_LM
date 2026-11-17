@@ -45,7 +45,9 @@ Phiên tối đa 5 phút, 24 tool calls, 64 plans; tái sử dụng evidence cò
 
 Chưa có required evidence thì hiện INCOMPLETE; chưa có backend thì UNAVAILABLE. MEASURED cho biết phép đo hoàn thành, không phải chẩn đoán nguyên nhân hay lời bảo đảm mạng khỏe. Không phản hồi ICMP có thể do lọc ping. IP/DNS phản hồi chưa chứng minh truy cập web. Signal % không chuyển thành RSSI dBm; tốc độ AP quảng bá không phải throughput Internet. Router CPU/RAM/health luôn unavailable ở profile laptop.
 
-Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLauncher/ReadSession → GraphRunner/Verifier → RCAAgent → LLM**. Model local tự chọn và phối hợp ID Skill được hỗ trợ; Core giữ quyền chạy và bằng chứng. RCA đánh giá trong cùng phiên, không tạo Runner khác. Khi đã đủ phép đo trong scope đã chọn, LLM chọn finding để trả lời; khi thiếu dữ liệu, có thể chọn tiếp trong budget. [Chi tiết và giới hạn](docs/LLM_SKILL_CHAT.md).
+Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLauncher/ReadSession → GraphRunner/Verifier → RCAAgent → LLM**. Model local tự chọn và phối hợp ID Skill được hỗ trợ; Core giữ quyền chạy và bằng chứng. RCA đánh giá trong cùng phiên, không tạo Runner khác. Hệ thống kiểm tra các phần được yêu cầu trong câu hỏi; hoàn tất một Skill không đồng nghĩa trả lời đủ cả câu. Khi thiếu dữ liệu, model có thể chọn tiếp trong budget; dữ liệu phụ thuộc giữ trong Trace, câu trả lời theo đúng phạm vi được hỏi. [Chi tiết và giới hạn](docs/LLM_SKILL_CHAT.md).
+
+Mặc định mỗi lượt có tối đa 4 vòng lựa chọn và deadline 120 giây. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
 
 Cần Ollama đang chạy và model local `qwen3:1.7b` đã có sẵn:
 

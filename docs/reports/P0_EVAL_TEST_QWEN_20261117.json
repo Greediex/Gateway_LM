@@ -1,0 +1,118 @@
+{
+  "benchmark": "skill_chat_v1",
+  "manifest_sha256": "7f6bfa9b3b65737ba20d1cb0bf7f96ef6c582255358107f3abf393101e7c9072",
+  "split_sha256": "f604503f2fd8aab50dfc60607e3b1b081b8b050f73df45aa400fba5ddac330a8",
+  "split": "test",
+  "runtime_commit": "b64cbe82645de81516210af72b485bf669c65ae7",
+  "runtime_skill_chat_sha256": "5755ed226d04912b3265014b54c946af9c1c9b90b9dd80e127d43b59a289a3d6",
+  "model_mode": "real_local_ollama",
+  "model": "qwen3:1.7b",
+  "provider_mode": "synthetic_replay",
+  "runtime_profile": "live_laptop_contracts",
+  "os_measurement": false,
+  "router_measurement": false,
+  "label_provenance": "Agent-authored semantic scope, coverage, abstention and minimal selection obligations; not human-reviewed, external holdout or network-ground-truth labels. Frozen before runtime edits.",
+  "cases": 12,
+  "turns": 14,
+  "request_success_rate": 1.0,
+  "reported_runtime_goals": 15,
+  "reported_runtime_satisfied_goals": 11,
+  "reported_runtime_complete_rate": 0.5714285714285714,
+  "skill_selection": {
+    "tp": 10,
+    "fp": 10,
+    "fn": 2,
+    "precision": 0.5,
+    "recall": 0.8333333333333334
+  },
+  "function_selection": {
+    "tp": 26,
+    "fp": 30,
+    "fn": 3,
+    "precision": 0.4642857142857143,
+    "recall": 0.896551724137931
+  },
+  "semantic_answer_obligations": 14,
+  "semantic_answer_covered": 11,
+  "answer_coverage": 0.7857142857142857,
+  "answer_complete_rate": 0.7857142857142857,
+  "abstention_accuracy": 0.8571428571428571,
+  "root_cause_abstention_accuracy": 1.0,
+  "rca_proof_valid_rate": 1.0,
+  "rca_true_claims": 40,
+  "rca_invalid_true_claims": 0,
+  "rca_turns_with_true_claims": 9,
+  "invalid_proposals": 0,
+  "proposals": 23,
+  "proposal_rejections": 0,
+  "advice_count": 22,
+  "advice_accepted": 21,
+  "coverage_feedback_rejections": 1,
+  "tool_calls": 57,
+  "call_bounds_pass_rate": 0.35714285714285715,
+  "ttl_recovery_attempts": 1,
+  "runner_repairs": 0,
+  "ttl_recovery_runs": 3,
+  "total_recovery_attempts": 1,
+  "stage_timings_ms": {
+    "catalog": {
+      "observed_turns": 14,
+      "sum": 4.222353999921324,
+      "p50": 0.2603029997771955,
+      "p95": 0.4260850000719074
+    },
+    "execution": {
+      "observed_turns": 14,
+      "sum": 1103.2359040009396,
+      "p50": 105.87346100010109,
+      "p95": 151.12909099980243
+    },
+    "inference": {
+      "observed_turns": 14,
+      "sum": 283611.53799099976,
+      "p50": 23663.26353400018,
+      "p95": 29978.48056599969
+    },
+    "probe": {
+      "observed_turns": 14,
+      "sum": 771.7772709975179,
+      "p50": 59.13219000012759,
+      "p95": 83.40136200013148
+    },
+    "rca": {
+      "observed_turns": 14,
+      "sum": 295.96518400057903,
+      "p50": 25.579662999916764,
+      "p95": 41.467815000032715
+    },
+    "setup": {
+      "observed_turns": 14,
+      "sum": 2696.314412000447,
+      "p50": 205.90897400006725,
+      "p95": 454.19810000021243
+    },
+    "total": {
+      "observed_turns": 14,
+      "sum": 288504.14473300043,
+      "p50": 24017.244422999738,
+      "p95": 30403.7190009999
+    }
+  },
+  "latency_ms": {
+    "p50": 24017.758715999662,
+    "p95": 30404.362286999913
+  },
+  "runtime_errors": 0,
+  "limits": [
+    "Generated semantic fixture, no external human validation.",
+    "Scripted selection is integration evidence only.",
+    "Selection metrics score executed skill_runs and attempted timeline function IDs.",
+    "Real inference time counts against TTL; stale scenarios also advance the clock 31 seconds.",
+    "Coverage checks selected verified ports, not prose semantics.",
+    "Synthetic latency is not live-device latency.",
+    "TTL recovery attempts and runner repairs are separate; their sum is not verified incident recovery.",
+    "Reported runtime goals are telemetry, separate from frozen semantic answer obligations.",
+    "Stage timings use runtime instrumentation; execution includes Core/Verifier costs.",
+    "Frozen exact call bounds may overestimate retries; failures are retained, never relabeled."
+  ]
+}

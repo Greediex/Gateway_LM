@@ -1,0 +1,76 @@
+{
+  "scope": "Real local Linux laptop READ via HTTP API and Qwen; no firmware execution claim.",
+  "runtime_revision": "b64cbe82645de81516210af72b485bf669c65ae7",
+  "os_measurement": true,
+  "router_firmware_measurement": false,
+  "model": "qwen3:1.7b",
+  "raw_network_identifiers_committed": false,
+  "session_close_requested": true,
+  "rows": [
+    {
+      "request": "Kiểm tra DNS trên laptop",
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "elapsed_s": 43.169518983000216,
+      "calls": 7,
+      "model_calls": 2,
+      "selected_ports": [
+        "laptop.dns"
+      ],
+      "selected_ids_in_snapshot": true,
+      "selected_evidence_fresh_at_snapshot": true,
+      "coverage": {
+        "requested_ports": [
+          "laptop.dns"
+        ],
+        "satisfied_ports": [
+          "laptop.dns"
+        ],
+        "missing_ports": [],
+        "unsupported_skills": [],
+        "unconfirmed_parts": [],
+        "complete": true,
+        "scope_confirmed": true
+      },
+      "recovery_attempts": 0,
+      "sources": [
+        "linux_client/skill_laptop_v1"
+      ],
+      "causal_diagnosis": null
+    },
+    {
+      "request": "Wi-Fi và gateway laptop thế nào?",
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "elapsed_s": 23.12624847999996,
+      "calls": 3,
+      "model_calls": 1,
+      "selected_ports": [
+        "laptop.route",
+        "laptop.wifi"
+      ],
+      "selected_ids_in_snapshot": true,
+      "selected_evidence_fresh_at_snapshot": true,
+      "coverage": {
+        "requested_ports": [
+          "laptop.wifi",
+          "laptop.route"
+        ],
+        "satisfied_ports": [
+          "laptop.route",
+          "laptop.wifi"
+        ],
+        "missing_ports": [],
+        "unsupported_skills": [],
+        "unconfirmed_parts": [],
+        "complete": true,
+        "scope_confirmed": true
+      },
+      "recovery_attempts": 1,
+      "sources": [
+        "linux_client/skill_laptop_v1"
+      ],
+      "causal_diagnosis": null
+    }
+  ]
+}
