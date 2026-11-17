@@ -7,9 +7,19 @@ from __future__ import annotations
 
 import json
 import re
+import time
+import math
+from functools import lru_cache
 from urllib.parse import urlparse
 
 from ..run import http_json
+
+
+@lru_cache(maxsize=1)
+def _skill_retriever():
+    from ..skill_expansion.catalog import SkillCatalog
+    from ..skill_expansion.retrieval import SkillRetriever
+    return SkillRetriever(SkillCatalog.load())
 
 
 class OllamaGoalModel:
@@ -30,7 +40,8 @@ class OllamaGoalModel:
                 or type(max_parameters) is not int or max_parameters <= 0):
             raise ValueError("goal_ollama_invalid_limits")
         self.model, self.endpoint, self.timeout = model, endpoint.rstrip("/"), timeout
-        show = http_json(self.endpoint, "show", {"model": self.model}, timeout=timeout)
+        show = http_json(self.endpoint, "show", {"model": self.model}, timeout=timeout,
+                         max_bytes=1048576)
         count = show.get("model_info", {}).get("general.parameter_count")
         if type(count) is not int or not 0 < count <= max_parameters:
             raise ValueError("goal_ollama_unverified_model_size")
@@ -89,8 +100,23 @@ class OllamaGoalModel:
                 or type(catalog) is not list or not 1 <= len(catalog) <= 128
                 or type(context) is not dict):
             raise ValueError('skill_model_invalid_input')
+        remaining=context.get('inference_timeout_s',self.timeout)
+        if type(remaining) not in (int,float) or not math.isfinite(remaining) or remaining <= 0:
+            raise ValueError('skill_model_invalid_deadline')
+        rpc_timeout=min(self.timeout,remaining)
+        # Existing lexical catalog retrieval searches all design Skills; ranking never grants execution.
+        search_start=time.perf_counter()
+        retriever=_skill_retriever()
+        relevant={h.skill_id for h in retriever.search(request,limit=6,include_proposed=True,graph_weight=0)}
+        relevant.update(context.get('required_unavailable',[]))
+        relevant.update(r[0] for r in catalog if r[2] in {'READY','DEGRADED'} or r[0] in request)
+        # Keep non-design records: native actions and trusted operator catalog extensions.
+        relevant.update(r[0] for r in catalog if r[0] not in retriever.catalog.skills)
+        visible=[r for r in catalog if r[0] in relevant]
+        self.last_catalog={'total':len(catalog),'visible_ids':[r[0] for r in visible],
+                           'retrieval_ms':(time.perf_counter()-search_start)*1000}
         available=[r[0] for r in catalog if r[2] in {'READY','DEGRADED'} and r[0] not in context.get('attempted',[])]
-        unsupported=[r[0] for r in catalog if r[2]=='UNAVAILABLE']
+        unsupported=[r[0] for r in visible if r[2]=='UNAVAILABLE']
         ids=[f['id'] for f in context.get('findings',[])]
         branches=[]
         for decision, choices, minimum, maximum in [('measure',available,1,3),
@@ -116,8 +142,14 @@ class OllamaGoalModel:
             "If existing findings answer the question, choose answer immediately. "
             "A measured result is a scoped observation, never a root-cause guarantee. "
             "Off-topic, ambiguous or WRITE: clarify without measuring. No commands, facts or targets. "
-            "On last_round answer or clarify. Catalog id:name (presence alone is NOT capability):\n"
-            + '\n'.join(r[0]+':'+r[1] for r in catalog)
+            "If missing_goals is nonempty, measure relevant remaining Skills or clearly report missing data. "
+            "runnable_outputs maps approved actions to output ports. If an action can produce a missing "
+            "requested port, measure it before declaring that port unsupported. Related UNAVAILABLE catalog "
+            "designs do not make a supported laptop measurement unavailable; do not select them unless "
+            "their specific missing capability was actually requested. "
+            "On last_round answer or clarify. Relevant catalog retrieved from ALL 120 design Skills plus local actions "
+            "(retrieval never grants capability):\n"
+            + '\n'.join(r[0]+':'+r[1]+' ['+r[2]+', scope='+r[3]+']' for r in visible)
             + '\nRunnable only: '+','.join(available))
         reply = http_json(self.endpoint, 'chat', {
             'model':self.model,'stream':False,'think':False,'format':schema,
@@ -132,7 +164,7 @@ class OllamaGoalModel:
                         {'role':'assistant','content':'{"decision":"clarify","ids":["B04"]}'},
                         {'role':'user','content':json.dumps({**context,'request':request},ensure_ascii=False)}],
             'options':{'temperature':0,'seed':42,'num_ctx':6144,'num_predict':160,'num_thread':4,'num_gpu':0},
-            'keep_alive':'10m'}, timeout=self.timeout)
+            'keep_alive':'10m'}, timeout=rpc_timeout,max_bytes=65536)
         content=reply.get('message',{}).get('content')
         if type(content) is not str or len(content)>8192:
             raise ValueError('skill_model_invalid_output')

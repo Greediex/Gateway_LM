@@ -1,0 +1,50 @@
+{
+  "format": "gateway-lm.skill-chat-benchmark/v1",
+  "version": "skill_chat_v1",
+  "frozen_at_utc": "2026-11-16",
+  "baseline_commit": "5884be4",
+  "label_provenance": "Agent-authored semantic scope, coverage, abstention and minimal selection obligations; not human-reviewed, external holdout or network-ground-truth labels. Frozen before runtime edits.",
+  "split_policy": "Distinct scenario_group and paraphrase_group IDs; no paraphrase family appears across splits. Both are generated semantic tests; repeated capability IDs are intentional.",
+  "model_boundary": "Expected labels and case metadata must never enter inference prompts. Scripted mode is a lexical test double, not model-quality evidence.",
+  "selection_policy": "Canonical minimal skill/function sets, including identity dependency and reviewed optional route; redundant broad selections lose precision. Coverage scored independently.",
+  "answer_coverage_policy": "Required semantic ports must be selected into answer via verified evidence_ids. This is structured evidence coverage, not a human judgement of prose quality.",
+  "calls_policy": "Expected bounds count bounded attempts including failed calls; reported separately from selection/coverage.",
+  "rca_policy": "Observation predicates may be TRUE; no scenario establishes causal root cause or repair.",
+  "provider_policy": "Deterministic synthetic laptop-provider replay through real live-profile Core/Verifier/RCA; runtime linux_live flag is not proof of OS measurement. No OS/router access by default.",
+  "files": {
+    "dev": {
+      "path": "dev.jsonl",
+      "sha256": "3b5e220c7678f62ad8595a5774605eccc2a03c2aa9fd47527a61f333617b6848",
+      "cases": 12,
+      "turns": 14,
+      "categories": {
+        "single": 2,
+        "multi": 2,
+        "followup": 1,
+        "unavailable": 1,
+        "mixed": 1,
+        "stale": 1,
+        "wrong_scope": 1,
+        "tool_error": 1,
+        "injection": 2
+      }
+    },
+    "test": {
+      "path": "test.jsonl",
+      "sha256": "f604503f2fd8aab50dfc60607e3b1b081b8b050f73df45aa400fba5ddac330a8",
+      "cases": 12,
+      "turns": 14,
+      "categories": {
+        "single": 2,
+        "multi": 2,
+        "followup": 1,
+        "unavailable": 1,
+        "mixed": 1,
+        "stale": 1,
+        "wrong_scope": 1,
+        "tool_error": 1,
+        "injection": 2
+      }
+    }
+  }
+}

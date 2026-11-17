@@ -86,6 +86,10 @@ def composition(mode: str, *, backend=None, clock=time.monotonic):
         require(set(diagnostics['skill_workflows']) == set(actions)
                 and all(set(ids) <= set(diagnostics['workflows']) for ids in diagnostics['skill_workflows'].values()),
                 'skill_diagnostic_membership')
+        require(all(set(v['ports']) <= set(runtime.registry.ports) and v['phrases']
+                    for v in diagnostics['question_intents'].values()), 'skill_question_intents')
+        runtime.registry.nonlocal_scope_phrases = diagnostics['nonlocal_scope_phrases']
+        runtime.registry.question_intents = diagnostics['question_intents']
         runtime.registry.required_skill_phrases = diagnostics['required_skill_phrases']
         runtime.registry.skill_workflows = diagnostics['skill_workflows']
         runtime.registry.workflows = diagnostics['workflows']

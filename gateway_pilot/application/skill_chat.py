@@ -4,7 +4,8 @@ from __future__ import annotations
 import os
 import re
 import threading
-from functools import lru_cache
+import time
+import math
 
 from ..core import PlanError
 from ..graph_v3.ollama_goal_model import OllamaGoalModel
@@ -15,10 +16,9 @@ from ..workflow import normalize
 from .skill_launcher import LAUNCHER, SkillSessionError
 
 
-@lru_cache(maxsize=1)
-def local_model():
+def local_model(*, timeout=60):
     # Trusted startup environment only; HTTP/model text cannot set endpoint/model.
-    return OllamaGoalModel(os.environ.get('GATEWAY_LM_CHAT_MODEL', 'qwen3:1.7b'), timeout=60)
+    return OllamaGoalModel(os.environ.get('GATEWAY_LM_CHAT_MODEL', 'qwen3:1.7b'), timeout=timeout)
 
 
 def findings(view: dict) -> dict:
@@ -37,7 +37,11 @@ def findings(view: dict) -> dict:
             text = f"DNS {v['query']}: {'phân giải được' if v['resolved'] else 'chưa phân giải được'}; interface {v['interface']}."
         elif port == 'laptop.wifi':
             signal = f"{v['signal_pct']:g}%" if v['signal_pct'] >= 0 else 'chưa đọc được'
-            text = f"Wi-Fi {v['interface']}: {'đã associated' if v['associated'] else 'chưa associated'}; signal {signal} (không phải RSSI dBm/SNR)."
+            frequency = f"{v['frequency_mhz']:g} MHz" if v['frequency_mhz'] >= 0 else 'chưa đọc được'
+            text = (f"Wi-Fi {v['interface']}: {'đã associated' if v['associated'] else 'chưa associated'}; "
+                    f"SSID {v['ssid'] or 'chưa đọc được'}; BSSID {v['bssid'] or 'chưa đọc được'}; "
+                    f"kênh {v['channel'] if v['channel'] >= 0 else 'chưa đọc được'}; "
+                    f"tần số {frequency}; signal {signal} (không phải RSSI dBm/SNR).")
         elif port == 'client.ipv4':
             text = f"IPv4 của Wi-Fi laptop: {v['address'] if v['configured'] else 'chưa được cấu hình'}."
         elif port == 'client.identity':
@@ -70,179 +74,320 @@ def validate_choice(choice, rows, available_findings, attempted):
     return choice
 
 
+# One local CPU model request at a time; busy clients get a bounded response instead of queuing threads.
+_MODEL_SLOT = threading.BoundedSemaphore(1)
+
+
+def _phrase(text, phrase):
+    return re.search(r'(?<!\w)'+re.escape(phrase)+r'(?!\w)',text) is not None
+
+
 class SkillChat:
-    def __init__(self, launcher=LAUNCHER, *, model_factory=local_model, max_rounds=4):
-        if type(max_rounds) is not int or not 1 <= max_rounds <= 6:
+    def __init__(self, launcher=LAUNCHER, *, model_factory=local_model, max_rounds=4,
+                 max_elapsed_s=120, clock=time.monotonic):
+        if (type(max_rounds) is not int or not 1 <= max_rounds <= 6
+                or type(max_elapsed_s) not in (int,float) or not math.isfinite(max_elapsed_s)
+                or not 1 <= max_elapsed_s <= 240 or not callable(clock)):
             raise ValueError('invalid_chat_round_budget')
         self.launcher, self.model_factory, self.max_rounds = launcher, model_factory, max_rounds
+        self.max_elapsed_s,self.clock=max_elapsed_s,clock
 
     def _view(self, entry, *, refresh=True):
         with entry['lock'], entry['session']._lock:
             try:
-                if refresh:
-                    entry['capabilities'] = entry['session'].refresh()
-                else:
-                    entry['session']._validate()
+                if refresh:entry['capabilities']=entry['session'].refresh()
+                else:entry['session']._validate()
             except PlanError as exc:
                 raise SkillSessionError('session_expired') from exc
-            return VerifiedSnapshot.from_state(entry['session'].state, entry['runtime'].registry.ports,
+            return VerifiedSnapshot.from_state(entry['session'].state,entry['runtime'].registry.ports,
                     context_valid=entry['context_valid']).export()
+
+    @staticmethod
+    def _requested(entry, request):
+        text=normalize(request)
+        goals={port:meta['title'] for meta in entry['runtime'].registry.question_intents.values()
+               if any(_phrase(text,p) for p in meta['phrases']) for port in meta['ports']}
+        # An explicit gateway ICMP question does not imply a public Internet measurement.
+        if 'gateway' in text and 'internet' not in text and 'chat luong mang' not in text:
+            goals.pop('laptop.internet_probe',None)
+        return goals
+
+    @classmethod
+    def _unconfirmed_parts(cls, entry, request):
+        # A recognized clause cannot prove a different, unrecognized clause answered.
+        clauses=re.split(r'\b(?:va|voi|and|also|cung nhu)\b|[,;]',normalize(request))
+        if len(clauses)==1:return []
+        return [part.strip() for part in clauses if part.strip()
+                and not cls._requested(entry,part)
+                and not any(_phrase(part,phrase)
+                            for phrases in entry['runtime'].registry.required_skill_phrases.values()
+                            for phrase in phrases)]
 
     def chat(self, request: str, *, session_id=None):
         if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
             raise ValueError('invalid_chat_request')
-        request=request.strip()
-        created = session_id is None
-        if created:
-            session_id=self.launcher.create_session('live')['session_id']
+        started=self.clock()
+        created=session_id is None
+        if created:session_id=self.launcher.create_session('live')['session_id']
         entry=self.launcher._get(session_id)
-        if entry['mode'] != 'live':
-            raise ValueError('chat_requires_live_session')
-        with self.launcher._lock:
-            lock=entry.setdefault('chat_lock',threading.Lock())
-        # Serialise conversation turns without holding the manager/measurement lock during inference.
-        with lock:
-            try:
-                return self._turn(request,session_id,entry)
-            except Exception:
-                if created:
-                    try:self.launcher.close(session_id)
-                    except SkillSessionError:pass
-                raise
+        if entry['mode']!='live':raise ValueError('chat_requires_live_session')
+        with self.launcher._lock:lock=entry.setdefault('chat_lock',threading.Lock())
+        if not lock.acquire(blocking=False):raise SkillSessionError('session_busy')
+        if not _MODEL_SLOT.acquire(blocking=False):
+            lock.release()
+            if created:self.launcher.close(session_id)
+            raise SkillSessionError('model_busy')
+        try:
+            return self._turn(request.strip(),session_id,entry,started)
+        except Exception:
+            if created:
+                try:self.launcher.close(session_id)
+                except SkillSessionError:pass
+            raise
+        finally:
+            _MODEL_SLOT.release();lock.release()
 
-    def _turn(self, request, sid, entry):
-        runtime, session = entry['runtime'], entry['session']
-        calls_before=session.runner.calls
-        plans_before=len(session.runner.plans)
-        entry['capabilities']=runtime.probe()
-        catalog=self.launcher.catalog('live',entry=entry)
+    def _turn(self, request, sid, entry, started):
+        runtime,session=entry['runtime'],entry['session']
+        deadline=started+self.max_elapsed_s
+        calls_before=session.runner.calls;plans_before=len(session.runner.plans)
+        timings={k:0.0 for k in ('setup','catalog','inference','probe','execution','rca')}
+        timings['setup']=(self.clock()-started)*1000
+        def timed(stage, method, *args, **kwargs):
+            start=self.clock()
+            try:return method(*args,**kwargs)
+            finally:timings[stage]+=(self.clock()-start)*1000
+        def view(refresh=True):return timed('probe',self._view,entry,refresh=refresh)
+        def assess(workflows):
+            return timed('rca',RCAAgent(runtime.registry,method='bm25').assess_session,
+                         session,workflows=workflows)
+        def check_deadline():return self.clock()<deadline and runtime._clock()<session.expires_at
+        view()
+        catalog=timed('catalog',self.launcher.catalog,'live',entry=entry)
         rows={r['skill_id']:r for r in catalog['rows']}
         docs=[[r['skill_id'],r['name'],r['availability'],r['runtime_scope']] for r in catalog['rows']]
-        attempted, runs, advice, unavailable, selected = [], [], [], [], []
+        goals=self._requested(entry,request)
+        unconfirmed=self._unconfirmed_parts(entry,request)
         normalized=normalize(request)
-        unavailable=[skill for skill, phrases in runtime.registry.required_skill_phrases.items()
-                     if rows[skill]['availability']=='UNAVAILABLE' and any(
-                         re.search(r'(?<!\w)'+re.escape(phrase)+r'(?!\w)',normalized) for phrase in phrases)]
-        assessments=[]; reason='round_budget_exhausted'; ready=False
-        if TaskDecomposer(runtime.registry).is_write_intent(request):
-            reason='write_intent_requires_approval'
-        # No custom targets: every action is pinned to this laptop. A named/addressed remote target needs another backend.
-        elif re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}',request):
-            reason='custom_target_not_supported'
+        unavailable=[skill for skill,phrases in runtime.registry.required_skill_phrases.items()
+                     if rows[skill]['availability']=='UNAVAILABLE' and any(_phrase(normalized,p) for p in phrases)]
+        attempted,runs,advice,selected,assessments=[],[],[],[],[]
+        rejections,recovery_attempts,model_calls=0,0,0
+        recovery_runs=[];feedback=None;seen=set();reason='round_budget_exhausted';ready=False
+        def coverage(facts):
+            missing=sorted(set(goals)-set(facts))
+            return {'requested_ports':list(goals),'satisfied_ports':sorted(set(goals)&set(facts)),
+                    'missing_ports':missing,'unsupported_skills':list(unavailable),
+                    'unconfirmed_parts':unconfirmed,
+                    'complete':bool(goals) and not missing and not unavailable and not custom_target and not blocked and not unconfirmed,
+                    'scope_confirmed':bool(goals) and not custom_target and not blocked and not unconfirmed}
+        def recover(ports):
+            nonlocal recovery_attempts,reason
+            if recovery_attempts or not ports or not check_deadline():return False
+            supported={r.function_id for r in entry['capabilities'].functions if r.status=='AVAILABLE'}
+            # Only expired registered ports with still-supported producers can be reread.
+            owners=[]
+            for port in ports:
+                options=[(len(a['required_ports'])+len(a['optional_ports']),key) for key,a in entry['actions'].items()
+                         if port in {**a['required_ports'],**a['optional_ports']}
+                         and any(f.id in supported and port in f.outputs for f in runtime.registry.functions.values())]
+                if options:owners.append(min(options)[1])
+            owners=list(dict.fromkeys(owners))
+            if not owners:return False
+            recovery_attempts+=1
+            for skill in owners:
+                if not check_deadline() or session.runner.calls>=session.runner.max_calls:break
+                result=timed('execution',self.launcher.run,sid,skill)
+                runs.append(result)
+                recovery_runs.append({'skill_id':skill,'reason':'expired_evidence',
+                                      'calls':result['calls_this_run'],'missing_ports':result['missing_ports']})
+            return True
+        blocked=TaskDecomposer(runtime.registry).is_write_intent(request)
+        custom_target=bool(re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}',request)) or any(
+            _phrase(normalized,p) for p in runtime.registry.nonlocal_scope_phrases)
+        if blocked:reason='write_intent_requires_approval'
+        elif custom_target:reason='custom_target_not_supported'
+        elif not check_deadline():reason='turn_deadline_exhausted'
         else:
             try:
-                model=self.model_factory()
+                if self.model_factory is local_model:
+                    model=timed('inference',self.model_factory,
+                                timeout=min(60,max(.001,deadline-self.clock())))
+                else:
+                    model=timed('inference',self.model_factory)
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
                     raise ValueError('local_skill_model_required')
                 ready=True
-                agent=RCAAgent(runtime.registry,method='bm25')
                 for round_index in range(self.max_rounds):
-                    view=self._view(entry)
-                    current=findings(view)
-                    context={'required_unavailable':unavailable,'attempted':attempted,'findings':[{'id':f['id'],'text':f['text']} for f in current.values()],
+                    if not check_deadline():reason='turn_deadline_exhausted';break
+                    current_view=view();current=findings(current_view)
+                    cov=coverage(current)
+                    supported={f.function_id for f in entry['capabilities'].functions if f.status=='AVAILABLE'}
+                    producible={port for f in runtime.registry.functions.values() if f.id in supported for port in f.outputs}
+                    context={'required_unavailable':unavailable,'attempted':attempted,
+                             'runnable_outputs':{skill:[p for p in {**action['required_ports'],**action['optional_ports']} if p in producible]
+                                                 for skill,action in entry['actions'].items()
+                                                 if rows[skill]['availability'] in {'READY','DEGRADED'} and skill not in attempted},
+                             'findings':[{'id':f['id'],'text':f['text']} for f in current.values()],
+                             'requested_goals':[{'port':p,'description':title} for p,title in goals.items()],
+                             'missing_goals':cov['missing_ports'],'feedback':feedback,
+                             'unconfirmed_parts':unconfirmed,
                              'rca':[{'workflow':a['workflow'],'decision':a['decision'],
                                      'candidate_goals':a['candidate_goals'],
                                      'verified_claims':[r['diagnosis'] for r in a['claim_results'] if r['truth']=='TRUE']} for a in assessments],
                              'remaining_tool_calls':max(0,session.runner.max_calls-session.runner.calls),
                              'last_round':round_index==self.max_rounds-1,
-                             'selected_measurements_complete':bool(runs) and all(r['status']=='MEASURED' for r in runs)
-                                 and all(a['decision']!='INCONCLUSIVE' for a in assessments),
+                             'selected_measurements_complete':bool(runs) and all(r['status']=='MEASURED' for r in runs),
                              'previous_question':entry.get('previous_question',''),
+                             'inference_timeout_s':min(60,max(.1,deadline-self.clock())),
                              'scope':'Only this local Linux laptop; never router/client inventory'}
-                    raw=model.choose_skills(request,docs,context)
-                    # Inference may outlast TTL or the session: validate again before admitting the decision.
-                    fresh=self._view(entry)
-                    choice=validate_choice(raw,rows,findings(fresh),attempted)
-                    advice.append({'model':getattr(model,'model','local-test'), 'accepted':True,
+                    try:
+                        model_calls+=1
+                        raw=timed('inference',model.choose_skills,request,docs,context)
+                        choice=validate_choice(raw,rows,current,attempted)
+                    except (OSError,TimeoutError):
+                        ready=False;reason='model_unavailable';break
+                    except Exception:
+                        rejections+=1;reason='invalid_model_proposal'
+                        feedback={'reason':reason,'instruction':'Return only allowed Skill/finding IDs; no commands or arguments.'}
+                        if rejections>=2:break
+                        continue
+                    # Never execute a post-timeout or post-close proposal.
+                    fresh=view()
+                    if not check_deadline():reason='turn_deadline_exhausted';break
+                    stale=set(choice['finding_ids'])-set(fresh['facts'])
+                    if stale:
+                        recover(stale);fresh=view()
+                        if stale-set(fresh['facts']):reason='evidence_refresh_unavailable';selected=choice['finding_ids'];break
+                    signature=(choice['decision'],tuple(choice['skill_ids']),tuple(choice['finding_ids']),
+                               tuple(choice['unavailable_ids']),tuple(sorted(f['evidence_id'] for f in fresh['facts'].values())))
+                    if signature in seen:reason='no_progress';break
+                    seen.add(signature)
+                    advice.append({'model':getattr(model,'model','local-test'),'accepted':True,
                                    'selected':', '.join(choice['skill_ids']) or choice['decision'],
                                    'decision':choice['decision'],'finding_ids':choice['finding_ids'],
-                                   'evidence_ids':[eid for f in current.values() for eid in f['evidence_ids']]})
+                                   'evidence_ids':[f['evidence_id'] for f in fresh['facts'].values()]})
                     unavailable=list(dict.fromkeys(unavailable+choice['unavailable_ids']))
                     if choice['decision']!='measure':
                         selected=choice['finding_ids']
+                        cov=coverage(fresh['facts'])
+                        if choice['decision']=='answer' and cov['missing_ports'] and round_index<self.max_rounds-1:
+                            reason='incomplete_coverage'
+                            feedback={'reason':reason,'missing_goals':cov['missing_ports']}
+                            advice[-1].update(accepted=False,reason=reason)
+                            continue
                         reason='model_answer' if selected else 'needs_clarification'
                         break
-                    if round_index==self.max_rounds-1:
-                        reason='round_budget_exhausted';break
+                    if round_index==self.max_rounds-1:reason='round_budget_exhausted';break
                     for skill in choice['skill_ids']:
-                        result=self.launcher.run(sid,skill)
+                        if not check_deadline():reason='turn_deadline_exhausted';break
+                        result=timed('execution',self.launcher.run,sid,skill)
                         attempted.append(skill);runs.append(result)
-                    # Workflows relevant to actually requested ports only; no global unrelated RCA conclusions.
-                    workflows=list(dict.fromkeys(w for skill in attempted
-                                                 for w in runtime.registry.skill_workflows[skill]))
-                    assessments=agent.assess_session(session,workflows=workflows)
-                    if session.runner.calls>=session.runner.max_calls:
-                        reason='tool_budget_exhausted';break
-            except SkillSessionError:
-                raise
-            except (OSError,TimeoutError):
-                ready=False
-                reason='model_unavailable'
+                    workflows=list(dict.fromkeys(w for skill in attempted for w in runtime.registry.skill_workflows[skill]))
+                    assessments=assess(workflows)
+                    feedback={'failed_skills':[r['skill_id'] for r in runs if r['status']!='MEASURED'],
+                              'missing_goals':coverage(view(refresh=False)['facts'])['missing_ports']}
+                    if session.runner.calls>=session.runner.max_calls:reason='tool_budget_exhausted';break
+            except SkillSessionError:raise
+            except (OSError,TimeoutError):ready=False;reason='model_unavailable'
             except (RuntimeError,ValueError,TypeError,PlanError):
                 if session.closed:raise SkillSessionError('session_expired')
-                reason='invalid_model_proposal' if ready else 'model_unavailable'
+                reason='read_execution_unavailable' if ready else 'model_unavailable'
         with entry['lock']:
-            # Refresh RCA after inference so no expired claim proof survives into the response.
-            if assessments:
-                assessments=RCAAgent(runtime.registry,method='bm25').assess_session(session,
-                    workflows=[r['workflow'] for r in assessments])
-            # Rebuild from current facts rather than exporting earlier model-visible copies.
-            view=self._view(entry,refresh=not bool(assessments))
-            current=findings(view)
-            if set(selected)-set(current):
-                reason='evidence_expired_during_answer'
+            if assessments:assessments=assess([a['workflow'] for a in assessments])
+            final=view(refresh=not bool(assessments))
+            expired=set(selected)-set(final['facts'])
+            if expired and not recovery_attempts and not blocked and not custom_target:
+                recover(expired)
+                if assessments:assessments=assess([a['workflow'] for a in assessments])
+                final=view(refresh=not bool(assessments))
+            if set(selected)-set(final['facts']):reason='evidence_expired_during_answer'
+            current=findings(final)
             selected=[p for p in selected if p in current]
-            # A bounded or failed model may still leave verified measurements; report those with an explicit stop reason.
+            # Complete known question parts from current verified facts, not stale copies or another inference.
+            if not blocked and not custom_target and (selected or runs):
+                selected=list(dict.fromkeys([*selected,*(p for p in goals if p in current)]))
             if not selected and runs:
                 selected=list(dict.fromkeys(p for r in runs for p in r['snapshot']['facts'] if p in current))[:4]
-            chosen={p:view['facts'][p] for p in selected}
-            evidence_ids=[f['evidence_id'] for f in chosen.values()]
+            if goals:
+                # Dependency measurements stay in Trace; the answer follows the requested scope.
+                selected=[p for p in selected if p in goals]
+            cov=coverage(final['facts'])
+            if not cov['complete'] and reason=='model_answer':reason='incomplete_coverage' if goals else 'intent_scope_unconfirmed'
+            chosen={p:final['facts'][p] for p in selected}
             answer='\n'.join(current[p]['text'] for p in selected)
-            if unavailable:
-                answer+='\n'+ '\n'.join(f"{rows[s]['name']}: chưa chạy được trên laptop ({rows[s]['reason']})." for s in unavailable)
-            if reason=='write_intent_requires_approval':
+            if unavailable:answer+='\n'+'\n'.join(f"{rows[s]['name']}: chưa chạy được trên laptop ({rows[s]['reason']})." for s in unavailable)
+            if cov['missing_ports'] and not blocked and not custom_target:
+                answer+='\nChưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.'
+            if unconfirmed and not blocked and not custom_target:
+                answer+='\nChưa xác minh đầy đủ các phần yêu cầu: '+ '; '.join(unconfirmed)+'.'
+            if blocked:
                 status='BLOCKED';answer='Ứng dụng chỉ đọc; không tự thay đổi cấu hình hoặc khởi động lại thiết bị.'
-            elif reason=='custom_target_not_supported':
-                status='NEEDS_INPUT';answer='Phiên này chỉ đo chính laptop đang chạy ứng dụng; chưa hỗ trợ target/IP/MAC tùy ý.'
+            elif custom_target:
+                status='NEEDS_INPUT';answer='Phiên này chỉ đo chính laptop; chưa có backend cho router/AP, thiết bị khác hoặc target/IP/MAC tùy ý.'
             elif not chosen:
                 status='UNAVAILABLE' if unavailable else 'NEEDS_INPUT'
-                answer=answer.strip() or ('Chưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.' if runs else
-                                         'LLM local chưa sẵn sàng; chưa chạy phép đo. Hãy kiểm tra Ollama và thử lại.' if not ready else
-                                         'Chưa đủ dữ liệu để trả lời. Hãy nêu vấn đề mạng trên chính laptop này; các Skill router chưa có backend live.')
+                if not ready:answer+='\nLLM local chưa sẵn sàng; hãy kiểm tra Ollama và thử lại.'
+                elif runs:answer+='\nChưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.'
+                elif not answer.strip():answer='Hãy nêu vấn đề mạng trên laptop này; chưa đủ dữ liệu để trả lời.'
             else:
-                status='PARTIAL' if unavailable or reason!='model_answer' or any(r['missing_ports'] for r in runs) else 'MEASURED'
-                wifi=view['facts'].get('laptop.wifi',{}).get('value',{})
-                route=view['facts'].get('laptop.route',{}).get('value',{})
-                if wifi and route.get('has_route') and route['interface'] != wifi['interface']:
+                status='MEASURED' if cov['complete'] and reason=='model_answer' else 'PARTIAL'
+                wifi=final['facts'].get('laptop.wifi',{}).get('value',{})
+                route=final['facts'].get('laptop.route',{}).get('value',{})
+                if wifi and route.get('has_route') and route['interface']!=wifi['interface']:
                     answer+=f"\nĐường đo mạng qua {route['interface']}, khác Wi-Fi {wifi['interface']}; chưa chứng minh Internet qua Wi-Fi."
                 if any(p in chosen for p in ('laptop.internet_probe','laptop.dns')):
-                    answer+='\nICMP/DNS phản hồi chưa chứng minh truy cập web hoặc xác định nguyên nhân gốc.'
-                if reason!='model_answer':answer+='\nĐã dừng chọn Skill: '+reason+'.'
+                    answer+='\nICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.'
+                if reason!='model_answer':
+                    messages={'incomplete_coverage':'Còn phần yêu cầu chưa đủ bằng chứng',
+                              'intent_scope_unconfirmed':'Chưa xác định đủ phạm vi câu hỏi',
+                              'invalid_model_proposal':'LLM chưa đưa được lựa chọn hợp lệ sau các lượt sửa',
+                              'no_progress':'Các lựa chọn tiếp theo không tạo thêm tiến triển',
+                              'model_unavailable':'LLM chưa hoàn tất; giữ lại các phép đo còn hiệu lực',
+                              'tool_budget_exhausted':'Đã hết số phép đo được phép trong phiên',
+                              'round_budget_exhausted':'Đã hết số vòng lựa chọn trong lượt hỏi',
+                              'turn_deadline_exhausted':'Đã hết thời gian xử lý lượt hỏi',
+                              'evidence_expired_during_answer':'Evidence hết hạn; cần đo lại',
+                              'evidence_refresh_unavailable':'Chưa thể làm mới evidence hết hạn',
+                              'read_execution_unavailable':'Một số phép đo READ chưa thực hiện được'}
+                    answer+='\n'+messages.get(reason,'Chưa đủ bằng chứng để kết thúc yêu cầu')+'.'
+            # Every exported RCA proof must still appear in the final fresh snapshot.
+            valid_ids={f['evidence_id'] for f in final['facts'].values()}
+            for a in assessments:
+                stale_claim=False
+                for claim in a['claim_results']:
+                    if claim['truth']=='TRUE' and not set(claim['evidence_ids'])<=valid_ids:
+                        claim.update(truth='UNKNOWN',evidence_ids=[]);stale_claim=True
+                if stale_claim:a.update(decision='INCONCLUSIVE',diagnosis=None,evidence_ids=[])
             entry['previous_question']=request
             timeline=[]
             for plan in session.runner.plans[plans_before:]:
                 for node in plan.nodes.values():
-                    fact=next((f for f in view['facts'].values() if f['function_id']==node.function_id),None)
-                    timeline.append({'index':len(timeline)+1,'function_id':node.function_id,
-                                     'node_state':node.state,'status':'OK' if fact and node.state=='SUCCEEDED' else 'UNVERIFIED',
+                    fact=next((f for f in final['facts'].values() if f['function_id']==node.function_id),None)
+                    timeline.append({'index':len(timeline)+1,'function_id':node.function_id,'node_state':node.state,
+                                     'status':'OK' if fact and node.state=='SUCCEEDED' else 'UNVERIFIED',
                                      'evidence_id':fact['evidence_id'] if fact else None,
                                      'value':fact['value'] if fact else None,'reason':node.reason})
-            evidence=[{'id':f['evidence_id'],'port':p,'status':'OK',**f} for p,f in view['facts'].items()]
+            evidence=[{'id':f['evidence_id'],'port':p,'status':'OK',**f} for p,f in final['facts'].items()]
+            timings['total']=(self.clock()-started)*1000
             return {'answer':answer.strip(),'request':request,'mode':'linux_live','fixture':'LLM + Skill catalog · laptop Linux',
                     'fixture_id':'LINUX-SKILL-CHAT','session_id':sid,'case_status':status,'action':'REPORT',
                     'workflow':'LAPTOP-SKILL-CHAT','workflow_id':None,'method':'core','policy':'dynamic','diagnosis':None,
                     'target':{'scope':'client','selector':'Laptop Linux này'},'calls':session.runner.calls-calls_before,
                     'calls_total':session.runner.calls,'repairs':session.runner.repairs,'evidence':evidence,
-                    'evidence_ids':evidence_ids,'status_ok_evidence_ids':[r['id'] for r in evidence],
-                    'snapshot':view,'plans':[p.export() for p in session.runner.plans[plans_before:]],
+                    'evidence_ids':[f['evidence_id'] for f in chosen.values()],
+                    'status_ok_evidence_ids':[r['id'] for r in evidence],
+                    'snapshot':final,'plans':[p.export() for p in session.runner.plans[plans_before:]],
                     'timeline':timeline,'events':[],'contracts':{'a':[],'b':[]},'errors':[],
                     'advice':advice,'intake':{'source':'llm','accepted':bool(advice),
-                          'model':advice[0]['model'] if advice else 'LLM local','shared_with_selection':True},'skill_runs':[
-                        {k:r[k] for k in ('skill_id','status','calls_this_run','reused_ports','missing_ports')} for r in runs],
-                    'rca_assessments':assessments,'stop_reason':reason,'unavailable_skills':unavailable,
+                          'model':advice[0]['model'] if advice else 'LLM local','shared_with_selection':True},
+                    'skill_runs':[{k:r[k] for k in ('skill_id','status','calls_this_run','reused_ports','missing_ports')} for r in runs],
+                    'rca_assessments':assessments,'stop_reason':reason,'unavailable_skills':unavailable,'coverage':cov,
+                    'recovery_attempts':recovery_attempts,'recovery_runs':recovery_runs,'proposal_rejections':rejections,
+                    'model_calls':model_calls,'timings_ms':timings,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
                     'llm_advisor_used':bool(advice),'runbooks':[],'warnings':[],
-                    'notice':'READ trên laptop; catalog không tạo capability. RCA xác minh predicate, không chứng minh nguyên nhân/khôi phục.'}
+                    'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'}
 
 
 CHAT=SkillChat()

@@ -60,12 +60,19 @@ SCHEMA = {
 }
 
 
-def http_json(base, route, payload=None, timeout=120):
+def http_json(base, route, payload=None, timeout=120, max_bytes=None):
     req = urllib.request.Request(base.rstrip("/") + "/api/" + route,
                                  data=json.dumps(payload).encode() if payload is not None else None,
                                  headers={"Content-Type": "application/json"})
+    if max_bytes is not None and (type(max_bytes) is not int or not 1 <= max_bytes <= 8_388_608):
+        raise ValueError('invalid_http_response_limit')
     with urllib.request.urlopen(req, timeout=timeout) as response:
-        return json.load(response)
+        if max_bytes is None:
+            return json.load(response)
+        raw=response.read(max_bytes+1)
+        if len(raw)>max_bytes:
+            raise ValueError('http_response_too_large')
+        return json.loads(raw)
 
 
 def prompt(case, state, registry, candidates, remaining):

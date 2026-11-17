@@ -56,6 +56,8 @@ class ReadSession:
         book = getattr(rt.registry, 'claim_book', None)
         diagnostics = (digest(rt.registry.workflows), digest(getattr(rt.registry, 'skill_workflows', {})),
                        digest(getattr(rt.registry, 'required_skill_phrases', {})),
+                       digest(getattr(rt.registry, 'question_intents', {})),
+                       digest(getattr(rt.registry, 'nonlocal_scope_phrases', [])),
                        digest([asdict(c) for c in book.claims.values()]) if book else None)
         return (diagnostics, id(rt.registry), id(rt._selection), id(rt._clock), id(rt._wall_clock),
                 rt.registry.contract_format, rt.registry.gs.version, digest(rt.registry.skills),

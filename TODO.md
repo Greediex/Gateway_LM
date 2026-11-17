@@ -1,6 +1,6 @@
 # Gateway LM v2 — TODO hiện hành
 
-Cập nhật **16/11/2026**, nhánh **v2**, baseline code **`f7389fb`**.
+Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 
 **Mục tiêu:** hoàn thiện chất lượng luồng hỏi → LLM tra catalog/chọn nhiều Skill → ReadSession/GraphRunner → Verifier → RCAAgent → chọn tiếp hoặc trả lời. Tận dụng các thành phần đã có, ưu tiên chạy tốt trên laptop.
 
@@ -21,10 +21,12 @@ Cập nhật **16/11/2026**, nhánh **v2**, baseline code **`f7389fb`**.
 ## P0 — Hoàn thiện luồng chat trên laptop
 
 - [ ] **CHAT-01 — Bao phủ đủ ý định người dùng.** Kiểm tra câu hỏi đơn, nhiều yêu cầu, câu hỏi tiếp nối và yêu cầu có phần chưa hỗ trợ. LLM phải phối hợp thêm Skill/evidence khi còn thiếu; hoàn tất một Skill không được coi là hoàn tất cả câu hỏi. **Nghiệm thu:** trả lời đúng trọng tâm từng phần, hoặc chỉ rõ phần chưa xác minh; giữ khả năng dùng facts còn hạn từ lượt trước.
-- [ ] **CHAT-02 — Xử lý evidence hết hạn trong lúc suy luận.** Làm rõ điều kiện đo lại/hỏi lại khi model chậm hoặc context thay đổi; mọi lần đo lại vẫn qua ReadSession và budget hiện có. **Nghiệm thu:** không trả số đo/Claim hết hạn, không tăng TTL để che độ trễ, không mất kết quả đã xác minh còn dùng được.
-- [ ] **CHAT-03 — Dừng và xử lý lỗi nhất quán.** Hoàn thiện các tình huống timeout, output model sai, mất capability, không có tiến triển, vòng chọn lặp và hết budget; chỉ dùng phương án READ thay thế đã được đăng ký/cấp quyền. **Nghiệm thu:** dừng hữu hạn, lý do rõ, không fallback live sang replay, không báo hoàn thành khi thiếu dữ liệu.
+- [x] **CHAT-02 — Xử lý evidence hết hạn trong lúc suy luận.** Làm rõ điều kiện đo lại/hỏi lại khi model chậm hoặc context thay đổi; mọi lần đo lại vẫn qua ReadSession và budget hiện có. **Nghiệm thu:** không trả số đo/Claim hết hạn, không tăng TTL để che độ trễ, không mất kết quả đã xác minh còn dùng được.
+- [x] **CHAT-03 — Dừng và xử lý lỗi nhất quán.** Hoàn thiện các tình huống timeout, output model sai, mất capability, không có tiến triển, vòng chọn lặp và hết budget; chỉ dùng phương án READ thay thế đã được đăng ký/cấp quyền. **Nghiệm thu:** dừng hữu hạn, lý do rõ, không fallback live sang replay, không báo hoàn thành khi thiếu dữ liệu.
 - [ ] **PERF-01 — Đo và giảm độ trễ thực tế.** Profile riêng thời gian tra catalog, inference, probe/Function, Verifier và RCA; tối ưu prompt/cache còn hợp lệ và lời gọi trùng. Kiểm giới hạn đồng thời, output, timeout và giải phóng phiên. **Nghiệm thu:** có số đo cold/warm, p50/p95, tool calls và tài nguyên laptop trước/sau; không bỏ gates để tăng tốc.
 - [ ] **EVAL-01 — Đánh giá độc lập trước khi mở rộng.** Tạo bộ câu hỏi và replay có nhãn, tách dev/test trước khi tune; gồm đa ý định, ngoài khả năng, evidence cũ, sai scope, lỗi tool và prompt injection. **Nghiệm thu:** báo Skill/Function selection, độ đầy đủ câu trả lời, RCA/abstention, proposal sai, calls và latency; phân biệt rõ test double, Qwen thật, replay và live. Các ví dụ nghiệm thu hiện có chưa phải holdout benchmark.
+
+**Đang xử lý P0:** đã sửa bao phủ nhiều ý định/phần chưa nhận diện, nhầm scope AP/router với laptop, thiếu SSID/kênh trong câu trả lời, phục hồi evidence một lần qua cùng Core/budget và vòng sửa proposal hữu hạn. Khởi tạo/inference nhận thời gian còn lại; có giới hạn response và đồng thời. Review độc lập đã kiểm lại các lỗi này; full regression 768 tests (763 pass, 5 Windows-only skips) và review độc lập đã đạt; đang đo Qwen trước/sau. CHAT-02/03 nghiệm thu bằng Core/provider/model doubles, chưa suy sang firmware thật. Bộ dev/test EVAL-01 được đóng băng trước thay đổi runtime tại `benchmarks/skill_chat_v1/`; nhãn do agent soạn, chưa được người ngoài thẩm định. Dev model giả đạt coverage 14/14 lượt, abstention 11/14; đây là kiểm tra tích hợp, không phải chất lượng Qwen. Chưa đánh dấu hoàn tất khi chưa có kết quả cuối.
 
 ## P1 — Hoàn thiện khả năng và trải nghiệm hiện có
 

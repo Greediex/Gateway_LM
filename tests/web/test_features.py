@@ -87,3 +87,15 @@ class LaptopHTTPTests(unittest.TestCase):
                 with self.subTest(key=key):
                     self.assertEqual(self.post({"message": "check", key: "injected"}, "/api/chat")[0], 400)
             chat.assert_not_called()
+
+    def test_skill_chat_busy_and_expired_errors_keep_machine_readable_reason(self):
+        from gateway_pilot.application.skill_launcher import SkillSessionError
+        with patch('gateway_pilot.application.skill_chat.CHAT') as chat:
+            for reason,expected in [('session_busy',409),('model_busy',429),
+                                    ('session_capacity_limit',429),('session_expired',410)]:
+                with self.subTest(reason=reason):
+                    chat.chat.side_effect=SkillSessionError(reason)
+                    status,body=self.post({'message':'Kiểm tra DNS','with_llm':True},'/api/chat')
+                    self.assertEqual(status,expected)
+                    self.assertEqual(body['reason'],reason)
+                    self.assertTrue(body['error'])

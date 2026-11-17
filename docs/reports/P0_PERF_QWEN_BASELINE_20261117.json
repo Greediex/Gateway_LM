@@ -1,0 +1,2190 @@
+{
+  "schema": "skill-chat-dev-profile-v1",
+  "label": "baseline-5884be4-reconstructed",
+  "revision": "baseline-5884be4-reconstructed",
+  "model": "qwen3:1.7b",
+  "provider": "frozen-synthetic-linux; not real laptop network/router telemetry",
+  "fixture": {
+    "associated": true,
+    "signal_pct": 70,
+    "gateway": "192.0.2.1",
+    "source_ipv4": "192.0.2.10",
+    "dns": true,
+    "loss_pct": 0,
+    "latency_ms": 2
+  },
+  "cases": [
+    [
+      "gateway",
+      "Gateway của laptop là gì?",
+      [
+        "laptop.route.inspect"
+      ],
+      [
+        "laptop.route"
+      ]
+    ],
+    [
+      "dns",
+      "Kiểm tra DNS trên laptop",
+      [
+        "laptop.dns.inspect"
+      ],
+      [
+        "laptop.dns"
+      ]
+    ],
+    [
+      "wifi_gateway",
+      "Wi-Fi và gateway laptop thế nào?",
+      [
+        "laptop.wifi.inspect",
+        "laptop.route.inspect"
+      ],
+      [
+        "laptop.wifi",
+        "laptop.route"
+      ]
+    ],
+    [
+      "internet",
+      "Kiểm tra kết nối Internet laptop",
+      [
+        "laptop.network.inspect"
+      ],
+      [
+        "laptop.route",
+        "laptop.internet_probe",
+        "laptop.dns"
+      ]
+    ]
+  ],
+  "allowed_findings": {
+    "gateway": [
+      "client.identity",
+      "laptop.gateway_probe",
+      "laptop.route"
+    ],
+    "dns": [
+      "client.identity",
+      "laptop.dns"
+    ],
+    "wifi_gateway": [
+      "client.identity",
+      "laptop.gateway_probe",
+      "laptop.route",
+      "laptop.wifi"
+    ],
+    "internet": [
+      "client.identity",
+      "client.ipv4",
+      "laptop.dns",
+      "laptop.gateway_probe",
+      "laptop.internet_probe",
+      "laptop.route",
+      "laptop.wifi"
+    ]
+  },
+  "fixture_sha256": "182396f7bb397a0813a0b391f2c75bd6635736eef17308e0afb5a4c99434b354",
+  "definitions": {
+    "cold": "new launcher/session; Qwen unloaded before case",
+    "warm": "same session repeated request; fact reuse still obeys TTL",
+    "stages": "inclusive wall spans; do not sum overlapping RCA/probe spans",
+    "resources": "sampled process RSS, Linux /proc CPU deltas; Ollama service + runner; shared-process and 250ms sampling limits",
+    "quality_valid": "MEASURED plus frozen expected finding ports included and no unrelated finding ports; strict port coverage, not an independent semantic-quality benchmark",
+    "p95": "linear interpolation of n=3 descriptive repeats, not a statistically strong tail estimate"
+  },
+  "source_sha256": {
+    "gateway_pilot/application/skill_chat.py": "b1c1329587ba8329224367ac0753f25166731411420ca0c8827e963aab0f0893",
+    "gateway_pilot/application/skill_launcher.py": "72f057679edafc080c1a081348b84588e5682edde455eb7e09efac3af8bc2254",
+    "gateway_pilot/graph_v3/ollama_goal_model.py": "f418071486eae722ddf9ddba4644b01cb8047604651ddd858dbe15f5b6606777",
+    "gateway_pilot/command_catalog/runtime.py": "cf6b41b38a98a8f12fbf2c023303db542a366deb05c01aee70ecf0d0b51771af",
+    "gateway_pilot/graph_v3/runner.py": "6df5485053a0f3ba67e7f1b2f8cb33a2c7584bdfe828bf3f59e96d686e0b3d47",
+    "gateway_pilot/graph_v3/verification.py": "508ac2989236c89e221cff761c0b01d00d24a63d76bce4a07e4b4ef6aa9c5d95"
+  },
+  "host": {
+    "cpu_count": 12,
+    "loadavg": [
+      8.46533203125,
+      6.91455078125,
+      4.3564453125
+    ]
+  },
+  "rows": [
+    {
+      "repeat": 0,
+      "case": "gateway",
+      "temperature": "cold",
+      "wall_ms": 36675.574894999954,
+      "stage_ms": {
+        "probe": 18.807662999847707,
+        "catalog": 0.5021619999752147,
+        "ollama_http": 36197.513830999924,
+        "inference": 36195.110903,
+        "function": 2.483571000084339,
+        "verifier": 1.8601670000180093,
+        "rca": 20.922446999975364
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 28072387666,
+          "load_duration": 2551087658,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 24298530000,
+          "eval_count": 13,
+          "eval_duration": 1207589000
+        },
+        {
+          "total_duration": 8120453255,
+          "load_duration": 1158122,
+          "prompt_eval_count": 2320,
+          "prompt_eval_duration": 6444803000,
+          "eval_count": 17,
+          "eval_duration": 1657921000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route"
+      ],
+      "cpu_s": {
+        "python": 1.12,
+        "ollama": 138.05
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2307260416
+      },
+      "loadavg": [
+        5.7685546875,
+        3.45361328125,
+        1.7060546875
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "gateway",
+      "temperature": "warm",
+      "wall_ms": 7298.833553000009,
+      "stage_ms": {
+        "probe": 8.726189000071827,
+        "catalog": 0.4610020000654913,
+        "ollama_http": 7258.944107000048,
+        "inference": 7255.770893999966
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 7254112148,
+          "load_duration": 1166970,
+          "prompt_eval_count": 2248,
+          "prompt_eval_duration": 5642293000,
+          "eval_count": 13,
+          "eval_duration": 1593065000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe"
+      ],
+      "cpu_s": {
+        "python": 0.16999999999999993,
+        "ollama": 29.00000000000001
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2308440064
+      },
+      "loadavg": [
+        5.947265625,
+        3.529296875,
+        1.740234375
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "dns",
+      "temperature": "cold",
+      "wall_ms": 37155.930379999976,
+      "stage_ms": {
+        "probe": 19.99441499981458,
+        "catalog": 0.6533939998689675,
+        "ollama_http": 36847.7190619999,
+        "inference": 36846.17862900007,
+        "function": 3.4293880000859644,
+        "verifier": 2.8215340000770084,
+        "rca": 22.80858699998589
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 28860601427,
+          "load_duration": 2557101092,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 24959821000,
+          "eval_count": 14,
+          "eval_duration": 1326638000
+        },
+        {
+          "total_duration": 7983537376,
+          "load_duration": 1074129,
+          "prompt_eval_count": 2302,
+          "prompt_eval_duration": 6374179000,
+          "eval_count": 16,
+          "eval_duration": 1591113000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.dns.inspect"
+      ],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 0.99,
+        "ollama": 140.39000000000001
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2287902720
+      },
+      "loadavg": [
+        6.20849609375,
+        3.8779296875,
+        1.93310546875
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "dns",
+      "temperature": "warm",
+      "wall_ms": 7408.317404999934,
+      "stage_ms": {
+        "probe": 8.666787000038312,
+        "catalog": 0.38542899994808977,
+        "ollama_http": 7367.226525999968,
+        "inference": 7365.335531000028
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 7363887899,
+          "load_duration": 1335420,
+          "prompt_eval_count": 2233,
+          "prompt_eval_duration": 5778649000,
+          "eval_count": 16,
+          "eval_duration": 1563392000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 0.16999999999999993,
+        "ollama": 29.42999999999999
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2288558080
+      },
+      "loadavg": [
+        7.15283203125,
+        4.11279296875,
+        2.01953125
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "wifi_gateway",
+      "temperature": "cold",
+      "wall_ms": 39420.25148599999,
+      "stage_ms": {
+        "probe": 25.552553000125044,
+        "catalog": 0.5585149999660644,
+        "ollama_http": 39099.78760799993,
+        "inference": 39098.17269899997,
+        "function": 2.7136960000007093,
+        "verifier": 2.6014029999714694,
+        "rca": 21.802338999918902
+      },
+      "stage_calls": {
+        "probe": 13,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 4,
+        "verifier": 4,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 29143284876,
+          "load_duration": 2562235773,
+          "prompt_eval_count": 2143,
+          "prompt_eval_duration": 24652496000,
+          "eval_count": 19,
+          "eval_duration": 1912063000
+        },
+        {
+          "total_duration": 9952100414,
+          "load_duration": 1052510,
+          "prompt_eval_count": 2401,
+          "prompt_eval_duration": 7676901000,
+          "eval_count": 22,
+          "eval_duration": 2255821000
+        }
+      ],
+      "tool_calls": 4,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.wifi.inspect",
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.04,
+        "ollama": 149.67
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2307506176
+      },
+      "loadavg": [
+        6.541015625,
+        4.34814453125,
+        2.18896484375
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "wifi_gateway",
+      "temperature": "warm",
+      "wall_ms": 8413.408394000044,
+      "stage_ms": {
+        "probe": 10.294437000084145,
+        "catalog": 0.2948869999954695,
+        "ollama_http": 8368.887924000092,
+        "inference": 8367.329833999975
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 8365664404,
+          "load_duration": 1423212,
+          "prompt_eval_count": 2291,
+          "prompt_eval_duration": 6499819000,
+          "eval_count": 18,
+          "eval_duration": 1844337000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.2200000000000002,
+        "ollama": 33.54
+      },
+      "peak_rss_bytes": {
+        "python": 40022016,
+        "ollama": 2307670016
+      },
+      "loadavg": [
+        6.6123046875,
+        4.43603515625,
+        2.24072265625
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "internet",
+      "temperature": "cold",
+      "wall_ms": 44912.964952999915,
+      "stage_ms": {
+        "probe": 31.814810999890142,
+        "catalog": 0.7024440000122922,
+        "ollama_http": 44513.91971099997,
+        "inference": 44512.4531969999,
+        "function": 5.357896999726108,
+        "verifier": 5.746291999912501,
+        "rca": 29.138359999933527
+      },
+      "stage_calls": {
+        "probe": 15,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 7,
+        "verifier": 7,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 31155070638,
+          "load_duration": 2554718546,
+          "prompt_eval_count": 2142,
+          "prompt_eval_duration": 25972103000,
+          "eval_count": 24,
+          "eval_duration": 2607089000
+        },
+        {
+          "total_duration": 13354433882,
+          "load_duration": 1068536,
+          "prompt_eval_count": 2622,
+          "prompt_eval_duration": 11529226000,
+          "eval_count": 18,
+          "eval_duration": 1804980000
+        }
+      ],
+      "tool_calls": 7,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [
+        "laptop.network.inspect",
+        "laptop.ipv4.inspect",
+        "laptop.route.inspect"
+      ],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.3000000000000003,
+        "ollama": 171.37
+      },
+      "peak_rss_bytes": {
+        "python": 40153088,
+        "ollama": 2307878912
+      },
+      "loadavg": [
+        7.091796875,
+        4.87353515625,
+        2.49462890625
+      ]
+    },
+    {
+      "repeat": 0,
+      "case": "internet",
+      "temperature": "warm",
+      "wall_ms": 9820.157494,
+      "stage_ms": {
+        "probe": 8.727869999916038,
+        "catalog": 0.3596170000719212,
+        "ollama_http": 9773.354934999928,
+        "inference": 9771.776914000042
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 9770193314,
+          "load_duration": 1126084,
+          "prompt_eval_count": 2391,
+          "prompt_eval_duration": 7876494000,
+          "eval_count": 18,
+          "eval_duration": 1874731000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.23999999999999932,
+        "ollama": 39.12
+      },
+      "peak_rss_bytes": {
+        "python": 40153088,
+        "ollama": 2308358144
+      },
+      "loadavg": [
+        6.9970703125,
+        4.927734375,
+        2.5380859375
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "gateway",
+      "temperature": "cold",
+      "wall_ms": 41164.57467400005,
+      "stage_ms": {
+        "probe": 23.784466999927645,
+        "catalog": 0.6589930001155153,
+        "ollama_http": 40835.128553,
+        "inference": 40833.64225299999,
+        "function": 2.9988329998786867,
+        "verifier": 2.446896999913406,
+        "rca": 23.821364000014
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 31598299349,
+          "load_duration": 2553351930,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 27717189000,
+          "eval_count": 13,
+          "eval_duration": 1304789000
+        },
+        {
+          "total_duration": 9229689935,
+          "load_duration": 1338032,
+          "prompt_eval_count": 2320,
+          "prompt_eval_duration": 7431111000,
+          "eval_count": 17,
+          "eval_duration": 1771755000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route"
+      ],
+      "cpu_s": {
+        "python": 1.1799999999999997,
+        "ollama": 156.67000000000002
+      },
+      "peak_rss_bytes": {
+        "python": 40153088,
+        "ollama": 2306891776
+      },
+      "loadavg": [
+        6.79443359375,
+        5.12890625,
+        2.70703125
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "gateway",
+      "temperature": "warm",
+      "wall_ms": 7752.539802999991,
+      "stage_ms": {
+        "probe": 10.109111999895504,
+        "catalog": 0.33329000007142895,
+        "ollama_http": 7709.195593999993,
+        "inference": 7707.486562000099
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 7705674660,
+          "load_duration": 1691579,
+          "prompt_eval_count": 2248,
+          "prompt_eval_duration": 6422076000,
+          "eval_count": 13,
+          "eval_duration": 1261348000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe"
+      ],
+      "cpu_s": {
+        "python": 0.20000000000000018,
+        "ollama": 30.92999999999999
+      },
+      "peak_rss_bytes": {
+        "python": 40153088,
+        "ollama": 2308464640
+      },
+      "loadavg": [
+        6.81103515625,
+        5.16015625,
+        2.73046875
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "dns",
+      "temperature": "cold",
+      "wall_ms": 41552.69176999991,
+      "stage_ms": {
+        "probe": 22.932335000064086,
+        "catalog": 0.5724049999571434,
+        "ollama_http": 41229.383031999874,
+        "inference": 41227.388786,
+        "function": 1.9889720000492161,
+        "verifier": 1.9420999999510968,
+        "rca": 23.0154030000449
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 31978026624,
+          "load_duration": 2554776044,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 27832825000,
+          "eval_count": 14,
+          "eval_duration": 1573358000
+        },
+        {
+          "total_duration": 9245511047,
+          "load_duration": 1196292,
+          "prompt_eval_count": 2302,
+          "prompt_eval_duration": 7542968000,
+          "eval_count": 16,
+          "eval_duration": 1681945000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.dns.inspect"
+      ],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 1.1599999999999993,
+        "ollama": 158.13
+      },
+      "peak_rss_bytes": {
+        "python": 40284160,
+        "ollama": 2287833088
+      },
+      "loadavg": [
+        6.40966796875,
+        5.2783203125,
+        2.88671875
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "dns",
+      "temperature": "warm",
+      "wall_ms": 8088.684309999962,
+      "stage_ms": {
+        "probe": 10.807183999986592,
+        "catalog": 0.3992550000475603,
+        "ollama_http": 8040.080827999873,
+        "inference": 8038.011772999994
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 8036610196,
+          "load_duration": 1592178,
+          "prompt_eval_count": 2233,
+          "prompt_eval_duration": 6392757000,
+          "eval_count": 16,
+          "eval_duration": 1620984000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 0.22000000000000064,
+        "ollama": 32.28000000000001
+      },
+      "peak_rss_bytes": {
+        "python": 40284160,
+        "ollama": 2288619520
+      },
+      "loadavg": [
+        6.37646484375,
+        5.29052734375,
+        2.90380859375
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "wifi_gateway",
+      "temperature": "cold",
+      "wall_ms": 45426.29448900004,
+      "stage_ms": {
+        "probe": 29.53238400027658,
+        "catalog": 0.6513629999744808,
+        "ollama_http": 45051.64241099999,
+        "inference": 45050.287003,
+        "function": 3.797483000198554,
+        "verifier": 3.6842749999550506,
+        "rca": 24.133217999974477
+      },
+      "stage_calls": {
+        "probe": 13,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 4,
+        "verifier": 4,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 33459552553,
+          "load_duration": 2803464173,
+          "prompt_eval_count": 2143,
+          "prompt_eval_duration": 28757799000,
+          "eval_count": 19,
+          "eval_duration": 1874773000
+        },
+        {
+          "total_duration": 11588366099,
+          "load_duration": 1221231,
+          "prompt_eval_count": 2401,
+          "prompt_eval_duration": 9280992000,
+          "eval_count": 22,
+          "eval_duration": 2285853000
+        }
+      ],
+      "tool_calls": 4,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.wifi.inspect",
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.33,
+        "ollama": 173.01999999999998
+      },
+      "peak_rss_bytes": {
+        "python": 40415232,
+        "ollama": 2306351104
+      },
+      "loadavg": [
+        7.62353515625,
+        5.7421875,
+        3.1689453125
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "wifi_gateway",
+      "temperature": "warm",
+      "wall_ms": 9638.299938000046,
+      "stage_ms": {
+        "probe": 11.299979000000349,
+        "catalog": 0.32258399994589126,
+        "ollama_http": 9592.083952000052,
+        "inference": 9589.762245999964
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 9587416174,
+          "load_duration": 1296585,
+          "prompt_eval_count": 2291,
+          "prompt_eval_duration": 7402315000,
+          "eval_count": 18,
+          "eval_duration": 2162502000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.25,
+        "ollama": 38.179999999999986
+      },
+      "peak_rss_bytes": {
+        "python": 40415232,
+        "ollama": 2307006464
+      },
+      "loadavg": [
+        8.23583984375,
+        5.9326171875,
+        3.2587890625
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "internet",
+      "temperature": "cold",
+      "wall_ms": 48664.126544999934,
+      "stage_ms": {
+        "probe": 34.311100999730115,
+        "catalog": 0.586082000040733,
+        "ollama_http": 48246.12057400008,
+        "inference": 48244.78574499995,
+        "function": 5.268588000149066,
+        "verifier": 6.059764999804429,
+        "rca": 31.85862099996939
+      },
+      "stage_calls": {
+        "probe": 15,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 7,
+        "verifier": 7,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 33698360033,
+          "load_duration": 2806551539,
+          "prompt_eval_count": 2142,
+          "prompt_eval_duration": 28459017000,
+          "eval_count": 24,
+          "eval_duration": 2419083000
+        },
+        {
+          "total_duration": 14543418150,
+          "load_duration": 992133,
+          "prompt_eval_count": 2622,
+          "prompt_eval_duration": 12621571000,
+          "eval_count": 18,
+          "eval_duration": 1903258000
+        }
+      ],
+      "tool_calls": 7,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [
+        "laptop.network.inspect",
+        "laptop.ipv4.inspect",
+        "laptop.route.inspect"
+      ],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.4100000000000001,
+        "ollama": 185.61
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2307653632
+      },
+      "loadavg": [
+        6.90185546875,
+        5.90185546875,
+        3.3896484375
+      ]
+    },
+    {
+      "repeat": 1,
+      "case": "internet",
+      "temperature": "warm",
+      "wall_ms": 11037.808624000036,
+      "stage_ms": {
+        "probe": 10.214060999942376,
+        "catalog": 0.39230599998063553,
+        "ollama_http": 10992.493558000093,
+        "inference": 10990.482412999994
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 10988810842,
+          "load_duration": 2764548,
+          "prompt_eval_count": 2391,
+          "prompt_eval_duration": 9091917000,
+          "eval_count": 18,
+          "eval_duration": 1874113000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.27999999999999936,
+        "ollama": 44.02000000000002
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2308440064
+      },
+      "loadavg": [
+        6.7626953125,
+        5.90576171875,
+        3.41796875
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "gateway",
+      "temperature": "cold",
+      "wall_ms": 43152.93846899999,
+      "stage_ms": {
+        "probe": 23.107578999997713,
+        "catalog": 0.6316670001069724,
+        "ollama_http": 42833.996416999864,
+        "inference": 42832.39514200011,
+        "function": 2.5242989999014753,
+        "verifier": 2.2179779999760285,
+        "rca": 28.197369000054096
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 33067282500,
+          "load_duration": 2806555593,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 29036714000,
+          "eval_count": 13,
+          "eval_duration": 1208028000
+        },
+        {
+          "total_duration": 9762223771,
+          "load_duration": 1040443,
+          "prompt_eval_count": 2320,
+          "prompt_eval_duration": 7953102000,
+          "eval_count": 17,
+          "eval_duration": 1788773000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route"
+      ],
+      "cpu_s": {
+        "python": 1.25,
+        "ollama": 163.95
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2307280896
+      },
+      "loadavg": [
+        6.798828125,
+        6.00439453125,
+        3.56884765625
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "gateway",
+      "temperature": "warm",
+      "wall_ms": 8144.105902000092,
+      "stage_ms": {
+        "probe": 10.801827999785019,
+        "catalog": 0.5802670000321086,
+        "ollama_http": 8095.677539999997,
+        "inference": 8092.639439000095
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 8091248850,
+          "load_duration": 1208245,
+          "prompt_eval_count": 2248,
+          "prompt_eval_duration": 6738560000,
+          "eval_count": 13,
+          "eval_duration": 1326657000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe"
+      ],
+      "cpu_s": {
+        "python": 0.22000000000000064,
+        "ollama": 32.46999999999999
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2308591616
+      },
+      "loadavg": [
+        6.66943359375,
+        6.00390625,
+        3.59521484375
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "dns",
+      "temperature": "cold",
+      "wall_ms": 44297.355941999966,
+      "stage_ms": {
+        "probe": 23.20282000005136,
+        "catalog": 0.6447200000820885,
+        "ollama_http": 43975.76632499999,
+        "inference": 43974.1724160001,
+        "function": 2.783032999786883,
+        "verifier": 2.035970000179077,
+        "rca": 23.061322000103246
+      },
+      "stage_calls": {
+        "probe": 10,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 3,
+        "verifier": 3,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 34369811398,
+          "load_duration": 2806240361,
+          "prompt_eval_count": 2141,
+          "prompt_eval_duration": 30154962000,
+          "eval_count": 14,
+          "eval_duration": 1383991000
+        },
+        {
+          "total_duration": 9601262817,
+          "load_duration": 2069831,
+          "prompt_eval_count": 2302,
+          "prompt_eval_duration": 7936400000,
+          "eval_count": 16,
+          "eval_duration": 1641326000
+        }
+      ],
+      "tool_calls": 3,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.dns.inspect"
+      ],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 1.2699999999999996,
+        "ollama": 168.16
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2287984640
+      },
+      "loadavg": [
+        6.54736328125,
+        6.0634765625,
+        3.7197265625
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "dns",
+      "temperature": "warm",
+      "wall_ms": 9158.061783999983,
+      "stage_ms": {
+        "probe": 10.639325000056488,
+        "catalog": 0.3595470000163914,
+        "ollama_http": 9114.590206999992,
+        "inference": 9113.042609999866
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 9111348385,
+          "load_duration": 3855264,
+          "prompt_eval_count": 2233,
+          "prompt_eval_duration": 7450510000,
+          "eval_count": 16,
+          "eval_duration": 1630661000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [],
+      "finding_ports": [
+        "client.identity",
+        "laptop.dns"
+      ],
+      "cpu_s": {
+        "python": 0.28000000000000114,
+        "ollama": 36.51000000000001
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2288771072
+      },
+      "loadavg": [
+        7.171875,
+        6.21044921875,
+        3.79296875
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "wifi_gateway",
+      "temperature": "cold",
+      "wall_ms": 48430.29402499997,
+      "stage_ms": {
+        "probe": 30.193073999498665,
+        "catalog": 0.6732949998422555,
+        "ollama_http": 48055.99848199995,
+        "inference": 48054.147636000154,
+        "function": 4.78120299976581,
+        "verifier": 3.153343000121822,
+        "rca": 26.020070999948075
+      },
+      "stage_calls": {
+        "probe": 13,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 4,
+        "verifier": 4,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 35953273453,
+          "load_duration": 2812229562,
+          "prompt_eval_count": 2143,
+          "prompt_eval_duration": 31011597000,
+          "eval_count": 19,
+          "eval_duration": 2113908000
+        },
+        {
+          "total_duration": 12097670632,
+          "load_duration": 1234765,
+          "prompt_eval_count": 2401,
+          "prompt_eval_duration": 9588663000,
+          "eval_count": 22,
+          "eval_duration": 2484630000
+        }
+      ],
+      "tool_calls": 4,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": true,
+      "skills": [
+        "laptop.wifi.inspect",
+        "laptop.gateway.inspect"
+      ],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.route",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.4299999999999997,
+        "ollama": 184.77
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2307248128
+      },
+      "loadavg": [
+        7.61181640625,
+        6.48388671875,
+        4.01611328125
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "wifi_gateway",
+      "temperature": "warm",
+      "wall_ms": 10064.155779999965,
+      "stage_ms": {
+        "probe": 11.101382000106241,
+        "catalog": 0.4557699999168108,
+        "ollama_http": 10017.380591999881,
+        "inference": 10013.987570999916
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 10012591505,
+          "load_duration": 1342336,
+          "prompt_eval_count": 2291,
+          "prompt_eval_duration": 8059396000,
+          "eval_count": 18,
+          "eval_duration": 1929134000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.gateway_probe",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.2699999999999996,
+        "ollama": 40.14000000000002
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2308034560
+      },
+      "loadavg": [
+        7.43115234375,
+        6.48388671875,
+        4.04296875
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "internet",
+      "temperature": "cold",
+      "wall_ms": 54021.65612399994,
+      "stage_ms": {
+        "probe": 37.59835000005296,
+        "catalog": 0.6339069998375635,
+        "ollama_http": 53545.46911400007,
+        "inference": 53543.08758299976,
+        "function": 6.8769039999097,
+        "verifier": 5.963318000112849,
+        "rca": 37.42265799996858
+      },
+      "stage_calls": {
+        "probe": 15,
+        "catalog": 2,
+        "ollama_http": 3,
+        "inference": 2,
+        "function": 7,
+        "verifier": 7,
+        "rca": 2
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 37515987456,
+          "load_duration": 2811752598,
+          "prompt_eval_count": 2142,
+          "prompt_eval_duration": 31838754000,
+          "eval_count": 24,
+          "eval_duration": 2844462000
+        },
+        {
+          "total_duration": 16023051919,
+          "load_duration": 1889689,
+          "prompt_eval_count": 2622,
+          "prompt_eval_duration": 14055296000,
+          "eval_count": 18,
+          "eval_duration": 1944941000
+        }
+      ],
+      "tool_calls": 7,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 2,
+      "advice_entries": 2,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [
+        "laptop.network.inspect",
+        "laptop.ipv4.inspect",
+        "laptop.route.inspect"
+      ],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 1.6600000000000001,
+        "ollama": 206.75
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2307567616
+      },
+      "loadavg": [
+        8.09130859375,
+        6.79150390625,
+        4.28955078125
+      ]
+    },
+    {
+      "repeat": 2,
+      "case": "internet",
+      "temperature": "warm",
+      "wall_ms": 11633.852300999934,
+      "stage_ms": {
+        "probe": 9.523283999897103,
+        "catalog": 0.3437719999510591,
+        "ollama_http": 11581.480194999813,
+        "inference": 11579.482889000019
+      },
+      "stage_calls": {
+        "probe": 4,
+        "catalog": 1,
+        "ollama_http": 2,
+        "inference": 1
+      },
+      "ollama": [
+        {},
+        {
+          "total_duration": 11578097699,
+          "load_duration": 1273182,
+          "prompt_eval_count": 2391,
+          "prompt_eval_duration": 9640697000,
+          "eval_count": 18,
+          "eval_duration": 1909406000
+        }
+      ],
+      "tool_calls": 0,
+      "status": "MEASURED",
+      "stop_reason": "model_answer",
+      "llm_advisor_used": true,
+      "llm_advisor_ready": true,
+      "accepted_model_proposals": 1,
+      "advice_entries": 1,
+      "runtime_timings_ms": {},
+      "runtime_model_calls": null,
+      "coverage": null,
+      "quality_valid": false,
+      "skills": [],
+      "finding_ports": [
+        "laptop.dns",
+        "laptop.wifi"
+      ],
+      "cpu_s": {
+        "python": 0.3200000000000003,
+        "ollama": 46.36000000000001
+      },
+      "peak_rss_bytes": {
+        "python": 40546304,
+        "ollama": 2308206592
+      },
+      "loadavg": [
+        8.46533203125,
+        6.91455078125,
+        4.3564453125
+      ]
+    }
+  ],
+  "aggregates": [
+    {
+      "case": "gateway",
+      "temperature": "cold",
+      "n": 3,
+      "wall_ms": {
+        "p50": 41164.57467400005,
+        "p95": 42954.1020895
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.6316670001069724,
+          "p95": 0.656260400114661
+        },
+        "function": {
+          "p50": 2.5242989999014753,
+          "p95": 2.9513795998809655
+        },
+        "inference": {
+          "p50": 40833.64225299999,
+          "p95": 42632.5198531001
+        },
+        "ollama_http": {
+          "p50": 40835.128553,
+          "p95": 42634.10963059988
+        },
+        "probe": {
+          "p50": 23.107578999997713,
+          "p95": 23.71677819993465
+        },
+        "rca": {
+          "p50": 23.821364000014,
+          "p95": 27.759768500050086
+        },
+        "verifier": {
+          "p50": 2.2179779999760285,
+          "p95": 2.4240050999196683
+        }
+      },
+      "tool_calls": [
+        3,
+        3,
+        3
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 1.1799999999999997,
+          "p95": 1.2429999999999999
+        },
+        "ollama": {
+          "p50": 156.67000000000002,
+          "p95": 163.22199999999998
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40153088.0,
+          "p95": 40506982.4
+        },
+        "ollama": {
+          "p50": 2307260416.0,
+          "p95": 2307278848.0
+        }
+      },
+      "quality_valid_count": 3,
+      "quality_valid_ratio": 1.0
+    },
+    {
+      "case": "gateway",
+      "temperature": "warm",
+      "n": 3,
+      "wall_ms": {
+        "p50": 7752.539802999991,
+        "p95": 8104.949292100082
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.4610020000654913,
+          "p95": 0.5683405000354469
+        },
+        "inference": {
+          "p50": 7707.486562000099,
+          "p95": 8054.124151300095
+        },
+        "ollama_http": {
+          "p50": 7709.195593999993,
+          "p95": 8057.029345399997
+        },
+        "probe": {
+          "p50": 10.109111999895504,
+          "p95": 10.732556399796067
+        }
+      },
+      "tool_calls": [
+        0,
+        0,
+        0
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 0.20000000000000018,
+          "p95": 0.21800000000000058
+        },
+        "ollama": {
+          "p50": 30.92999999999999,
+          "p95": 32.31599999999999
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40153088.0,
+          "p95": 40506982.4
+        },
+        "ollama": {
+          "p50": 2308464640.0,
+          "p95": 2308578918.4
+        }
+      },
+      "quality_valid_count": 0,
+      "quality_valid_ratio": 0.0
+    },
+    {
+      "case": "dns",
+      "temperature": "cold",
+      "n": 3,
+      "wall_ms": {
+        "p50": 41552.69176999991,
+        "p95": 44022.88952479996
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.6447200000820885,
+          "p95": 0.6525265998902796
+        },
+        "function": {
+          "p50": 2.783032999786883,
+          "p95": 3.3647525000560563
+        },
+        "inference": {
+          "p50": 41227.388786,
+          "p95": 43699.49405300009
+        },
+        "ollama_http": {
+          "p50": 41229.383031999874,
+          "p95": 43701.12799569998
+        },
+        "probe": {
+          "p50": 22.932335000064086,
+          "p95": 23.175771500052633
+        },
+        "rca": {
+          "p50": 23.0154030000449,
+          "p95": 23.05673010009741
+        },
+        "verifier": {
+          "p50": 2.035970000179077,
+          "p95": 2.7429776000872153
+        }
+      },
+      "tool_calls": [
+        3,
+        3,
+        3
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 1.1599999999999993,
+          "p95": 1.2589999999999995
+        },
+        "ollama": {
+          "p50": 158.13,
+          "p95": 167.15699999999998
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40284160.0,
+          "p95": 40520089.6
+        },
+        "ollama": {
+          "p50": 2287902720.0,
+          "p95": 2287976448.0
+        }
+      },
+      "quality_valid_count": 3,
+      "quality_valid_ratio": 1.0
+    },
+    {
+      "case": "dns",
+      "temperature": "warm",
+      "n": 3,
+      "wall_ms": {
+        "p50": 8088.684309999962,
+        "p95": 9051.12403659998
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.38542899994808977,
+          "p95": 0.39787240003761326
+        },
+        "inference": {
+          "p50": 8038.011772999994,
+          "p95": 9005.539526299879
+        },
+        "ollama_http": {
+          "p50": 8040.080827999873,
+          "p95": 9007.13926909998
+        },
+        "probe": {
+          "p50": 10.639325000056488,
+          "p95": 10.790398099993581
+        }
+      },
+      "tool_calls": [
+        0,
+        0,
+        0
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 0.22000000000000064,
+          "p95": 0.2740000000000011
+        },
+        "ollama": {
+          "p50": 32.28000000000001,
+          "p95": 36.08700000000001
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40284160.0,
+          "p95": 40520089.6
+        },
+        "ollama": {
+          "p50": 2288619520.0,
+          "p95": 2288755916.8
+        }
+      },
+      "quality_valid_count": 3,
+      "quality_valid_ratio": 1.0
+    },
+    {
+      "case": "wifi_gateway",
+      "temperature": "cold",
+      "n": 3,
+      "wall_ms": {
+        "p50": 45426.29448900004,
+        "p95": 48129.89407139998
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.6513629999744808,
+          "p95": 0.671101799855478
+        },
+        "function": {
+          "p50": 3.797483000198554,
+          "p95": 4.6828309998090845
+        },
+        "inference": {
+          "p50": 45050.287003,
+          "p95": 47753.76157270014
+        },
+        "ollama_http": {
+          "p50": 45051.64241099999,
+          "p95": 47755.56287489996
+        },
+        "probe": {
+          "p50": 29.53238400027658,
+          "p95": 30.127004999576457
+        },
+        "rca": {
+          "p50": 24.133217999974477,
+          "p95": 25.831385699950715
+        },
+        "verifier": {
+          "p50": 3.153343000121822,
+          "p95": 3.6311817999717277
+        }
+      },
+      "tool_calls": [
+        4,
+        4,
+        4
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 1.33,
+          "p95": 1.4199999999999997
+        },
+        "ollama": {
+          "p50": 173.01999999999998,
+          "p95": 183.595
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40415232.0,
+          "p95": 40533196.8
+        },
+        "ollama": {
+          "p50": 2307248128.0,
+          "p95": 2307480371.2
+        }
+      },
+      "quality_valid_count": 3,
+      "quality_valid_ratio": 1.0
+    },
+    {
+      "case": "wifi_gateway",
+      "temperature": "warm",
+      "n": 3,
+      "wall_ms": {
+        "p50": 9638.299938000046,
+        "p95": 10021.570195799972
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.32258399994589126,
+          "p95": 0.4424513999197188
+        },
+        "inference": {
+          "p50": 9589.762245999964,
+          "p95": 9971.56503849992
+        },
+        "ollama_http": {
+          "p50": 9592.083952000052,
+          "p95": 9974.850927999898
+        },
+        "probe": {
+          "p50": 11.101382000106241,
+          "p95": 11.280119300010938
+        }
+      },
+      "tool_calls": [
+        0,
+        0,
+        0
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 0.25,
+          "p95": 0.2679999999999996
+        },
+        "ollama": {
+          "p50": 38.179999999999986,
+          "p95": 39.94400000000002
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40415232.0,
+          "p95": 40533196.8
+        },
+        "ollama": {
+          "p50": 2307670016.0,
+          "p95": 2307998105.6
+        }
+      },
+      "quality_valid_count": 0,
+      "quality_valid_ratio": 0.0
+    },
+    {
+      "case": "internet",
+      "temperature": "cold",
+      "n": 3,
+      "wall_ms": {
+        "p50": 48664.126544999934,
+        "p95": 53485.90316609994
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.6339069998375635,
+          "p95": 0.6955902999948194
+        },
+        "function": {
+          "p50": 5.357896999726108,
+          "p95": 6.725003299891341
+        },
+        "inference": {
+          "p50": 48244.78574499995,
+          "p95": 53013.25739919978
+        },
+        "ollama_http": {
+          "p50": 48246.12057400008,
+          "p95": 53015.53426000007
+        },
+        "probe": {
+          "p50": 34.311100999730115,
+          "p95": 37.269625100020676
+        },
+        "rca": {
+          "p50": 31.85862099996939,
+          "p95": 36.86625429996866
+        },
+        "verifier": {
+          "p50": 5.963318000112849,
+          "p95": 6.050120299835271
+        }
+      },
+      "tool_calls": [
+        7,
+        7,
+        7
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 1.4100000000000001,
+          "p95": 1.6350000000000002
+        },
+        "ollama": {
+          "p50": 185.61,
+          "p95": 204.636
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40546304.0,
+          "p95": 40546304.0
+        },
+        "ollama": {
+          "p50": 2307653632.0,
+          "p95": 2307856384.0
+        }
+      },
+      "quality_valid_count": 0,
+      "quality_valid_ratio": 0.0
+    },
+    {
+      "case": "internet",
+      "temperature": "warm",
+      "n": 3,
+      "wall_ms": {
+        "p50": 11037.808624000036,
+        "p95": 11574.247933299943
+      },
+      "stage_ms": {
+        "catalog": {
+          "p50": 0.3596170000719212,
+          "p95": 0.3890370999897641
+        },
+        "inference": {
+          "p50": 10990.482412999994,
+          "p95": 11520.582841400017
+        },
+        "ollama_http": {
+          "p50": 10992.493558000093,
+          "p95": 11522.58153129984
+        },
+        "probe": {
+          "p50": 9.523283999897103,
+          "p95": 10.144983299937849
+        }
+      },
+      "tool_calls": [
+        0,
+        0,
+        0
+      ],
+      "cpu_s": {
+        "python": {
+          "p50": 0.27999999999999936,
+          "p95": 0.31600000000000017
+        },
+        "ollama": {
+          "p50": 44.02000000000002,
+          "p95": 46.126000000000005
+        }
+      },
+      "peak_rss_bytes": {
+        "python": {
+          "p50": 40546304.0,
+          "p95": 40546304.0
+        },
+        "ollama": {
+          "p50": 2308358144.0,
+          "p95": 2308431872.0
+        }
+      },
+      "quality_valid_count": 0,
+      "quality_valid_ratio": 0.0
+    }
+  ]
+}

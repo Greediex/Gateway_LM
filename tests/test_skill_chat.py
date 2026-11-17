@@ -110,14 +110,16 @@ class SkillChatTests(unittest.TestCase):
         r=chat.chat('Kiểm tra route');self.assertEqual(r['calls'],0)
         self.assertEqual(r['stop_reason'],'round_budget_exhausted')
 
-    def test_evidence_expiring_during_inference_cannot_support_answer(self):
+    def test_evidence_expiring_during_inference_requires_verified_refresh(self):
         def late(context):
             self.now+=31
             return choice('answer',findings=['laptop.route'])
         chat,_=self.chat([choice(skills=['laptop.route.inspect']),late])
         r=chat.chat('Gateway là gì?')
-        self.assertEqual(r['evidence_ids'],[])
-        self.assertNotIn('Gateway:',r['answer'])
+        self.assertEqual(r['recovery_attempts'],1)
+        self.assertTrue(r['evidence_ids'])
+        self.assertIn('Gateway:',r['answer'])
+        self.assertGreater(r['snapshot']['facts']['laptop.route']['expires_in_s'],0)
 
     def test_context_acl_and_session_changes_fail_closed_after_inference(self):
         for mutation in ('context','permissions','claim','closed'):
@@ -170,6 +172,7 @@ class SkillModelAdapterTests(unittest.TestCase):
             self.assertEqual(model.choose_skills('Gateway?',docs,{'findings':[]}),output)
             payload=http.call_args.args[2]
             self.assertIn('A119:Design Skill 119',payload['messages'][0]['content'])
+            self.assertIn('laptop.route.inspect:Route [READY, scope=client]',payload['messages'][0]['content'])
             self.assertEqual(payload['format']['oneOf'][0]['properties']['ids']['items']['enum'],['laptop.route.inspect'])
             self.assertFalse(any(b['properties']['decision']['const']=='answer' for b in payload['format']['oneOf']))
             self.assertFalse(payload['think'])

@@ -535,9 +535,12 @@ class Handler(BaseHTTPRequestHandler):
         except ValueError as exc:
             from gateway_pilot.application.skill_launcher import SkillSessionError
             code = (HTTPStatus.GONE if isinstance(exc, SkillSessionError) and str(exc) == "session_expired" else
-                    HTTPStatus.TOO_MANY_REQUESTS if isinstance(exc, SkillSessionError) and str(exc) == "session_capacity_limit" else
+                    HTTPStatus.TOO_MANY_REQUESTS if isinstance(exc, SkillSessionError) and str(exc) in {"session_capacity_limit", "model_busy"} else
+                    HTTPStatus.CONFLICT if isinstance(exc, SkillSessionError) and str(exc) == "session_busy" else
                     HTTPStatus.BAD_REQUEST)
-            return self._json({"error": str(exc)}, code)
+            messages={"model_busy":"LLM đang xử lý một lượt khác; hãy thử lại sau.",
+                      "session_busy":"Phiên này đang xử lý câu hỏi trước; hãy chờ hoặc đóng phiên."}
+            return self._json({"error": messages.get(str(exc),str(exc)),"reason":str(exc)}, code)
         except (RuntimeError, ImportError, OSError, KeyError) as exc:
             return self._json({"error": f"Không chạy được backend ({type(exc).__name__}).",
                                "hint": "Kiểm tra dữ liệu replay và các dependency của chế độ đang chọn."},

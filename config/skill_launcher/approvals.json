@@ -6,7 +6,7 @@
     "backend_id": "linux.laptop.skills",
     "backend_revision": "2.0.0",
     "source": "linux_client/skill_laptop_v1",
-    "diagnostics_digest": "e91ef84c9227867039a010f737ee3ebc7df43c2f9a600061b04de149404aeec3"
+    "diagnostics_digest": "277ce80669220d23ba1491d801c54716a8eb13118b45c4050e5de38336250a5d"
   },
   "replay": {
     "registry_digest": "60c65d844e4b620eeb8393a5a8b78224b65e3f88a27e558de9f95b716fc971a8",

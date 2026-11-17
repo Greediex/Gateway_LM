@@ -344,6 +344,172 @@
     ],
     "B07": [
       "roaming"
+    ],
+    "G03": [
+      "throughput",
+      "toc do tai",
+      "download mbps",
+      "upload mbps"
+    ],
+    "SK03": [
+      "dhcp"
+    ],
+    "A02": [
+      "danh sach thiet bi",
+      "kiem ke thiet bi",
+      "client khac"
+    ],
+    "SK08": [
+      "cpu router",
+      "ram router"
     ]
-  }
+  },
+  "question_intents": {
+    "laptop.wifi": {
+      "title": "Wi-Fi",
+      "phrases": [
+        "wifi",
+        "wi fi",
+        "wireless",
+        "ssid",
+        "signal",
+        "radio",
+        "tin hieu",
+        "song wifi",
+        "ket noi khong day"
+      ],
+      "ports": [
+        "laptop.wifi"
+      ]
+    },
+    "laptop.dns": {
+      "title": "DNS",
+      "phrases": [
+        "dns",
+        "phan giai",
+        "ten mien",
+        "domain name"
+      ],
+      "ports": [
+        "laptop.dns"
+      ]
+    },
+    "laptop.route": {
+      "title": "Gateway / route",
+      "phrases": [
+        "gateway",
+        "cong mac dinh",
+        "default route",
+        "tuyen",
+        "dinh tuyen",
+        "route"
+      ],
+      "ports": [
+        "laptop.route"
+      ]
+    },
+    "laptop.gateway_probe": {
+      "title": "Phản hồi gateway",
+      "phrases": [
+        "ping gateway",
+        "gateway ping",
+        "do tre gateway",
+        "gateway co phan hoi"
+      ],
+      "ports": [
+        "laptop.gateway_probe"
+      ]
+    },
+    "laptop.internet_probe": {
+      "title": "Độ trễ / mất gói",
+      "phrases": [
+        "ip cong cong",
+        "chat luong mang",
+        "mat goi",
+        "packet loss",
+        "latency",
+        "do tre"
+      ],
+      "ports": [
+        "laptop.gateway_probe",
+        "laptop.internet_probe"
+      ]
+    },
+    "client.ipv4": {
+      "title": "IPv4 laptop",
+      "phrases": [
+        "ipv4",
+        "dia chi ip",
+        "ip laptop",
+        "ip cua may"
+      ],
+      "ports": [
+        "client.ipv4"
+      ]
+    },
+    "expansion.client_association": {
+      "title": "AP của laptop",
+      "phrases": [
+        "ap nao",
+        "bssid",
+        "diem phat nao",
+        "access point"
+      ],
+      "ports": [
+        "expansion.client_association"
+      ]
+    },
+    "client.identity": {
+      "title": "Định danh laptop",
+      "phrases": [
+        "dinh danh",
+        "client id",
+        "laptop nao",
+        "identity"
+      ],
+      "ports": [
+        "client.identity"
+      ]
+    },
+    "network.connectivity": {
+      "title": "Kết nối Internet",
+      "phrases": [
+        "internet"
+      ],
+      "ports": [
+        "laptop.route",
+        "laptop.gateway_probe",
+        "laptop.internet_probe",
+        "laptop.dns"
+      ]
+    }
+  },
+  "nonlocal_scope_phrases": [
+    "cua router",
+    "tren router",
+    "dns router",
+    "router dns",
+    "on router",
+    "router s",
+    "cua ap",
+    "tren ap",
+    "client khac",
+    "thiet bi khac",
+    "may khac",
+    "another client",
+    "other client",
+    "router",
+    "cua gateway",
+    "tren gateway",
+    "on ap",
+    "of ap",
+    "from ap",
+    "ap dns",
+    "access point dns",
+    "on access point",
+    "of access point",
+    "gateway dns",
+    "cua bo phat",
+    "tren bo phat"
+  ]
 }
