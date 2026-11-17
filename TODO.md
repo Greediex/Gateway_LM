@@ -10,6 +10,8 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 
 ## Đã có
 
+- [x] Audit Graphify và mức dùng tính năng (17/11/2026): [báo cáo 30 nhóm tính năng](docs/reports/FEATURE_USAGE_AUDIT_20261117.md), đối chiếu entrypoint/runtime và 90 tests; giữ riêng mức live laptop, opt-in và replay/mock. Không bật thêm tính năng trong lần audit.
+
 - [x] Catalog 120 Skill thiết kế, mapping/availability và deployment READ có version/approval pins.
 - [x] Linux laptop live: 8 Functions; SK01/A08 scope local và 6 action laptop riêng. Replay B02/B03/B05 tách nguồn.
 - [x] Shared ReadSession, GraphRunner/Verifier, evidence có TTL, context/ACL/budget gates và tái sử dụng dữ liệu còn hạn.
@@ -17,6 +19,19 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 - [x] Web chat/Trace, launcher thủ công, CLI/API; README và nghiệm thu Qwen thật trên laptop.
 
 **Phạm vi đã xác minh:** 120 hàng thiết kế không đồng nghĩa 120 Skill chạy được. Live hiện có 2 mapping thiết kế local + 6 action laptop; 118 thiết kế còn UNAVAILABLE. Source 72 READ contracts vẫn PROPOSED, 203 cạnh đề xuất chưa được duyệt. [Bằng chứng nghiệm thu](docs/reports/LLM_SKILL_CHAT_ACCEPTANCE_20261116.json).
+
+## Tích hợp các thành phần đã có vào luồng laptop
+
+Phạm vi được yêu cầu: sử dụng các tính năng hiện có qua cùng Core/ReadSession; không tạo executor mới. Các đường thay thế GoS/ReAct không chạy trùng một phép đo. Không quảng bá router/WRITE/cloud thành live khi chưa có backend/cấu hình.
+
+- [x] **USE-01:** Nối TaskRuntime/RCA vào cùng ReadSession, thực thi candidate goals thích ứng có scope, budget và evidence provenance; giữ lookup không đo lan man. Test same Runner, thiếu dữ liệu, capability mất và deadline.
+- [x] **USE-02:** Bật bounded repair và GoS/Hybrid READY selection trong session qua kernel chung; kiểm tra giới hạn repair/calls và không lặp READ vô hạn.
+- [x] **USE-03:** Nối semantic local và runbook đúng profile vào context LLM; phân biệt tài liệu với evidence, giữ model/index do server cấu hình, test prompt injection/metadata profile.
+- [x] **USE-04:** Nối checkpoint/journal vào READ session với key local, kiểm chữ ký/context/TTL và không reset budget khi phục hồi; history/monitoring chỉ báo những số đo thật có nguồn.
+- [x] **USE-05:** Tích hợp trạng thái các tính năng trong API/Trace, kiểm tra toàn bộ regression và Qwen 4B live; cập nhật README/audit, đẩy v2 và CI. Giữ rõ các mục cần router, WRITE driver và cloud credential chưa thể nghiệm thu.
+
+**Nghiệm thu tích hợp READ:** full local 844 tests: 839 pass, 5 Windows-only skips; hygiene và DOM presentation đạt. Review độc lập không còn lỗi chặn; chờ CI đúng commit. [báo cáo local](docs/reports/READ_INTEGRATION_ACCEPTANCE_20261117.json). Qwen4B + laptop DNS đạt MEASURED trong 102,36s, 6 READ/3 model calls; Function Hybrid có chạy, semantic catalog ERROR timeout được giữ nguyên trong báo cáo. Restart process thật khôi phục 2 facts, giữ tổng calls=2, chạy lại route thêm 0 calls; phiên còn khoảng 285s, không cấp lại TTL/budget. Full Qwen4B EVAL1000 và causal RCA tổng quát chưa nghiệm thu. Chỉ kết nối các module READ phù hợp; không coi ReAct/GoS thay thế là hai executor chạy đồng thời. Cloud/WRITE/router/collector monitoring/Incident không có backend hoặc nguồn đo thật nên chưa bật.
+
 
 ## P0 — Hoàn thiện luồng chat trên laptop
 

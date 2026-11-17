@@ -8,6 +8,7 @@ rechecks the claims after each batch.
 from __future__ import annotations
 
 import copy
+import math
 from collections import Counter
 
 from ..adapters import PROBE_OK
@@ -135,6 +136,108 @@ class RCAAgent:
         with session._lock:
             session.refresh()
             return [EvidenceRCA(self.registry, wid).assess(session.state) for wid in workflows]
+
+    def diagnose_session(self, session, *, workflows, allowed_ports,
+                         max_steps=2, deadline=None):
+        """Collect bounded missing Claim evidence in the caller's existing READ case.
+
+        ``deadline`` is absolute on the runtime clock. Goals come only from
+        registered Claim requirements intersected with the caller's port scope;
+        registered compiler dependencies still pass through the shared kernel.
+        """
+        if (type(max_steps) is not int or not 0 <= max_steps <= 16
+                or type(allowed_ports) not in (list, tuple, set, frozenset)
+                or any(type(p) is not str or p not in self.registry.ports
+                       for p in allowed_ports)
+                or (deadline is not None and (type(deadline) not in (int, float)
+                                              or not math.isfinite(deadline)))):
+            raise PlanError("rca_session_limits")
+        # This also validates the genuine session, workflow contracts and pins.
+        assessments = self.assess_session(session, workflows=workflows)
+        with session._lock:
+            runner, state = session.runner, session.state
+            before = runner.calls
+            steps, excluded = [], set()
+            allowed = {p for p in allowed_ports
+                       if self.registry.ports[p].scope == session.runtime.context.scope
+                       and not self.registry.ports[p].untrusted_text}
+            assessors = [EvidenceRCA(self.registry, w) for w in workflows]
+            original_deadline = runner.deadline_s
+            if deadline is not None:
+                runner.deadline_s = min(original_deadline, deadline - runner.started)
+            reason = "rca_step_budget_exhausted"
+            try:
+                for _ in range(max_steps):
+                    session.refresh()
+                    assessments = [a.assess(state, excluded_ports=excluded) for a in assessors]
+                    if assessments and all(a["decision"] != "INCONCLUSIVE" for a in assessments):
+                        reason = "claim_supported_by_verified_evidence"
+                        break
+                    if session.runtime._clock() - runner.started >= runner.deadline_s:
+                        reason = "rca_deadline_exhausted"
+                        break
+                    if runner.calls >= runner.max_calls:
+                        reason = "rca_call_budget_exhausted"
+                        break
+                    goals = dict.fromkeys(p for a in assessments
+                                          if a["decision"] == "INCONCLUSIVE"
+                                          for p in a["candidate_goals"] if p in allowed)
+                    chosen = None
+                    for goal in goals:
+                        try:
+                            runner.compiler().compile([goal], state)
+                        except PlanError:
+                            excluded.add(goal)
+                            continue
+                        chosen = goal
+                        break
+                    if chosen is None:
+                        reason = "no_admissible_evidence_goal"
+                        break
+                    calls = runner.calls
+                    try:
+                        session.execute([chosen], request="READ registered diagnostic evidence")
+                    except PlanError as exc:
+                        if str(exc) not in {"runner_call_or_deadline_budget", "runner_cost_budget",
+                                            "binding_v02:session_plan_budget"}:
+                            raise
+                        reason = ("rca_deadline_exhausted"
+                                  if session.runtime._clock() - runner.started >= runner.deadline_s
+                                  else "rca_execution_budget_exhausted")
+                        steps.append({"iteration": len(steps) + 1, "goal": chosen,
+                                      "calls_added": runner.calls - calls,
+                                      "verified": state.fact(chosen) is not None,
+                                      "status": "BUDGET_EXHAUSTED"})
+                        break
+                    verified = state.fact(chosen) is not None
+                    steps.append({"iteration": len(steps) + 1, "goal": chosen,
+                                  "calls_added": runner.calls - calls, "verified": verified,
+                                  "status": "VERIFIED" if verified else "INCONCLUSIVE"})
+                    if not verified or runner.calls == calls:
+                        reason = "rca_no_progress"
+                        break
+                session.refresh()
+                assessments = [a.assess(state, excluded_ports=excluded) for a in assessors]
+                if assessments and all(a["decision"] != "INCONCLUSIVE" for a in assessments):
+                    reason = "claim_supported_by_verified_evidence"
+            finally:
+                runner.deadline_s = original_deadline
+            decisions = {a["decision"] for a in assessments}
+            status = ("MULTIPLE_FAULTS" if "MULTIPLE_FAULTS" in decisions
+                      else "VERIFIED_FAULT" if "VERIFIED_FAULT" in decisions
+                      else "HEALTHY_OBSERVED" if decisions == {"HEALTHY_OBSERVED"}
+                      else "INCONCLUSIVE")
+            diagnoses = {a["diagnosis"] for a in assessments if a["diagnosis"] is not None
+                         and a["decision"] in ({"VERIFIED_FAULT", "MULTIPLE_FAULTS"}
+                                                if status in {"VERIFIED_FAULT", "MULTIPLE_FAULTS"}
+                                                else {"HEALTHY_OBSERVED"})}
+            if status == "VERIFIED_FAULT" and len(diagnoses) > 1:
+                status = "MULTIPLE_FAULTS"
+            return {"status": status, "reason": reason,
+                    "diagnosis": (next(iter(diagnoses))
+                                  if status != "INCONCLUSIVE" and len(diagnoses) == 1 else None),
+                    "assessments": assessments, "steps": steps, "calls": runner.calls,
+                    "calls_added": runner.calls - before}
 
     def run(self, request: str, case: dict, *, workflow: str):
         if not isinstance(request, str) or not request.strip() or not isinstance(case, dict):

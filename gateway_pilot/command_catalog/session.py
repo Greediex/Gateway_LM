@@ -10,6 +10,7 @@ from ..application.feature_availability import _time
 from ..core import PlanError
 from ..graph_v3.execution_kernel import execute_ready_once
 from ..graph_v3.runner import GraphRunner
+from ..graph_v3.planner import NodeState
 from .loader import digest
 
 
@@ -21,7 +22,8 @@ class ReadSession:
     """
 
     def __init__(self, runtime, *, max_calls=24, ttl_s=300, max_plans=64,
-                 cost_budget=100, context_valid=lambda: True):
+                 cost_budget=100, context_valid=lambda: True, max_repairs=0,
+                 method="ordered", case_id=None):
         from .runtime import ReadRuntime
         require(type(runtime) is ReadRuntime, "session_runtime")
         require(type(max_calls) is int and 1 <= max_calls <= 4096
@@ -29,6 +31,11 @@ class ReadSession:
                 and _time(ttl_s) and 0 < ttl_s <= 86400
                 and _time(cost_budget) and 0 < cost_budget <= 1e6
                 and callable(context_valid), "session_limits")
+        require(type(max_repairs) is int and 0 <= max_repairs <= 4
+                and method in {"ordered", "gos", "bm25", "hybrid"}, "session_execution_policy")
+        self.method = method
+        self.retrievals = []
+        self._prior_plans = 0
         self.runtime = runtime
         self._lock = RLock()
         self.closed = False
@@ -38,12 +45,17 @@ class ReadSession:
         require(_time(self.created_at), "session_clock")
         self.expires_at = self.created_at + ttl_s
         self._last_clock = self.created_at
-        case, self.state = runtime.new_case()
+        case, self.state = runtime.new_case(case_id=case_id)
         self.runner = GraphRunner(runtime.registry, case, self.state, max_calls=max_calls,
-                                  max_repairs=0, deadline_s=ttl_s, cost_budget=cost_budget)
+                                  max_repairs=max_repairs, deadline_s=ttl_s, cost_budget=cost_budget)
+        self.runner.plan_validator = self._validate_plan
         self._target = copy.deepcopy(self.state.target)
         self._pins = self._configuration()
         self._validate()
+
+    def _validate_plan(self, plan):
+        self._validate()
+        require(len(self.runner.plans)+self._prior_plans < self._max_plans, "session_plan_budget")
 
     def _configuration(self):
         rt = self.runtime
@@ -115,7 +127,7 @@ class ReadSession:
             require(type(request) is str and 0 < len(request) <= 4096, "runtime_request")
             require(type(goals) in (tuple, list) and 0 < len(goals) <= 256
                     and all(type(g) is str for g in goals), "session_goals")
-            require(len(self.runner.plans) < self._max_plans, "session_plan_budget")
+            require(len(self.runner.plans)+self._prior_plans < self._max_plans, "session_plan_budget")
             self.refresh()
             self.runner.case["request"] = request
             plan = self.runner.compiler().compile(tuple(goals), self.state)
@@ -126,8 +138,26 @@ class ReadSession:
             self.runner.attach(plan)
             while True:
                 self._validate()
-                node, _ = execute_ready_once(self.runner, plan, goals, ordered_ids=plan.topological())
+                try:
+                    node, _ = execute_ready_once(self.runner, plan, goals, method=self.method,
+                                                 ordered_ids=plan.topological() if self.method=='ordered' else None,
+                                                 audit=self.retrievals)
+                except PlanError as exc:
+                    if self.method!='hybrid' or not str(exc).startswith('semantic_'):raise
+                    # Ranking may degrade; execution authorization and verifier stay unchanged.
+                    self.retrievals.append({'method':'gos','semantic_status':'ERROR','reason':str(exc)})
+                    self.method='gos'
+                    self._validate()
+                    continue
                 if node is None:
                     break
+                if self.runner.max_repairs and node.state in (NodeState.FAILED, NodeState.INCONCLUSIVE):
+                    self._validate()
+                    try:
+                        plan = self.runner.repair(plan, node)
+                        self.refresh()
+                    except PlanError as exc:
+                        self.state.errors.append(str(exc))
+                        break
             self._validate()
             return self.runner, plan

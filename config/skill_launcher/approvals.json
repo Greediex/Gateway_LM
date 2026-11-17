@@ -1,7 +1,7 @@
 {
   "format": "gateway-lm.skill-launcher-approval/v1",
   "live": {
-    "registry_digest": "f956ee8831d1b4f11c65a3a2569f5b469814205ab49dbcd3c88d482d92e48ffd",
+    "registry_digest": "801d53906ba8901e5ca8c0743c6fa67c0f63e6292febcf385ac4d9df06f1725b",
     "actions_digest": "808660094e8b6bb7d41165fee251e8e356a74734f73f8a7f210d63e5aca24f16",
     "backend_id": "linux.laptop.skills",
     "backend_revision": "2.0.0",

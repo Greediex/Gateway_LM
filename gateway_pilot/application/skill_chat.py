@@ -6,10 +6,12 @@ import re
 import threading
 import time
 import math
+from functools import lru_cache
 
 from ..core import PlanError
 from ..graph_v3.ollama_goal_model import OllamaGoalModel
-from ..graph_v3.rca_agent import RCAAgent
+from ..graph_v3.task_runtime import TaskRuntime
+from ..graph_v3.llm_goals import BoundedGoalProposer
 from ..graph_v3.task_decomposer import TaskDecomposer
 from ..observability.snapshot import VerifiedSnapshot
 from ..workflow import normalize
@@ -17,11 +19,17 @@ from .skill_launcher import LAUNCHER, SkillSessionError
 from .grounded_answer import compose_answer, diagnostic_request, produce_grounded_answer, assessment_summary
 
 
+@lru_cache(maxsize=1)
+def _chat_context():
+    from .chat_context import trusted_context
+    return trusted_context()
+
+
 def local_model(*, timeout=60):
     # Trusted startup environment only; HTTP/model text cannot set endpoint/model.
     name = os.environ.get('GATEWAY_LM_CHAT_MODEL', 'qwen3:4b')
     limit = 4_500_000_000 if name == 'qwen3:4b' else 3_000_000_000
-    return OllamaGoalModel(name, timeout=timeout, max_parameters=limit)
+    return OllamaGoalModel(name, timeout=timeout, max_parameters=limit, chat_context=_chat_context())
 
 
 def findings(view: dict) -> dict:
@@ -141,7 +149,10 @@ class SkillChat:
             if created:self.launcher.close(session_id)
             raise SkillSessionError('model_busy')
         try:
-            return self._turn(request.strip(),session_id,entry,started)
+            result=self._turn(request.strip(),session_id,entry,started)
+            saved=self.launcher.checkpoint(session_id)
+            result['persistence']={'enabled':self.launcher.storage is not None,'checkpoint_facts':saved,'restored_facts':entry.get('restored_facts',0)}
+            return result
         except Exception:
             if created:
                 try:self.launcher.close(session_id)
@@ -161,9 +172,19 @@ class SkillChat:
             try:return method(*args,**kwargs)
             finally:timings[stage]+=(self.clock()-start)*1000
         def view(refresh=True):return timed('probe',self._view,entry,refresh=refresh)
-        def assess(workflows):
-            return timed('rca',RCAAgent(runtime.registry,method='bm25').assess_session,
-                         session,workflows=workflows)
+        def run_skill(skill):
+            return timed('execution',self.launcher.run,sid,skill,
+                         deadline=runtime._clock()+max(0,deadline-self.clock()))
+        task_trace=[]
+        def assess(workflows, *, adaptive=False):
+            allowed=set(goals) if goals else set(p for skill in attempted
+                    for p in {**entry['actions'][skill]['required_ports'],**entry['actions'][skill]['optional_ports']})
+            result=timed('rca',TaskRuntime.run_session,session,request=request,
+                         workflows=workflows,allowed_ports=sorted(allowed),
+                         diagnostic=adaptive and diagnostic_request(request),max_steps=2,
+                         deadline=runtime._clock()+max(0,deadline-self.clock()))
+            task_trace.append({k:result[k] for k in ('mode','status','reason','steps','calls_added')})
+            return result['assessments']
         def check_deadline():return self.clock()<deadline and runtime._clock()<session.expires_at
         view()
         catalog=timed('catalog',self.launcher.catalog,'live',entry=entry)
@@ -177,6 +198,7 @@ class SkillChat:
         attempted,runs,advice,selected,assessments=[],[],[],[],[]
         rejections,recovery_attempts,model_calls=0,0,0
         model=None
+        goal_proposal={'status':'NOT_NEEDED','goals':[]}
         recovery_runs=[];feedback=None;seen=set();reason='round_budget_exhausted';ready=False
         def coverage(facts):
             missing=sorted(set(goals)-set(facts))
@@ -201,7 +223,7 @@ class SkillChat:
             recovery_attempts+=1
             for skill in owners:
                 if not check_deadline() or session.runner.calls>=session.runner.max_calls:break
-                result=timed('execution',self.launcher.run,sid,skill)
+                result=run_skill(skill)
                 runs.append(result)
                 recovery_runs.append({'skill_id':skill,'reason':'expired_evidence',
                                       'calls':result['calls_this_run'],'missing_ports':result['missing_ports']})
@@ -216,12 +238,26 @@ class SkillChat:
             try:
                 if self.model_factory is local_model:
                     model=timed('inference',self.model_factory,
-                                timeout=min(60,max(.001,deadline-self.clock())))
+                                timeout=min(90 if os.environ.get('GATEWAY_LM_CHAT_MODEL','qwen3:4b')=='qwen3:4b' else 60,max(.001,deadline-self.clock())))
                 else:
                     model=timed('inference',self.model_factory)
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
                     raise ValueError('local_skill_model_required')
                 ready=True
+                if (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
+                    view()
+                    if check_deadline():
+                        model_calls+=1
+                        original_timeout=getattr(model,'timeout',None)
+                        if original_timeout is not None:model.timeout=min(original_timeout,max(.001,deadline-self.clock()))
+                        try:
+                            proposal=timed('inference',BoundedGoalProposer(model).propose,
+                                request,runtime.registry,session.state,TaskDecomposer(runtime.registry))
+                        finally:
+                            if original_timeout is not None:model.timeout=original_timeout
+                        goal_proposal={'status':proposal.decision,'reason':proposal.reason,'goals':list(proposal.goals)}
+                        if proposal.decision=='READY':
+                            goals.update({port:port for port in proposal.goals})
                 for round_index in range(self.max_rounds):
                     if not check_deadline():reason='turn_deadline_exhausted';break
                     current_view=view();current=findings(current_view)
@@ -246,7 +282,7 @@ class SkillChat:
                              'remaining_tool_calls':max(0,session.runner.max_calls-session.runner.calls),
                              'last_round':round_index==self.max_rounds-1,
                              'previous_question':entry.get('previous_question',''),
-                             'inference_timeout_s':min(60,max(.1,deadline-self.clock())),
+                             'inference_timeout_s':min(getattr(model,'timeout',60),max(.1,deadline-self.clock())),
                              'scope':'Only this local Linux laptop; never router/client inventory'}
                     try:
                         model_calls+=1
@@ -290,10 +326,10 @@ class SkillChat:
                     if round_index==self.max_rounds-1:reason='round_budget_exhausted';break
                     for skill in choice['skill_ids']:
                         if not check_deadline():reason='turn_deadline_exhausted';break
-                        result=timed('execution',self.launcher.run,sid,skill)
+                        result=run_skill(skill)
                         attempted.append(skill);runs.append(result)
                     workflows=list(dict.fromkeys(w for skill in attempted for w in runtime.registry.skill_workflows[skill]))
-                    assessments=assess(workflows)
+                    assessments=assess(workflows,adaptive=True)
                     feedback={'failed_skills':[r['skill_id'] for r in runs if r['status']!='MEASURED'],
                               'missing_goals':coverage(view(refresh=False)['facts'])['missing_ports']}
                     if session.runner.calls>=session.runner.max_calls:reason='tool_budget_exhausted';break
@@ -438,6 +474,18 @@ class SkillChat:
                     'advice':advice,'intake':{'source':'llm','accepted':bool(advice),
                           'model':advice[0]['model'] if advice else 'LLM local','shared_with_selection':True},
                     'skill_runs':[{k:r[k] for k in ('skill_id','status','calls_this_run','reused_ports','missing_ports')} for r in runs],
+                    'goal_proposal':goal_proposal,'task_trace':task_trace,'function_retrievals':session.retrievals,
+                    'runbooks':((getattr(model,'last_catalog',{}).get('runbooks') or {}).get('documents',[])),
+                    'runtime_features':{'task_runtime':'USED' if task_trace else 'READY',
+                        'adaptive_rca':'USED' if any(t['mode']=='DIAGNOSE' for t in task_trace) else 'LOOKUP' if task_trace else 'NOT_RUN',
+                        'repair_budget':session.runner.max_repairs,'ready_selection':session.method,
+                        'checkpoint_journal':'ACTIVE' if self.launcher.storage else 'NOT_CONFIGURED',
+                        'catalog_semantic':getattr(model,'last_catalog',{}).get('semantic',{'status':'NOT_CONFIGURED'}),
+                        'function_semantic':{'method':session.method,'used':any(r.get('selected_ready') for r in session.retrievals),'fallbacks':[r for r in session.retrievals if r.get('semantic_status')=='ERROR']},
+                        'runbook_profile':((getattr(model,'last_catalog',{}).get('runbooks') or {}).get('firmware')),
+                        'runbook_documents':len((getattr(model,'last_catalog',{}).get('runbooks') or {}).get('documents',[])),
+                        'cloud':'NOT_CONFIGURED','write':'DISABLED','router_backend':'NOT_CONFIGURED',
+                        'monitoring':'INSUFFICIENT_SAMPLES'},
                     'rca_assessments':assessments,'stop_reason':reason,'unavailable_skills':unavailable,'coverage':cov,
                     'recovery_attempts':recovery_attempts,'recovery_runs':recovery_runs,'proposal_rejections':rejections,
                     'model_calls':model_calls,'timings_ms':timings,
@@ -445,8 +493,8 @@ class SkillChat:
                     'answer_kind':'diagnostic' if diagnostic_request(request) else 'lookup',
                     'diagnostic_status':'INCONCLUSIVE' if diagnostic_request(request) else None,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
-                    'llm_advisor_used':bool(advice),'runbooks':[],'warnings':[],
+                    'llm_advisor_used':bool(advice),'warnings':[],
                     'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'}
 
 
-CHAT=SkillChat()
+CHAT=SkillChat(max_elapsed_s=180)

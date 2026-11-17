@@ -395,9 +395,9 @@ class GraphRegistry:
                                     ports=list(f.inputs) + list(f.outputs))
             elif name.startswith("w:"):
                 workflow = workflows[name[2:]]
-                fields[name] = dict(name=workflow["title"], description=" ".join(workflow["symptoms"]),
+                fields[name] = dict(name=workflow.get("title", name[2:]), description=" ".join(workflow.get("symptoms", ())),
                                     tags=[workflow["kind"], workflow["target_scope"], *workflow.get("tags", ())],
-                                    ports=list(workflow["goal_ports"]))
+                                    ports=list(workflow.get("goal_ports", ())))
             else:
                 skill = self.skills[name[2:]]
                 fields[name] = dict(name=skill["name"], description=skill.get("description", ""),
@@ -413,7 +413,7 @@ class GraphRegistry:
                                    provenance=origin, evidence=evidence, **metadata))
 
         for wid, workflow in workflows.items():
-            for sid in workflow["skill_ids"]:
+            for sid in workflow.get("skill_ids", ()):
                 if sid in self.skills:
                     add("w:" + wid, "s:" + sid, "workflow", 1.0, "GATEWAY_DESIGN", [wid, sid],
                         relation="workflow_skill")

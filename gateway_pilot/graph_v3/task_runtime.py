@@ -29,6 +29,34 @@ class TaskRuntime:
 
     STATES = ("RECEIVED", "ROUTED", "EXECUTED", "VERIFIED", "TERMINAL")
 
+    @staticmethod
+    def run_session(session, *, request: str, workflows, allowed_ports,
+                    diagnostic: bool, max_steps=2, deadline=None):
+        """Dispatch on an existing READ session without constructing execution state.
+
+        A lookup only assesses cached verified facts. A diagnostic may collect
+        registered missing evidence within the supplied port and turn budgets.
+        """
+        from ..command_catalog.session import ReadSession
+        if (type(session) is not ReadSession or type(request) is not str
+                or not 1 <= len(request.strip()) <= 2000 or type(diagnostic) is not bool):
+            raise ValueError("invalid_session_task_request")
+        agent = RCAAgent(session.runtime.registry)
+        if TaskDecomposer(session.runtime.registry).is_write_intent(request):
+            return {"mode": "DIAGNOSE" if diagnostic else "LOOKUP", "status": "BLOCKED",
+                    "reason": "write_approval_required", "diagnosis": None,
+                    "assessments": [], "steps": [], "calls": session.runner.calls,
+                    "calls_added": 0}
+        if diagnostic:
+            result = agent.diagnose_session(
+                session, workflows=workflows, allowed_ports=allowed_ports,
+                max_steps=max_steps, deadline=deadline)
+            return dict(result, mode="DIAGNOSE")
+        assessments = agent.assess_session(session, workflows=workflows)
+        return {"mode": "LOOKUP", "status": "NOT_EVALUATED", "diagnosis": None,
+                "reason": "lookup_without_measurement", "assessments": assessments,
+                "steps": [], "calls": session.runner.calls, "calls_added": 0}
+
     def __init__(self, registry=None, *, method="bm25", max_calls=12,
                  goal_proposer=None, checkpoint=None, journal=None):
         self.registry = registry if registry is not None else GraphRegistry.from_v01()

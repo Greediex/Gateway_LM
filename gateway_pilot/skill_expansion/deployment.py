@@ -101,5 +101,6 @@ def composition(mode: str, *, backend=None, clock=time.monotonic):
                   notes='Separate laptop action, not a fulfilled router Skill.',source=None,runtime_status='NOT_BOUND')
             for a in actions.values() if a['kind']=='laptop']
     bridge=RuntimeSkillBridge(runtime,SkillCatalog([*design.skills.values(),*native],design.relations))
-    session=runtime.open_session(max_calls=24,ttl_s=300,max_plans=64,context_valid=context_valid)
+    session=runtime.open_session(max_calls=24,ttl_s=300,max_plans=64,context_valid=context_valid,
+                                 max_repairs=2 if mode=="live" else 0,method="gos" if mode=="live" else "ordered")
     return {'runtime':runtime,'session':session,'bridge':bridge,'actions':actions,'context_valid':context_valid,'backend':backend}

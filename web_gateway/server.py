@@ -430,6 +430,12 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         path = urlparse(self.path).path
+        if path == "/api/skills/history":
+            from gateway_pilot.application.skill_launcher import LAUNCHER
+            from gateway_pilot.core import PlanError
+            if urlparse(self.path).query:return self._json({"error":"History không nhận cấu hình từ URL"},HTTPStatus.BAD_REQUEST)
+            try:return self._json({"sessions": LAUNCHER.history(), "raw_conversations_stored": False})
+            except (OSError,ValueError,PlanError):return self._json({"error":"History integrity unavailable"},HTTPStatus.SERVICE_UNAVAILABLE)
         if path == "/api/skills":
             try:
                 from gateway_pilot.application.skill_launcher import LAUNCHER
@@ -488,7 +494,7 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         endpoint = urlparse(self.path).path
-        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network", "/api/skills/session", "/api/skills/run", "/api/skills/close"):
+        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network", "/api/skills/session", "/api/skills/run", "/api/skills/close", "/api/skills/resume"):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -504,12 +510,15 @@ class Handler(BaseHTTPRequestHandler):
                 from gateway_pilot.application.skill_launcher import LAUNCHER, SkillSessionError
                 fields = {"/api/skills/session": {"mode"},
                           "/api/skills/run": {"session_id", "skill_id"},
-                          "/api/skills/close": {"session_id"}}[endpoint]
+                          "/api/skills/close": {"session_id"},
+                          "/api/skills/resume": {"session_id"}}[endpoint]
                 if type(data) is not dict or set(data) != fields:
                     raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
                 try:
                     if endpoint.endswith("/session"):
                         result = LAUNCHER.create_session(data["mode"])
+                    elif endpoint.endswith("/resume"):
+                        result = LAUNCHER.resume(data["session_id"])
                     elif endpoint.endswith("/close"):
                         result = LAUNCHER.close(data["session_id"])
                     else:

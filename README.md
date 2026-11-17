@@ -47,9 +47,17 @@ Chưa có required evidence thì hiện INCOMPLETE; chưa có backend thì UNAVA
 
 Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLauncher/ReadSession → GraphRunner/Verifier → RCAAgent → LLM**. Catalog được xếp hạng bằng BM25 + graph diffusion hiện có, rồi model local tự chọn và phối hợp ID Skill được hỗ trợ; Core giữ quyền chạy và bằng chứng. RCA đánh giá trong cùng phiên, không tạo Runner khác. Hệ thống kiểm tra các phần được yêu cầu trong câu hỏi; hoàn tất một Skill không đồng nghĩa trả lời đủ cả câu. Khi thiếu dữ liệu, model có thể chọn tiếp trong budget; dữ liệu phụ thuộc giữ trong Trace, câu trả lời theo đúng phạm vi được hỏi. [Chi tiết và giới hạn](docs/LLM_SKILL_CHAT.md).
 
-Mặc định mỗi lượt có tối đa 4 vòng lựa chọn và deadline 120 giây. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
+Web laptop dùng Qwen 4B với tối đa 4 vòng lựa chọn, deadline 180 giây và tối đa 90 giây/RPC (model khác giữ giới hạn 60 giây). Constructor test/CLI vẫn có thể dùng budget nhỏ hơn. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
 
 Câu hỏi như “kiểm tra SSID” chỉ hiển thị SSID. Câu hỏi chẩn đoán có nhận định và giới hạn riêng; “Đã có số đo” không đồng nghĩa đã chẩn đoán hay khắc phục. Cùng model local có thể chọn field và cách diễn đạt bằng placeholder trong tối đa hai lượt bổ sung, với hậu kiểm evidence sau suy luận; lỗi/timeout/dữ liệu cũ dùng fallback từ facts còn hạn. Chi tiết kỹ thuật nằm trong “Chi tiết phép đo” và Trace.
+
+Luồng laptop hiện dùng **TaskRuntime/RCA trong cùng ReadSession**, GoS/Hybrid để chọn READY node và bounded repair. READ được thử tối đa hai lần theo metadata đã duyệt; retry phải probe lại capability. Khi câu hỏi không khớp phrase, LLM có thể đề xuất port-goal có kiểu qua BoundedGoalProposer; Core vẫn kiểm tra scope/quyền/deadline.
+
+**Semantic và Runbook RAG:** `embeddinggemma` chạy local trong Ollama, xếp hạng catalog và Function; Qwen 4B dùng để chọn Skill/trả lời. Chỉ mục được cache trong RAM. Embedding lỗi được ghi vào Trace, không cấp quyền; Function ranking có thể chuyển sang GoS. Runbook laptop là tài liệu tham khảo đúng profile, không phải evidence hay kiểm chứng firmware.
+
+**Lịch sử và khôi phục:** nút “Lịch sử phiên” đọc tóm tắt các phiên READ. Checkpoint và journal có chữ ký lưu riêng tại `~/.local/state/gateway_lm` (hoặc `GATEWAY_LM_STATE_DIR` do server cấu hình), thư mục 0700/key và file 0600. Facts có thể chứa thông tin mạng, không được mã hóa và không đưa lên Git. Khôi phục cùng OS boot/context giữ TTL, calls/cost/plans/repairs đã dùng; phiên đóng/hết hạn hoặc journal không khớp bị từ chối. Không lưu nguyên văn hội thoại; không resume WRITE hay tự chạy lại job sau crash. UI thử khôi phục handle cũ một lần sau khi server restart.
+
+Router/OpenWrt, cloud, WRITE, monitoring định kỳ và Incident vẫn cần backend/cấu hình hoặc dữ liệu tương ứng; việc nối các module READ không làm 118 Skill thiết kế còn thiếu backend trở thành READY.
 
 Chat laptop mặc định dùng `qwen3:4b`. Cần Ollama đang chạy và tải model trước:
 
@@ -57,6 +65,7 @@ Chat laptop mặc định dùng `qwen3:4b`. Cần Ollama đang chạy và tải 
 ollama serve
 # Terminal khác:
 ollama pull qwen3:4b
+ollama pull embeddinggemma
 bash web_gateway/start_linux.sh
 ```
 

@@ -138,3 +138,82 @@ class LocalSentenceTransformerEncoder:
             show_progress_bar=False,
         )
         return result.tolist()
+
+
+class LocalOllamaEncoder:
+    """Trusted startup-only Ollama embedding client, pinned to loopback.
+
+    No proxy, redirects, remote URLs, model downloads or model paths. Mutable
+    tags are checked against the startup digest before and after every batch.
+    """
+
+    local_only = True
+    endpoint = "http://127.0.0.1:11434"
+    max_response_bytes = 8_000_000
+
+    def __init__(self, model: str = "embeddinggemma", *, timeout: float = 10.0):
+        import urllib.request
+        if (not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9_-]+(?::[A-Za-z0-9_.-]+)?", model)
+                or not isinstance(timeout, (float, int)) or isinstance(timeout, bool)
+                or not math.isfinite(timeout) or not 0 < timeout <= 10):
+            raise ValueError("invalid_local_embedding_configuration")
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):
+                raise ValueError("embedding_redirect_denied")
+        self._opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+        self.model = model if ":" in model else model + ":latest"
+        self.timeout = float(timeout)
+        self.digest = self._digest()
+        info = self._request("/api/show", {"model": self.model})
+        if "embedding" not in info.get("capabilities", []):
+            raise ValueError("ollama_model_not_embedding_capable")
+        dimensions = {value for key, value in info.get("model_info", {}).items()
+                      if key.endswith(".embedding_length") and type(value) is int}
+        if len(dimensions) != 1 or not 1 <= next(iter(dimensions)) <= 4096:
+            raise ValueError("ollama_embedding_dimension_unknown")
+        self.dimension = next(iter(dimensions))
+        self.model_id = "ollama/" + self.digest.removeprefix("sha256:")
+
+    def _request(self, path, payload=None):
+        import json
+        import urllib.request
+        data = None if payload is None else json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(self.endpoint + path, data=data,
+                                         headers={"Content-Type": "application/json"})
+        with self._opener.open(request, timeout=self.timeout) as response:
+            content = response.read(self.max_response_bytes + 1)
+        if len(content) > self.max_response_bytes:
+            raise ValueError("embedding_response_budget")
+        result = json.loads(content)
+        if not isinstance(result, dict) or result.get("error"):
+            raise ValueError("embedding_invalid_response")
+        return result
+
+    def _digest(self):
+        rows = self._request("/api/tags").get("models", [])
+        matches = [row.get("digest") for row in rows if isinstance(row, dict)
+                   and row.get("name") == self.model]
+        if (len(matches) != 1 or not isinstance(matches[0], str)
+                or not re.fullmatch(r"(?:sha256:)?[a-f0-9]{64}", matches[0])):
+            raise ValueError("local_embedding_model_unavailable")
+        return matches[0]
+
+    def encode_many(self, texts):
+        if (not isinstance(texts, list) or not 1 <= len(texts) <= 128
+                or any(not isinstance(t, str) or not 0 < len(t) <= 4096 for t in texts)
+                or sum(len(t.encode("utf-8")) for t in texts) > 256_000):
+            raise ValueError("embedding_input_budget")
+        if self._digest() != self.digest:
+            raise ValueError("embedding_model_changed")
+        result = self._request("/api/embed", {"model": self.model, "input": texts,
+                                              "truncate": False, "keep_alive": "5m"})
+        if self._digest() != self.digest:
+            raise ValueError("embedding_model_changed")
+        vectors = result.get("embeddings")
+        if (not isinstance(vectors, list) or len(vectors) != len(texts)
+                or any(not isinstance(v, list) or len(v) != self.dimension for v in vectors)
+                or any(type(n) not in (int, float) for v in vectors for n in v)):
+            raise ValueError("embedding_output_dimension_mismatch")
+        # Numeric, finite, normalization and zero-vector validation is shared
+        # with all trusted encoders by LocalSemanticIndex.
+        return vectors

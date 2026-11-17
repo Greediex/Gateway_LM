@@ -59,7 +59,7 @@
   "effects": [],
   "timeout_ms": 15000,
   "retry": {
-    "max_attempts": 1
+    "max_attempts": 2
   },
   "ttl_seconds": 30,
   "cost": 1.0,

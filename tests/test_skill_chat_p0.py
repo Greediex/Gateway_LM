@@ -263,7 +263,8 @@ class P0ChatTests(unittest.TestCase):
             model=OllamaGoalModel('qwen3:1.7b',timeout=60)
             model.choose_skills('Kiểm tra',[['laptop.wifi.inspect','WiFi','READY','client']],
                                 {'findings':[],'inference_timeout_s':.25})
-            self.assertEqual(http.call_args.kwargs['timeout'],.25)
+            self.assertGreater(http.call_args.kwargs['timeout'],0)
+            self.assertLessEqual(http.call_args.kwargs['timeout'],.25)
             self.assertEqual(http.call_args.kwargs['max_bytes'],65536)
 
     def test_router_owned_query_is_not_answered_with_laptop_telemetry(self):

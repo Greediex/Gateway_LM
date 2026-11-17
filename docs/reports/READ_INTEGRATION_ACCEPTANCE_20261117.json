@@ -1,0 +1,83 @@
+{
+  "scope": "Illustrative integration acceptance, not general agent quality, not firmware acceptance",
+  "runtime_base_commit": "9f1ab6ba",
+  "source_note": "Qwen smoke was measured on integration candidate before final metadata display and persistence lock/budget fixes; inference and READ session source hashes below remain identical. Latest full validation is recorded in TODO/CI.",
+  "inference_read_source_sha256": {
+    "gateway_pilot/graph_v3/ollama_goal_model.py": "9e4df8c6985660a4f829a16085a2857489ca94c380ccd51d945679d01c5f03cc",
+    "gateway_pilot/graph_v3/semantic.py": "ee9ab44062fc07be2f734b48a964548dea1b87ccb67c3b6b78227edaeeff31d4",
+    "gateway_pilot/application/chat_context.py": "198ae1227e39be1184d1510cb8d8e803429a692af9bbab4b7871addfcc43857b",
+    "gateway_pilot/command_catalog/session.py": "1fa554e4ae5872bc5db4971b40177d4a0e2a46c51b6641d37488d4969835fe97"
+  },
+  "local_model": "qwen3:4b",
+  "embedding_model": "embeddinggemma",
+  "embedding_digest": "85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+  "physical_laptop_qwen": {
+    "case_status": "MEASURED",
+    "stop_reason": "model_answer",
+    "calls": 6,
+    "model_calls": 3,
+    "timings_ms": {
+      "setup": 1384.5108630011964,
+      "catalog": 0.4643070024030749,
+      "inference": 84101.34785199989,
+      "probe": 6756.319345993688,
+      "execution": 8585.27685199806,
+      "rca": 1527.054982001573,
+      "total": 102364.3851400011
+    },
+    "persistence": {
+      "enabled": true,
+      "restored_facts": 0
+    },
+    "runtime_features": {
+      "task_runtime": "ACTIVE",
+      "adaptive_rca": "LOOKUP",
+      "repair_budget": 2,
+      "ready_selection": "hybrid",
+      "checkpoint_journal": "ACTIVE",
+      "catalog_semantic": {
+        "status": "ERROR",
+        "reason": "semantic_encoder_failed",
+        "model_id": "ollama/85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1",
+        "source": "trusted_catalog_metadata",
+        "grants_execution": false,
+        "retry_suppressed_this_turn": true
+      },
+      "function_semantic": {
+        "method": "hybrid",
+        "fallbacks": []
+      },
+      "runbook_profile": "linux-read-docs-v1",
+      "cloud": "NOT_CONFIGURED",
+      "write": "DISABLED",
+      "router_backend": "NOT_CONFIGURED",
+      "monitoring": "INSUFFICIENT_SAMPLES"
+    }
+  },
+  "runbook_documents": 1,
+  "selected_proofs_fresh": true,
+  "raw_network_values_committed": false,
+  "physical_restart_resume": {
+    "scope": "Physical Linux laptop; process restart; no LLM in this persistence check",
+    "restored_facts": 2,
+    "after_status": "MEASURED",
+    "after_total_calls": 2,
+    "calls_added_after_resume": 0,
+    "expires_in_s": 285.01827706399854
+  },
+  "limits": [
+    "Cold 60s attempts timed out; production 4B now has 90s RPC/180s turn caps without extending fact TTL.",
+    "Catalog semantic timed out in measured full chat; explicit ERROR and suppressed retries. Function hybrid succeeded; no claim both layers succeeded.",
+    "Standalone embedding index smoke succeeded, but retrieval quality and full EVAL1000 Qwen4B remain unmeasured.",
+    "Cloud/WRITE/router backend remain unconfigured; monitoring lacks real metric samples. ReAct remains an alternative legacy route."
+  ],
+  "validation": {
+    "local_tests": 844,
+    "pass": 839,
+    "skipped": 5,
+    "skip_reason": "Windows-only paths",
+    "presentation": "PASS",
+    "hygiene": "PASS",
+    "review": "No blocking findings after scope/deadline/lock and persistence budget fixes; component tests use doubles except illustrative live measurements."
+  }
+}
