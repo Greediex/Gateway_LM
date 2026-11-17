@@ -224,10 +224,14 @@ class SkillChat:
                     cov=coverage(current)
                     supported={f.function_id for f in entry['capabilities'].functions if f.status=='AVAILABLE'}
                     producible={port for f in runtime.registry.functions.values() if f.id in supported for port in f.outputs}
+                    outputs={skill:[p for p in {**action['required_ports'],**action['optional_ports']} if p in producible]
+                             for skill,action in entry['actions'].items()
+                             if rows[skill]['availability'] in {'READY','DEGRADED'} and skill not in attempted}
+                    missing_actions={port:sorted((skill for skill,ports in outputs.items() if port in ports),
+                                                key=lambda skill:len(outputs[skill])) for port in cov['missing_ports']}
                     context={'required_unavailable':unavailable,'attempted':attempted,
-                             'runnable_outputs':{skill:[p for p in {**action['required_ports'],**action['optional_ports']} if p in producible]
-                                                 for skill,action in entry['actions'].items()
-                                                 if rows[skill]['availability'] in {'READY','DEGRADED'} and skill not in attempted},
+                             'runnable_outputs':outputs if cov['missing_ports'] or not goals else {},
+                             'missing_goal_actions':missing_actions,
                              'findings':[{'id':f['id'],'text':f['text']} for f in current.values()],
                              'requested_goals':[{'port':p,'description':title} for p,title in goals.items()],
                              'missing_goals':cov['missing_ports'],'feedback':feedback,
@@ -237,7 +241,6 @@ class SkillChat:
                                      'verified_claims':[r['diagnosis'] for r in a['claim_results'] if r['truth']=='TRUE']} for a in assessments],
                              'remaining_tool_calls':max(0,session.runner.max_calls-session.runner.calls),
                              'last_round':round_index==self.max_rounds-1,
-                             'selected_measurements_complete':bool(runs) and all(r['status']=='MEASURED' for r in runs),
                              'previous_question':entry.get('previous_question',''),
                              'inference_timeout_s':min(60,max(.1,deadline-self.clock())),
                              'scope':'Only this local Linux laptop; never router/client inventory'}
@@ -273,7 +276,8 @@ class SkillChat:
                         cov=coverage(fresh['facts'])
                         if choice['decision']=='answer' and cov['missing_ports'] and round_index<self.max_rounds-1:
                             reason='incomplete_coverage'
-                            feedback={'reason':reason,'missing_goals':cov['missing_ports']}
+                            feedback={'reason':reason,'missing_goals':cov['missing_ports'],
+                                      'instruction':'Measure an approved action from missing_goal_actions before answering; selected Skill completion is not whole-request completion.'}
                             advice[-1].update(accepted=False,reason=reason)
                             continue
                         reason='model_answer' if selected else 'needs_clarification'

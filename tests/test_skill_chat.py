@@ -47,7 +47,7 @@ class SkillChatTests(unittest.TestCase):
         self.assertEqual(len(model.inputs[0][1]),126)
         self.assertTrue(any(row[0]=='SK13' and row[2]=='UNAVAILABLE' for row in model.inputs[0][1]))
         self.assertTrue(model.inputs[1][2]['rca'])
-        self.assertTrue(model.inputs[1][2]['selected_measurements_complete'])
+        self.assertFalse(model.inputs[1][2]['missing_goals'])
         self.assertTrue(r['evidence_ids']);self.assertIsNone(r['diagnosis'])
         model.outputs=[choice('answer',findings=['laptop.route'])]
         follow=chat.chat('Gateway là gì?',session_id=r['session_id'])

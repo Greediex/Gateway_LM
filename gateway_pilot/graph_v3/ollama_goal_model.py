@@ -135,7 +135,7 @@ class OllamaGoalModel:
             "Do not collect unrelated metrics. RCA candidate_goals are suggestions only, not mandatory tasks. "
             "Completion of selected Skills does not prove the whole question answered; check the user request. "
             "Output only {decision,ids}. measure ids=Skills; answer ids=existing findings; clarify ids=unsupported Skills or []. "
-            "For DNS/gateway alone prefer specific actions. For broad Internet/quality use network.inspect. "
+            "For DNS/gateway alone prefer specific actions. For broad Internet/quality use laptop.network.inspect. "
             "Do not infer router/other-client state from laptop. A required_unavailable Skill cannot be satisfied "
             "by a runnable action. Signal percent is not RSSI/SNR. If the request only asks for those missing "
             "capabilities, clarify using those IDs without measuring. "
@@ -147,6 +147,8 @@ class OllamaGoalModel:
             "requested port, measure it before declaring that port unsupported. Related UNAVAILABLE catalog "
             "designs do not make a supported laptop measurement unavailable; do not select them unless "
             "their specific missing capability was actually requested. "
+            "missing_goal_actions lists capable, unattempted producers for each missing requested port. "
+            "Select actions covering those missing ports before answering, unless last_round. "
             "On last_round answer or clarify. Relevant catalog retrieved from ALL 120 design Skills plus local actions "
             "(retrieval never grants capability):\n"
             + '\n'.join(r[0]+':'+r[1]+' ['+r[2]+', scope='+r[3]+']' for r in visible)
@@ -160,6 +162,8 @@ class OllamaGoalModel:
                         {'role':'assistant','content':'{"decision":"answer","ids":["laptop.dns"]}'},
                         {'role':'user','content':'{"request":"DNS và Wi-Fi thế nào?","findings":[{"id":"laptop.dns","text":"DNS đã phản hồi"}],"attempted":["laptop.dns.inspect"]}'},
                         {'role':'assistant','content':'{"decision":"measure","ids":["laptop.wifi.inspect"]}'},
+                        {'role':'user','content':'{"request":"Kiểm tra kết nối Internet laptop","findings":[{"id":"laptop.route"}],"missing_goals":["laptop.internet_probe","laptop.dns"],"missing_goal_actions":{"laptop.internet_probe":["laptop.network.inspect"],"laptop.dns":["laptop.dns.inspect","laptop.network.inspect"]}}'},
+                        {'role':'assistant','content':'{"decision":"measure","ids":["laptop.network.inspect"]}'},
                         {'role':'user','content':'{"request":"Đọc SNR","required_unavailable":["B04"],"findings":[]}'},
                         {'role':'assistant','content':'{"decision":"clarify","ids":["B04"]}'},
                         {'role':'user','content':json.dumps({**context,'request':request},ensure_ascii=False)}],

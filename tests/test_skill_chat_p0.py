@@ -127,6 +127,8 @@ class P0ChatTests(unittest.TestCase):
         self.assertIn('laptop.wifi',model.inputs[2][2]['missing_goals'])
         self.assertIn('laptop.dns',model.inputs[0][2]['runnable_outputs']['laptop.dns.inspect'])
         self.assertNotIn('B04',model.inputs[0][2]['runnable_outputs'])
+        self.assertEqual(model.inputs[2][2]['missing_goal_actions']['laptop.wifi'][0],'laptop.wifi.inspect')
+        self.assertNotIn('selected_measurements_complete',model.inputs[2][2])
 
     def test_expired_answer_is_refreshed_once_through_same_session(self):
         def late(context):
