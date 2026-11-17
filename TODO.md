@@ -35,9 +35,13 @@ Cập nhật **17/11/2026**, nhánh **v2**, baseline trước P0 **`5884be4`**.
 - **Laptop live:** [API thực với Qwen](docs/reports/P0_LAPTOP_LIVE_20261117.json), DNS và Wi-Fi+gateway đều MEASURED, chỉ chọn finding đúng câu hỏi, evidence còn hạn; lần lượt **43,17s/7 calls** và **23,13s/3 calls**, lượt thứ hai có một đợt đọc lại TTL. Phiên kiểm tra đã đóng; raw SSID/BSSID/IP chỉ lưu trong `runs/` bị Git bỏ qua. Hai ví dụ này không phải benchmark hoặc nghiệm thu firmware. Web thử tại `http://127.0.0.1:8767/`.
 
 
+## Nối graph truy xuất vào chat
+
+- [x] Dùng BM25 + graph diffusion có sẵn (trọng số 0,30) để xếp hạng ứng viên catalog trong chat; giữ mọi Skill laptop khả dụng trong prompt. Ghi method/điểm lexical/graph vào trace; cạnh PROPOSED chỉ hỗ trợ liên quan, không cấp quyền hay biến thành phụ thuộc thực thi. Đã kiểm chứng ứng viên graph-only được đưa vào prompt và Skill UNAVAILABLE vẫn bị chặn. [So sánh 283 câu catalog dev](docs/reports/CHAT_GRAPH_RETRIEVAL_DEV_20261117.json): recall@6 BM25 56,24% → graph 57,13%, không phải điểm Qwen/E2E. API DNS laptop thật + Qwen 4B đạt MEASURED, 101,54s, 3 model calls/6 READ calls, trace có bm25_graph. Full regression 790 tests: 785 pass/5 Windows skips, hygiene đạt. Chờ CI cho commit tích hợp; CHAT-01 vẫn mở.
+
 ## Chuyển model theo yêu cầu
 
-- [x] Chuyển chat laptop mặc định sang `qwen3:4b`; đã tải Q4_K_M và xác minh 4.022.468.096 parameters, giữ kiểm tra model local và parameter count. Regression 788 tests: 783 pass, 5 Windows skips; hygiene đạt. Lượt API cold chạm timeout 60s; lượt warm với Qwen 4B thật đạt MEASURED/model_answer, trả đúng phạm vi SSID, 72,79s, 4 model calls và 6 READ calls. Đây là một ví dụ live, chưa chứng minh chất lượng/latency tốt hơn. [CI runtime 555f2e2](https://github.com/Greediex/Gateway_LM/actions/runs/44051845760) đang chạy. Kết quả 1.7B trước đây vẫn là baseline cũ, không suy thành chất lượng 4B.
+- [x] Chuyển chat laptop mặc định sang `qwen3:4b`; đã tải Q4_K_M và xác minh 4.022.468.096 parameters, giữ kiểm tra model local và parameter count. Regression 788 tests: 783 pass, 5 Windows skips; hygiene đạt. Lượt API cold chạm timeout 60s; lượt warm với Qwen 4B thật đạt MEASURED/model_answer, trả đúng phạm vi SSID, 72,79s, 4 model calls và 6 READ calls. Đây là một ví dụ live, chưa chứng minh chất lượng/latency tốt hơn. [CI runtime 555f2e2](https://github.com/Greediex/Gateway_LM/actions/runs/44051845760) đã đạt. Kết quả 1.7B trước đây vẫn là baseline cũ, không suy thành chất lượng 4B.
 
 ## Đã sửa câu trả lời theo grounded patch
 

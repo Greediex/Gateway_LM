@@ -273,7 +273,8 @@ class SkillChat:
                     advice.append({'model':getattr(model,'model','local-test'),'accepted':True,
                                    'selected':', '.join(choice['skill_ids']) or choice['decision'],
                                    'decision':choice['decision'],'finding_ids':choice['finding_ids'],
-                                   'evidence_ids':[f['evidence_id'] for f in fresh['facts'].values()]})
+                                   'evidence_ids':[f['evidence_id'] for f in fresh['facts'].values()],
+                                   'catalog_retrieval':getattr(model,'last_catalog',None)})
                     unavailable=list(dict.fromkeys(unavailable+choice['unavailable_ids']))
                     if choice['decision']!='measure':
                         selected=choice['finding_ids']

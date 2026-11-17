@@ -1,0 +1,44 @@
+{
+  "scope": "Frozen EVAL1000 catalog DEV only; candidate retrieval, not Qwen selection or end-to-end accuracy. Generated families are not independent expert labels. No tuning or label edits.",
+  "dataset_sha256": "a90e39c13250ed7cdfb548816311c527e308da17edb8066c43483b6ce4259cc5",
+  "cases": 283,
+  "limit": 6,
+  "graph_weight": 0.3,
+  "changed_candidate_lists": 278,
+  "results": {
+    "bm25": {
+      "recall_at_6": 0.5624263839811545,
+      "precision_at_6": 0.15429917550058875,
+      "all_gold_present_rate": 0.3745583038869258,
+      "mean_search_ms": 8.835752483924942,
+      "graph_only_hits": 0
+    },
+    "bm25_graph": {
+      "recall_at_6": 0.5712603062426385,
+      "precision_at_6": 0.15724381625441677,
+      "all_gold_present_rate": 0.392226148409894,
+      "mean_search_ms": 9.752238593631928,
+      "graph_only_hits": 0
+    }
+  },
+  "source_sha256": {
+    "gateway_pilot/skill_expansion/retrieval.py": "3a7e30bb076d4fe1de899f0af76cf14427f9d1334474837a7e3a90d9e07f345e",
+    "gateway_pilot/graph_v3/ollama_goal_model.py": "270a53e1103df204cffbdaffe4c02bd0dced40d85538cd43cf0aa6afe18134f3"
+  },
+  "illustrative_live_smoke": {
+    "provider": "physical Linux laptop",
+    "model": "qwen3:4b",
+    "request": "Ki\u1ec3m tra DNS laptop",
+    "case_status": "MEASURED",
+    "stop_reason": "model_answer",
+    "model_calls": 3,
+    "read_calls": 6,
+    "elapsed_ms": 101543.47840799892,
+    "retrieval_methods": [
+      "bm25_graph",
+      "bm25_graph"
+    ],
+    "selected_proofs_fresh": true,
+    "note": "One illustrative request, not Qwen quality benchmark or latency improvement evidence. Raw network values omitted."
+  }
+}

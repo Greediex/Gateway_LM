@@ -12,7 +12,7 @@ Cùng `session_id` giữ state/runner/budget và evidence còn hạn qua nhiều
 
 ## Vai trò từng thành phần
 
-- Bộ tìm kiếm catalog hiện có tra toàn bộ 120 Skill thiết kế; prompt chứa các mục liên quan, toàn bộ action runnable và các mục chưa hỗ trợ được yêu cầu rõ. Retrieval không cấp quyền thực thi. Đầu ra có đúng một quyết định: đo các ID đã cấp, chọn finding IDs để trả lời, hoặc hỏi rõ/báo Skill chưa hỗ trợ.
+- Bộ tìm kiếm catalog hiện có tra toàn bộ 120 Skill thiết kế, kết hợp BM25 (0,70) và graph diffusion (0,30) để lấy tối đa 6 ứng viên theo thứ hạng; prompt chứa các mục liên quan, toàn bộ action runnable và các mục chưa hỗ trợ được yêu cầu rõ. Trace `advice[].catalog_retrieval` ghi method, trọng số, thứ hạng ứng viên, điểm lexical/graph và trạng thái catalog. Cạnh PROPOSED chỉ phục vụ liên quan khi truy xuất, không trở thành cạnh phụ thuộc thực thi hoặc cấp quyền. Retrieval không cấp quyền thực thi. Đầu ra có đúng một quyết định: đo các ID đã cấp, chọn finding IDs để trả lời, hoặc hỏi rõ/báo Skill chưa hỗ trợ.
 - Core kiểm proposal lại, không nhận Function/command/target/quyền từ model. Chọn lại Skill đã thử trong lượt, ID lạ hoặc enum sai bị từ chối; model có tối đa hai lần proposal sai trước khi dừng. Không fallback sang replay.
 - `ReadSession.refresh` probe lại và thu hồi facts từ producer không còn hỗ trợ. Session context/ACL/contracts/bindings/diagnostics thay đổi sẽ đóng phiên.
 - `RCAAgent.assess_session` dùng ClaimBook, state và runner hiện có; chỉ đọc facts đã verified, refresh capability trước khi đánh giá. Workflow/Claim theo scope của Skill đã chọn nằm trong `config/skill_launcher/live.diagnostics.json`, có approval digest. Không tạo Runner hay gọi tool riêng trong assessor.

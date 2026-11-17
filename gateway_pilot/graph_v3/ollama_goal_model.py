@@ -104,16 +104,22 @@ class OllamaGoalModel:
         if type(remaining) not in (int,float) or not math.isfinite(remaining) or remaining <= 0:
             raise ValueError('skill_model_invalid_deadline')
         rpc_timeout=min(self.timeout,remaining)
-        # Existing lexical catalog retrieval searches all design Skills; ranking never grants execution.
+        # BM25 seeds plus graph diffusion rank design candidates; ranking never grants execution.
         search_start=time.perf_counter()
         retriever=_skill_retriever()
-        relevant={h.skill_id for h in retriever.search(request,limit=6,include_proposed=True,graph_weight=0)}
+        hits=retriever.search(request,limit=6,include_proposed=True,graph_weight=.30)
+        relevant={h.skill_id for h in hits}
         relevant.update(context.get('required_unavailable',[]))
         relevant.update(r[0] for r in catalog if r[2] in {'READY','DEGRADED'} or r[0] in request)
         # Keep non-design records: native actions and trusted operator catalog extensions.
         relevant.update(r[0] for r in catalog if r[0] not in retriever.catalog.skills)
-        visible=[r for r in catalog if r[0] in relevant]
+        rank={h.skill_id:i for i,h in enumerate(hits)}
+        visible=sorted((r for r in catalog if r[0] in relevant),
+                       key=lambda r:rank.get(r[0],len(rank)))
         self.last_catalog={'total':len(catalog),'visible_ids':[r[0] for r in visible],
+                           'method':'bm25_graph','graph_weight':.30,
+                           'hits':[{'skill_id':h.skill_id,'score':h.score,
+                                    'lexical':h.lexical,'graph':h.graph,'status':h.status} for h in hits],
                            'retrieval_ms':(time.perf_counter()-search_start)*1000}
         available=[r[0] for r in catalog if r[2] in {'READY','DEGRADED'} and r[0] not in context.get('attempted',[])]
         unsupported=[r[0] for r in visible if r[2]=='UNAVAILABLE']
@@ -149,7 +155,7 @@ class OllamaGoalModel:
             "their specific missing capability was actually requested. "
             "missing_goal_actions lists capable, unattempted producers for each missing requested port. "
             "Select actions covering those missing ports before answering, unless last_round. "
-            "On last_round answer or clarify. Relevant catalog retrieved from ALL 120 design Skills plus local actions "
+            "On last_round answer or clarify. Relevant catalog ranked by BM25 plus graph diffusion from ALL 120 design Skills plus local actions "
             "(retrieval never grants capability):\n"
             + '\n'.join(r[0]+':'+r[1]+' ['+r[2]+', scope='+r[3]+']' for r in visible)
             + '\nRunnable only: '+','.join(available))

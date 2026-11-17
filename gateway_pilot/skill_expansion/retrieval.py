@@ -1,8 +1,8 @@
-"""Offline retrieval preview for a 120-Skill design graph.
+"""Relevance retrieval for the 120-Skill design graph and live chat candidates.
 
-This is NOT the repo's production GoS / SkillDAG / Planner. It creates no
-Function invocations. Rank uses BM25 lexical seeds + a small weighted
-PageRank-style diffusion on permitted graph edges for human review.
+This is not an execution planner or the GoS / SkillDAG implementation. It
+creates no Function invocations. Rank uses BM25 lexical seeds plus weighted
+PageRank-style diffusion; proposed edges are relevance hints only.
 """
 from __future__ import annotations
 from collections import Counter, defaultdict
