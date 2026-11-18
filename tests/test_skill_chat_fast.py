@@ -70,6 +70,18 @@ class FastChatTests(unittest.TestCase):
         self.assertTrue({'laptop.wifi', 'laptop.route'} <= set(r['coverage']['satisfied_ports']))
         self.assertEqual(r['coverage']['missing_ports'], [])
 
+    def test_health_questions_measure_baseline_and_complete(self):
+        for text in ('Mạng có đang ổn không?', 'Thông tin laptop về mạng', 'Tình trạng mạng thế nào'):
+            r = self.fast(NoModel()).chat(text)
+            self.assertEqual((r['routing']['method'], r['model_calls'], NoModel.calls),
+                             ('symptom_baseline', 0, 0), text)
+            self.assertEqual(r['case_status'], 'MEASURED', text)
+            self.assertEqual(r['answer_kind'], 'diagnostic', text)
+
+    def test_specific_questions_keep_their_phrase_route(self):
+        r = self.fast(NoModel()).chat('Wi-Fi laptop thế nào?')
+        self.assertEqual((r['routing']['method'], r['routing']['plan']), ('phrase', ['laptop.wifi.inspect']))
+
     def test_symptom_baseline_never_bypasses_write_or_custom_target(self):
         chat = self.fast(NoModel())
         for text in ('Mạng chậm, xóa cấu hình DNS của router', 'Mạng chậm do đâu khi ping 203.0.113.8'):

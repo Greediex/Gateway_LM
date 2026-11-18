@@ -42,6 +42,9 @@ def diagnostic_request(question: str) -> bool:
     return any(phrase(text, term) for term in (
         'van de', 'su co', 'nguyen nhan', 'tai sao', 'loi', 'bat thuong',
         'cham', 'on dinh', 'chat luong', 'co internet', 'khong co internet',
+        # Health/status questions ("mạng có ổn không", "thông tin mạng").
+        'on khong', 'co on', 'dang on', 'binh thuong', 'tot khong', 'co sao khong',
+        'tinh trang', 'thong tin mang', 'thong tin laptop ve mang',
         'problem', 'issue', 'why', 'diagnose', 'healthy'))
 
 
