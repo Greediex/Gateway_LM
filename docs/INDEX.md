@@ -40,6 +40,8 @@ Bắt đầu ở [README](../README.md), sau đó chọn đúng nhóm tài liệ
 | [Graph v4 repair demo](GRAPH_V4_REPAIR_DEMO.md) | Ví dụ repair bằng dữ liệu replay |
 | [Graph v3 result (historical)](reports/GRAPH_V3_RESULT_VI.md) | Báo cáo giai đoạn Graph v3 |
 | [v1/v2 experiment overview](reports/EXPERIMENT_OVERVIEW_VI.md) | Benchmark và hạn chế của baseline |
+| [Feature usage audit 17/11](reports/FEATURE_USAGE_AUDIT_20261117.md) | Audit tính năng và mức sử dụng trên v2 |
+| [Kiến trúc v2 laptop-first (đề xuất)](architecture/GATEWAY_LM_V2_LAPTOP_FIRST.md) | Thiết kế dự kiến; tiến độ thật ở TODO.md |
 | [Graph v3 repair demo](GRAPH_V3_REPAIR_DEMO.md) | Demo lịch sử |
 
 ## III. Báo cáo/paper và bằng chứng

@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - refactor/gateway-lm-composite-adapter-pr01
+      - v2
+  pull_request:
+    branches:
+      - v2
   workflow_dispatch:
 
 permissions:
