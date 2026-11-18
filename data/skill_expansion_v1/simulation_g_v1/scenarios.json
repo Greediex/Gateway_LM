@@ -1,0 +1,191 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-G",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "G01-normal",
+      "skill_id": "G01",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.latency_loss",
+      "values": {
+        "latency_ms": 18.0,
+        "packet_loss_pct": 0.0
+      }
+    },
+    {
+      "id": "G01-fault",
+      "skill_id": "G01",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.latency_loss",
+      "values": {
+        "latency_ms": 240.0,
+        "packet_loss_pct": 6.0
+      }
+    },
+    {
+      "id": "G01-missing",
+      "skill_id": "G01",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.latency_loss",
+      "values": null
+    },
+    {
+      "id": "G02-normal",
+      "skill_id": "G02",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.network_jitter",
+      "values": {
+        "jitter_ms": 4.0
+      }
+    },
+    {
+      "id": "G02-fault",
+      "skill_id": "G02",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.network_jitter",
+      "values": {
+        "jitter_ms": 75.0
+      }
+    },
+    {
+      "id": "G02-missing",
+      "skill_id": "G02",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.network_jitter",
+      "values": null
+    },
+    {
+      "id": "G04-normal",
+      "skill_id": "G04",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.traffic_counters",
+      "values": {
+        "rx_bytes": 1048576,
+        "tx_bytes": 524288
+      }
+    },
+    {
+      "id": "G04-fault",
+      "skill_id": "G04",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.traffic_counters",
+      "values": {
+        "rx_bytes": 0,
+        "tx_bytes": 0
+      }
+    },
+    {
+      "id": "G04-missing",
+      "skill_id": "G04",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.traffic_counters",
+      "values": null
+    },
+    {
+      "id": "G05-normal",
+      "skill_id": "G05",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.bandwidth_usage",
+      "values": {
+        "rx_mbps": 120.0,
+        "tx_mbps": 20.0
+      }
+    },
+    {
+      "id": "G05-fault",
+      "skill_id": "G05",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.bandwidth_usage",
+      "values": {
+        "rx_mbps": 940.0,
+        "tx_mbps": 15.0
+      }
+    },
+    {
+      "id": "G05-missing",
+      "skill_id": "G05",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.bandwidth_usage",
+      "values": null
+    },
+    {
+      "id": "G06-normal",
+      "skill_id": "G06",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.queue_delay",
+      "values": {
+        "queue_delay_ms": 8.0
+      }
+    },
+    {
+      "id": "G06-fault",
+      "skill_id": "G06",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.queue_delay",
+      "values": {
+        "queue_delay_ms": 180.0
+      }
+    },
+    {
+      "id": "G06-missing",
+      "skill_id": "G06",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.queue_delay",
+      "values": null
+    },
+    {
+      "id": "G07-normal",
+      "skill_id": "G07",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.qos_policy",
+      "values": {
+        "sqm_enabled": true,
+        "configured_rate_mbps": 300.0
+      }
+    },
+    {
+      "id": "G07-fault",
+      "skill_id": "G07",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.qos_policy",
+      "values": {
+        "sqm_enabled": false,
+        "configured_rate_mbps": 0.0
+      }
+    },
+    {
+      "id": "G07-missing",
+      "skill_id": "G07",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.qos_policy",
+      "values": null
+    }
+  ]
+}

@@ -100,7 +100,8 @@ class AcceptanceTests(unittest.TestCase):
                           "B02", "B03", "B04", "B05", "B06", "B07", "B08",
                           "D02", "D03", "D05", "D06", "D07",
                           "E02", "E03", "E04", "E05", "E06", "E07", "E08",
-                          "F02", "F03", "F04", "F05", "F06", "F07", "F08"})
+                          "F02", "F03", "F04", "F05", "F06", "F07", "F08",
+                          "G01", "G02", "G04", "G05", "G06", "G07"})
         self.assertFalse(any(r.router_verified for r in rows))
 
     def test_hand_edited_failure_or_missing_state_is_not_counted(self):

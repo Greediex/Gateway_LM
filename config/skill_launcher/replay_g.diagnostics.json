@@ -1,0 +1,436 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-G01-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "latency_high_v1",
+        "packet_loss_high_v1",
+        "latency_loss_ok_v1"
+      ]
+    },
+    "REPLAY-G02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "jitter_high_v1",
+        "jitter_ok_v1"
+      ]
+    },
+    "REPLAY-G04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "no_traffic_v1",
+        "traffic_flowing_v1"
+      ]
+    },
+    "REPLAY-G05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "download_saturated_v1",
+        "upload_saturated_v1",
+        "bandwidth_ok_v1"
+      ]
+    },
+    "REPLAY-G06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "bufferbloat_v1",
+        "queue_delay_ok_v1"
+      ]
+    },
+    "REPLAY-G07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "sqm_disabled_v1",
+        "sqm_rate_zero_v1",
+        "sqm_configured_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "latency_high_v1",
+      "diagnosis": "latency_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.latency_loss",
+          "field": "latency_ms",
+          "op": "gt",
+          "value": 100
+        },
+        {
+          "port": "expansion.latency_loss",
+          "field": "packet_loss_pct",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "latency_high",
+      "workflow": "REPLAY-G01-V1"
+    },
+    {
+      "claim_id": "packet_loss_high_v1",
+      "diagnosis": "packet_loss_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.latency_loss",
+          "field": "packet_loss_pct",
+          "op": "gt",
+          "value": 2
+        },
+        {
+          "port": "expansion.latency_loss",
+          "field": "packet_loss_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "packet_loss_high",
+      "workflow": "REPLAY-G01-V1"
+    },
+    {
+      "claim_id": "latency_loss_ok_v1",
+      "diagnosis": "latency_loss_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.latency_loss",
+          "field": "latency_ms",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.latency_loss",
+          "field": "latency_ms",
+          "op": "le",
+          "value": 100
+        },
+        {
+          "port": "expansion.latency_loss",
+          "field": "packet_loss_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.latency_loss",
+          "field": "packet_loss_pct",
+          "op": "le",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "latency_loss_ok",
+      "workflow": "REPLAY-G01-V1"
+    },
+    {
+      "claim_id": "jitter_high_v1",
+      "diagnosis": "jitter_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.network_jitter",
+          "field": "jitter_ms",
+          "op": "gt",
+          "value": 30
+        }
+      ],
+      "excludes": [],
+      "message_key": "jitter_high",
+      "workflow": "REPLAY-G02-V1"
+    },
+    {
+      "claim_id": "jitter_ok_v1",
+      "diagnosis": "jitter_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.network_jitter",
+          "field": "jitter_ms",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.network_jitter",
+          "field": "jitter_ms",
+          "op": "le",
+          "value": 30
+        }
+      ],
+      "excludes": [],
+      "message_key": "jitter_ok",
+      "workflow": "REPLAY-G02-V1"
+    },
+    {
+      "claim_id": "no_traffic_v1",
+      "diagnosis": "no_traffic_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.traffic_counters",
+          "field": "rx_bytes",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.traffic_counters",
+          "field": "tx_bytes",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_traffic",
+      "workflow": "REPLAY-G04-V1"
+    },
+    {
+      "claim_id": "traffic_flowing_v1",
+      "diagnosis": "traffic_flowing_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.traffic_counters",
+          "field": "rx_bytes",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.traffic_counters",
+          "field": "tx_bytes",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "traffic_flowing",
+      "workflow": "REPLAY-G04-V1"
+    },
+    {
+      "claim_id": "download_saturated_v1",
+      "diagnosis": "download_saturated_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "rx_mbps",
+          "op": "gt",
+          "value": 800
+        },
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "tx_mbps",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "download_saturated",
+      "workflow": "REPLAY-G05-V1"
+    },
+    {
+      "claim_id": "upload_saturated_v1",
+      "diagnosis": "upload_saturated_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "tx_mbps",
+          "op": "gt",
+          "value": 800
+        },
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "rx_mbps",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "upload_saturated",
+      "workflow": "REPLAY-G05-V1"
+    },
+    {
+      "claim_id": "bandwidth_ok_v1",
+      "diagnosis": "bandwidth_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "rx_mbps",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "rx_mbps",
+          "op": "le",
+          "value": 800
+        },
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "tx_mbps",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.bandwidth_usage",
+          "field": "tx_mbps",
+          "op": "le",
+          "value": 800
+        }
+      ],
+      "excludes": [],
+      "message_key": "bandwidth_ok",
+      "workflow": "REPLAY-G05-V1"
+    },
+    {
+      "claim_id": "bufferbloat_v1",
+      "diagnosis": "bufferbloat_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.queue_delay",
+          "field": "queue_delay_ms",
+          "op": "gt",
+          "value": 50
+        }
+      ],
+      "excludes": [],
+      "message_key": "bufferbloat",
+      "workflow": "REPLAY-G06-V1"
+    },
+    {
+      "claim_id": "queue_delay_ok_v1",
+      "diagnosis": "queue_delay_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.queue_delay",
+          "field": "queue_delay_ms",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.queue_delay",
+          "field": "queue_delay_ms",
+          "op": "le",
+          "value": 50
+        }
+      ],
+      "excludes": [],
+      "message_key": "queue_delay_ok",
+      "workflow": "REPLAY-G06-V1"
+    },
+    {
+      "claim_id": "sqm_disabled_v1",
+      "diagnosis": "sqm_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.qos_policy",
+          "field": "sqm_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "sqm_disabled",
+      "workflow": "REPLAY-G07-V1"
+    },
+    {
+      "claim_id": "sqm_rate_zero_v1",
+      "diagnosis": "sqm_rate_zero_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.qos_policy",
+          "field": "sqm_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.qos_policy",
+          "field": "configured_rate_mbps",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "sqm_rate_zero",
+      "workflow": "REPLAY-G07-V1"
+    },
+    {
+      "claim_id": "sqm_configured_v1",
+      "diagnosis": "sqm_configured_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.qos_policy",
+          "field": "sqm_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.qos_policy",
+          "field": "configured_rate_mbps",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "sqm_configured",
+      "workflow": "REPLAY-G07-V1"
+    }
+  ],
+  "skill_workflows": {
+    "G01": [
+      "REPLAY-G01-V1"
+    ],
+    "G02": [
+      "REPLAY-G02-V1"
+    ],
+    "G04": [
+      "REPLAY-G04-V1"
+    ],
+    "G05": [
+      "REPLAY-G05-V1"
+    ],
+    "G06": [
+      "REPLAY-G06-V1"
+    ],
+    "G07": [
+      "REPLAY-G07-V1"
+    ]
+  }
+}
