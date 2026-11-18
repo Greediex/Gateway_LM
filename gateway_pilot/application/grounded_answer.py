@@ -128,17 +128,40 @@ def compose_answer(question: str, selected: list[str], facts: dict, renderers: d
     return '\n'.join(lines)
 
 
+# One line per verified Claim diagnosis; thresholds mirror live.diagnostics.json.
+# Lines describe scoped observations; "có thể" lines are hints, never RCA (L5).
+CLAIM_MESSAGES = {
+    'wifi_not_associated': 'Wi-Fi laptop chưa kết nối tới điểm phát.',
+    'ipv4_route_absent': 'Laptop không có tuyến IPv4 mặc định.',
+    'gateway_icmp_loss_observed': 'Có mất gói tới gateway.',
+    'internet_icmp_loss_observed': 'Có mất gói tới IP Internet kiểm tra.',
+    'dns_not_resolved': 'DNS không phân giải được tên miền kiểm tra.',
+    'wifi_signal_weak': 'Tín hiệu Wi-Fi yếu (dưới 40%); có thể làm mạng chậm hoặc chập chờn.',
+    'gateway_latency_high': 'Độ trễ tới gateway cao (trên 20 ms); có thể do nghẽn hoặc nhiễu trong mạng nội bộ/Wi-Fi.',
+    'internet_latency_high': 'Độ trễ ra Internet cao (trên 100 ms); có thể do nhà mạng hoặc đường ra ngoài.',
+    'performance_path_normal': ('Đường mạng từ laptop ra Internet không có dấu hiệu chậm lúc đo '
+                                '(tín hiệu ≥ 40%, gateway ≤ 20 ms, Internet ≤ 100 ms, không mất gói). '
+                                'Nếu vẫn thấy chậm, có thể do ứng dụng/máy chủ đích hoặc chỉ xảy ra từng lúc; '
+                                'đây là gợi ý, chưa phải nguyên nhân đã xác minh.'),
+}
+
+
 def assessment_summary(facts: dict, assessments: list) -> str:
     """Observation predicates are not whole-network health or causal proof."""
     ids={f['evidence_id'] for f in facts.values()}
-    severities={c.get('severity') for a in assessments for c in a.get('claim_results',[])
-                if c.get('truth')=='TRUE' and c.get('evidence_ids')
-                and set(c['evidence_ids']) <= ids}
+    verified=[c for a in assessments for c in a.get('claim_results',[])
+              if c.get('truth')=='TRUE' and c.get('evidence_ids')
+              and set(c['evidence_ids']) <= ids]
+    severities={c.get('severity') for c in verified}
+    details=list(dict.fromkeys(CLAIM_MESSAGES[c['diagnosis']] for c in verified
+                               if c.get('diagnosis') in CLAIM_MESSAGES))
     if 'FAULT' in severities:
-        return 'Có dấu hiệu bất thường đã được xác minh trong phạm vi các phép đo được chọn.'
-    if 'HEALTHY' in severities:
-        return 'Các tiêu chí đã kiểm tra có dấu hiệu bình thường trong phạm vi phép đo; điều này không loại trừ mọi sự cố.'
-    return ''
+        head='Có dấu hiệu bất thường đã được xác minh trong phạm vi các phép đo được chọn.'
+    elif 'HEALTHY' in severities:
+        head='Các tiêu chí đã kiểm tra có dấu hiệu bình thường trong phạm vi phép đo; điều này không loại trừ mọi sự cố.'
+    else:
+        return ''
+    return '\n'.join([head,*details])
 
 
 @dataclass(frozen=True)

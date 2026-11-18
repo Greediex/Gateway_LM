@@ -84,6 +84,8 @@ Tiến độ WP-L1 (18/11/2026, laptop Linux, `qwen3:4b`, commit `13afb6e`; số
 
 Tiến độ CHAT (18/11/2026, `v2`): (1) Qwen chỉ thấy Skill READY/DEGRADED, cộng Skill UNAVAILABLE do luật cụm từ phát hiện; không còn chọn K07/M02 không chạy được. (2) Chế độ nhanh: câu triệu chứng mơ hồ (`diagnostic_request`: chậm, do đâu, vấn đề…) không có route → đo cơ bản mọi port của question_intent mà action chạy được sản xuất, 0 lượt LLM; WRITE/IP lạ vẫn chặn trước. Live: "mạng đang hơi chậm do đâu" 21,6 s MEASURED (trước: 60 s, UNAVAILABLE). (3) Cho Qwen diễn đạt ở chế độ nhanh: đã thử và **bỏ** — Qwen CPU vượt 12 s/lượt (`selection_TimeoutError`) hoặc fact hết hạn trước khi xong; không nới TTL (L4). Đổi 2 test cũ theo hợp đồng mới (danh sách cho model chỉ gồm Skill chạy được), thêm 4 test.
 
+Tiến độ CLAIM hiệu năng (18/11/2026, `v2`): workflow `LAPTOP-PERFORMANCE` trong `live.diagnostics.json` (gắn `laptop.network.inspect`): `wifi_signal_weak` (signal_pct < 40), `gateway_latency_high` (> 20 ms), `internet_latency_high` (> 100 ms), `performance_path_normal` (HEALTHY khi đủ ngưỡng và không mất gói). Ngưỡng heuristic phía laptop, chưa hiệu chỉnh trên nhiều mạng. Câu trả lời in một dòng cho mỗi Claim TRUE còn hạn; dòng gợi ý ghi rõ chưa phải nguyên nhân (L5). Digest live đổi `80e3c865…` → `d272b0b6…`, chủ dự án duyệt trong chat, ghi trong commit riêng.
+
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
 ## 15 batch — danh sách nghiệm thu đủ 120 Skill

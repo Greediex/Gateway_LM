@@ -56,6 +56,17 @@
         "connectivity_dns_unresolved",
         "connectivity_probes_responded"
       ]
+    },
+    "LAPTOP-PERFORMANCE": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "wifi_signal_weak",
+        "gateway_latency_high",
+        "internet_latency_high",
+        "performance_path_normal"
+      ]
     }
   },
   "claims": [
@@ -308,6 +319,98 @@
       "excludes": [],
       "message_key": "probes_responded",
       "workflow": "LAPTOP-CONNECTIVITY"
+    },
+    {
+      "claim_id": "wifi_signal_weak",
+      "diagnosis": "wifi_signal_weak",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.wifi",
+          "field": "signal_pct",
+          "op": "lt",
+          "value": 40
+        }
+      ],
+      "excludes": [],
+      "message_key": "wifi_signal_weak",
+      "workflow": "LAPTOP-PERFORMANCE"
+    },
+    {
+      "claim_id": "gateway_latency_high",
+      "diagnosis": "gateway_latency_high",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.gateway_probe",
+          "field": "latency_ms",
+          "op": "gt",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "gateway_latency_high",
+      "workflow": "LAPTOP-PERFORMANCE"
+    },
+    {
+      "claim_id": "internet_latency_high",
+      "diagnosis": "internet_latency_high",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "laptop.internet_probe",
+          "field": "latency_ms",
+          "op": "gt",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "internet_latency_high",
+      "workflow": "LAPTOP-PERFORMANCE"
+    },
+    {
+      "claim_id": "performance_path_normal",
+      "diagnosis": "performance_path_normal",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "laptop.wifi",
+          "field": "signal_pct",
+          "op": "ge",
+          "value": 40
+        },
+        {
+          "port": "laptop.gateway_probe",
+          "field": "latency_ms",
+          "op": "le",
+          "value": 20
+        },
+        {
+          "port": "laptop.gateway_probe",
+          "field": "loss_pct",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "laptop.internet_probe",
+          "field": "latency_ms",
+          "op": "le",
+          "value": 100
+        },
+        {
+          "port": "laptop.internet_probe",
+          "field": "loss_pct",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "performance_path_normal",
+      "workflow": "LAPTOP-PERFORMANCE"
     }
   ],
   "skill_workflows": {
@@ -317,7 +420,8 @@
       "LAPTOP-GATEWAY",
       "LAPTOP-INTERNET",
       "LAPTOP-DNS",
-      "LAPTOP-CONNECTIVITY"
+      "LAPTOP-CONNECTIVITY",
+      "LAPTOP-PERFORMANCE"
     ],
     "laptop.wifi.inspect": [
       "LAPTOP-WIFI"
