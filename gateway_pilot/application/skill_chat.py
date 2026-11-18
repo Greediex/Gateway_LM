@@ -139,8 +139,9 @@ class SkillChat:
             raise ValueError('invalid_chat_round_budget')
         self.launcher, self.model_factory, self.max_rounds = launcher, model_factory, max_rounds
         self.max_elapsed_s,self.clock=max_elapsed_s,clock
-        # fast: graph/phrase routing without LLM when unambiguous, otherwise at
-        # most one LLM selection call; no goal-proposal or answer-wording calls.
+        # fast: graph/phrase routing (or a symptom baseline) without LLM when
+        # possible, otherwise at most one LLM selection call; no goal-proposal or
+        # answer-wording calls (CPU Qwen cannot word within evidence TTL).
         if type(fast) is not bool:raise ValueError('invalid_chat_fast_flag')
         self.fast=fast
 
@@ -242,6 +243,9 @@ class SkillChat:
         normalized=normalize(request)
         unavailable=[skill for skill,phrases in runtime.registry.required_skill_phrases.items()
                      if rows[skill]['availability']=='UNAVAILABLE' and any(_phrase(normalized,p) for p in phrases)]
+        # The model only sees what can run now; phrase rules (not the model)
+        # decide which unavailable Skills to report.
+        model_docs=[d for d in docs if rows[d[0]]['availability'] in {'READY','DEGRADED'} or d[0] in unavailable]
         attempted,runs,advice,selected,assessments=[],[],[],[],[]
         rejections,recovery_attempts,model_calls=0,0,0
         model=None
@@ -301,9 +305,19 @@ class SkillChat:
                 # that is an approved runnable action may route; score never grants.
                 hits=_retriever().search(request,limit=3,include_proposed=True,graph_weight=.30)
                 top=hits[0].skill_id if hits else None
-                if top not in outputs or not outputs[top]:return None
-                goals.update({p:p for p in entry['actions'][top]['required_ports'] if p in outputs[top]})
-                route_meta['method']='graph'
+                if top in outputs and outputs[top]:
+                    goals.update({p:p for p in entry['actions'][top]['required_ports'] if p in outputs[top]})
+                    route_meta['method']='graph'
+                elif diagnostic_request(request):
+                    # Vague symptom ("chậm", "do đâu"): measure every question-intent
+                    # port a runnable action can produce, before any model call.
+                    producible={p for ports in outputs.values() for p in ports}
+                    baseline={p for meta in runtime.registry.question_intents.values()
+                              for p in meta['ports'] if p in producible}
+                    if not baseline:return None
+                    goals.update({p:p for p in sorted(baseline)})
+                    route_meta['method']='symptom_baseline'
+                else:return None
             need=set(goals)-set(view(refresh=False)['facts'])
             plan=[]
             while need:
@@ -388,7 +402,7 @@ class SkillChat:
                              'scope':prof['scope']}
                     try:
                         model_calls+=1
-                        raw=timed('inference',model.choose_skills,request,docs,context)
+                        raw=timed('inference',model.choose_skills,request,model_docs,context)
                         choice=validate_choice(raw,rows,current,attempted)
                     except (OSError,TimeoutError) as exc:
                         reason=_model_error(exc)

@@ -20,7 +20,7 @@ class SemanticEncoder:
 
 
 class ChatContextIntegrationTests(unittest.TestCase):
-    def test_semantic_only_unavailable_candidate_reaches_prompt_but_zero_calls(self):
+    def test_semantic_only_unavailable_candidate_is_hidden_from_prompt_and_zero_calls(self):
         context = ChatContext(encoder=SemanticEncoder())
         payloads = []
         def http(endpoint, api, payload, **kwargs):
@@ -36,7 +36,8 @@ class ChatContextIntegrationTests(unittest.TestCase):
             result = SkillChat(launcher, model_factory=lambda: model).chat('opaque')
         self.assertTrue(payloads)
         selection=next(p for p in payloads if 'oneOf' in p['format'])
-        self.assertIn('B04:', selection['messages'][0]['content'])
+        # Ranked semantically, but an unrequested UNAVAILABLE design never reaches the prompt.
+        self.assertNotIn('B04:', selection['messages'][0]['content'])
         self.assertEqual(model.last_catalog['semantic_candidates'][0]['skill_id'], 'B04')
         measure = next(b for b in selection['format']['oneOf']
                        if b['properties']['decision']['const'] == 'measure')

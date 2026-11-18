@@ -44,8 +44,10 @@ class SkillChatTests(unittest.TestCase):
         self.assertEqual(r['case_status'],'MEASURED')
         self.assertEqual([x['skill_id'] for x in r['skill_runs']],['laptop.wifi.inspect','laptop.route.inspect'])
         self.assertEqual(r['calls'],3)
-        self.assertEqual(len(model.inputs[0][1]),126)
-        self.assertTrue(any(row[0]=='SK13' and row[2]=='UNAVAILABLE' for row in model.inputs[0][1]))
+        # The model sees only runnable rows; unrequested UNAVAILABLE designs (SK13) are hidden.
+        self.assertTrue(model.inputs[0][1])
+        self.assertTrue(all(row[2] in {'READY','DEGRADED'} for row in model.inputs[0][1]))
+        self.assertFalse(any(row[0]=='SK13' for row in model.inputs[0][1]))
         self.assertTrue(model.inputs[1][2]['rca'])
         self.assertFalse(model.inputs[1][2]['missing_goals'])
         self.assertTrue(r['evidence_ids']);self.assertIsNone(r['diagnosis'])
