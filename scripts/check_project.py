@@ -5,6 +5,7 @@ replay outputs are deliberately excluded from active-document link checking.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import subprocess
 from pathlib import Path
@@ -15,12 +16,14 @@ ACTIVE_DOCS = (
     "README.md",
     "docs/WEB_UI.md",
     "AGENTS.md",
+    "CLAUDE.md",
     "docs/INDEX.md",
     "docs/DEVELOPER_GUIDE.md",
 )
 REQUIRED = (
     "README.md",
     "AGENTS.md",
+    "CLAUDE.md",
     "docs/INDEX.md",
     "docs/DEVELOPER_GUIDE.md",
     "data/frozen_manifest.json",
@@ -34,6 +37,11 @@ GENERATED_DIRS = {
     "__pycache__", ".venv", ".venv-graph", "venv", ".pytest_cache",
     ".mypy_cache", ".ruff_cache", ".tox", ".nox",
 }
+# Owner-locked AI criteria in CLAUDE.md. Changing the block or this hash
+# requires an explicit human-owner commit; agents must not update it.
+LOCKED_CRITERIA_SHA256 = "4dfebbc69df8f386ad840464476e215dfbc2ba4707c4e050afd951feb7759d9f"
+LOCKED_RE = re.compile(
+    r"<!-- LOCKED-CRITERIA:BEGIN -->\n(.*?)<!-- LOCKED-CRITERIA:END -->", re.S)
 LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 
 
@@ -73,10 +81,25 @@ def broken_links(root: Path, doc_paths: tuple[str, ...] = ACTIVE_DOCS) -> list[s
     return errors
 
 
+def locked_criteria_errors(root: Path) -> list[str]:
+    """Fail closed if the owner-locked CLAUDE.md criteria block was altered."""
+    source = root / "CLAUDE.md"
+    if not source.is_file():
+        return ["Missing CLAUDE.md with locked AI criteria"]
+    blocks = LOCKED_RE.findall(source.read_text(encoding="utf-8"))
+    if len(blocks) != 1:
+        return ["CLAUDE.md must contain exactly one LOCKED-CRITERIA block"]
+    digest = hashlib.sha256(blocks[0].encode("utf-8")).hexdigest()
+    if digest != LOCKED_CRITERIA_SHA256:
+        return ["CLAUDE.md locked criteria changed (sha256 mismatch); owner approval required"]
+    return []
+
+
 def check_project(root: Path = ROOT) -> list[str]:
     errors = [f"Missing required project path: {name}" for name in REQUIRED
               if not (root / name).exists()]
     errors.extend(broken_links(root))
+    errors.extend(locked_criteria_errors(root))
     try:
         tracked = subprocess.run(
             ["git", "-C", str(root), "ls-files", "-z"], check=True, capture_output=True,

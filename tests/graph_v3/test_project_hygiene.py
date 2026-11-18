@@ -3,7 +3,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.check_project import broken_links, suspicious_tracked
+from scripts.check_project import (
+    ROOT, broken_links, locked_criteria_errors, suspicious_tracked,
+)
 
 
 class ProjectHygieneTests(unittest.TestCase):
@@ -42,3 +44,28 @@ class ProjectHygieneTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LockedCriteriaTests(unittest.TestCase):
+    def test_repository_locked_block_matches_pinned_hash(self):
+        self.assertEqual(locked_criteria_errors(ROOT), [])
+
+    def test_edited_locked_block_fails_closed(self):
+        text = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "CLAUDE.md").write_text(
+                text.replace("WRITE bị chặn", "WRITE được phép"), encoding="utf-8")
+            self.assertIn("sha256 mismatch", locked_criteria_errors(root)[0])
+
+    def test_missing_or_duplicated_markers_fail_closed(self):
+        text = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertEqual(locked_criteria_errors(root),
+                             ["Missing CLAUDE.md with locked AI criteria"])
+            (root / "CLAUDE.md").write_text(
+                text.replace("<!-- LOCKED-CRITERIA:BEGIN -->", ""), encoding="utf-8")
+            self.assertIn("exactly one", locked_criteria_errors(root)[0])
+            (root / "CLAUDE.md").write_text(text + text, encoding="utf-8")
+            self.assertIn("exactly one", locked_criteria_errors(root)[0])

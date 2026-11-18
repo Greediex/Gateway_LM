@@ -37,7 +37,6 @@ build/
 .npmrc
 .idea/
 .vscode/
-CLAUDE.md
 # AGENTS.md is tracked as the public coding policy; keep private local config under .agents/.
 /docs/mvp/
 /docs/CODEX_MVP_TASKS.md
