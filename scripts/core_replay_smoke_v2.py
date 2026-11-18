@@ -10,7 +10,8 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 
-def smoke(fid: str):
+def smoke(fid: str, *, values: dict | None = None, omit: bool = False):
+    """``values`` replaces the default fixture; ``omit`` drops it (missing data)."""
     from gateway_pilot.command_catalog.loader import load_catalog
     from gateway_pilot.command_catalog.validator import validate_catalog
     from gateway_pilot.command_catalog.builder import build_registry
@@ -39,7 +40,7 @@ def smoke(fid: str):
                json.loads((original/'ports'/(port_id+'.json')).read_text(encoding='utf-8'))),
               (catalog_root/'skills'/(sid+'.json'),
                json.loads((original/'skills'/(sid+'.json')).read_text(encoding='utf-8')))]
-        fixtures = {fid: fixture[fid]}
+        fixtures = {} if omit else {fid: {port_id: copy.deepcopy(values)} if values is not None else fixture[fid]}
         if function['scope'] == 'client':
             # Client evidence requires a Core-verified identity. Supply a
             # dependency only in this disposable synthetic catalog, never by
@@ -91,6 +92,7 @@ def smoke(fid: str):
             raise AssertionError('shared Core did not admit verified synthetic fact')
         return {'synthetic_only':True,'function':fid,'skill':slug,
                 'ports':list(function['outputs']),'verified_fact_present':True,
+                'fact_value':copy.deepcopy(fact['value']),'evidence_id':fact['id'],
                 'used_existing_graph_runner':True,'test_target':target.target_id,
                 'core_calls':runner.calls,
                 'verified_identity_present':runner.state.fact('client.identity') is not None,
