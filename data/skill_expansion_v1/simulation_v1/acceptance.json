@@ -2,7 +2,7 @@
   "format": "gateway-lm.skill-acceptance/v1",
   "version": "1.0.0",
   "synthetic_only": true,
-  "inputs_digest": "efd545165f753de63559b5d31bf77b3ab770d1d4f3e8bf1a29bb61b5579a3a95",
+  "inputs_digest": "676783922af85e97ff2c180c31e147ae4ad0e1dcdf66f8bbf5e83e782eec4651",
   "skills": {
     "A02": {
       "normal": {
@@ -226,6 +226,91 @@
       }
     },
     "B08": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "D02": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "D03": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "D05": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "D06": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "D07": {
       "normal": {
         "pass": true,
         "core_calls": 1,

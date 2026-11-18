@@ -93,11 +93,12 @@ class AcceptanceTests(unittest.TestCase):
         self.assertEqual(build_acceptance(evaluate_all()["rows"]),
                          json.loads(ACCEPTANCE.read_text(encoding="utf-8")))
 
-    def test_real_coverage_counts_only_accepted_batch_a_and_b_skills(self):
+    def test_real_coverage_counts_only_accepted_skills(self):
         rows = [r for r in build_coverage() if r.simulation_verified]
         self.assertEqual({r.skill_id for r in rows},
                          {"A02", "A03", "A04", "A05", "A06", "A07", "A08",
-                          "B02", "B03", "B04", "B05", "B06", "B07", "B08"})
+                          "B02", "B03", "B04", "B05", "B06", "B07", "B08",
+                          "D02", "D03", "D05", "D06", "D07"})
         self.assertFalse(any(r.router_verified for r in rows))
 
     def test_hand_edited_failure_or_missing_state_is_not_counted(self):

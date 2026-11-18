@@ -1,0 +1,22 @@
+{
+  "format": "gateway-lm.skill-simulation-claims-gold/v1",
+  "version": "1.0.0",
+  "scenarios_version": "1.0.0",
+  "expected": {
+    "D02-normal": "HEALTHY",
+    "D02-fault": "FAULT",
+    "D02-missing": "UNKNOWN",
+    "D03-normal": "HEALTHY",
+    "D03-fault": "FAULT",
+    "D03-missing": "UNKNOWN",
+    "D05-normal": "HEALTHY",
+    "D05-fault": "FAULT",
+    "D05-missing": "UNKNOWN",
+    "D06-normal": "HEALTHY",
+    "D06-fault": "FAULT",
+    "D06-missing": "UNKNOWN",
+    "D07-normal": "HEALTHY",
+    "D07-fault": "FAULT",
+    "D07-missing": "UNKNOWN"
+  }
+}

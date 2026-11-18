@@ -1,0 +1,354 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-D02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "pool_exhausted_v1",
+        "pool_low_v1",
+        "pool_ok_v1"
+      ]
+    },
+    "REPLAY-D03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "lease_expiry_high_v1",
+        "lease_events_ok_v1"
+      ]
+    },
+    "REPLAY-D05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "neighbor_failed_high_v1",
+        "neighbor_table_ok_v1"
+      ]
+    },
+    "REPLAY-D06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ipv6_ra_missing_v1",
+        "ipv6_prefix_missing_v1",
+        "ipv6_ra_ok_v1"
+      ]
+    },
+    "REPLAY-D07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "dhcpv6_server_disabled_v1",
+        "dhcpv6_server_ok_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "pool_exhausted_v1",
+      "diagnosis": "pool_exhausted_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "free_addresses",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "used_addresses",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "pool_exhausted",
+      "workflow": "REPLAY-D02-V1"
+    },
+    {
+      "claim_id": "pool_low_v1",
+      "diagnosis": "pool_low_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "free_addresses",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "free_addresses",
+          "op": "le",
+          "value": 5
+        },
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "used_addresses",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "pool_low",
+      "workflow": "REPLAY-D02-V1"
+    },
+    {
+      "claim_id": "pool_ok_v1",
+      "diagnosis": "pool_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "free_addresses",
+          "op": "gt",
+          "value": 5
+        },
+        {
+          "port": "expansion.dhcp_pool",
+          "field": "used_addresses",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "pool_ok",
+      "workflow": "REPLAY-D02-V1"
+    },
+    {
+      "claim_id": "lease_expiry_high_v1",
+      "diagnosis": "lease_expiry_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dhcp_lease_events",
+          "field": "expired_leases",
+          "op": "gt",
+          "value": 20
+        },
+        {
+          "port": "expansion.dhcp_lease_events",
+          "field": "active_leases",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "lease_expiry_high",
+      "workflow": "REPLAY-D03-V1"
+    },
+    {
+      "claim_id": "lease_events_ok_v1",
+      "diagnosis": "lease_events_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dhcp_lease_events",
+          "field": "expired_leases",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.dhcp_lease_events",
+          "field": "expired_leases",
+          "op": "le",
+          "value": 20
+        },
+        {
+          "port": "expansion.dhcp_lease_events",
+          "field": "active_leases",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "lease_events_ok",
+      "workflow": "REPLAY-D03-V1"
+    },
+    {
+      "claim_id": "neighbor_failed_high_v1",
+      "diagnosis": "neighbor_failed_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.neighbor_table",
+          "field": "failed_entries",
+          "op": "gt",
+          "value": 3
+        },
+        {
+          "port": "expansion.neighbor_table",
+          "field": "neighbor_count",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "neighbor_failed_high",
+      "workflow": "REPLAY-D05-V1"
+    },
+    {
+      "claim_id": "neighbor_table_ok_v1",
+      "diagnosis": "neighbor_table_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.neighbor_table",
+          "field": "failed_entries",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.neighbor_table",
+          "field": "failed_entries",
+          "op": "le",
+          "value": 3
+        },
+        {
+          "port": "expansion.neighbor_table",
+          "field": "neighbor_count",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "neighbor_table_ok",
+      "workflow": "REPLAY-D05-V1"
+    },
+    {
+      "claim_id": "ipv6_ra_missing_v1",
+      "diagnosis": "ipv6_ra_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ipv6_ra",
+          "field": "router_advertisements",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ipv6_ra_missing",
+      "workflow": "REPLAY-D06-V1"
+    },
+    {
+      "claim_id": "ipv6_prefix_missing_v1",
+      "diagnosis": "ipv6_prefix_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ipv6_ra",
+          "field": "router_advertisements",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.ipv6_ra",
+          "field": "prefix_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "ipv6_prefix_missing",
+      "workflow": "REPLAY-D06-V1"
+    },
+    {
+      "claim_id": "ipv6_ra_ok_v1",
+      "diagnosis": "ipv6_ra_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ipv6_ra",
+          "field": "router_advertisements",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.ipv6_ra",
+          "field": "prefix_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "ipv6_ra_ok",
+      "workflow": "REPLAY-D06-V1"
+    },
+    {
+      "claim_id": "dhcpv6_server_disabled_v1",
+      "diagnosis": "dhcpv6_server_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dhcpv6",
+          "field": "server_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "dhcpv6_server_disabled",
+      "workflow": "REPLAY-D07-V1"
+    },
+    {
+      "claim_id": "dhcpv6_server_ok_v1",
+      "diagnosis": "dhcpv6_server_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dhcpv6",
+          "field": "server_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.dhcpv6",
+          "field": "leases_count",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "dhcpv6_server_ok",
+      "workflow": "REPLAY-D07-V1"
+    }
+  ],
+  "skill_workflows": {
+    "D02": [
+      "REPLAY-D02-V1"
+    ],
+    "D03": [
+      "REPLAY-D03-V1"
+    ],
+    "D05": [
+      "REPLAY-D05-V1"
+    ],
+    "D06": [
+      "REPLAY-D06-V1"
+    ],
+    "D07": [
+      "REPLAY-D07-V1"
+    ]
+  }
+}

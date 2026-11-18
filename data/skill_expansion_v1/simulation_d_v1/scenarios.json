@@ -1,0 +1,165 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-D",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "D02-normal",
+      "skill_id": "D02",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dhcp_pool",
+      "values": {
+        "free_addresses": 120,
+        "used_addresses": 30
+      }
+    },
+    {
+      "id": "D02-fault",
+      "skill_id": "D02",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dhcp_pool",
+      "values": {
+        "free_addresses": 0,
+        "used_addresses": 150
+      }
+    },
+    {
+      "id": "D02-missing",
+      "skill_id": "D02",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dhcp_pool",
+      "values": null
+    },
+    {
+      "id": "D03-normal",
+      "skill_id": "D03",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dhcp_lease_events",
+      "values": {
+        "active_leases": 25,
+        "expired_leases": 3
+      }
+    },
+    {
+      "id": "D03-fault",
+      "skill_id": "D03",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dhcp_lease_events",
+      "values": {
+        "active_leases": 10,
+        "expired_leases": 45
+      }
+    },
+    {
+      "id": "D03-missing",
+      "skill_id": "D03",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dhcp_lease_events",
+      "values": null
+    },
+    {
+      "id": "D05-normal",
+      "skill_id": "D05",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.neighbor_table",
+      "values": {
+        "neighbor_count": 12,
+        "failed_entries": 0
+      }
+    },
+    {
+      "id": "D05-fault",
+      "skill_id": "D05",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.neighbor_table",
+      "values": {
+        "neighbor_count": 12,
+        "failed_entries": 9
+      }
+    },
+    {
+      "id": "D05-missing",
+      "skill_id": "D05",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.neighbor_table",
+      "values": null
+    },
+    {
+      "id": "D06-normal",
+      "skill_id": "D06",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.ipv6_ra",
+      "values": {
+        "router_advertisements": true,
+        "prefix_count": 1
+      }
+    },
+    {
+      "id": "D06-fault",
+      "skill_id": "D06",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.ipv6_ra",
+      "values": {
+        "router_advertisements": false,
+        "prefix_count": 0
+      }
+    },
+    {
+      "id": "D06-missing",
+      "skill_id": "D06",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.ipv6_ra",
+      "values": null
+    },
+    {
+      "id": "D07-normal",
+      "skill_id": "D07",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dhcpv6",
+      "values": {
+        "server_enabled": true,
+        "leases_count": 8
+      }
+    },
+    {
+      "id": "D07-fault",
+      "skill_id": "D07",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dhcpv6",
+      "values": {
+        "server_enabled": false,
+        "leases_count": 0
+      }
+    },
+    {
+      "id": "D07-missing",
+      "skill_id": "D07",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dhcpv6",
+      "values": null
+    }
+  ]
+}

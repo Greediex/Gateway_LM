@@ -5,15 +5,11 @@ calibrated values. The 21 shared scenarios cover normal/fault/missing; the
 boundary table below covers the exact edges.
 """
 import unittest
-from dataclasses import replace
-from unittest.mock import patch
 
-from gateway_pilot.skill_expansion.replay_backend import ReplayFixtureError
-from gateway_pilot.skill_expansion.simulation import load_scenarios
-from scripts.simulate_skills import ROOT, evaluate, run_scenario
+import tests.batch_sim_support as support
 
-SIM = ROOT / 'data/skill_expansion_v1/simulation_b_v1'
-DIAG = ROOT / 'config/skill_launcher/replay_b.diagnostics.json'
+SIM = support.ROOT / 'data/skill_expansion_v1/simulation_b_v1'
+DIAG = support.ROOT / 'config/skill_launcher/replay_b.diagnostics.json'
 SKILLS = ('B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08')
 
 # (skill, values, expected verdict). Edges follow the declared Claim thresholds.
@@ -48,56 +44,16 @@ BOUNDARIES = [
 ]
 
 
-class BatchBTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.scenarios = {s.id: s for s in load_scenarios(SIM)}
+BAD = [('B02', {'radio_up': 'yes', 'channel': 36, 'band': '5GHz'}),
+       ('B04', {'rssi_dbm': '-60', 'snr_db': 30.0}),
+       ('B05', {'channel_utilization_pct': None}),
+       ('B07', {'roam_count': 2.5, 'last_ap_id': 'a'}),
+       ('B08', {'backhaul_up': True}),
+       ('B06', {'channel': 36, 'neighbor_bss_count': 1, 'extra': 1})]
 
-    def run_values(self, skill, values):
-        return run_scenario(replace(self.scenarios[f'{skill}-normal'], values=values), DIAG)
 
-    def test_all_seven_skills_have_three_states_and_pass_through_core(self):
-        report = evaluate(SIM, DIAG)
-        self.assertEqual((report['passed'], report['total']), (21, 21))
-        for skill in SKILLS:
-            self.assertEqual({s.state for s in self.scenarios.values() if s.skill_id == skill},
-                             {'normal', 'fault', 'missing'}, skill)
-        for row in report['rows']:
-            if row['id'].endswith('-missing'):
-                self.assertEqual((row['outcome'], row['verdict']), ('NOT_READY', 'UNKNOWN'))
-            else:
-                self.assertEqual(row['outcome'], 'VERIFIED')
-                self.assertTrue(row['core_calls'] > 0 and row['evidence_id'])
-
-    def test_threshold_boundaries_and_out_of_range_values(self):
-        for skill, values, expected in BOUNDARIES:
-            with self.subTest(skill=skill, values=values):
-                result = self.run_values(skill, values)
-                self.assertEqual(result['verdict'], expected)
-                if expected == 'UNKNOWN':
-                    # Out-of-range proof is admitted as evidence but supports no Claim.
-                    self.assertFalse([c for c in result['claims'].values() if c['value'] == 'TRUE'])
-
-    def test_malformed_values_are_rejected_before_any_claim(self):
-        bad = [('B02', {'radio_up': 'yes', 'channel': 36, 'band': '5GHz'}),
-               ('B04', {'rssi_dbm': '-60', 'snr_db': 30.0}),
-               ('B05', {'channel_utilization_pct': None}),
-               ('B07', {'roam_count': 2.5, 'last_ap_id': 'a'}),
-               ('B08', {'backhaul_up': True}),
-               ('B06', {'channel': 36, 'neighbor_bss_count': 1, 'extra': 1})]
-        for skill, values in bad:
-            with self.subTest(skill=skill), self.assertRaises(ReplayFixtureError):
-                self.run_values(skill, values)
-
-    def test_gold_is_never_read_during_execution(self):
-        with patch('scripts.simulate_skills.load_claim_gold', side_effect=AssertionError('gold read')), \
-                patch('scripts.simulate_skills.load_gold', side_effect=AssertionError('gold read')):
-            self.assertEqual(run_scenario(self.scenarios['B04-fault'], DIAG)['verdict'], 'FAULT')
-
-    def test_missing_source_is_unknown_and_never_healthy(self):
-        for skill in SKILLS:
-            row = run_scenario(self.scenarios[f'{skill}-missing'], DIAG)
-            self.assertEqual((row['outcome'], row['verdict'], row['claims']), ('NOT_READY', 'UNKNOWN', {}), skill)
+class BatchBTests(support.BatchSimulationCase):
+    SIM, DIAG, SKILLS, BOUNDARIES, BAD = SIM, DIAG, SKILLS, BOUNDARIES, BAD
 
 
 if __name__ == '__main__':

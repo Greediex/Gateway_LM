@@ -11,6 +11,8 @@ from pathlib import Path
 
 from gateway_pilot.graph_v3.claims import ClaimBook
 from gateway_pilot.graph_v3.state import CaseState
+from gateway_pilot.skill_expansion.catalog import DATA_DIR
+from gateway_pilot.skill_expansion.coverage import DIRECT_BATCHES
 from gateway_pilot.skill_expansion.runtime_bridge import SkillNotReady
 from gateway_pilot.skill_expansion.simulation import (
     SIM_DIR, Scenario, SimulationError, load_gold, load_scenarios,
@@ -20,10 +22,8 @@ from scripts.core_replay_smoke_v2 import smoke
 ROOT = Path(__file__).resolve().parents[1]
 DIAGNOSTICS = ROOT / 'config/skill_launcher/replay_a.diagnostics.json'
 # (scenario/gold dir, Claim diagnostics) per direct-Skill batch; composites run separately.
-BATCHES = (
-    (SIM_DIR, DIAGNOSTICS),
-    (ROOT / 'data/skill_expansion_v1/simulation_b_v1', ROOT / 'config/skill_launcher/replay_b.diagnostics.json'),
-)
+BATCHES = tuple((DATA_DIR / d, ROOT / 'config/skill_launcher' / f'{diag}.diagnostics.json')
+                for d, diag in DIRECT_BATCHES.values())
 
 
 def assess_claims(state: CaseState, skill_id: str, diagnostics: Path = DIAGNOSTICS) -> dict:

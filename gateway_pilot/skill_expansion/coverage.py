@@ -24,16 +24,20 @@ EXPECTED_DOMAINS = 15
 EXPECTED_PER_DOMAIN = 8
 SKILL_TYPES = ("direct", "composite", "history", "change", "legacy_v01")
 ACCEPTANCE = DATA_DIR / "simulation_v1" / "acceptance.json"
+# Direct-Skill batches: letter -> (scenario/gold dir under DATA_DIR, Claim diagnostics name).
+# One place to register a batch; simulate_skills and the acceptance digest both read it.
+DIRECT_BATCHES = {
+    "A": ("simulation_v1", "replay_a"),
+    "B": ("simulation_b_v1", "replay_b"),
+    "D": ("simulation_d_v1", "replay_d"),
+}
 # Every file that decides a simulated verdict; editing one invalidates acceptance.
-ACCEPTANCE_INPUTS = (
-    "simulation_v1/scenarios.json", "simulation_v1/gold_v1.json",
-    "simulation_v1/gold_claims_v1.json", "simulation_composite_v1/scenarios.json",
-    "simulation_composite_v1/gold.json",
-    "simulation_b_v1/scenarios.json", "simulation_b_v1/gold_v1.json",
-    "simulation_b_v1/gold_claims_v1.json",
-    "../../config/skill_launcher/replay_a.diagnostics.json",
-    "../../config/skill_launcher/replay_a_composite.diagnostics.json",
-    "../../config/skill_launcher/replay_b.diagnostics.json",
+ACCEPTANCE_INPUTS = tuple(
+    [f"{d}/{name}" for d, _ in DIRECT_BATCHES.values()
+     for name in ("scenarios.json", "gold_v1.json", "gold_claims_v1.json")]
+    + ["simulation_composite_v1/scenarios.json", "simulation_composite_v1/gold.json"]
+    + [f"../../config/skill_launcher/{diag}.diagnostics.json" for _, diag in DIRECT_BATCHES.values()]
+    + ["../../config/skill_launcher/replay_a_composite.diagnostics.json"]
 )
 ACCEPTANCE_STATES = ("normal", "fault", "missing")
 
