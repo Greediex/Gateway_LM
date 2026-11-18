@@ -1,0 +1,338 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "A03": {
+      "workflow_id": "REPLAY-A03-COMPOSITE-V1",
+      "target_scope": "client",
+      "sources": {
+        "inventory": {
+          "function_id": "expansion.device_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target"
+        },
+        "identity": {
+          "function_id": "expansion.identity_consistency",
+          "scope": "client",
+          "target": "synthetic-test-target"
+        }
+      },
+      "claims": [
+        "a03_consistent_v1",
+        "a03_ip_conflict_v1",
+        "a03_hostname_conflict_v1"
+      ],
+      "limitation": "Inventory count plus identity consistency only; no per-device merge or inventory membership proof."
+    },
+    "A05": {
+      "workflow_id": "REPLAY-A05-COMPOSITE-V1",
+      "target_scope": "client",
+      "sources": {
+        "inventory": {
+          "function_id": "expansion.device_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target"
+        },
+        "vendor": {
+          "function_id": "expansion.device_vendor",
+          "scope": "client",
+          "target": "synthetic-test-target"
+        }
+      },
+      "claims": [
+        "a05_vendor_available_v1",
+        "a05_vendor_unknown_v1"
+      ],
+      "limitation": "Inventory plus OUI availability only; vendor does not prove device type."
+    },
+    "A07": {
+      "workflow_id": "REPLAY-A07-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "inventory": {
+          "function_id": "expansion.device_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target"
+        },
+        "previous": {
+          "function_id": "expansion.device_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target"
+        }
+      },
+      "claims": [
+        "a07_count_stable_v1",
+        "a07_count_decreased_v1",
+        "a07_count_increased_v1"
+      ],
+      "limitation": "Two synthetic inventory counts only; no individual device arrival/departure or causal RCA.",
+      "history": {
+        "earlier": "previous",
+        "later": "inventory",
+        "same_field": "segment"
+      }
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "a03_consistent_v1",
+      "diagnosis": "a03_consistent_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "identity",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "identity",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "identity",
+          "field": "hostname_conflict",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "a03_consistent_v1",
+      "workflow": "REPLAY-A03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a03_ip_conflict_v1",
+      "diagnosis": "a03_ip_conflict_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "identity",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "identity",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "a03_ip_conflict_v1",
+      "workflow": "REPLAY-A03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a03_hostname_conflict_v1",
+      "diagnosis": "a03_hostname_conflict_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "identity",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "identity",
+          "field": "hostname_conflict",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "a03_hostname_conflict_v1",
+      "workflow": "REPLAY-A03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a05_vendor_available_v1",
+      "diagnosis": "a05_vendor_available_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "vendor",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "vendor",
+          "field": "oui_known",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "a05_vendor_available_v1",
+      "workflow": "REPLAY-A05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a05_vendor_unknown_v1",
+      "diagnosis": "a05_vendor_unknown_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "vendor",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "vendor",
+          "field": "oui_known",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "a05_vendor_unknown_v1",
+      "workflow": "REPLAY-A05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a07_count_stable_v1",
+      "diagnosis": "a07_count_stable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "previous",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "eq",
+          "value": {
+            "source": "previous",
+            "field": "devices_count"
+          }
+        }
+      ],
+      "excludes": [],
+      "message_key": "a07_count_stable_v1",
+      "workflow": "REPLAY-A07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a07_count_decreased_v1",
+      "diagnosis": "a07_count_decreased_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "previous",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "lt",
+          "value": {
+            "source": "previous",
+            "field": "devices_count"
+          }
+        }
+      ],
+      "excludes": [],
+      "message_key": "a07_count_decreased_v1",
+      "workflow": "REPLAY-A07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "a07_count_increased_v1",
+      "diagnosis": "a07_count_increased_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "previous",
+          "field": "",
+          "op": "exists",
+          "value": null
+        },
+        {
+          "port": "inventory",
+          "field": "devices_count",
+          "op": "gt",
+          "value": {
+            "source": "previous",
+            "field": "devices_count"
+          }
+        }
+      ],
+      "excludes": [],
+      "message_key": "a07_count_increased_v1",
+      "workflow": "REPLAY-A07-COMPOSITE-V1"
+    }
+  ]
+}

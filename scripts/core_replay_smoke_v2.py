@@ -14,8 +14,13 @@ from gateway_pilot.graph_v3.state import CaseState
 ROOT=Path(__file__).resolve().parents[1]
 
 def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
-          assess: Callable[[CaseState], dict] | None = None):
-    """``values`` replaces the default fixture; ``omit`` drops it (missing data)."""
+          assess: Callable[[CaseState], dict] | None = None,
+          require_fact: bool = True):
+    """``values`` replaces the fixture; ``omit`` drops it (missing data).
+
+    ``require_fact=False`` lets negative-path assessors inspect rejected Core
+    results. It never changes admission; the default smoke still requires proof.
+    """
     from gateway_pilot.command_catalog.loader import load_catalog
     from gateway_pilot.command_catalog.validator import validate_catalog
     from gateway_pilot.command_catalog.builder import build_registry
@@ -92,12 +97,13 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
         bridge=RuntimeSkillBridge(runtime,SkillCatalog.load())
         runner,plan=bridge.execute(slug,snapshot=capabilities)
         fact=runner.state.fact(port_id)
-        if fact is None:
+        if fact is None and require_fact:
             raise AssertionError('shared Core did not admit verified synthetic fact')
         assessment = assess(runner.state) if assess is not None else None
         return {**({'assessment': assessment} if assess is not None else {}), 'synthetic_only':True,'function':fid,'skill':slug,
-                'ports':list(function['outputs']),'verified_fact_present':True,
-                'fact_value':copy.deepcopy(fact['value']),'evidence_id':fact['id'],
+                'ports':list(function['outputs']),'verified_fact_present':fact is not None,
+                'fact_value':copy.deepcopy(fact['value']) if fact else None,
+                'evidence_id':fact['id'] if fact else None,
                 'used_existing_graph_runner':True,'test_target':target.target_id,
                 'core_calls':runner.calls,
                 'verified_identity_present':runner.state.fact('client.identity') is not None,

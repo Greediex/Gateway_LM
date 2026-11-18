@@ -1,0 +1,178 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "A03-normal",
+      "skill_id": "A03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "identity": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "ip_mac_consistent": true,
+            "hostname_conflict": false
+          }
+        }
+      }
+    },
+    {
+      "id": "A03-fault",
+      "skill_id": "A03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "identity": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "ip_mac_consistent": false,
+            "hostname_conflict": false
+          }
+        }
+      }
+    },
+    {
+      "id": "A03-missing",
+      "skill_id": "A03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "identity": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "A05-normal",
+      "skill_id": "A05",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "vendor": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "oui_vendor": "Intel Corporate",
+            "oui_known": true
+          }
+        }
+      }
+    },
+    {
+      "id": "A05-fault",
+      "skill_id": "A05",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "vendor": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "oui_vendor": "unknown",
+            "oui_known": false
+          }
+        }
+      }
+    },
+    {
+      "id": "A05-missing",
+      "skill_id": "A05",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "vendor": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "A07-normal",
+      "skill_id": "A07",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "previous": {
+          "simulated_at": "2026-11-18T08:00:00Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        }
+      }
+    },
+    {
+      "id": "A07-fault",
+      "skill_id": "A07",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 2,
+            "segment": "synthetic-lan"
+          }
+        },
+        "previous": {
+          "simulated_at": "2026-11-18T08:00:00Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        }
+      }
+    },
+    {
+      "id": "A07-missing",
+      "skill_id": "A07",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-18T08:00:10Z",
+          "values": {
+            "devices_count": 3,
+            "segment": "synthetic-lan"
+          }
+        },
+        "previous": {
+          "simulated_at": "2026-11-18T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

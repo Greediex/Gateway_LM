@@ -75,5 +75,10 @@ def evaluate() -> dict:
 if __name__ == '__main__':
     argparse.ArgumentParser(description=__doc__).parse_args()
     report = evaluate()
+    from scripts.simulate_composites import evaluate as evaluate_composites
+    composites = evaluate_composites()
+    report = {**report, 'total': report['total'] + composites['total'],
+              'passed': report['passed'] + composites['passed'],
+              'rows': report['rows'] + composites['rows']}
     print(json.dumps(report, ensure_ascii=False, indent=2))
     raise SystemExit(0 if report['passed'] == report['total'] else 1)
