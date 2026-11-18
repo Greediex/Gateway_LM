@@ -17,13 +17,15 @@ from .replay_backend import StrictSkillReplayBackend
 from .runtime_bridge import RuntimeSkillBridge
 
 
-@functools.lru_cache(maxsize=2)
+@functools.lru_cache(maxsize=3)
 def deployment(mode: str):
-    require(mode in {'live','replay'},'skill_mode')
-    folder='laptop_v1' if mode=='live' else 'wifi_replay_v1'
+    folders = {'live': 'laptop_v1', 'replay': 'wifi_replay_v1', 'replay_client': 'client_replay_v1'}
+    require(mode in folders, 'skill_mode')
+    folder = folders[mode]
     config=ROOT/'config/skill_launcher'
     approvals=read_json(config/'approvals.json')
     require(approvals['format']=='gateway-lm.skill-launcher-approval/v1','skill_approval_format')
+    require(mode in approvals, 'skill_deployment_not_approved')
     approved=approvals[mode]
     catalog=load_catalog(ROOT/'examples/skill_deployments'/folder)
     policy=read_json(config/(mode+'.policy.json'))
@@ -61,12 +63,21 @@ def composition(mode: str, *, backend=None, clock=time.monotonic):
         context=TargetContext('client',backend.client_id,backend.environment_id)
         context_valid=lambda: backend.environment_id==context.environment_id
     else:
-        fixture=read_json(ROOT/'data/skill_expansion_v1/replay_fixtures_v2.json',max_bytes=1048576)
+        if mode == 'replay_client':
+            from .client_replay import normal_fixtures
+            fixture = normal_fixtures()
+            require(digest(fixture) == approved.get('fixtures_digest'), 'skill_fixture_pin')
+        else:
+            fixture=read_json(ROOT/'data/skill_expansion_v1/replay_fixtures_v2.json',max_bytes=1048576)
         values={f['function_id']:fixture[f['function_id']] for f in artifact['functions']}
         backend=StrictSkillReplayBackend(artifact['functions'],artifact['ports'],values) if backend is None else backend
         require(getattr(backend,'revision',None)==approved['backend_revision'] and getattr(backend,'source',None)==approved['source'],'skill_provider_pin')
         environment=digest({'registry':artifact['content_digest'],'fixtures':backend._fixture})
-        context=TargetContext('gateway','synthetic-skill-gateway',environment)
+        if mode == 'replay_client':
+            require(digest(backend._fixture) == approved['fixtures_digest'], 'skill_fixture_pin')
+            context=TargetContext('client','synthetic-test-target',environment)
+        else:
+            context=TargetContext('gateway','synthetic-skill-gateway',environment)
         context_valid=lambda: digest({'registry':artifact['content_digest'],'fixtures':backend._fixture})==environment
     require(backend.revision==approved['backend_revision'] and backend.source==approved['source'],'skill_provider_pin')
     rows=[declare_binding(artifact,f['function_id'],'launcher.'+f['function_id'],approved['backend_id'],backend,context)

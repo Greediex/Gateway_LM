@@ -1,0 +1,16 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "selection",
+  "functions": {
+    "expansion.device_vendor": "1.0.0",
+    "expansion.identity_consistency": "1.0.0",
+    "expansion.client_association": "1.0.0",
+    "expansion.synthetic_client_identity": "1.0.0"
+  },
+  "ports": {
+    "expansion.device_vendor": "1.0.0",
+    "expansion.identity_consistency": "1.0.0",
+    "expansion.client_association": "1.0.0",
+    "client.identity": "1.0.0"
+  }
+}

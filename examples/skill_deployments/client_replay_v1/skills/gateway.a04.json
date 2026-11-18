@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.a04",
+  "version": "1.0.0",
+  "name": "Nhận diện hãng từ MAC/OUI",
+  "description": "Design proposal only: Nhận diện hãng từ MAC/OUI",
+  "requires": {},
+  "produces": {
+    "expansion.device_vendor": "1.0.0",
+    "client.identity": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.device_vendor": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.device_vendor": "1.0.0",
+    "expansion.synthetic_client_identity": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

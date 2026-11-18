@@ -1,0 +1,54 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "function",
+  "function_id": "expansion.synthetic_client_identity",
+  "version": "1.0.0",
+  "description": "Synthetic replay identity only, not device discovery.",
+  "domain": "skill_expansion",
+  "skill_refs": [
+    {
+      "skill_id": "gateway.a04",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "gateway.a06",
+      "version": "1.0.0"
+    },
+    {
+      "skill_id": "gateway.a08",
+      "version": "1.0.0"
+    }
+  ],
+  "lifecycle": "IMPLEMENTED",
+  "inputs": {},
+  "outputs": {
+    "client.identity": "1.0.0"
+  },
+  "scope": "client",
+  "risk": "READ_ONLY",
+  "permission": "network.read",
+  "arguments_schema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false,
+    "required": []
+  },
+  "argument_sources": {},
+  "preconditions": [],
+  "order_after": [],
+  "effects": [],
+  "timeout_ms": 2000,
+  "retry": {
+    "max_attempts": 1
+  },
+  "ttl_seconds": 30,
+  "cost": 1.0,
+  "latency_ms": 0.0,
+  "capability_probe": "probe.expansion.synthetic_client_identity",
+  "verifier": "schema_scope_provenance_freshness/v3",
+  "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+  "tags": [
+    "synthetic_replay",
+    "proposal"
+  ]
+}

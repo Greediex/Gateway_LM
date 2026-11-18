@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.2.0",
+  "allowed_probe_ids": [
+    "probe.expansion.device_vendor",
+    "probe.expansion.identity_consistency",
+    "probe.expansion.client_association",
+    "probe.expansion.synthetic_client_identity"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "format": "gateway-lm.skill-actions/v1",
+  "mode": "replay_client",
+  "actions": [
+    {
+      "skill_id": "A04",
+      "runtime_skill_id": "gateway.a04",
+      "version": "1.0.0",
+      "name": "Nhận diện hãng từ MAC/OUI",
+      "domain": "A",
+      "kind": "design",
+      "scope": "client",
+      "required_ports": {
+        "expansion.device_vendor": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic simulation_v1 normal fixture only; no hardware acceptance."
+      ]
+    },
+    {
+      "skill_id": "A06",
+      "runtime_skill_id": "gateway.a06",
+      "version": "1.0.0",
+      "name": "Đối chiếu IP–MAC–hostname",
+      "domain": "A",
+      "kind": "design",
+      "scope": "client",
+      "required_ports": {
+        "expansion.identity_consistency": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic simulation_v1 normal fixture only; no hardware acceptance."
+      ]
+    },
+    {
+      "skill_id": "A08",
+      "runtime_skill_id": "gateway.a08",
+      "version": "1.0.0",
+      "name": "Theo dõi thiết bị gắn với AP",
+      "domain": "A",
+      "kind": "design",
+      "scope": "client",
+      "required_ports": {
+        "expansion.client_association": "1.0.0"
+      },
+      "optional_ports": {},
+      "limitations": [
+        "Synthetic simulation_v1 normal fixture only; no hardware acceptance."
+      ]
+    }
+  ]
+}
