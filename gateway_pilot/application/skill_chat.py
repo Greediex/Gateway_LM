@@ -52,6 +52,13 @@ _MODE = {
 }
 
 
+@lru_cache(maxsize=1)
+def _retriever():
+    from ..skill_expansion.catalog import SkillCatalog
+    from ..skill_expansion.retrieval import SkillRetriever
+    return SkillRetriever(SkillCatalog.load())
+
+
 def _model_error(exc):
     return 'model_timeout' if isinstance(exc,TimeoutError) or isinstance(getattr(exc,'reason',None),TimeoutError) else 'model_unavailable'
 
@@ -125,13 +132,17 @@ def _phrase(text, phrase):
 
 class SkillChat:
     def __init__(self, launcher=LAUNCHER, *, model_factory=local_model, max_rounds=4,
-                 max_elapsed_s=120, clock=time.monotonic):
+                 max_elapsed_s=120, clock=time.monotonic, fast=False):
         if (type(max_rounds) is not int or not 1 <= max_rounds <= 6
                 or type(max_elapsed_s) not in (int,float) or not math.isfinite(max_elapsed_s)
                 or not 1 <= max_elapsed_s <= 240 or not callable(clock)):
             raise ValueError('invalid_chat_round_budget')
         self.launcher, self.model_factory, self.max_rounds = launcher, model_factory, max_rounds
         self.max_elapsed_s,self.clock=max_elapsed_s,clock
+        # fast: graph/phrase routing without LLM when unambiguous, otherwise at
+        # most one LLM selection call; no goal-proposal or answer-wording calls.
+        if type(fast) is not bool:raise ValueError('invalid_chat_fast_flag')
+        self.fast=fast
 
     def _view(self, entry, *, refresh=True):
         with entry['lock'], entry['session']._lock:
@@ -276,9 +287,47 @@ class SkillChat:
         blocked=TaskDecomposer(runtime.registry).is_write_intent(request)
         custom_target=bool(re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}',request)) or any(
             _phrase(normalized,p) for p in runtime.registry.nonlocal_scope_phrases)
+        def runnable_outputs():
+            supported={f.function_id for f in entry['capabilities'].functions if f.status=='AVAILABLE'}
+            producible={port for f in runtime.registry.functions.values() if f.id in supported for port in f.outputs}
+            return {skill:[p for p in {**a['required_ports'],**a['optional_ports']} if p in producible]
+                    for skill,a in entry['actions'].items() if rows[skill]['availability'] in {'READY','DEGRADED'}}
+        def direct_route():
+            """Deterministic plan from phrase intents or graph retrieval; None if ambiguous."""
+            if unconfirmed or unavailable:return None
+            outputs=runnable_outputs()
+            if not goals:
+                # BM25 + graph diffusion ranks the catalog (~ms). Only a top hit
+                # that is an approved runnable action may route; score never grants.
+                hits=_retriever().search(request,limit=3,include_proposed=True,graph_weight=.30)
+                top=hits[0].skill_id if hits else None
+                if top not in outputs or not outputs[top]:return None
+                goals.update({p:p for p in entry['actions'][top]['required_ports'] if p in outputs[top]})
+                route_meta['method']='graph'
+            need=set(goals)-set(view(refresh=False)['facts'])
+            plan=[]
+            while need:
+                best=max(((len(need&set(ports)),-len(ports),skill) for skill,ports in outputs.items()
+                          if skill not in plan),default=(0,0,None))
+                if best[0]==0:return None
+                plan.append(best[2]);need-=set(outputs[best[2]])
+            return plan
+        route_meta={'method':'phrase','plan':None}
+        direct_plan=None
         if blocked:reason='write_intent_requires_approval'
         elif custom_target:reason='custom_target_not_supported'
         elif not check_deadline():reason='turn_deadline_exhausted'
+        elif self.fast and (direct_plan:=direct_route()) is not None:
+            route_meta['plan']=list(direct_plan)
+            for skill in direct_plan:
+                if not check_deadline():reason='turn_deadline_exhausted';break
+                attempted.append(skill);runs.append(run_skill(skill))
+            else:
+                if attempted:
+                    workflows=list(dict.fromkeys(w for skill in attempted for w in runtime.registry.skill_workflows.get(skill,[])))
+                    if workflows:assessments=assess(workflows,adaptive=True)
+                selected=[p for p in goals if p in view(refresh=False)['facts']]
+                reason='direct_route' if selected else 'needs_clarification'
         elif inference_budget()<=0:reason='finalization_budget_reserved'
         else:
             try:
@@ -290,7 +339,7 @@ class SkillChat:
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
                     raise ValueError('local_skill_model_required')
                 ready=True
-                if (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
+                if not self.fast and (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
                     view()
                     if check_deadline() and inference_budget()>0:
                         model_calls+=1
@@ -378,7 +427,7 @@ class SkillChat:
                             continue
                         reason='model_answer' if selected else 'needs_clarification'
                         break
-                    if round_index==self.max_rounds-1:reason='round_budget_exhausted';break
+                    if round_index==self.max_rounds-1 and not self.fast:reason='round_budget_exhausted';break
                     for skill in choice['skill_ids']:
                         if not check_deadline():reason='turn_deadline_exhausted';break
                         result=run_skill(skill)
@@ -388,6 +437,11 @@ class SkillChat:
                     feedback={'failed_skills':[r['skill_id'] for r in runs if r['status']!='MEASURED'],
                               'missing_goals':coverage(view(refresh=False)['facts'])['missing_ports']}
                     if session.runner.calls>=session.runner.max_calls:reason='tool_budget_exhausted';break
+                    if self.fast:
+                        facts=view(refresh=False)['facts']
+                        selected=[p for p in facts if not goals or p in goals]
+                        reason='model_answer' if selected else 'needs_clarification'
+                        break
             except SkillSessionError:raise
             except (OSError,TimeoutError) as exc:
                 reason=_model_error(exc)
@@ -408,7 +462,7 @@ class SkillChat:
         draft_proofs={}
         answer_calls=0
         synthesis={'used_llm':False,'reason':'renderer','calls':0}
-        if (reason=='model_answer' and check_deadline()
+        if (reason=='model_answer' and not self.fast and check_deadline()
                 and os.environ.get('GATEWAY_LM_ANSWER_SYNTHESIS','1').lower() not in {'0','off','false','no'}
                 and callable(getattr(model,'complete_answer',None))):
             before_answer=view()
@@ -449,7 +503,7 @@ class SkillChat:
             selected=answer_ports(final,selected)
             if not check_deadline():reason='turn_deadline_exhausted'
             cov=coverage(final['facts'])
-            if not cov['complete'] and reason=='model_answer':reason='incomplete_coverage' if goals else 'intent_scope_unconfirmed'
+            if not cov['complete'] and reason in {'model_answer','direct_route'}:reason='incomplete_coverage' if goals else 'intent_scope_unconfirmed'
             chosen={p:final['facts'][p] for p in selected}
             answer=compose_answer(request,selected,final['facts'],current)
             if draft:
@@ -476,7 +530,7 @@ class SkillChat:
                 elif runs:answer+='\nChưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.'
                 elif not answer.strip():answer=prof['empty']
             else:
-                status='MEASURED' if cov['complete'] and reason=='model_answer' else 'PARTIAL'
+                status='MEASURED' if cov['complete'] and reason in {'model_answer','direct_route'} else 'PARTIAL'
                 wifi=final['facts'].get('laptop.wifi',{}).get('value',{})
                 route=final['facts'].get('laptop.route',{}).get('value',{})
                 diagnostic=diagnostic_request(request)
@@ -491,7 +545,7 @@ class SkillChat:
                     answer=prof['prefix']+'\n'+answer
                     answer+='\nChưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
                     answer+='\nBước tiếp theo: xác định thiết bị/ứng dụng bị ảnh hưởng và kiểm tra đúng lúc gặp lỗi; chưa có cơ sở chọn thay đổi cấu hình cụ thể.'
-                if reason!='model_answer':
+                if reason not in {'model_answer','direct_route'}:
                     messages={'incomplete_coverage':'Còn phần yêu cầu chưa đủ bằng chứng',
                               'intent_scope_unconfirmed':'Chưa xác định đủ phạm vi câu hỏi',
                               'invalid_model_proposal':'LLM chưa đưa được lựa chọn hợp lệ sau các lượt sửa',
@@ -554,6 +608,7 @@ class SkillChat:
                     'rca_assessments':assessments,'stop_reason':reason,'unavailable_skills':unavailable,'coverage':cov,
                     'recovery_attempts':recovery_attempts,'recovery_runs':recovery_runs,'proposal_rejections':rejections,
                     'model_calls':model_calls,'timings_ms':timings,
+                    'routing':{'fast':self.fast,'direct':direct_plan is not None,**route_meta},
                     'answer_synthesis':synthesis,
                     'answer_kind':'diagnostic' if diagnostic_request(request) else 'lookup',
                     'user_input_required':reason=='needs_clarification' and not bool(runs),
@@ -563,4 +618,6 @@ class SkillChat:
                     'notice':prof['notice']}
 
 
-CHAT=SkillChat(max_elapsed_s=240)
+# Trusted startup env only. Default fast: graph/phrase routing, <=1 LLM call.
+CHAT=SkillChat(max_elapsed_s=240,
+               fast=os.environ.get('GATEWAY_LM_CHAT_FAST','1').lower() not in {'0','off','false','no'})
