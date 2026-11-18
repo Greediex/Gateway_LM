@@ -29,8 +29,11 @@ ACCEPTANCE_INPUTS = (
     "simulation_v1/scenarios.json", "simulation_v1/gold_v1.json",
     "simulation_v1/gold_claims_v1.json", "simulation_composite_v1/scenarios.json",
     "simulation_composite_v1/gold.json",
+    "simulation_b_v1/scenarios.json", "simulation_b_v1/gold_v1.json",
+    "simulation_b_v1/gold_claims_v1.json",
     "../../config/skill_launcher/replay_a.diagnostics.json",
     "../../config/skill_launcher/replay_a_composite.diagnostics.json",
+    "../../config/skill_launcher/replay_b.diagnostics.json",
 )
 ACCEPTANCE_STATES = ("normal", "fault", "missing")
 

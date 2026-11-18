@@ -1,0 +1,226 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-B",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01",
+      "ap-bedroom-02"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "B02-normal",
+      "skill_id": "B02",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.radio_health",
+      "values": {
+        "radio_up": true,
+        "channel": 36,
+        "band": "5GHz"
+      }
+    },
+    {
+      "id": "B02-fault",
+      "skill_id": "B02",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.radio_health",
+      "values": {
+        "radio_up": false,
+        "channel": 36,
+        "band": "5GHz"
+      }
+    },
+    {
+      "id": "B02-missing",
+      "skill_id": "B02",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.radio_health",
+      "values": null
+    },
+    {
+      "id": "B03-normal",
+      "skill_id": "B03",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.ssid_config",
+      "values": {
+        "ssid_present": true,
+        "ssid": "HomeNet"
+      }
+    },
+    {
+      "id": "B03-fault",
+      "skill_id": "B03",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.ssid_config",
+      "values": {
+        "ssid_present": false,
+        "ssid": ""
+      }
+    },
+    {
+      "id": "B03-missing",
+      "skill_id": "B03",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.ssid_config",
+      "values": null
+    },
+    {
+      "id": "B04-normal",
+      "skill_id": "B04",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.wireless_signal",
+      "values": {
+        "rssi_dbm": -58.0,
+        "snr_db": 32.0
+      }
+    },
+    {
+      "id": "B04-fault",
+      "skill_id": "B04",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.wireless_signal",
+      "values": {
+        "rssi_dbm": -82.0,
+        "snr_db": 12.0
+      }
+    },
+    {
+      "id": "B04-missing",
+      "skill_id": "B04",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.wireless_signal",
+      "values": null
+    },
+    {
+      "id": "B05-normal",
+      "skill_id": "B05",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.airtime_usage",
+      "values": {
+        "channel_utilization_pct": 35.0
+      }
+    },
+    {
+      "id": "B05-fault",
+      "skill_id": "B05",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.airtime_usage",
+      "values": {
+        "channel_utilization_pct": 88.0
+      }
+    },
+    {
+      "id": "B05-missing",
+      "skill_id": "B05",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.airtime_usage",
+      "values": null
+    },
+    {
+      "id": "B06-normal",
+      "skill_id": "B06",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.rf_environment",
+      "values": {
+        "channel": 36,
+        "neighbor_bss_count": 2
+      }
+    },
+    {
+      "id": "B06-fault",
+      "skill_id": "B06",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.rf_environment",
+      "values": {
+        "channel": 6,
+        "neighbor_bss_count": 9
+      }
+    },
+    {
+      "id": "B06-missing",
+      "skill_id": "B06",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.rf_environment",
+      "values": null
+    },
+    {
+      "id": "B07-normal",
+      "skill_id": "B07",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.roaming_events",
+      "values": {
+        "roam_count": 2,
+        "last_ap_id": "ap-livingroom-01"
+      }
+    },
+    {
+      "id": "B07-fault",
+      "skill_id": "B07",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.roaming_events",
+      "values": {
+        "roam_count": 17,
+        "last_ap_id": "ap-bedroom-02"
+      }
+    },
+    {
+      "id": "B07-missing",
+      "skill_id": "B07",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.roaming_events",
+      "values": null
+    },
+    {
+      "id": "B08-normal",
+      "skill_id": "B08",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.mesh_backhaul",
+      "values": {
+        "backhaul_up": true,
+        "link_quality_pct": 82.0
+      }
+    },
+    {
+      "id": "B08-fault",
+      "skill_id": "B08",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.mesh_backhaul",
+      "values": {
+        "backhaul_up": false,
+        "link_quality_pct": 0.0
+      }
+    },
+    {
+      "id": "B08-missing",
+      "skill_id": "B08",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.mesh_backhaul",
+      "values": null
+    }
+  ]
+}

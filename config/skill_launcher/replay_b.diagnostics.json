@@ -1,0 +1,422 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-B02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "radio_down_v1",
+        "radio_up_v1"
+      ]
+    },
+    "REPLAY-B03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ssid_missing_v1",
+        "ssid_present_v1"
+      ]
+    },
+    "REPLAY-B04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "rssi_weak_v1",
+        "snr_low_v1",
+        "signal_quality_ok_v1"
+      ]
+    },
+    "REPLAY-B05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "airtime_congested_v1",
+        "airtime_normal_v1"
+      ]
+    },
+    "REPLAY-B06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "channel_crowded_v1",
+        "channel_clear_v1"
+      ]
+    },
+    "REPLAY-B07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "roaming_excessive_v1",
+        "roaming_normal_v1"
+      ]
+    },
+    "REPLAY-B08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "backhaul_down_v1",
+        "backhaul_weak_v1",
+        "backhaul_ok_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "radio_down_v1",
+      "diagnosis": "radio_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.radio_health",
+          "field": "radio_up",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "radio_down",
+      "workflow": "REPLAY-B02-V1"
+    },
+    {
+      "claim_id": "radio_up_v1",
+      "diagnosis": "radio_up_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.radio_health",
+          "field": "radio_up",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "radio_up",
+      "workflow": "REPLAY-B02-V1"
+    },
+    {
+      "claim_id": "ssid_missing_v1",
+      "diagnosis": "ssid_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ssid_config",
+          "field": "ssid_present",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ssid_missing",
+      "workflow": "REPLAY-B03-V1"
+    },
+    {
+      "claim_id": "ssid_present_v1",
+      "diagnosis": "ssid_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ssid_config",
+          "field": "ssid_present",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "ssid_present",
+      "workflow": "REPLAY-B03-V1"
+    },
+    {
+      "claim_id": "rssi_weak_v1",
+      "diagnosis": "rssi_weak_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wireless_signal",
+          "field": "rssi_dbm",
+          "op": "lt",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "rssi_weak",
+      "workflow": "REPLAY-B04-V1"
+    },
+    {
+      "claim_id": "snr_low_v1",
+      "diagnosis": "snr_low_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wireless_signal",
+          "field": "snr_db",
+          "op": "lt",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "snr_low",
+      "workflow": "REPLAY-B04-V1"
+    },
+    {
+      "claim_id": "signal_quality_ok_v1",
+      "diagnosis": "signal_quality_ok_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wireless_signal",
+          "field": "rssi_dbm",
+          "op": "ge",
+          "value": -75
+        },
+        {
+          "port": "expansion.wireless_signal",
+          "field": "snr_db",
+          "op": "ge",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "signal_quality_ok",
+      "workflow": "REPLAY-B04-V1"
+    },
+    {
+      "claim_id": "airtime_congested_v1",
+      "diagnosis": "airtime_congested_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "gt",
+          "value": 70
+        },
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "airtime_congested",
+      "workflow": "REPLAY-B05-V1"
+    },
+    {
+      "claim_id": "airtime_normal_v1",
+      "diagnosis": "airtime_normal_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "le",
+          "value": 70
+        }
+      ],
+      "excludes": [],
+      "message_key": "airtime_normal",
+      "workflow": "REPLAY-B05-V1"
+    },
+    {
+      "claim_id": "channel_crowded_v1",
+      "diagnosis": "channel_crowded_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.rf_environment",
+          "field": "neighbor_bss_count",
+          "op": "gt",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "channel_crowded",
+      "workflow": "REPLAY-B06-V1"
+    },
+    {
+      "claim_id": "channel_clear_v1",
+      "diagnosis": "channel_clear_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.rf_environment",
+          "field": "neighbor_bss_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.rf_environment",
+          "field": "neighbor_bss_count",
+          "op": "le",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "channel_clear",
+      "workflow": "REPLAY-B06-V1"
+    },
+    {
+      "claim_id": "roaming_excessive_v1",
+      "diagnosis": "roaming_excessive_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.roaming_events",
+          "field": "roam_count",
+          "op": "gt",
+          "value": 10
+        }
+      ],
+      "excludes": [],
+      "message_key": "roaming_excessive",
+      "workflow": "REPLAY-B07-V1"
+    },
+    {
+      "claim_id": "roaming_normal_v1",
+      "diagnosis": "roaming_normal_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.roaming_events",
+          "field": "roam_count",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.roaming_events",
+          "field": "roam_count",
+          "op": "le",
+          "value": 10
+        }
+      ],
+      "excludes": [],
+      "message_key": "roaming_normal",
+      "workflow": "REPLAY-B07-V1"
+    },
+    {
+      "claim_id": "backhaul_down_v1",
+      "diagnosis": "backhaul_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "backhaul_up",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "backhaul_down",
+      "workflow": "REPLAY-B08-V1"
+    },
+    {
+      "claim_id": "backhaul_weak_v1",
+      "diagnosis": "backhaul_weak_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "backhaul_up",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "link_quality_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "link_quality_pct",
+          "op": "lt",
+          "value": 50
+        }
+      ],
+      "excludes": [],
+      "message_key": "backhaul_weak",
+      "workflow": "REPLAY-B08-V1"
+    },
+    {
+      "claim_id": "backhaul_ok_v1",
+      "diagnosis": "backhaul_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "backhaul_up",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "link_quality_pct",
+          "op": "ge",
+          "value": 50
+        },
+        {
+          "port": "expansion.mesh_backhaul",
+          "field": "link_quality_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "backhaul_ok",
+      "workflow": "REPLAY-B08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "B02": [
+      "REPLAY-B02-V1"
+    ],
+    "B03": [
+      "REPLAY-B03-V1"
+    ],
+    "B04": [
+      "REPLAY-B04-V1"
+    ],
+    "B05": [
+      "REPLAY-B05-V1"
+    ],
+    "B06": [
+      "REPLAY-B06-V1"
+    ],
+    "B07": [
+      "REPLAY-B07-V1"
+    ],
+    "B08": [
+      "REPLAY-B08-V1"
+    ]
+  }
+}

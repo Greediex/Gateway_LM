@@ -17,12 +17,18 @@ from gateway_pilot.skill_expansion.simulation import (
 )
 from scripts.core_replay_smoke_v2 import smoke
 
-DIAGNOSTICS = Path(__file__).resolve().parents[1] / 'config/skill_launcher/replay_a.diagnostics.json'
+ROOT = Path(__file__).resolve().parents[1]
+DIAGNOSTICS = ROOT / 'config/skill_launcher/replay_a.diagnostics.json'
+# (scenario/gold dir, Claim diagnostics) per direct-Skill batch; composites run separately.
+BATCHES = (
+    (SIM_DIR, DIAGNOSTICS),
+    (ROOT / 'data/skill_expansion_v1/simulation_b_v1', ROOT / 'config/skill_launcher/replay_b.diagnostics.json'),
+)
 
 
-def assess_claims(state: CaseState, skill_id: str) -> dict:
+def assess_claims(state: CaseState, skill_id: str, diagnostics: Path = DIAGNOSTICS) -> dict:
     """Evaluate declared predicates on Core state, never on raw fixture values."""
-    doc = json.loads(DIAGNOSTICS.read_text(encoding='utf-8'))
+    doc = json.loads(diagnostics.read_text(encoding='utf-8'))
     workflows = {wid: doc['workflows'][wid] for wid in doc['skill_workflows'][skill_id]}
     rows = [row for row in doc['claims'] if row['workflow'] in workflows]
     book = ClaimBook(rows, state.registry.ports, workflows)
@@ -48,10 +54,10 @@ def load_claim_gold(scenarios: list[Scenario], sim_dir: Path = SIM_DIR) -> dict[
     return dict(expected)
 
 
-def run_scenario(sc: Scenario) -> dict:
+def run_scenario(sc: Scenario, diagnostics: Path = DIAGNOSTICS) -> dict:
     try:
         result = smoke(sc.function_id, values=sc.values, omit=sc.values is None,
-                       assess=lambda state: assess_claims(state, sc.skill_id))
+                       assess=lambda state: assess_claims(state, sc.skill_id, diagnostics))
     except SkillNotReady as exc:
         return {'id': sc.id, 'outcome': 'NOT_READY', 'verdict': 'UNKNOWN',
                 'claims': {}, 'reason': str(exc)}
@@ -61,11 +67,11 @@ def run_scenario(sc: Scenario) -> dict:
             'core_calls': result['core_calls'], **result['assessment']}
 
 
-def evaluate() -> dict:
-    scenarios = load_scenarios()
-    rows = [run_scenario(sc) for sc in scenarios]
-    gold = load_gold(scenarios)
-    claim_gold = load_claim_gold(scenarios)
+def evaluate(sim_dir: Path = SIM_DIR, diagnostics: Path = DIAGNOSTICS) -> dict:
+    scenarios = load_scenarios(sim_dir)
+    rows = [run_scenario(sc, diagnostics) for sc in scenarios]
+    gold = load_gold(scenarios, sim_dir)
+    claim_gold = load_claim_gold(scenarios, sim_dir)
     for row in rows:
         row['pass'] = row['outcome'] == gold[row['id']] and row['verdict'] == claim_gold[row['id']]
     skill_of = {sc.id: sc.skill_id for sc in scenarios}
@@ -75,17 +81,22 @@ def evaluate() -> dict:
             'passed': sum(r['pass'] for r in rows), 'rows': rows}
 
 
+def evaluate_all() -> dict:
+    """Every direct-Skill batch plus composites, as one report (gold read after each run)."""
+    from scripts.simulate_composites import evaluate as evaluate_composites
+    reports = [evaluate(sim_dir, diagnostics) for sim_dir, diagnostics in BATCHES]
+    reports.append(evaluate_composites())
+    return {'synthetic_only': True, 'total': sum(r['total'] for r in reports),
+            'passed': sum(r['passed'] for r in reports),
+            'rows': [row for r in reports for row in r['rows']]}
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-acceptance', action='store_true',
                         help='write simulation_v1/acceptance.json from this run (WP-A5)')
     args = parser.parse_args()
-    report = evaluate()
-    from scripts.simulate_composites import evaluate as evaluate_composites
-    composites = evaluate_composites()
-    report = {**report, 'total': report['total'] + composites['total'],
-              'passed': report['passed'] + composites['passed'],
-              'rows': report['rows'] + composites['rows']}
+    report = evaluate_all()
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if args.write_acceptance:
         from gateway_pilot.skill_expansion.coverage import ACCEPTANCE, build_acceptance
