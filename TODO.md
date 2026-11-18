@@ -88,6 +88,8 @@ Tiến độ CLAIM hiệu năng (18/11/2026, `v2`): workflow `LAPTOP-PERFORMANCE
 
 Tiến độ WP-S1 (18/11/2026, `v2`): nguyên nhân `semantic_encoder_failed` không phải RAM mà là giới hạn 10 s mỗi request của `LocalOllamaEncoder`: nhúng cả catalog (126 tài liệu) bằng một lệnh gọi trên CPU mất khoảng 27 s (đo 1 tài liệu 0,2 s, 32 tài liệu 6,7 s). Sửa: `encode_many` chia khối 16 tài liệu, kiểm digest quanh mỗi khối, không trả vector từng phần khi một khối lỗi; thêm `ChatContext.warm` và luồng nền khi server khởi động để lượt Qwen đầu không tốn thời gian. Đo live: chỉ mục sẵn sàng sau 7 s, lượt Qwen `catalog_semantic: READY` (trước: ERROR). 6 test mới.
 
+Tiến độ WP-S2/S3 (18/11/2026, `v2`): `python -m scripts.scaffold_batch <A-O> [--out F]` in bảng việc của một batch từ dữ liệu catalog: loại Skill, Function/port khai báo, trường của port và 3 kịch bản mẫu normal/fault/missing với giá trị `TODO:<kiểu>` cố ý không qua được schema (không thể bị nạp nhầm như kịch bản thật); không bao giờ sinh gold. `python -m scripts.suggest_phrases <ID...>` gợi ý cụm từ từ tên Skill (bỏ động từ mở đầu chung chung) và báo cụm nào trùng với cụm đã có của intent/Skill khác; không ghi file. Phát hiện khi viết test: bộ chặn gold ở `simulation.load_scenarios` từ chối trường port hợp lệ `expected_routes` (batch J) và `expected_match` (batch N). Sửa hẹp: tên trường do chính port schema của kịch bản khai báo được phép; mọi khóa giống nhãn khác vẫn bị từ chối, có test. Chưa sửa tương tự cho `composite.py` vì chưa có kịch bản composite dùng các trường này. WP-S4 (rà soát hợp đồng) vẫn chờ người duyệt.
+
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
 ## Kế hoạch chạy đủ 120 Skill (18/11/2026, Claude điều phối)

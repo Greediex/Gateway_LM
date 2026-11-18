@@ -41,22 +41,27 @@ def _read(path: Path) -> Any:
         return json.load(fh)
 
 
-def _no_gold(obj: Any, where: str) -> None:
+def _no_gold(obj: Any, where: str, allowed: frozenset = frozenset()) -> None:
+    """Reject gold-like keys. ``allowed`` holds field names declared by a reviewed
+    port schema (e.g. ``expected_routes``), which are fixture data, not labels."""
     if isinstance(obj, dict):
         for key, value in obj.items():
-            if any(w in str(key).lower() for w in _GOLD_WORDS):
+            if key not in allowed and any(w in str(key).lower() for w in _GOLD_WORDS):
                 raise SimulationError(f"gold-like key in scenarios: {where}.{key}")
-            _no_gold(value, f"{where}.{key}")
+            _no_gold(value, f"{where}.{key}", allowed)
     elif isinstance(obj, list):
         for i, value in enumerate(obj):
-            _no_gold(value, f"{where}[{i}]")
+            _no_gold(value, f"{where}[{i}]", allowed)
 
 
 def load_scenarios(sim_dir: Path = SIM_DIR, ports_dir: Path = PORTS_DIR) -> list[Scenario]:
     doc = _read(sim_dir / "scenarios.json")
     if doc.get("format") != "gateway-lm.skill-simulation/v1" or doc.get("synthetic_only") is not True:
         raise SimulationError("scenarios must be gateway-lm.skill-simulation/v1 and synthetic_only")
-    _no_gold(doc, "scenarios")
+    # Fixture values are scanned per scenario below against their own port schema.
+    _no_gold({**doc, "scenarios": [{k: v for k, v in raw.items() if k != "values"}
+                                   for raw in doc.get("scenarios", []) if isinstance(raw, dict)]},
+             "scenarios")
     rows, seen = [], set()
     for raw in doc.get("scenarios", []):
         if not isinstance(raw, dict) or set(raw) != _SCENARIO_FIELDS:
@@ -74,6 +79,7 @@ def load_scenarios(sim_dir: Path = SIM_DIR, ports_dir: Path = PORTS_DIR) -> list
             raise SimulationError(f"{sc.id}: unknown function/port {sc.function_id}")
         if sc.values is not None:
             schema = _read(port_path)["schema"]
+            _no_gold(sc.values, sc.id, frozenset(schema.get("properties", {})))
             if not Draft202012Validator(schema).is_valid(sc.values):
                 raise SimulationError(f"{sc.id}: values violate port schema")
         rows.append(sc)

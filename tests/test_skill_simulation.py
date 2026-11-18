@@ -51,6 +51,24 @@ class ScenarioLoaderTests(unittest.TestCase):
             with self.assertRaisesRegex(SimulationError, "gold-like"):
                 load_scenarios(c.dir)
 
+    def test_declared_port_field_named_expected_is_fixture_data_not_gold(self):
+        # expansion.vpn_routes declares `expected_routes`; the loader must accept it
+        # in values while still rejecting any undeclared label-like key.
+        with _Copy() as c:
+            c.doc["scenarios"][0].update(function_id="expansion.vpn_routes",
+                                         values={"expected_routes": 4, "missing_routes": 0})
+            c.save()
+            self.assertEqual(load_scenarios(c.dir)[0].values["expected_routes"], 4)
+            c.doc["scenarios"][0]["values"]["verdict"] = "HEALTHY"
+            c.save()
+            with self.assertRaisesRegex(SimulationError, "gold-like"):
+                load_scenarios(c.dir)
+            c.doc["scenarios"][0]["values"] = {"expected_routes": 4, "missing_routes": 0}
+            c.doc["scenarios"][0]["expected_state"] = "ok"
+            c.save()
+            with self.assertRaises(SimulationError):
+                load_scenarios(c.dir)
+
     def test_missing_state_must_have_null_values(self):
         with _Copy() as c:
             c.doc["scenarios"][2]["values"] = {"devices_count": 1, "segment": "x"}
