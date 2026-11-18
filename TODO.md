@@ -108,9 +108,9 @@ Loại trừ vĩnh viễn khỏi "chạy": WRITE thật (N). Skill N chỉ ở s
 
 | Xong | WP | Việc | Nghiệm thu |
 |---|---|---|---|
-| [ ] | **WP-S1 — Sửa embedding** | `embeddinggemma` lỗi `semantic_encoder_failed` khi RAM đầy; đo RAM, giảm `keep_alive`/tải tuần tự, thêm cảnh báo rõ ràng | Hỏi 10 câu không còn `catalog_semantic: ERROR` khi Qwen đang nạp; test fallback giữ nguyên |
-| [ ] | **WP-S2 — Scaffold batch** | Script `scripts/scaffold_batch.py <BATCH>` sinh khung từ `skill_contract_stubs_120.json`: file kịch bản (normal/fault/missing, **chưa có gold**), khung Claim, khung workflow, khung test | Chạy cho batch B ra file hợp lệ; gold luôn do người/Codex điền riêng, không sinh tự động (L1/L5) |
-| [ ] | **WP-S3 — Danh sách cụm từ từ catalog** | Gợi ý cụm từ từ `name_vi`/`goal_description` để giảm việc viết tay; kết quả vẫn qua review, không tự cấp quyền | Câu hỏi thường gặp của batch mới rơi vào route đúng mà không cần Qwen; test không khớp nhầm Skill UNAVAILABLE |
+| [x] | **WP-S1 — Sửa embedding** | `embeddinggemma` lỗi `semantic_encoder_failed` khi RAM đầy; đo RAM, giảm `keep_alive`/tải tuần tự, thêm cảnh báo rõ ràng | Hỏi 10 câu không còn `catalog_semantic: ERROR` khi Qwen đang nạp; test fallback giữ nguyên |
+| [x] | **WP-S2 — Scaffold batch** | Script `scripts/scaffold_batch.py <BATCH>` sinh khung từ `skill_contract_stubs_120.json`: file kịch bản (normal/fault/missing, **chưa có gold**), khung Claim, khung workflow, khung test | Chạy cho batch B ra file hợp lệ; gold luôn do người/Codex điền riêng, không sinh tự động (L1/L5) |
+| [x] | **WP-S3 — Danh sách cụm từ từ catalog** | Gợi ý cụm từ từ `name_vi`/`goal_description` để giảm việc viết tay; kết quả vẫn qua review, không tự cấp quyền | Câu hỏi thường gặp của batch mới rơi vào route đúng mà không cần Qwen; test không khớp nhầm Skill UNAVAILABLE |
 | [ ] | **WP-S4 — Rà soát hợp đồng** | Người duyệt đọc `skill_contract_stubs_120.json` theo batch, đặt `runtime_binding_approved` theo từng Skill đã nghiệm thu mô phỏng | Mức `contract_reviewed` tăng theo batch; mỗi lần là commit riêng của người duyệt |
 
 ### Pha 1 — M1: mô phỏng đủ 120 (mỗi batch = 3 WP theo mẫu WP-A)
