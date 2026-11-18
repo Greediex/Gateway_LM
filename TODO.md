@@ -80,6 +80,8 @@ Tiến độ WP-A4 (18/11/2026, `v2`, chờ review; giữ nguyên checkbox): Cod
 
 Tiến độ WP-A5 (18/11/2026, `v2`, chờ review; giữ nguyên checkbox; Claude làm vì Codex hết hạn mức): `scripts.simulate_skills --write-acceptance` sinh `simulation_v1/acceptance.json` từ kết quả chạy, ghim `inputs_digest` (scenarios, gold, diagnostics). `coverage.py` chỉ tính `simulation_verified` khi Skill có đủ normal/fault/missing đều pass, normal/fault có `core_calls` > 0; digest lệch → CoverageError. Test chạy lại mô phỏng và so khớp file đã commit. Coverage: `simulation_verified` 7 (A02–A08), `router_verified` 0; SK01 (legacy) chưa có kịch bản.
 
+Tiến độ WP-L1 (18/11/2026, laptop Linux, `qwen3:4b`, commit `13afb6e`; số liệu cho FINALIZE-02): 10 câu × 2 chế độ. **Nhanh (mặc định):** 4 câu rõ ràng đi `direct_route`, 0 lượt LLM, MEASURED, tổng 8–15 s; 2 câu mơ hồ 1 lượt LLM, `intent_scope_unconfirmed` PARTIAL, 70–100 s (inference 56–85 s); 2 câu WRITE BLOCKED, 0 LLM, ~2,4 s; 2 câu ngoài phạm vi 1 lượt LLM, `needs_clarification` NEEDS_INPUT, 11–52 s. **`GATEWAY_LM_CHAT_FAST=0`:** câu rõ ràng 2 lượt LLM, 98–107 s, 2/4 `model_timeout` PARTIAL, 2/4 MEASURED nhưng `insufficient_freshness_window`; câu mơ hồ 3 lượt, ~141 s, `model_timeout`; WRITE BLOCKED ~4 s; ngoài phạm vi 2 lượt, 88–98 s, NEEDS_INPUT. **Ở cả 20 lượt `answer_synthesis.used_llm` = false** (renderer hoặc freshness): Qwen chưa lần nào viết câu trả lời cuối. Ghi chú đo: script không đóng session nên lần đầu 2 câu ngoài phạm vi chế độ nhanh bị `session_capacity_limit`; đã đo lại trên server mới.
+
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
 ## 15 batch — danh sách nghiệm thu đủ 120 Skill
