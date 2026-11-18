@@ -49,6 +49,29 @@ Không ép mọi Skill thành một READ call. Skill tổng hợp dùng Function
 
 Mỗi task có negative-path test đúng ranh giới, chạy test fail trước bản sửa khi phù hợp, thực thi qua Core rồi xác minh và commit batch nhỏ lên `v2`. Chỉ cập nhật approval sau review semantic/schema; không cập nhật hash tự động để ép test xanh.
 
+## Giao việc cho Codex (điều phối: Claude)
+
+Codex thực hiện từng gói **WP** dưới đây theo thứ tự; Claude review trước khi đánh dấu. Mỗi gói một nhánh con từ `v2` (`codex/<wp-id>`), commit nhỏ, không sửa `main`.
+
+**Quy tắc chung cho mọi WP** (bắt buộc, cùng khối KHÓA trong `CLAUDE.md`):
+- Không sửa khối `LOCKED-CRITERIA`, `LOCKED_CRITERIA_SHA256`, `data/frozen_manifest.json`, fixture frozen, báo cáo lịch sử.
+- **Không ghi `config/skill_launcher/approvals.json`.** Gói nào cần digest mới thì in digest đề xuất bằng script, để người duyệt ghi.
+- Không xóa/skip/làm yếu test; interface mới phải có negative test (sai target/scope, thiếu quyền, response hỏng, timeout, fact hết hạn).
+- Mọi thực thi đi qua `execute_ready_once`/`GraphRunner.step`; không thêm đường WRITE; gold chỉ ở scorer.
+- Trước khi báo xong: `python -m scripts.check_project`, `python -m unittest discover -s tests`, `python -m scripts.simulate_skills`, `python -m gateway_pilot.skill_expansion.cli coverage`; dán số pass/skip và output coverage vào mô tả.
+
+| Xong | WP | Việc | Đầu ra / nghiệm thu | Ai |
+|---|---|---|---|---|
+| [ ] | **WP-A1 — Claim batch A** | Thêm Claim có version cho A02/A04/A06/A08 (vd. `inventory_empty`, `oui_unknown`, `ip_mac_conflict`, `client_not_associated` + bản HEALTHY), theo định dạng `replay.diagnostics.json`, file mới `config/skill_launcher/replay_a.diagnostics.json`. Mở rộng `scripts/simulate_skills.py` để chấm verdict Claim (FAULT/HEALTHY/UNKNOWN) với gold tách riêng `simulation_v1/gold_claims_v1.json`. | 12 kịch bản: normal→HEALTHY, fault→FAULT, missing→UNKNOWN/NOT_READY; test phủ ngưỡng biên và fact hết hạn. | Codex |
+| [ ] | **WP-A2 — Profile đa domain / đa scope** | Mở rộng `skill_expansion/profiles.py` để một profile replay chứa nhiều domain **cùng scope** (giữ chặn khác scope). Không đổi hành vi profile v1 (test cũ giữ nguyên). | Profile v1 vẫn hợp lệ, digest không đổi; profile mới gộp A02 (gateway) + B02/B03/B05 qua được validator; profile trộn scope bị từ chối. | Codex |
+| [ ] | **WP-A3 — Deployment replay client** | Deployment replay scope `client` cho A04/A06/A08 (identity dependency khai báo đúng như `core_replay_smoke_v2`), fixture lấy từ `simulation_v1` trạng thái normal. Script in digest đề xuất (giống `prepare_replay_chat_approval.py`). | `composition('replay_client')` hoặc tương đương chạy được trong test với approval giả lập; production vẫn tắt tới khi người duyệt ghi digest. | Codex |
+| [ ] | **WP-A4 — Composite A03/A05/A07** | Workflow + Claim cho Skill tổng hợp dựa trên evidence đã có (A03 = inventory+identity, A05 = inventory+vendor, A07 = inventory+history), không tạo READ Function giả. A07 cần chuỗi thời gian ≥2 mẫu mô phỏng. | Mỗi composite có kịch bản normal/fault/missing qua Core; thiếu một nguồn → UNKNOWN, không suy diễn. | Codex |
+| [ ] | **WP-A5 — Coverage ghi nhận nghiệm thu** | Thêm nguồn nghiệm thu có version cho `coverage.py` (vd. `simulation_v1/acceptance.json` sinh từ `simulate_skills`, không nhập tay) để `simulation_verified` tăng **chỉ khi** Skill có đủ normal/fault/missing qua Core + Claim đúng. | `cli coverage` báo đúng số Skill batch A đạt; sửa tay acceptance mà không khớp kết quả chạy → fail. | Codex |
+| [ ] | **WP-L1 — Đo Qwen thật trên laptop** | Chạy Web live (`./web_gateway/start_linux.sh`) với `qwen3:4b`; 10 câu hỏi (rõ ràng/mơ hồ/WRITE/ngoài phạm vi); ghi `routing`, `model_calls`, `timings_ms`, `answer_synthesis`, `case_status`. Thử thêm `GATEWAY_LM_CHAT_FAST=0` để so sánh. | Bảng kết quả (không kèm định danh người dùng/capture mạng) gửi Claude để chỉnh; ghi tóm tắt số liệu vào FINALIZE-02. | Người dùng / Codex trên laptop |
+| [ ] | **WP-R1 — Duyệt digest** | Đọc `replay.diagnostics.json` (+ file của WP-A1/A3 khi có), chạy script in digest, ghi vào `approvals.json` trong commit riêng. | Commit do người duyệt; Claude kiểm lại digest khớp. | **Người duyệt** |
+
+Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
+
 ## 15 batch — danh sách nghiệm thu đủ 120 Skill
 
 Mỗi checkbox bên dưới là **nghiệm thu mô phỏng của cả batch**, không phải đánh dấu catalog tồn tại. Dùng ID gốc (gồm SKxx legacy), không đổi tên thành 120 ID mới. Từng ID phải được ghi kết quả riêng trong coverage được sinh từ kiểm thử.
