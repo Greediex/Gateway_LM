@@ -1,0 +1,149 @@
+"""COV-01: derive the 120-Skill coverage inventory from data and deployments.
+
+Every number is computed from versioned catalog data, Registry v0.1 and the
+approved launcher deployments; nothing is typed in by hand. Reported levels
+are deliberately conservative: being in a deployment is *launchable*, not
+*verified*. ``simulation_verified``/``router_verified`` stay False until an
+acceptance source exists (L1/L2 in CLAUDE.md).
+"""
+from __future__ import annotations
+
+import json
+from collections import Counter
+from dataclasses import asdict, dataclass
+from pathlib import Path
+from typing import Callable, Mapping
+
+from .catalog import DATA_DIR, SkillCatalog
+
+REGISTRY_V01 = DATA_DIR.parents[0] / "registry_v01.json"
+EXPECTED_TOTAL = 120
+EXPECTED_DOMAINS = 15
+EXPECTED_PER_DOMAIN = 8
+SKILL_TYPES = ("direct", "composite", "history", "change", "legacy_v01")
+
+
+class CoverageError(ValueError):
+    """Raised when the inventory does not have the exact 120/15x8 shape."""
+
+
+@dataclass(frozen=True)
+class SkillCoverage:
+    skill_id: str
+    name: str
+    domain: str
+    batch: str
+    skill_type: str
+    catalog: bool
+    contract_reviewed: bool
+    replay_launchable: bool
+    live_launchable: bool
+    simulation_verified: bool
+    router_verified: bool
+    hard_dependencies: tuple[str, ...]
+    proposed_dependencies: tuple[str, ...]
+    gaps: tuple[str, ...]
+
+
+def _load(path: Path):
+    with path.open(encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def classify(*, mapping: Mapping, stub: Mapping, write_set: tuple[str, ...]) -> str:
+    """Skill type from data only: WRITE set > time-series scope > mapping mode."""
+    if write_set:
+        return "change"
+    if "time-series" in str(stub.get("target_scope_draft", "")):
+        return "history"
+    mode = mapping.get("proposal_mode")
+    if mode == "PROPOSED_READ_METADATA":
+        return "direct"
+    if mode == "NO_DIRECT_READ_FUNCTION":
+        return "composite"
+    if mode == "LEGACY_DISCOVER_FROM_REPO":
+        return "legacy_v01"
+    raise CoverageError(f"unknown proposal_mode for {mapping.get('skill_id')}: {mode!r}")
+
+
+def _default_actions(mode: str) -> Mapping:
+    from .deployment import deployment
+    return deployment(mode)[3]
+
+
+def build_coverage(
+    data_dir: Path = DATA_DIR,
+    registry_path: Path = REGISTRY_V01,
+    actions_for: Callable[[str], Mapping] = _default_actions,
+) -> list[SkillCoverage]:
+    catalog = SkillCatalog.load(data_dir)
+    mappings = {m["skill_id"]: m for m in _load(data_dir / "skill_function_mapping_120.json")}
+    stubs = {s["skill_id"]: s for s in _load(data_dir / "skill_contract_stubs_120.json")}
+    writes = {s["skill_id"]: tuple(s.get("write_set", ()))
+              for s in _load(registry_path).get("skills", ())}
+    ids = list(catalog.skills)
+    if len(ids) != EXPECTED_TOTAL or set(ids) != set(mappings) or set(ids) != set(stubs):
+        raise CoverageError("skills, mapping and contract stubs must share exactly 120 IDs")
+    per_domain = Counter(s.domain for s in catalog.skills.values())
+    if len(per_domain) != EXPECTED_DOMAINS or set(per_domain.values()) != {EXPECTED_PER_DOMAIN}:
+        raise CoverageError(f"expected 15 domains x 8 skills, got {dict(per_domain)}")
+
+    def design_ids(mode: str) -> set[str]:
+        return {k for k, v in actions_for(mode).items() if v.get("kind") == "design"}
+
+    replay, live = design_ids("replay"), design_ids("live")
+    unknown = (replay | live) - set(ids)
+    if unknown:
+        raise CoverageError(f"deployment references unknown skills: {sorted(unknown)}")
+
+    hard: dict[str, set[str]] = {i: set() for i in ids}
+    proposed: dict[str, set[str]] = {i: set() for i in ids}
+    for rel in catalog.relations:
+        if rel.type == "depends_on" and rel.source in hard:
+            (hard if rel.status == "EXISTING_V01" else proposed)[rel.source].add(rel.target)
+
+    rows = []
+    for sid in ids:
+        skill, mapping, stub = catalog.skills[sid], mappings[sid], stubs[sid]
+        stype = classify(mapping=mapping, stub=stub, write_set=writes.get(sid, ()))
+        reviewed = bool(stub.get("runtime_binding_approved"))
+        gaps = []
+        if not reviewed:
+            gaps.append("CONTRACT_NOT_REVIEWED")
+        if mapping.get("requires_claim_or_workflow_definition"):
+            gaps.append("NEEDS_CLAIM_OR_WORKFLOW")
+        if stype == "change":
+            gaps.append("WRITE_SANDBOX_ONLY")
+        if sid in replay:
+            gaps.append("REPLAY_PENDING_ACCEPTANCE")
+        elif stype != "change":
+            gaps.append("NO_REPLAY_PROFILE")
+        if sid not in live:
+            gaps.append("NO_LIVE_BINDING")
+        gaps.append("NO_ROUTER_BACKEND")
+        rows.append(SkillCoverage(
+            skill_id=sid, name=skill.name_vi, domain=skill.domain,
+            batch=f"COV-{skill.domain}", skill_type=stype, catalog=True,
+            contract_reviewed=reviewed, replay_launchable=sid in replay,
+            live_launchable=sid in live, simulation_verified=False, router_verified=False,
+            hard_dependencies=tuple(sorted(hard[sid])),
+            proposed_dependencies=tuple(sorted(proposed[sid])), gaps=tuple(gaps)))
+    return rows
+
+
+def summarize(rows: list[SkillCoverage]) -> dict:
+    count = lambda field: sum(1 for r in rows if getattr(r, field))
+    return {
+        "total": len(rows),
+        "denominator_note": "120 catalog Skills only; laptop.* actions are excluded",
+        "by_type": dict(sorted(Counter(r.skill_type for r in rows).items())),
+        "levels": {f: count(f) for f in ("catalog", "contract_reviewed", "replay_launchable",
+                                         "live_launchable", "simulation_verified",
+                                         "router_verified")},
+        "by_batch": {b: n for b, n in sorted(Counter(r.batch for r in rows).items())},
+    }
+
+
+def coverage_report(**kwargs) -> dict:
+    rows = build_coverage(**kwargs)
+    return {"summary": summarize(rows), "skills": [asdict(r) for r in rows]}

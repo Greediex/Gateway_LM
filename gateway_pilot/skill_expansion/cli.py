@@ -13,6 +13,8 @@ def main(argv: list[str] | None = None) -> int:
     commands=p.add_subparsers(dest='cmd',required=True)
     commands.add_parser('validate',help='Validate catalog + dependency acyclicity')
     commands.add_parser('stats',help='Summarize design catalog')
+    cv=commands.add_parser('coverage',help='COV-01 inventory derived from data/deployments')
+    cv.add_argument('--output',type=Path,help='Save full per-Skill JSON report')
     s=commands.add_parser('search',help='BM25 + weighted graph retrieval preview')
     s.add_argument('query');s.add_argument('--top',type=int,default=10)
     s.add_argument('--include-proposed',action='store_true',help='Design preview only; NOT runtime')
@@ -33,6 +35,13 @@ def main(argv: list[str] | None = None) -> int:
             output={'valid':True, **catalog.summary()}
         elif args.cmd == 'stats':
             output=catalog.summary()
+        elif args.cmd == 'coverage':
+            from .coverage import coverage_report
+            report=coverage_report(data_dir=args.data_dir) if args.data_dir else coverage_report()
+            if args.output:
+                args.output.parent.mkdir(parents=True,exist_ok=True)
+                args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+            output=report['summary']
         elif args.cmd == 'search':
             hits=SkillRetriever(catalog).search(args.query,limit=args.top,
                 include_proposed=args.include_proposed,graph_weight=args.graph_weight)
