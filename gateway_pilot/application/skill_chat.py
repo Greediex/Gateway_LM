@@ -252,7 +252,7 @@ class SkillChat:
             try:
                 if self.model_factory is local_model:
                     model=timed('inference',self.model_factory,
-                                timeout=min(90 if os.environ.get('GATEWAY_LM_CHAT_MODEL','qwen3:4b')=='qwen3:4b' else 60,max(.001,inference_budget())))
+                                timeout=min(240 if os.environ.get('GATEWAY_LM_CHAT_MODEL','qwen3:4b')=='qwen3:4b' else 60,max(.001,inference_budget())))
                 else:
                     model=timed('inference',self.model_factory)
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
@@ -531,4 +531,4 @@ class SkillChat:
                     'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'}
 
 
-CHAT=SkillChat(max_elapsed_s=180)
+CHAT=SkillChat(max_elapsed_s=240)

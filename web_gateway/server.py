@@ -196,15 +196,18 @@ def analyze(payload: dict):
 
     warnings = []
     advisor = None
+    advisor_timeout = None
     if payload.get("with_llm") is True:
         from gateway_pilot.workflow_advisor import OllamaProbeAdvisor
-        model = payload.get("model", "qwen3:1.7b")
+        model = payload.get("model", os.environ.get("GATEWAY_LM_CHAT_MODEL", "qwen3:4b"))
         if not isinstance(model, str) or not 1 <= len(model) <= 80 or not all(
             c.isalnum() or c in "-._:/" for c in model
         ):
             raise ValueError("Tên model không hợp lệ")
+        advisor_timeout = 240 if model == "qwen3:4b" else 25
         try:
-            advisor = OllamaProbeAdvisor(model, endpoint="http://127.0.0.1:11434", timeout=25)
+            advisor = OllamaProbeAdvisor(model, endpoint="http://127.0.0.1:11434",
+                                         timeout=advisor_timeout)
         except (OSError, ConnectionError, ValueError, RuntimeError, KeyError) as exc:
             warnings.append(f"Ollama advisor không khả dụng ({type(exc).__name__}); dùng thứ tự mặc định.")
 
@@ -290,6 +293,7 @@ def analyze(payload: dict):
         "fixture": fixture_label,
         "method": method, "policy": policy, "llm_advisor_requested": payload.get("with_llm", False),
         "llm_advisor_ready": advisor is not None,
+        "llm_limits": {"rpc_timeout_s": advisor_timeout} if advisor is not None else None,
         "llm_advisor_used": bool(graph.get("advice")) or result.get("intake", {}).get("source") == "llm",
         "calls": graph.get("calls", 0), "repairs": graph.get("repairs", 0),
         "timeline": timeline, "stages": graph.get("stages", []),

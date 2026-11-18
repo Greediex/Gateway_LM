@@ -36,7 +36,7 @@ class OllamaGoalModel:
         if (not isinstance(model, str)
                 or re.fullmatch(r"[A-Za-z0-9_.:/-]{1,100}", model) is None):
             raise ValueError("goal_ollama_invalid_model")
-        if (type(timeout) not in (int, float) or not 0 < timeout <= (90 if model=="qwen3:4b" else 60)
+        if (type(timeout) not in (int, float) or not 0 < timeout <= (240 if model=="qwen3:4b" else 60)
                 or type(max_parameters) is not int or max_parameters <= 0):
             raise ValueError("goal_ollama_invalid_limits")
         self.model, self.endpoint, self.timeout = model, endpoint.rstrip("/"), timeout

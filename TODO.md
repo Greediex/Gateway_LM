@@ -41,6 +41,10 @@ Kiểm chứng bản sửa: 852 tests, 847 pass và 5 Windows-only skips; projec
 
 - [ ] **FINALIZE-02:** Hoàn tất lượt quyết định/diễn đạt bằng Qwen3:4b trước khi evidence hết hạn trên CPU laptop. Chưa nghiệm thu: prompt sau đo giảm từ 2.285 xuống 888 token nhưng câu hỏi “mạng nhà tôi có vấn đề gì không và cần giải quyết thế nào” vẫn `model_timeout`, `PARTIAL`, 7 READ, 3 model calls, 133,22s; 6 evidence IDs còn hiệu lực, `answer_synthesis.used_llm=false` (renderer). Ollama sẵn sàng và model đã chọn Skill; không ghi thành LLM tự trả lời hoàn tất. Không tăng TTL để che độ trễ.
 
+- [x] **SIM-01:** Dùng lại replay/ReAct có fixture, hỗ trợ Qwen3:4b với 240s/RPC và live turn 240s (TTL thật không tăng). Kiểm model size/giới hạn timeout, chạy Qwen thật, phân biệt advisor chọn bước với LLM viết kết luận; ghi rõ 74 tình huống/3 Skill replay, không coi 120 Skill đã chạy.
+
+Nghiệm thu SIM-01: Qwen3:4b thật, Replay/ReAct `WEB-CLIENT-DNS-1`: intake và lựa chọn `dns.probe` được chấp nhận, 10 Function calls, 3 evidence IDs, verdict synthetic `client_dns_failure`; không có warning. Kết luận do Core dựng, không coi là natural-language synthesis đã xong. Local 855 tests (850 pass, 5 Windows-only skips), hygiene/DOM đạt; TTL/cache/session regression vẫn đạt. FINALIZE-02 vẫn mở cho live và LLM viết kết luận.
+
 ## P0 — Hoàn thiện luồng chat trên laptop
 
 - [ ] **CHAT-01 — Bao phủ đủ ý định người dùng.** Kiểm tra câu hỏi đơn, nhiều yêu cầu, câu hỏi tiếp nối và yêu cầu có phần chưa hỗ trợ. LLM phải phối hợp thêm Skill/evidence khi còn thiếu; hoàn tất một Skill không được coi là hoàn tất cả câu hỏi. **Nghiệm thu:** trả lời đúng trọng tâm từng phần, hoặc chỉ rõ phần chưa xác minh; giữ khả năng dùng facts còn hạn từ lượt trước.

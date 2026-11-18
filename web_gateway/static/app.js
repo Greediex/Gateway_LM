@@ -213,7 +213,7 @@ async function send(override) {
       fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,
       with_skill_context:!$('skillToggle').disabled&&$('skillToggle').checked,
       with_guide:!$('guideToggle').disabled&&$('guideToggle').checked,
-      with_llm:!$('llmToggle').disabled&&$('llmToggle').checked,model:$('modelName').value.trim()||'qwen3:1.7b'};
+      with_llm:!$('llmToggle').disabled&&$('llmToggle').checked,model:$('modelName').value.trim()||'qwen3:4b'};
     let response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     let data=await response.json();
     if(response.status===410 && payload.session_id && payload.with_llm && payload.source_mode==='live'){

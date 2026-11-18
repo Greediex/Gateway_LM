@@ -1,6 +1,7 @@
 """GATEWAY_DESIGN: optional SK10 probe/turn advisor on a local Ollama endpoint."""
 
 import json
+import math
 from urllib.parse import urlparse
 
 from .run import http_json
@@ -21,13 +22,14 @@ class OllamaProbeAdvisor:
         url = urlparse(endpoint)
         if url.scheme not in ("http", "https") or url.hostname not in ("localhost", "127.0.0.1", "::1"):
             raise ValueError("Ollama must use a loopback HTTP endpoint")
-        if not 0 < timeout <= 60:
-            raise ValueError("Advisor timeout must be in (0, 60] seconds")
+        if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= (240 if model=="qwen3:4b" else 60):
+            raise ValueError("Advisor timeout exceeds the bounded local model limit")
         self.model, self.endpoint, self.timeout = model, endpoint, timeout
         show = http_json(endpoint, "show", {"model": model}, timeout=timeout)
         count = show.get("model_info", {}).get("general.parameter_count")
-        if type(count) is not int or not 0 < count < 3_000_000_000:
-            raise ValueError("Ollama model must have a verified parameter count below 3B")
+        limit = 4_500_000_000 if model == "qwen3:4b" else 2_999_999_999
+        if type(count) is not int or not 0 < count <= limit:
+            raise ValueError("Ollama model exceeds the verified local parameter limit")
         self.parameter_count = count
 
     def __call__(self, request, facts, candidates):

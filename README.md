@@ -47,7 +47,7 @@ Chưa có required evidence thì hiện INCOMPLETE; chưa có backend thì UNAVA
 
 Chat Linux hiện mặc định bật **LLM → catalog 120 Skill → SkillLauncher/ReadSession → GraphRunner/Verifier → RCAAgent → LLM**. Catalog được xếp hạng bằng BM25 + graph diffusion hiện có, rồi model local tự chọn và phối hợp ID Skill được hỗ trợ; Core giữ quyền chạy và bằng chứng. RCA đánh giá trong cùng phiên, không tạo Runner khác. Hệ thống kiểm tra các phần được yêu cầu trong câu hỏi; hoàn tất một Skill không đồng nghĩa trả lời đủ cả câu. Khi thiếu dữ liệu, model có thể chọn tiếp trong budget; dữ liệu phụ thuộc giữ trong Trace, câu trả lời theo đúng phạm vi được hỏi. [Chi tiết và giới hạn](docs/LLM_SKILL_CHAT.md).
 
-Web laptop dùng Qwen 4B với tối đa 4 vòng lựa chọn, deadline 180 giây và tối đa 90 giây/RPC (model khác giữ giới hạn 60 giây). Constructor test/CLI vẫn có thể dùng budget nhỏ hơn. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
+Web laptop dùng Qwen 4B với tối đa 4 vòng lựa chọn, deadline 240 giây và tối đa 240 giây/RPC (model khác giữ giới hạn 60 giây). Timeout thực tế của live còn bị chặn bởi TTL evidence và hạn phiên; tăng RPC không tăng TTL. Constructor test/CLI vẫn có thể dùng budget nhỏ hơn. Evidence hết hạn được đọc lại tối đa một đợt qua cùng Core/session/budget; không tăng TTL. Nếu vẫn thiếu dữ liệu, hệ thống trả lời phần đã xác minh và chỉ rõ phần còn thiếu. Phiên/model đang bận trả HTTP 409/429; không xếp hàng suy luận vô hạn. Tra catalog không làm các Skill chưa có backend trở thành chạy được.
 
 Câu hỏi như “kiểm tra SSID” chỉ hiển thị SSID. Câu hỏi chẩn đoán có nhận định và giới hạn riêng; “Đã có số đo” không đồng nghĩa đã chẩn đoán hay khắc phục. Cùng model local có thể chọn field và cách diễn đạt bằng placeholder trong tối đa hai lượt bổ sung, với hậu kiểm evidence sau suy luận; lỗi/timeout/dữ liệu cũ dùng fallback từ facts còn hạn. Chi tiết kỹ thuật nằm trong “Chi tiết phép đo” và Trace.
 
@@ -92,6 +92,12 @@ py -3.12 -m venv .venv-graph
 ```
 
 Windows giữ route/ping/DNS cũ; dashboard Wi-Fi FND-07 dành cho Linux, không quảng bá phép đo chưa có trên Windows. [Hướng dẫn Web/API](docs/WEB_UI.md).
+
+## Thử mô phỏng với Qwen3:4b
+
+Chọn **Replay mô phỏng** → chọn tình huống → **ReAct** → bật **LLM suy luận**, model `qwen3:4b`, rồi gửi câu hỏi. ReAct cần môi trường đã cài `requirements-react.txt`; Dynamic vẫn chạy được nhưng chỉ hỏi LLM khi có nhiều phép thử đủ điều kiện. Replay advisor chờ tối đa 240 giây/RPC; model khác giữ giới hạn cũ. LLM chọn intent/bước chẩn đoán, Core kiểm chứng fixture và dựng kết luận; chế độ này chưa dùng LLM viết văn bản kết luận tự do. UI/Trace gắn nhãn mô phỏng, không phản ánh mạng nhà hiện tại.
+
+Có 74 tình huống workflow replay; profile Skill replay riêng hiện có B02/B03/B05. Bộ smoke 72 READ contract chỉ kiểm synthetic execution, không tương đương 120 Skill chạy end-to-end. Không tự sinh số đo cho Skill thiếu fixture và không bỏ xác minh evidence để chờ LLM.
 
 ## Catalog mở rộng 120 Skill (opt-in)
 
