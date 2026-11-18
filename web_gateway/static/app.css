@@ -35,3 +35,7 @@
 @media(max-width:720px){.skill-launcher{padding:13px}.skill-filters{grid-template-columns:1fr}.skill-run-bar{align-items:stretch;flex-direction:column;gap:0}.skill-run-bar button{margin-bottom:12px}.skill-launcher h2{font-size:15px}}
 
 .answer-details{margin-top:12px}.answer-details>summary{cursor:pointer;color:#8bdaf7;font-size:11px}.answer-details .meta-chip{display:inline-block;margin:7px 5px 0 0}.answer-details .inspector-note{margin-top:10px}
+
+/* Chat-only layout: settings, Skill launcher and trace panels are hidden; chat stays. */
+.shell{grid-template-columns:minmax(0,1fr)!important}
+.sidebar,.inspector,#skillLauncher,#networkOverview,.trace-open-btn,#historyBtn,.mobile-menu,.suggestion-title,#suggestions,#liveSuggestions,.intro-caption{display:none!important}
