@@ -1,0 +1,225 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-E",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "E02-normal",
+      "skill_id": "E02",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.wan_link",
+      "values": {
+        "link_up": true,
+        "uptime_seconds": 86400
+      }
+    },
+    {
+      "id": "E02-fault",
+      "skill_id": "E02",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.wan_link",
+      "values": {
+        "link_up": false,
+        "uptime_seconds": 0
+      }
+    },
+    {
+      "id": "E02-missing",
+      "skill_id": "E02",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.wan_link",
+      "values": null
+    },
+    {
+      "id": "E03-normal",
+      "skill_id": "E03",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.wan_routes",
+      "values": {
+        "default_route": true,
+        "default_route_count": 1
+      }
+    },
+    {
+      "id": "E03-fault",
+      "skill_id": "E03",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.wan_routes",
+      "values": {
+        "default_route": false,
+        "default_route_count": 0
+      }
+    },
+    {
+      "id": "E03-missing",
+      "skill_id": "E03",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.wan_routes",
+      "values": null
+    },
+    {
+      "id": "E04-normal",
+      "skill_id": "E04",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.wan_access",
+      "values": {
+        "protocol": "pppoe",
+        "session_connected": true
+      }
+    },
+    {
+      "id": "E04-fault",
+      "skill_id": "E04",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.wan_access",
+      "values": {
+        "protocol": "pppoe",
+        "session_connected": false
+      }
+    },
+    {
+      "id": "E04-missing",
+      "skill_id": "E04",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.wan_access",
+      "values": null
+    },
+    {
+      "id": "E05-normal",
+      "skill_id": "E05",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.nat_state",
+      "values": {
+        "nat_enabled": true,
+        "cgnat_suspected": false
+      }
+    },
+    {
+      "id": "E05-fault",
+      "skill_id": "E05",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.nat_state",
+      "values": {
+        "nat_enabled": true,
+        "cgnat_suspected": true
+      }
+    },
+    {
+      "id": "E05-missing",
+      "skill_id": "E05",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.nat_state",
+      "values": null
+    },
+    {
+      "id": "E06-normal",
+      "skill_id": "E06",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.multiwan_state",
+      "values": {
+        "uplinks": 2,
+        "healthy_uplinks": 2
+      }
+    },
+    {
+      "id": "E06-fault",
+      "skill_id": "E06",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.multiwan_state",
+      "values": {
+        "uplinks": 2,
+        "healthy_uplinks": 0
+      }
+    },
+    {
+      "id": "E06-missing",
+      "skill_id": "E06",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.multiwan_state",
+      "values": null
+    },
+    {
+      "id": "E07-normal",
+      "skill_id": "E07",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.wan_events",
+      "values": {
+        "disconnect_events": 1,
+        "observation_window_s": 86400
+      }
+    },
+    {
+      "id": "E07-fault",
+      "skill_id": "E07",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.wan_events",
+      "values": {
+        "disconnect_events": 9,
+        "observation_window_s": 3600
+      }
+    },
+    {
+      "id": "E07-missing",
+      "skill_id": "E07",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.wan_events",
+      "values": null
+    },
+    {
+      "id": "E08-normal",
+      "skill_id": "E08",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.upstream_probe",
+      "values": {
+        "reachable": true,
+        "loss_pct": 0.0
+      }
+    },
+    {
+      "id": "E08-fault",
+      "skill_id": "E08",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.upstream_probe",
+      "values": {
+        "reachable": false,
+        "loss_pct": 100.0
+      }
+    },
+    {
+      "id": "E08-missing",
+      "skill_id": "E08",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.upstream_probe",
+      "values": null
+    }
+  ]
+}

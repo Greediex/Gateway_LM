@@ -30,6 +30,7 @@ DIRECT_BATCHES = {
     "A": ("simulation_v1", "replay_a"),
     "B": ("simulation_b_v1", "replay_b"),
     "D": ("simulation_d_v1", "replay_d"),
+    "E": ("simulation_e_v1", "replay_e"),
     "F": ("simulation_f_v1", "replay_f"),
 }
 # Every file that decides a simulated verdict; editing one invalidates acceptance.

@@ -1,0 +1,478 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-E02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "wan_link_down_v1",
+        "wan_link_stable_v1"
+      ]
+    },
+    "REPLAY-E03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "no_default_route_v1",
+        "single_default_route_v1"
+      ]
+    },
+    "REPLAY-E04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "wan_session_down_v1",
+        "wan_session_up_v1"
+      ]
+    },
+    "REPLAY-E05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "nat_disabled_v1",
+        "cgnat_suspected_v1",
+        "nat_normal_v1"
+      ]
+    },
+    "REPLAY-E06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "no_healthy_uplink_v1",
+        "uplink_healthy_v1"
+      ]
+    },
+    "REPLAY-E07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "wan_flapping_v1",
+        "wan_stable_window_v1"
+      ]
+    },
+    "REPLAY-E08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "upstream_unreachable_v1",
+        "upstream_loss_v1",
+        "upstream_ok_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "wan_link_down_v1",
+      "diagnosis": "wan_link_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wan_link",
+          "field": "link_up",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.wan_link",
+          "field": "uptime_seconds",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_link_down",
+      "workflow": "REPLAY-E02-V1"
+    },
+    {
+      "claim_id": "wan_link_stable_v1",
+      "diagnosis": "wan_link_stable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wan_link",
+          "field": "link_up",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.wan_link",
+          "field": "uptime_seconds",
+          "op": "ge",
+          "value": 60
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_link_stable",
+      "workflow": "REPLAY-E02-V1"
+    },
+    {
+      "claim_id": "no_default_route_v1",
+      "diagnosis": "no_default_route_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wan_routes",
+          "field": "default_route",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.wan_routes",
+          "field": "default_route_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_default_route",
+      "workflow": "REPLAY-E03-V1"
+    },
+    {
+      "claim_id": "single_default_route_v1",
+      "diagnosis": "single_default_route_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wan_routes",
+          "field": "default_route",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.wan_routes",
+          "field": "default_route_count",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "single_default_route",
+      "workflow": "REPLAY-E03-V1"
+    },
+    {
+      "claim_id": "wan_session_down_v1",
+      "diagnosis": "wan_session_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wan_access",
+          "field": "protocol",
+          "op": "in",
+          "value": [
+            "pppoe",
+            "dhcp",
+            "static"
+          ]
+        },
+        {
+          "port": "expansion.wan_access",
+          "field": "session_connected",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_session_down",
+      "workflow": "REPLAY-E04-V1"
+    },
+    {
+      "claim_id": "wan_session_up_v1",
+      "diagnosis": "wan_session_up_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wan_access",
+          "field": "protocol",
+          "op": "in",
+          "value": [
+            "pppoe",
+            "dhcp",
+            "static"
+          ]
+        },
+        {
+          "port": "expansion.wan_access",
+          "field": "session_connected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_session_up",
+      "workflow": "REPLAY-E04-V1"
+    },
+    {
+      "claim_id": "nat_disabled_v1",
+      "diagnosis": "nat_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.nat_state",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "nat_disabled",
+      "workflow": "REPLAY-E05-V1"
+    },
+    {
+      "claim_id": "cgnat_suspected_v1",
+      "diagnosis": "cgnat_suspected_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.nat_state",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.nat_state",
+          "field": "cgnat_suspected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "cgnat_suspected",
+      "workflow": "REPLAY-E05-V1"
+    },
+    {
+      "claim_id": "nat_normal_v1",
+      "diagnosis": "nat_normal_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.nat_state",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.nat_state",
+          "field": "cgnat_suspected",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "nat_normal",
+      "workflow": "REPLAY-E05-V1"
+    },
+    {
+      "claim_id": "no_healthy_uplink_v1",
+      "diagnosis": "no_healthy_uplink_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.multiwan_state",
+          "field": "uplinks",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.multiwan_state",
+          "field": "healthy_uplinks",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_healthy_uplink",
+      "workflow": "REPLAY-E06-V1"
+    },
+    {
+      "claim_id": "uplink_healthy_v1",
+      "diagnosis": "uplink_healthy_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.multiwan_state",
+          "field": "uplinks",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.multiwan_state",
+          "field": "healthy_uplinks",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "uplink_healthy",
+      "workflow": "REPLAY-E06-V1"
+    },
+    {
+      "claim_id": "wan_flapping_v1",
+      "diagnosis": "wan_flapping_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wan_events",
+          "field": "disconnect_events",
+          "op": "gt",
+          "value": 3
+        },
+        {
+          "port": "expansion.wan_events",
+          "field": "observation_window_s",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_flapping",
+      "workflow": "REPLAY-E07-V1"
+    },
+    {
+      "claim_id": "wan_stable_window_v1",
+      "diagnosis": "wan_stable_window_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wan_events",
+          "field": "disconnect_events",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.wan_events",
+          "field": "disconnect_events",
+          "op": "le",
+          "value": 3
+        },
+        {
+          "port": "expansion.wan_events",
+          "field": "observation_window_s",
+          "op": "ge",
+          "value": 3600
+        }
+      ],
+      "excludes": [],
+      "message_key": "wan_stable_window",
+      "workflow": "REPLAY-E07-V1"
+    },
+    {
+      "claim_id": "upstream_unreachable_v1",
+      "diagnosis": "upstream_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.upstream_probe",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "upstream_unreachable",
+      "workflow": "REPLAY-E08-V1"
+    },
+    {
+      "claim_id": "upstream_loss_v1",
+      "diagnosis": "upstream_loss_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.upstream_probe",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.upstream_probe",
+          "field": "loss_pct",
+          "op": "gt",
+          "value": 5
+        },
+        {
+          "port": "expansion.upstream_probe",
+          "field": "loss_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "upstream_loss",
+      "workflow": "REPLAY-E08-V1"
+    },
+    {
+      "claim_id": "upstream_ok_v1",
+      "diagnosis": "upstream_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.upstream_probe",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.upstream_probe",
+          "field": "loss_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.upstream_probe",
+          "field": "loss_pct",
+          "op": "le",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "upstream_ok",
+      "workflow": "REPLAY-E08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "E02": [
+      "REPLAY-E02-V1"
+    ],
+    "E03": [
+      "REPLAY-E03-V1"
+    ],
+    "E04": [
+      "REPLAY-E04-V1"
+    ],
+    "E05": [
+      "REPLAY-E05-V1"
+    ],
+    "E06": [
+      "REPLAY-E06-V1"
+    ],
+    "E07": [
+      "REPLAY-E07-V1"
+    ],
+    "E08": [
+      "REPLAY-E08-V1"
+    ]
+  }
+}
