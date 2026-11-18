@@ -7,10 +7,14 @@ Requires --synthetic-only acknowledgement. Does not modify source checkout.
 from __future__ import annotations
 import argparse, copy, hashlib, json, tempfile
 from pathlib import Path
+from typing import Callable
+
+from gateway_pilot.graph_v3.state import CaseState
 
 ROOT=Path(__file__).resolve().parents[1]
 
-def smoke(fid: str, *, values: dict | None = None, omit: bool = False):
+def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
+          assess: Callable[[CaseState], dict] | None = None):
     """``values`` replaces the default fixture; ``omit`` drops it (missing data)."""
     from gateway_pilot.command_catalog.loader import load_catalog
     from gateway_pilot.command_catalog.validator import validate_catalog
@@ -90,7 +94,8 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False):
         fact=runner.state.fact(port_id)
         if fact is None:
             raise AssertionError('shared Core did not admit verified synthetic fact')
-        return {'synthetic_only':True,'function':fid,'skill':slug,
+        assessment = assess(runner.state) if assess is not None else None
+        return {**({'assessment': assessment} if assess is not None else {}), 'synthetic_only':True,'function':fid,'skill':slug,
                 'ports':list(function['outputs']),'verified_fact_present':True,
                 'fact_value':copy.deepcopy(fact['value']),'evidence_id':fact['id'],
                 'used_existing_graph_runner':True,'test_target':target.target_id,

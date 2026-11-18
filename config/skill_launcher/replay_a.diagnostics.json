@@ -1,0 +1,218 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-A02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "inventory_empty_v1",
+        "inventory_present_v1"
+      ]
+    },
+    "REPLAY-A04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "oui_unknown_v1",
+        "oui_known_v1"
+      ]
+    },
+    "REPLAY-A06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "ip_mac_conflict_v1",
+        "identity_consistent_v1",
+        "hostname_conflict_v1"
+      ]
+    },
+    "REPLAY-A08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "client",
+      "claims": [
+        "client_not_associated_v1",
+        "client_associated_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "inventory_empty_v1",
+      "diagnosis": "inventory_empty_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.device_inventory",
+          "field": "devices_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "inventory_empty",
+      "workflow": "REPLAY-A02-V1"
+    },
+    {
+      "claim_id": "inventory_present_v1",
+      "diagnosis": "inventory_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.device_inventory",
+          "field": "devices_count",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "inventory_present",
+      "workflow": "REPLAY-A02-V1"
+    },
+    {
+      "claim_id": "oui_unknown_v1",
+      "diagnosis": "oui_unknown_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.device_vendor",
+          "field": "oui_known",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "oui_unknown",
+      "workflow": "REPLAY-A04-V1"
+    },
+    {
+      "claim_id": "oui_known_v1",
+      "diagnosis": "oui_known_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.device_vendor",
+          "field": "oui_known",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "oui_known",
+      "workflow": "REPLAY-A04-V1"
+    },
+    {
+      "claim_id": "ip_mac_conflict_v1",
+      "diagnosis": "ip_mac_conflict_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.identity_consistency",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ip_mac_conflict",
+      "workflow": "REPLAY-A06-V1"
+    },
+    {
+      "claim_id": "identity_consistent_v1",
+      "diagnosis": "identity_consistent_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.identity_consistency",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.identity_consistency",
+          "field": "hostname_conflict",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "identity_consistent",
+      "workflow": "REPLAY-A06-V1"
+    },
+    {
+      "claim_id": "hostname_conflict_v1",
+      "diagnosis": "hostname_conflict_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.identity_consistency",
+          "field": "hostname_conflict",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "hostname_conflict",
+      "workflow": "REPLAY-A06-V1"
+    },
+    {
+      "claim_id": "client_not_associated_v1",
+      "diagnosis": "client_not_associated_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.client_association",
+          "field": "associated",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "client_not_associated",
+      "workflow": "REPLAY-A08-V1"
+    },
+    {
+      "claim_id": "client_associated_v1",
+      "diagnosis": "client_associated_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.client_association",
+          "field": "associated",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "client_associated",
+      "workflow": "REPLAY-A08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "A02": [
+      "REPLAY-A02-V1"
+    ],
+    "A04": [
+      "REPLAY-A04-V1"
+    ],
+    "A06": [
+      "REPLAY-A06-V1"
+    ],
+    "A08": [
+      "REPLAY-A08-V1"
+    ]
+  }
+}
