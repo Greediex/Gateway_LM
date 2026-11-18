@@ -68,12 +68,18 @@ def evaluate() -> dict:
     claim_gold = load_claim_gold(scenarios)
     for row in rows:
         row['pass'] = row['outcome'] == gold[row['id']] and row['verdict'] == claim_gold[row['id']]
+    skill_of = {sc.id: sc.skill_id for sc in scenarios}
+    for row in rows:
+        row['skill_id'] = skill_of[row['id']]
     return {'synthetic_only': True, 'total': len(rows),
             'passed': sum(r['pass'] for r in rows), 'rows': rows}
 
 
 if __name__ == '__main__':
-    argparse.ArgumentParser(description=__doc__).parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--write-acceptance', action='store_true',
+                        help='write simulation_v1/acceptance.json from this run (WP-A5)')
+    args = parser.parse_args()
     report = evaluate()
     from scripts.simulate_composites import evaluate as evaluate_composites
     composites = evaluate_composites()
@@ -81,4 +87,8 @@ if __name__ == '__main__':
               'passed': report['passed'] + composites['passed'],
               'rows': report['rows'] + composites['rows']}
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    if args.write_acceptance:
+        from gateway_pilot.skill_expansion.coverage import ACCEPTANCE, build_acceptance
+        ACCEPTANCE.write_text(json.dumps(build_acceptance(report['rows']), indent=2) + '\n',
+                              encoding='utf-8')
     raise SystemExit(0 if report['passed'] == report['total'] else 1)

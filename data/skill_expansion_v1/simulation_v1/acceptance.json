@@ -1,0 +1,127 @@
+{
+  "format": "gateway-lm.skill-acceptance/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "inputs_digest": "e35e969781900cdcfa24f4de512df02319247e423f61b14df3d079de92031499",
+  "skills": {
+    "A02": {
+      "normal": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A03": {
+      "normal": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A04": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A05": {
+      "normal": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A06": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A07": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "A08": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    }
+  }
+}

@@ -3,11 +3,13 @@
 Every number is computed from versioned catalog data, Registry v0.1 and the
 approved launcher deployments; nothing is typed in by hand. Reported levels
 are deliberately conservative: being in a deployment is *launchable*, not
-*verified*. ``simulation_verified``/``router_verified`` stay False until an
-acceptance source exists (L1/L2 in CLAUDE.md).
+*verified*. ``simulation_verified`` comes only from ``acceptance.json``, which
+``scripts.simulate_skills --write-acceptance`` generates from a real run and
+pins to its input files; ``router_verified`` stays False (L1/L2 in CLAUDE.md).
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter
 from dataclasses import asdict, dataclass
@@ -21,6 +23,16 @@ EXPECTED_TOTAL = 120
 EXPECTED_DOMAINS = 15
 EXPECTED_PER_DOMAIN = 8
 SKILL_TYPES = ("direct", "composite", "history", "change", "legacy_v01")
+ACCEPTANCE = DATA_DIR / "simulation_v1" / "acceptance.json"
+# Every file that decides a simulated verdict; editing one invalidates acceptance.
+ACCEPTANCE_INPUTS = (
+    "simulation_v1/scenarios.json", "simulation_v1/gold_v1.json",
+    "simulation_v1/gold_claims_v1.json", "simulation_composite_v1/scenarios.json",
+    "simulation_composite_v1/gold.json",
+    "../../config/skill_launcher/replay_a.diagnostics.json",
+    "../../config/skill_launcher/replay_a_composite.diagnostics.json",
+)
+ACCEPTANCE_STATES = ("normal", "fault", "missing")
 
 
 class CoverageError(ValueError):
@@ -66,6 +78,43 @@ def classify(*, mapping: Mapping, stub: Mapping, write_set: tuple[str, ...]) -> 
     raise CoverageError(f"unknown proposal_mode for {mapping.get('skill_id')}: {mode!r}")
 
 
+def inputs_digest(data_dir: Path = DATA_DIR) -> str:
+    h = hashlib.sha256()
+    for rel in ACCEPTANCE_INPUTS:
+        h.update(rel.encode() + b"\0" + (data_dir / rel).read_bytes() + b"\0")
+    return h.hexdigest()
+
+
+def build_acceptance(rows: list[dict], data_dir: Path = DATA_DIR) -> dict:
+    """Per-Skill evidence from simulate_skills rows; the only acceptance writer."""
+    skills: dict[str, dict] = {}
+    for row in rows:
+        state = row["id"].rsplit("-", 1)[-1]
+        if state not in ACCEPTANCE_STATES or state in skills.get(row["skill_id"], {}):
+            raise CoverageError(f"unexpected simulation row {row['id']!r}")
+        skills.setdefault(row["skill_id"], {})[state] = {
+            "pass": row["pass"] is True, "core_calls": int(row.get("core_calls") or 0),
+            "verdict": row["verdict"]}
+    return {"format": "gateway-lm.skill-acceptance/v1", "version": "1.0.0",
+            "synthetic_only": True, "inputs_digest": inputs_digest(data_dir),
+            "skills": dict(sorted(skills.items()))}
+
+
+def accepted_skills(path: Path = ACCEPTANCE, data_dir: Path = DATA_DIR) -> set[str]:
+    """Skills with passing normal/fault/missing runs; normal/fault must reach Core."""
+    if not path.exists():
+        return set()
+    doc = _load(path)
+    if doc.get("format") != "gateway-lm.skill-acceptance/v1" or doc.get("version") != "1.0.0":
+        raise CoverageError("invalid acceptance format")
+    if doc.get("inputs_digest") != inputs_digest(data_dir):
+        raise CoverageError("stale acceptance: rerun simulate_skills --write-acceptance")
+    return {sid for sid, states in doc["skills"].items()
+            if set(states) == set(ACCEPTANCE_STATES)
+            and all(states[s]["pass"] is True for s in ACCEPTANCE_STATES)
+            and all(states[s]["core_calls"] > 0 for s in ("normal", "fault"))}
+
+
 def _default_actions(mode: str) -> Mapping:
     from .deployment import deployment
     return deployment(mode)[3]
@@ -75,6 +124,7 @@ def build_coverage(
     data_dir: Path = DATA_DIR,
     registry_path: Path = REGISTRY_V01,
     actions_for: Callable[[str], Mapping] = _default_actions,
+    acceptance_path: Path = ACCEPTANCE,
 ) -> list[SkillCoverage]:
     catalog = SkillCatalog.load(data_dir)
     mappings = {m["skill_id"]: m for m in _load(data_dir / "skill_function_mapping_120.json")}
@@ -92,7 +142,8 @@ def build_coverage(
         return {k for k, v in actions_for(mode).items() if v.get("kind") == "design"}
 
     replay, live = design_ids("replay"), design_ids("live")
-    unknown = (replay | live) - set(ids)
+    accepted = accepted_skills(acceptance_path, data_dir)
+    unknown = (replay | live | accepted) - set(ids)
     if unknown:
         raise CoverageError(f"deployment references unknown skills: {sorted(unknown)}")
 
@@ -125,7 +176,7 @@ def build_coverage(
             skill_id=sid, name=skill.name_vi, domain=skill.domain,
             batch=f"COV-{skill.domain}", skill_type=stype, catalog=True,
             contract_reviewed=reviewed, replay_launchable=sid in replay,
-            live_launchable=sid in live, simulation_verified=False, router_verified=False,
+            live_launchable=sid in live, simulation_verified=sid in accepted, router_verified=False,
             hard_dependencies=tuple(sorted(hard[sid])),
             proposed_dependencies=tuple(sorted(proposed[sid])), gaps=tuple(gaps)))
     return rows

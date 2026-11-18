@@ -78,6 +78,8 @@ Tiến độ WP-A3 (18/11/2026, `v2`, chờ review; giữ nguyên checkbox): th�
 
 Tiến độ WP-A4 (18/11/2026, `v2`, chờ review; giữ nguyên checkbox): Codex dừng giữa chừng do hết hạn mức, Claude hoàn thiện. Thêm `replay_a_composite.diagnostics.json` v1.0.0 cho A03 (inventory+identity), A05 (inventory+vendor), A07 (inventory hiện tại+trước, ≥2 mẫu có thứ tự), `simulation_composite_v1` (9 kịch bản, gold tách riêng), `composite.py`, `scripts/simulate_composites.py`. Mỗi nguồn chạy qua Core (`smoke` → `GraphRunner`), không tạo READ Function mới; thiếu/sai một nguồn → mọi Claim UNKNOWN. simulate_composites 9/9; giới hạn: A03 không gộp từng thiết bị, A05 không suy loại thiết bị, A07 chỉ so số lượng. Chưa nghiệm thu coverage (WP-A5).
 
+Tiến độ WP-A5 (18/11/2026, `v2`, chờ review; giữ nguyên checkbox; Claude làm vì Codex hết hạn mức): `scripts.simulate_skills --write-acceptance` sinh `simulation_v1/acceptance.json` từ kết quả chạy, ghim `inputs_digest` (scenarios, gold, diagnostics). `coverage.py` chỉ tính `simulation_verified` khi Skill có đủ normal/fault/missing đều pass, normal/fault có `core_calls` > 0; digest lệch → CoverageError. Test chạy lại mô phỏng và so khớp file đã commit. Coverage: `simulation_verified` 7 (A02–A08), `router_verified` 0; SK01 (legacy) chưa có kịch bản.
+
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
 ## 15 batch — danh sách nghiệm thu đủ 120 Skill

@@ -7,7 +7,8 @@ from pathlib import Path
 
 from gateway_pilot.skill_expansion.catalog import DATA_DIR
 from gateway_pilot.skill_expansion.coverage import (
-    CoverageError, REGISTRY_V01, build_coverage, classify, summarize,
+    ACCEPTANCE, CoverageError, REGISTRY_V01, accepted_skills, build_acceptance,
+    build_coverage, classify, inputs_digest, summarize,
 )
 
 
@@ -35,7 +36,9 @@ class CoverageInventoryTests(unittest.TestCase):
         self.assertEqual(summarize(rows)["levels"]["live_launchable"], 1)
 
     def test_launchable_is_never_reported_as_verified(self):
-        rows = build_coverage(actions_for=_actions(replay=("B02",), live=("A08",)))
+        # No acceptance source: launchable alone must never count as verified.
+        rows = build_coverage(actions_for=_actions(replay=("B02",), live=("A08",)),
+                              acceptance_path=Path("/nonexistent/acceptance.json"))
         levels = summarize(rows)["levels"]
         self.assertEqual((levels["replay_launchable"], levels["live_launchable"]), (1, 1))
         self.assertEqual(levels["simulation_verified"], 0)
@@ -73,6 +76,58 @@ class CoverageInventoryTests(unittest.TestCase):
             with self.assertRaises(CoverageError):
                 build_coverage(data_dir=data, registry_path=REGISTRY_V01,
                                actions_for=_actions())
+
+
+class AcceptanceTests(unittest.TestCase):
+    """WP-A5: simulation_verified only from a run-generated, input-pinned file."""
+
+    def _write(self, doc):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        path = Path(tmp.name) / "acceptance.json"
+        path.write_text(json.dumps(doc), encoding="utf-8")
+        return path
+
+    def test_committed_acceptance_matches_a_fresh_run(self):
+        from scripts.simulate_composites import evaluate as composites
+        from scripts.simulate_skills import evaluate as direct
+        rows = direct()["rows"] + composites()["rows"]
+        self.assertEqual(build_acceptance(rows), json.loads(ACCEPTANCE.read_text(encoding="utf-8")))
+
+    def test_real_coverage_counts_only_batch_a_accepted_skills(self):
+        rows = [r for r in build_coverage() if r.simulation_verified]
+        self.assertEqual({r.skill_id for r in rows}, {"A02", "A03", "A04", "A05", "A06", "A07", "A08"})
+        self.assertFalse(any(r.router_verified for r in rows))
+
+    def test_hand_edited_failure_or_missing_state_is_not_counted(self):
+        doc = json.loads(ACCEPTANCE.read_text(encoding="utf-8"))
+        doc["skills"]["A02"]["fault"]["pass"] = False
+        del doc["skills"]["A04"]["missing"]
+        doc["skills"]["A06"]["normal"]["core_calls"] = 0
+        accepted = accepted_skills(self._write(doc))
+        self.assertTrue({"A02", "A04", "A06"}.isdisjoint(accepted))
+        self.assertIn("A08", accepted)
+
+    def test_stale_or_foreign_acceptance_fails_closed(self):
+        doc = json.loads(ACCEPTANCE.read_text(encoding="utf-8"))
+        with self.assertRaises(CoverageError):
+            accepted_skills(self._write({**doc, "inputs_digest": "0" * 64}))
+        with self.assertRaises(CoverageError):
+            accepted_skills(self._write({**doc, "format": "other"}))
+        self.assertEqual(doc["inputs_digest"], inputs_digest())
+
+    def test_unknown_skill_in_acceptance_is_rejected(self):
+        doc = json.loads(ACCEPTANCE.read_text(encoding="utf-8"))
+        doc["skills"]["ZZ99"] = doc["skills"]["A02"]
+        with self.assertRaises(CoverageError):
+            build_coverage(acceptance_path=self._write(doc))
+
+    def test_unexpected_or_duplicate_rows_are_rejected(self):
+        row = {"id": "A02-normal", "skill_id": "A02", "pass": True, "core_calls": 1, "verdict": "HEALTHY"}
+        with self.assertRaises(CoverageError):
+            build_acceptance([row, row])
+        with self.assertRaises(CoverageError):
+            build_acceptance([{**row, "id": "A02-weird"}])
 
 
 if __name__ == "__main__":
