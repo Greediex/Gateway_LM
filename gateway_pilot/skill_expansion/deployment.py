@@ -78,9 +78,11 @@ def composition(mode: str, *, backend=None, clock=time.monotonic):
     runtime=ReadRuntime(artifact,policy,approved_digest=approved['registry_digest'],selection=selection,context=context,
                         permissions=frozenset({'network.read'}),
                         policy_context_id=digest({'principal':'localhost-skill-operator','mode':mode,'revision':1}),clock=clock)
-    if mode == 'live':
+    # Live always requires reviewed diagnostics. Replay chat is enabled only
+    # after an operator pins replay.diagnostics.json in approvals.json.
+    if mode == 'live' or 'diagnostics_digest' in approved:
         from ..graph_v3.claims import ClaimBook
-        diagnostics = read_json(ROOT/'config/skill_launcher/live.diagnostics.json')
+        diagnostics = read_json(ROOT/'config/skill_launcher'/(mode+'.diagnostics.json'))
         require(diagnostics.get('format') == 'gateway-lm.laptop-diagnostics/v1'
                 and digest(diagnostics) == approved['diagnostics_digest'], 'skill_diagnostics_pin')
         require(set(diagnostics['skill_workflows']) == set(actions)

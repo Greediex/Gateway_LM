@@ -194,6 +194,16 @@ def analyze(payload: dict):
     from gateway_pilot.workflow import diagnose, replay_from_fixture, workflow_registry
     from gateway_pilot.rag import RunbookIndex, DEFAULT_CATALOG, REPLAY_PRODUCT, REPLAY_FIRMWARE
 
+    if not live and payload.get("with_llm") is True:
+        # Same Skill chat path as live (Core/Verifier/RCA + grounded LLM answer),
+        # enabled only once an operator pinned replay.diagnostics.json.
+        from gateway_pilot.application.skill_chat import CHAT
+        try:
+            return CHAT.chat(message.strip(), session_id=session_id, mode="replay")
+        except ValueError as exc:
+            if str(exc) != "chat_diagnostics_not_approved":
+                raise
+
     warnings = []
     advisor = None
     advisor_timeout = None

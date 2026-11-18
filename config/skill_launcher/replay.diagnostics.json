@@ -1,0 +1,215 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "workflows": {
+    "REPLAY-RADIO": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "radio_down",
+        "radio_up_observed"
+      ]
+    },
+    "REPLAY-SSID": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ssid_not_broadcast",
+        "ssid_broadcast_observed"
+      ]
+    },
+    "REPLAY-AIRTIME": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "channel_congested",
+        "channel_utilization_normal"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "radio_down",
+      "diagnosis": "radio_down",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.radio_health",
+          "field": "radio_up",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "radio_down",
+      "workflow": "REPLAY-RADIO"
+    },
+    {
+      "claim_id": "radio_up_observed",
+      "diagnosis": "radio_up_observed",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.radio_health",
+          "field": "radio_up",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "radio_up_observed",
+      "workflow": "REPLAY-RADIO"
+    },
+    {
+      "claim_id": "ssid_not_broadcast",
+      "diagnosis": "ssid_not_broadcast",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ssid_config",
+          "field": "ssid_present",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ssid_not_broadcast",
+      "workflow": "REPLAY-SSID"
+    },
+    {
+      "claim_id": "ssid_broadcast_observed",
+      "diagnosis": "ssid_broadcast_observed",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ssid_config",
+          "field": "ssid_present",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "ssid_broadcast_observed",
+      "workflow": "REPLAY-SSID"
+    },
+    {
+      "claim_id": "channel_congested",
+      "diagnosis": "channel_congested",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "ge",
+          "value": 80
+        }
+      ],
+      "excludes": [],
+      "message_key": "channel_congested",
+      "workflow": "REPLAY-AIRTIME"
+    },
+    {
+      "claim_id": "channel_utilization_normal",
+      "diagnosis": "channel_utilization_normal",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.airtime_usage",
+          "field": "channel_utilization_pct",
+          "op": "lt",
+          "value": 80
+        }
+      ],
+      "excludes": [],
+      "message_key": "channel_utilization_normal",
+      "workflow": "REPLAY-AIRTIME"
+    }
+  ],
+  "skill_workflows": {
+    "B02": [
+      "REPLAY-RADIO"
+    ],
+    "B03": [
+      "REPLAY-SSID"
+    ],
+    "B05": [
+      "REPLAY-AIRTIME"
+    ]
+  },
+  "required_skill_phrases": {
+    "B04": [
+      "rssi",
+      "snr"
+    ],
+    "B07": [
+      "roaming"
+    ],
+    "A02": [
+      "danh sach thiet bi",
+      "kiem ke thiet bi"
+    ],
+    "SK08": [
+      "cpu router",
+      "ram router"
+    ]
+  },
+  "question_intents": {
+    "expansion.radio_health": {
+      "title": "Radio Wi-Fi của gateway",
+      "phrases": [
+        "radio",
+        "bang tan",
+        "kenh wifi",
+        "wifi",
+        "wi fi",
+        "phat song"
+      ],
+      "ports": [
+        "expansion.radio_health"
+      ]
+    },
+    "expansion.ssid_config": {
+      "title": "SSID của gateway",
+      "phrases": [
+        "ssid",
+        "ten wifi",
+        "ten mang",
+        "khong thay wifi"
+      ],
+      "ports": [
+        "expansion.ssid_config"
+      ]
+    },
+    "expansion.airtime_usage": {
+      "title": "Airtime / mức dùng kênh",
+      "phrases": [
+        "airtime",
+        "nghen kenh",
+        "kenh dong",
+        "channel utilization",
+        "wifi cham",
+        "cham"
+      ],
+      "ports": [
+        "expansion.airtime_usage"
+      ]
+    }
+  },
+  "nonlocal_scope_phrases": [
+    "laptop nay",
+    "may nay",
+    "client khac",
+    "thiet bi khac",
+    "may khac",
+    "another client",
+    "other client"
+  ]
+}

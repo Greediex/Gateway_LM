@@ -32,6 +32,26 @@ def local_model(*, timeout=60):
     return OllamaGoalModel(name, timeout=timeout, max_parameters=limit, chat_context=_chat_context())
 
 
+_MODE = {
+    'live': {'mode':'linux_live','fixture':'LLM + Skill catalog · laptop Linux','fixture_id':'LINUX-SKILL-CHAT',
+             'workflow':'LAPTOP-SKILL-CHAT','target':{'scope':'client','selector':'Laptop Linux này'},
+             'scope':'Only this local Linux laptop; never router/client inventory',
+             'prefix':'Trong phạm vi laptop này:','where':'trên laptop',
+             'custom':'Phiên này chỉ đo chính laptop; chưa có backend cho router/AP, thiết bị khác hoặc target/IP/MAC tùy ý.',
+             'unconfirmed':'Chưa xác minh đầy đủ phạm vi yêu cầu; các phép đo hiện tại chỉ đánh giá kết nối từ laptop này.',
+             'empty':'Hãy nêu vấn đề mạng trên laptop này; chưa đủ dữ liệu để trả lời.',
+             'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'},
+    'replay': {'mode':'synthetic_replay','fixture':'LLM + Skill catalog · gateway mô phỏng','fixture_id':'REPLAY-SKILL-CHAT',
+               'workflow':'REPLAY-SKILL-CHAT','target':{'scope':'gateway','selector':'Gateway mô phỏng (synthetic)'},
+               'scope':'Only the synthetic replay gateway; fixture data, never a real device',
+               'prefix':'Trong phạm vi gateway mô phỏng (dữ liệu synthetic, không phải thiết bị thật):','where':'ở chế độ replay',
+               'custom':'Phiên replay chỉ có gateway mô phỏng; chưa có backend cho thiết bị khác hoặc target/IP/MAC tùy ý.',
+               'unconfirmed':'Chưa xác minh đầy đủ phạm vi yêu cầu; dữ liệu chỉ là fixture mô phỏng của gateway.',
+               'empty':'Hãy nêu vấn đề Wi-Fi/gateway cần kiểm tra trong dữ liệu mô phỏng.',
+               'notice':'READ trên fixture mô phỏng; không phải số đo thiết bị thật, không phải causal RCA.'},
+}
+
+
 def _model_error(exc):
     return 'model_timeout' if isinstance(exc,TimeoutError) or isinstance(getattr(exc,'reason',None),TimeoutError) else 'model_unavailable'
 
@@ -61,6 +81,12 @@ def findings(view: dict) -> dict:
             text = f"IPv4 của Wi-Fi laptop: {v['address'] if v['configured'] else 'chưa được cấu hình'}."
         elif port == 'client.identity':
             text = 'Đã xác minh định danh của chính laptop đang chạy ứng dụng.'
+        elif port == 'expansion.radio_health':
+            text = f"Radio gateway (mô phỏng): {'đang bật' if v['radio_up'] else 'đang tắt'}; kênh {v['channel']}; băng tần {v['band']}."
+        elif port == 'expansion.ssid_config':
+            text = f"SSID gateway (mô phỏng): {('đang phát ' + repr(v['ssid'])) if v['ssid_present'] else 'không phát SSID'}."
+        elif port == 'expansion.airtime_usage':
+            text = f"Mức dùng kênh (mô phỏng): {v['channel_utilization_pct']:g}%."
         elif port == 'expansion.client_association':
             text = f"Laptop {'đang associated với AP ' + v['access_point_id'] if v['associated'] else 'chưa associated với AP'}."
         else:
@@ -115,7 +141,7 @@ class SkillChat:
             except PlanError as exc:
                 raise SkillSessionError('session_expired') from exc
             return VerifiedSnapshot.from_state(entry['session'].state,entry['runtime'].registry.ports,
-                    context_valid=entry['context_valid']).export()
+                    context_valid=entry['context_valid'],allow_replay=entry['mode']=='replay').export()
 
     @staticmethod
     def _requested(entry, request):
@@ -138,14 +164,19 @@ class SkillChat:
                             for phrases in entry['runtime'].registry.required_skill_phrases.values()
                             for phrase in phrases)]
 
-    def chat(self, request: str, *, session_id=None):
+    def chat(self, request: str, *, session_id=None, mode='live'):
         if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
             raise ValueError('invalid_chat_request')
+        if type(mode) is not str or mode not in _MODE:
+            raise ValueError('invalid_chat_mode')
         started=self.clock()
         created=session_id is None
-        if created:session_id=self.launcher.create_session('live')['session_id']
+        if created:session_id=self.launcher.create_session(mode)['session_id']
         entry=self.launcher._get(session_id)
-        if entry['mode']!='live':raise ValueError('chat_requires_live_session')
+        if entry['mode']!=mode:raise ValueError(f'chat_requires_{mode}_session')
+        if not hasattr(entry['runtime'].registry,'question_intents'):
+            if created:self.launcher.close(session_id)
+            raise ValueError('chat_diagnostics_not_approved')
         with self.launcher._lock:lock=entry.setdefault('chat_lock',threading.Lock())
         if not lock.acquire(blocking=False):raise SkillSessionError('session_busy')
         if not _MODEL_SLOT.acquire(blocking=False):
@@ -191,7 +222,8 @@ class SkillChat:
             return result['assessments']
         def check_deadline():return self.clock()<deadline and runtime._clock()<session.expires_at
         view()
-        catalog=timed('catalog',self.launcher.catalog,'live',entry=entry)
+        prof=_MODE[entry['mode']]
+        catalog=timed('catalog',self.launcher.catalog,entry['mode'],entry=entry)
         rows={r['skill_id']:r for r in catalog['rows']}
         docs=[[r['skill_id'],r['name'],r['availability'],r['runtime_scope']] for r in catalog['rows']]
         goals=self._requested(entry,request)
@@ -304,7 +336,7 @@ class SkillChat:
                              'last_round':round_index==self.max_rounds-1,
                              'previous_question':entry.get('previous_question',''),
                              'inference_timeout_s':min(getattr(model,'timeout',60),remaining),
-                             'scope':'Only this local Linux laptop; never router/client inventory'}
+                             'scope':prof['scope']}
                     try:
                         model_calls+=1
                         raw=timed('inference',model.choose_skills,request,docs,context)
@@ -427,22 +459,22 @@ class SkillChat:
                     answer=draft.answer
                 else:
                     synthesis.update(used_llm=False,reason='evidence_changed_or_deadline')
-            if unavailable:answer+='\n'+'\n'.join(f"{rows[s]['name']}: chưa chạy được trên laptop ({rows[s]['reason']})." for s in unavailable)
+            if unavailable:answer+='\n'+'\n'.join(f"{rows[s]['name']}: chưa chạy được {prof['where']} ({rows[s]['reason']})." for s in unavailable)
             if cov['missing_ports'] and not blocked and not custom_target:
                 answer+='\nChưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.'
             if unconfirmed and not blocked and not custom_target:
-                answer+='\nChưa xác minh đầy đủ phạm vi yêu cầu; các phép đo hiện tại chỉ đánh giá kết nối từ laptop này.'
+                answer+='\n'+prof['unconfirmed']
             if blocked:
                 status='BLOCKED';answer='Ứng dụng chỉ đọc; không tự thay đổi cấu hình hoặc khởi động lại thiết bị.'
             elif custom_target:
-                status='NEEDS_INPUT';answer='Phiên này chỉ đo chính laptop; chưa có backend cho router/AP, thiết bị khác hoặc target/IP/MAC tùy ý.'
+                status='NEEDS_INPUT';answer=prof['custom']
             elif not chosen:
                 status='UNAVAILABLE' if unavailable else 'NEEDS_INPUT'
                 if reason=='turn_deadline_exhausted':answer+='\nĐã hết thời gian xử lý; số đo trước đó không còn hiệu lực để kết luận hiện tại.'
                 elif reason in {'model_timeout','finalization_budget_reserved'}:answer+='\nLLM chưa hoàn tất trong thời gian cho phép; chưa có số đo còn hiệu lực để kết luận.'
                 elif not ready:answer+='\nKhông kết nối được LLM local; hãy kiểm tra dịch vụ Ollama.'
                 elif runs:answer+='\nChưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.'
-                elif not answer.strip():answer='Hãy nêu vấn đề mạng trên laptop này; chưa đủ dữ liệu để trả lời.'
+                elif not answer.strip():answer=prof['empty']
             else:
                 status='MEASURED' if cov['complete'] and reason=='model_answer' else 'PARTIAL'
                 wifi=final['facts'].get('laptop.wifi',{}).get('value',{})
@@ -456,7 +488,7 @@ class SkillChat:
                 if diagnostic:
                     assessment=assessment_summary(chosen,assessments)
                     if assessment:answer=assessment+'\n'+answer
-                    answer='Trong phạm vi laptop này:\n'+answer
+                    answer=prof['prefix']+'\n'+answer
                     answer+='\nChưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
                     answer+='\nBước tiếp theo: xác định thiết bị/ứng dụng bị ảnh hưởng và kiểm tra đúng lúc gặp lỗi; chưa có cơ sở chọn thay đổi cấu hình cụ thể.'
                 if reason!='model_answer':
@@ -495,10 +527,10 @@ class SkillChat:
                                      'value':fact['value'] if fact else None,'reason':node.reason})
             evidence=[{'id':f['evidence_id'],'port':p,'status':'OK',**f} for p,f in final['facts'].items()]
             timings['total']=(self.clock()-started)*1000
-            return {'answer':answer.strip(),'request':request,'mode':'linux_live','fixture':'LLM + Skill catalog · laptop Linux',
-                    'fixture_id':'LINUX-SKILL-CHAT','session_id':sid,'case_status':status,'action':'REPORT',
-                    'workflow':'LAPTOP-SKILL-CHAT','workflow_id':None,'method':'core','policy':'dynamic','diagnosis':None,
-                    'target':{'scope':'client','selector':'Laptop Linux này'},'calls':session.runner.calls-calls_before,
+            return {'answer':answer.strip(),'request':request,'mode':prof['mode'],'fixture':prof['fixture'],
+                    'fixture_id':prof['fixture_id'],'session_id':sid,'case_status':status,'action':'REPORT',
+                    'workflow':prof['workflow'],'workflow_id':None,'method':'core','policy':'dynamic','diagnosis':None,
+                    'target':dict(prof['target']),'synthetic_only':entry['mode']=='replay','calls':session.runner.calls-calls_before,
                     'calls_total':session.runner.calls,'repairs':session.runner.repairs,'evidence':evidence,
                     'evidence_ids':[f['evidence_id'] for f in chosen.values()],
                     'status_ok_evidence_ids':[r['id'] for r in evidence],
@@ -528,7 +560,7 @@ class SkillChat:
                     'diagnostic_status':'INCONCLUSIVE' if diagnostic_request(request) else None,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
                     'llm_advisor_used':bool(advice),'warnings':[],
-                    'notice':'READ trên laptop; coverage là phép đo được yêu cầu, không phải causal RCA hoặc khôi phục.'}
+                    'notice':prof['notice']}
 
 
 CHAT=SkillChat(max_elapsed_s=240)
