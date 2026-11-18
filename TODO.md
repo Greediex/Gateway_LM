@@ -86,6 +86,8 @@ Tiến độ CHAT (18/11/2026, `v2`): (1) Qwen chỉ thấy Skill READY/DEGRADED
 
 Tiến độ CLAIM hiệu năng (18/11/2026, `v2`): workflow `LAPTOP-PERFORMANCE` trong `live.diagnostics.json` (gắn `laptop.network.inspect`): `wifi_signal_weak` (signal_pct < 40), `gateway_latency_high` (> 20 ms), `internet_latency_high` (> 100 ms), `performance_path_normal` (HEALTHY khi đủ ngưỡng và không mất gói). Ngưỡng heuristic phía laptop, chưa hiệu chỉnh trên nhiều mạng. Câu trả lời in một dòng cho mỗi Claim TRUE còn hạn; dòng gợi ý ghi rõ chưa phải nguyên nhân (L5). Digest live đổi `80e3c865…` → `d272b0b6…`, chủ dự án duyệt trong chat, ghi trong commit riêng.
 
+Tiến độ WP-S1 (18/11/2026, `v2`): nguyên nhân `semantic_encoder_failed` không phải RAM mà là giới hạn 10 s mỗi request của `LocalOllamaEncoder`: nhúng cả catalog (126 tài liệu) bằng một lệnh gọi trên CPU mất khoảng 27 s (đo 1 tài liệu 0,2 s, 32 tài liệu 6,7 s). Sửa: `encode_many` chia khối 16 tài liệu, kiểm digest quanh mỗi khối, không trả vector từng phần khi một khối lỗi; thêm `ChatContext.warm` và luồng nền khi server khởi động để lượt Qwen đầu không tốn thời gian. Đo live: chỉ mục sẵn sàng sau 7 s, lượt Qwen `catalog_semantic: READY` (trước: ERROR). 6 test mới.
+
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
 ## Kế hoạch chạy đủ 120 Skill (18/11/2026, Claude điều phối)

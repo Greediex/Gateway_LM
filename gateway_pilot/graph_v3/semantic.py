@@ -150,6 +150,7 @@ class LocalOllamaEncoder:
     local_only = True
     endpoint = "http://127.0.0.1:11434"
     max_response_bytes = 8_000_000
+    chunk_size = 16
 
     def __init__(self, model: str = "embeddinggemma", *, timeout: float = 10.0):
         import urllib.request
@@ -203,13 +204,21 @@ class LocalOllamaEncoder:
                 or any(not isinstance(t, str) or not 0 < len(t) <= 4096 for t in texts)
                 or sum(len(t.encode("utf-8")) for t in texts) > 256_000):
             raise ValueError("embedding_input_budget")
-        if self._digest() != self.digest:
-            raise ValueError("embedding_model_changed")
-        result = self._request("/api/embed", {"model": self.model, "input": texts,
-                                              "truncate": False, "keep_alive": "5m"})
-        if self._digest() != self.digest:
-            raise ValueError("embedding_model_changed")
-        vectors = result.get("embeddings")
+        # CPU Ollama embeds ~5 docs/s; one 126-doc call exceeds the 10 s request
+        # cap, so send bounded chunks. Digest is rechecked around every chunk.
+        vectors = []
+        for start in range(0, len(texts), self.chunk_size):
+            chunk = texts[start:start + self.chunk_size]
+            if self._digest() != self.digest:
+                raise ValueError("embedding_model_changed")
+            result = self._request("/api/embed", {"model": self.model, "input": chunk,
+                                                  "truncate": False, "keep_alive": "5m"})
+            if self._digest() != self.digest:
+                raise ValueError("embedding_model_changed")
+            part = result.get("embeddings")
+            if not isinstance(part, list) or len(part) != len(chunk):
+                raise ValueError("embedding_output_dimension_mismatch")
+            vectors.extend(part)
         if (not isinstance(vectors, list) or len(vectors) != len(texts)
                 or any(not isinstance(v, list) or len(v) != self.dimension for v in vectors)
                 or any(type(n) not in (int, float) for v in vectors for n in v)):

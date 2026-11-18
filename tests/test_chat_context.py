@@ -127,6 +127,79 @@ class OllamaEncoderTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'dimension_mismatch'):
                 encoder.encode_many(['dns'])
 
+    def test_large_catalog_is_sent_in_bounded_chunks_in_order(self):
+        sizes = []
+        def respond(path, payload=None):
+            if path == '/api/embed':
+                sizes.append(len(payload['input']))
+                # Tag each vector with its text so ordering across chunks is checkable.
+                return {'embeddings': [[float(t[1:]), 0] for t in payload['input']]}
+            return self.response(path, payload)
+        with patch.object(LocalOllamaEncoder, '_request', side_effect=respond):
+            encoder = LocalOllamaEncoder()
+            texts = ['t%d' % i for i in range(1, 127)]
+            vectors = encoder.encode_many(texts)
+        self.assertEqual(len(vectors), 126)
+        self.assertTrue(max(sizes) <= LocalOllamaEncoder.chunk_size and len(sizes) == 8)
+        self.assertEqual([v[0] for v in vectors], [float(i) for i in range(1, 127)])
+
+    def test_failure_in_a_later_chunk_returns_no_partial_vectors(self):
+        calls = []
+        def respond(path, payload=None):
+            if path == '/api/embed':
+                calls.append(1)
+                if len(calls) == 3:
+                    return {'embeddings': [[1, 0]]}  # truncated response
+                return {'embeddings': [[1, 0] for _ in payload['input']]}
+            return self.response(path, payload)
+        with patch.object(LocalOllamaEncoder, '_request', side_effect=respond):
+            encoder = LocalOllamaEncoder()
+            with self.assertRaisesRegex(ValueError, 'dimension_mismatch'):
+                encoder.encode_many(['t%d' % i for i in range(60)])
+
+    def test_digest_change_between_chunks_is_rejected(self):
+        state = {'embeds': 0}
+        def respond(path, payload=None):
+            if path == '/api/tags' and state['embeds'] >= 1:
+                return {'models': [{'name': 'embeddinggemma:latest', 'digest': 'b' * 64}]}
+            if path == '/api/embed':
+                state['embeds'] += 1
+            return self.response(path, payload)
+        with patch.object(LocalOllamaEncoder, '_request', side_effect=respond):
+            encoder = LocalOllamaEncoder()
+            with self.assertRaisesRegex(ValueError, 'model_changed'):
+                encoder.encode_many(['t%d' % i for i in range(40)])
+
+
+class WarmTests(unittest.TestCase):
+    def test_warm_builds_index_once_and_search_reuses_it(self):
+        catalog = SkillCatalog.load()
+        calls = []
+        class Counting(Encoder):
+            def encode_many(self, texts):
+                calls.append(len(texts))
+                return super().encode_many(texts)
+        context = ChatContext(encoder=Counting())
+        self.assertTrue(context.warm(catalog))
+        after_warm = len(calls)
+        lexical = SkillRetriever(catalog).search('dns', include_proposed=True, limit=10)
+        result = context.search('dns', catalog, lexical)
+        self.assertEqual(result['semantic']['status'], 'READY')
+        self.assertEqual(len(calls), after_warm + 1)  # only the query is encoded
+
+    def test_warm_failure_is_reported_and_search_still_falls_back(self):
+        catalog = SkillCatalog.load()
+        class Broken(Encoder):
+            def encode_many(self, texts):
+                raise OSError('boom')
+        context = ChatContext(encoder=Broken())
+        self.assertFalse(context.warm(catalog))
+        lexical = SkillRetriever(catalog).search('dns', include_proposed=True, limit=10)
+        self.assertEqual(context.search('dns', catalog, lexical)['semantic']['status'], 'ERROR')
+
+    def test_warm_without_encoder_is_noop(self):
+        self.assertFalse(ChatContext().warm(SkillCatalog.load()))
+
 
 if __name__ == '__main__':
     unittest.main()

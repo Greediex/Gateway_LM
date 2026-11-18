@@ -58,6 +58,30 @@ class ChatContext:
         if not isinstance(request, str) or not 0 < len(request) <= 4000:
             raise ValueError("chat_context_request_budget")
 
+    @staticmethod
+    def _catalog_fields(catalog: SkillCatalog):
+        fields = {s.id: {"name": s.name_vi, "description": s.notes[:2000],
+                          "tags": [s.domain, s.domain_name, s.kind, s.scope], "ports": []}
+                  for s in catalog.skills.values()}
+        return fields, hashlib.sha256(json.dumps(fields, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    def warm(self, catalog: SkillCatalog) -> bool:
+        """Build the in-RAM catalog index once, off the request path.
+
+        CPU embedding of the catalog takes ~30 s; doing it inside the first chat
+        turn would eat that turn's budget. A failure just leaves search() to
+        report ERROR and fall back to BM25/GoS as before.
+        """
+        if self.semantic is None:
+            return False
+        with self._lock:
+            fields, fingerprint = self._catalog_fields(catalog)
+            try:
+                self.semantic.score(fingerprint, sorted(fields), fields, "khoi dong")
+                return True
+            except PlanError:
+                return False
+
     def search(self, request: str, catalog: SkillCatalog,
                lexical_hits: Iterable[SearchHit]) -> dict:
         with self._lock:
@@ -77,10 +101,7 @@ class ChatContext:
         candidates = []
         if self.semantic is not None:
             metadata["model_id"] = self.semantic.model_id
-            fields = {s.id: {"name": s.name_vi, "description": s.notes[:2000],
-                              "tags": [s.domain, s.domain_name, s.kind, s.scope], "ports": []}
-                      for s in catalog.skills.values()}
-            fingerprint = hashlib.sha256(json.dumps(fields, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+            fields, fingerprint = self._catalog_fields(catalog)
             try:
                 scores = self.semantic.score(fingerprint, sorted(fields), fields, request)
                 candidates = [{"skill_id": key, "similarity": round(score, 6)}

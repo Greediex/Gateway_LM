@@ -13,6 +13,7 @@ import os
 import platform
 import shutil
 import sys
+import threading
 import traceback
 from collections import defaultdict, deque
 from copy import deepcopy
@@ -587,6 +588,15 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
     with ThreadingHTTPServer((args.host, args.port), Handler) as httpd:
         httpd.default_source = args.source
+        # Index the catalog off the request path so the first Qwen turn finds it ready.
+        def _warm():
+            from gateway_pilot.application.chat_context import trusted_context
+            from gateway_pilot.skill_expansion.catalog import SkillCatalog
+            try:
+                print("Chỉ mục ngữ nghĩa: " + ("sẵn sàng." if trusted_context().warm(SkillCatalog.load()) else "chưa sẵn sàng (dùng BM25)."))
+            except Exception as exc:
+                print(f"Chỉ mục ngữ nghĩa: lỗi khởi động ({type(exc).__name__}); dùng BM25.")
+        threading.Thread(target=_warm, name="semantic-warm", daemon=True).start()
         print(f"Gateway LM Web: http://{args.host}:{httpd.server_port}")
         print(_status()["message"])
         print("Nguồn mặc định: đo từ " + ("Windows." if os.name == "nt" else "Linux laptop.") if args.source == "live" else "Nguồn mặc định: synthetic replay.")
