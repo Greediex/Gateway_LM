@@ -131,11 +131,25 @@ def audit_mappings(bundle: dict) -> list[dict]:
 
 
 def _validate_profile(profile: dict, bundle: dict, rows: list[dict]) -> dict:
-    """Return selected metadata, never a runtime/approved binding."""
+    """Return selected metadata, never a runtime/approved binding.
+
+    V1 keeps its single-domain contract. V2 declares the exact nonempty set of
+    selected Skill domains in ``domains``; both formats require one scope.
+    """
     _json_value(profile)
-    fields = {'format','profile_id','version','domain','scope','backend','skill_refs','selection',
+    fields = {'format','profile_id','version','scope','backend','skill_refs','selection',
               'contract_digests','source_bundle_digest','edge_policy','target_policy'}
-    require(type(profile) is dict and set(profile) == fields and profile['format'] == 'gateway-lm.skill-profile/v1', 'profile_fields')
+    require(type(profile) is dict, 'profile_fields')
+    multi_domain = profile.get('format') == 'gateway-lm.skill-profile/v2'
+    domain_field = 'domains' if multi_domain else 'domain'
+    require(set(profile) == fields | {domain_field}
+            and profile['format'] in ('gateway-lm.skill-profile/v1', 'gateway-lm.skill-profile/v2'),
+            'profile_fields')
+    if multi_domain:
+        domains = profile['domains']
+        require(type(domains) is list and bool(domains)
+                and all(type(domain) is str for domain in domains)
+                and len(domains) == len(set(domains)), 'profile_domains')
     require(Draft202012Validator(_SCHEMA['$defs']['id']).is_valid(profile['profile_id'])
             and Draft202012Validator(_SCHEMA['$defs']['version']).is_valid(profile['version']), 'profile_identity')
     require(profile['backend'] == {'backend_id':'expansion.synthetic_replay', 'revision':'0.2.0',
@@ -162,11 +176,15 @@ def _validate_profile(profile: dict, bundle: dict, rows: list[dict]) -> dict:
     required_functions = set()
     for sid, ref in refs.items():
         row = resolved[sid]
-        require(row['mode'] == 'PROPOSED_READ_METADATA' and row['domain'] == profile['domain'], 'profile_domain_or_mode')
+        require(row['mode'] == 'PROPOSED_READ_METADATA'
+                and (row['domain'] in domains if multi_domain else row['domain'] == profile['domain']),
+                'profile_domain_or_mode')
         require(set(ref) == {'skill_id','version'} and ref['skill_id'] == row['catalog_skill_id']
                 and (ref['skill_id'],ref['version']) in indexed['skills'], 'profile_skill_version')
         require('CLIENT_IDENTITY_DEPENDENCY_NOT_DECLARED' not in row['gaps'], 'profile_identity_unresolved')
         required_functions.update(row['declared_functions'])
+    if multi_domain:
+        require(set(domains) == {resolved[sid]['domain'] for sid in refs}, 'profile_domains')
     # Dependencies may cross domain, but never scope. The builder verifies exact refs.
     indexes = build_indexes(functions)
     from ..command_catalog.indexes import dependency_closure

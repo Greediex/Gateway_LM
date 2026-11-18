@@ -1,0 +1,77 @@
+{
+  "format": "gateway-lm.skill-profile/v2",
+  "profile_id": "expansion.inventory_wifi_gateway_replay_v2",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "backend": {
+    "backend_id": "expansion.synthetic_replay",
+    "revision": "0.2.0",
+    "source": "synthetic_replay/skill_expansion_v2",
+    "synthetic_only": true
+  },
+  "skill_refs": {
+    "B02": {
+      "skill_id": "gateway.b02",
+      "version": "1.0.0"
+    },
+    "B03": {
+      "skill_id": "gateway.b03",
+      "version": "1.0.0"
+    },
+    "B05": {
+      "skill_id": "gateway.b05",
+      "version": "1.0.0"
+    },
+    "A02": {
+      "skill_id": "gateway.a02",
+      "version": "1.0.0"
+    }
+  },
+  "selection": {
+    "schema_version": "0.2.0",
+    "kind": "selection",
+    "functions": {
+      "expansion.airtime_usage": "1.0.0",
+      "expansion.radio_health": "1.0.0",
+      "expansion.ssid_config": "1.0.0",
+      "expansion.device_inventory": "1.0.0"
+    },
+    "ports": {
+      "expansion.airtime_usage": "1.0.0",
+      "expansion.radio_health": "1.0.0",
+      "expansion.ssid_config": "1.0.0",
+      "expansion.device_inventory": "1.0.0"
+    }
+  },
+  "contract_digests": {
+    "functions": {
+      "expansion.airtime_usage@1.0.0": "f88aeda5fe294bad0e4f3cf42270f07837427b8dbfb20923f34c95dda69d3c15",
+      "expansion.device_inventory@1.0.0": "3e3fbf77ee3af96dd968fe4d46baabc774e4dfee31669b5f108b210a368bd1f0",
+      "expansion.radio_health@1.0.0": "6f51fe1c52b95c4ea31f006f0b6b6f8ec4cf2eeb4fa5ed0529f67be8628e3c8f",
+      "expansion.ssid_config@1.0.0": "07a9b4883ffc2d9888233cac588d03b6379c71ad849359235ef41d01d6e7107c"
+    },
+    "ports": {
+      "expansion.airtime_usage@1.0.0": "700f12856e6efc5410490670abd0c86dcefc2c718f7d2cf7dc9e3faabfe59423",
+      "expansion.device_inventory@1.0.0": "e6140fd8bbde63efdba41d542f60489cb3635e8dc9af1bb9bf13c3e328dd5bd0",
+      "expansion.radio_health@1.0.0": "33b0d0adfd1dee2a734fce6ed457e93274fb1c78392bc3303bd770eb9732d2fa",
+      "expansion.ssid_config@1.0.0": "270b299d473ad90e7f5f3c09573b20eabbcef98b80f3571ae5f046b6decd4e6d"
+    },
+    "skills": {
+      "gateway.a02@1.0.0": "8f20b5ab23e4e9c71495af414b2cdaf642ec0f4ead9512f5705770e631742714",
+      "gateway.b02@1.0.0": "1e56bea7898f8ec81b5599fbe96bb1931e9ee285c0343214d64688b764ad5a73",
+      "gateway.b03@1.0.0": "cceb878ecc2f79ec417a9d5efbdb9aba08de7be91aac4f3098e93822324c59c3",
+      "gateway.b05@1.0.0": "a7571778822130c5783decfd4469d28d7b3901c017dfc535fa9a6f657be54976"
+    }
+  },
+  "source_bundle_digest": "306b8f3747e9034f5465f78e8efc38295bb3fa14a8bf69d5bc8b6344781cb827",
+  "edge_policy": "TYPED_CONTRACTS_ONLY",
+  "target_policy": {
+    "scope": "gateway",
+    "target_id_prefix": "synthetic-",
+    "environment": "EXPLICIT_TRUSTED_CONTEXT_REQUIRED"
+  },
+  "domains": [
+    "A",
+    "B"
+  ]
+}
