@@ -88,6 +88,66 @@ Tiến độ CLAIM hiệu năng (18/11/2026, `v2`): workflow `LAPTOP-PERFORMANCE
 
 Sau khi WP-A1…A5 đạt: Claude review, đánh dấu Batch COV-A, rồi tạo WP cho COV-B theo cùng mẫu.
 
+## Kế hoạch chạy đủ 120 Skill (18/11/2026, Claude điều phối)
+
+**Hiện trạng đo được:** catalog 120; chạy thật trên laptop 8 action; Simulation verified 7 (A02–A08); Router verified 0. Gap toàn catalog: CONTRACT_NOT_REVIEWED 120, NO_ROUTER_BACKEND 120, NO_LIVE_BINDING 118, NO_REPLAY_PROFILE 116, NEEDS_CLAIM_OR_WORKFLOW 40. Mô phỏng và laptop làm được ngay; router thật cần phần cứng (L2), nên "chạy đủ" chia thành 3 mức nghiệm thu độc lập, không gộp số.
+
+| Mức | Mục tiêu | Cần phần cứng? | Ai làm |
+|---|---|---|---|
+| **M1 Simulation verified** | 120/120 có normal/fault/missing qua Core + Claim đúng, sinh từ `acceptance.json` | Không | Codex + Claude review |
+| **M2 Live trên laptop** | Mọi Skill đo được từ laptop Linux có adapter READ thật (ước tính 20–30 Skill: batch B, D, một phần A/F/E/G) | Laptop này | Codex + Claude |
+| **M3 Router verified** | Skill phía gateway/network có output Ubus thật, hash firmware, đo CPU/RAM | **Router thật (người dùng cung cấp)** | Người dùng chạy, Claude/Codex viết adapter |
+
+Loại trừ vĩnh viễn khỏi "chạy": WRITE thật (N). Skill N chỉ ở sandbox, ghi nhãn WRITE_SANDBOX_ONLY (L3).
+
+### Pha 0 — Nền móng (làm trước, mở khóa tốc độ)
+
+| Xong | WP | Việc | Nghiệm thu |
+|---|---|---|---|
+| [ ] | **WP-S1 — Sửa embedding** | `embeddinggemma` lỗi `semantic_encoder_failed` khi RAM đầy; đo RAM, giảm `keep_alive`/tải tuần tự, thêm cảnh báo rõ ràng | Hỏi 10 câu không còn `catalog_semantic: ERROR` khi Qwen đang nạp; test fallback giữ nguyên |
+| [ ] | **WP-S2 — Scaffold batch** | Script `scripts/scaffold_batch.py <BATCH>` sinh khung từ `skill_contract_stubs_120.json`: file kịch bản (normal/fault/missing, **chưa có gold**), khung Claim, khung workflow, khung test | Chạy cho batch B ra file hợp lệ; gold luôn do người/Codex điền riêng, không sinh tự động (L1/L5) |
+| [ ] | **WP-S3 — Danh sách cụm từ từ catalog** | Gợi ý cụm từ từ `name_vi`/`goal_description` để giảm việc viết tay; kết quả vẫn qua review, không tự cấp quyền | Câu hỏi thường gặp của batch mới rơi vào route đúng mà không cần Qwen; test không khớp nhầm Skill UNAVAILABLE |
+| [ ] | **WP-S4 — Rà soát hợp đồng** | Người duyệt đọc `skill_contract_stubs_120.json` theo batch, đặt `runtime_binding_approved` theo từng Skill đã nghiệm thu mô phỏng | Mức `contract_reviewed` tăng theo batch; mỗi lần là commit riêng của người duyệt |
+
+### Pha 1 — M1: mô phỏng đủ 120 (mỗi batch = 3 WP theo mẫu WP-A)
+
+Mẫu mỗi batch X: **WP-X1** Claim + kịch bản + gold cho Skill `direct`; **WP-X2** workflow/Claim cho Skill `composite`/`history` (không tạo READ Function giả; thiếu nguồn → UNKNOWN); **WP-X3** profile/deployment replay + `acceptance.json` + sinh lại coverage. Mỗi WP theo "Quy tắc chung cho mọi WP" ở trên.
+
+Thứ tự (đi từ ít phụ thuộc đến nhiều; M, O phụ thuộc kết quả các batch trước):
+
+| Thứ tự | Batch | Ghi chú loại Skill (từ coverage) |
+|---|---|---|
+| 1 | **B** Wi-Fi & RF | 7 direct + 1 legacy; RSSI/SNR đúng đơn vị, không quy nguyên nhân duy nhất |
+| 2 | **D** IP/DHCP/IPv6, **F** DNS | 5+7 direct; làm sớm vì laptop đo được (M2) |
+| 3 | **E** WAN & Internet, **G** Performance/QoS | 7+6 direct, 2 composite; tái dùng Claim hiệu năng |
+| 4 | **C** Ethernet L2, **H** System Health | 7 direct mỗi batch |
+| 5 | **I** Security, **J** VPN | 7+6 direct, 3 composite |
+| 6 | **K** History/Monitoring | 8 history; dùng `monitor_window`, cần ≥2 mẫu mô phỏng có thứ tự |
+| 7 | **L** Topology/Multi-gateway | 4 direct + 4 composite |
+| 8 | **M** Evidence/Adaptive, **O** Composite troubleshooting | 15 composite; chỉ làm khi nguồn đã có |
+| 9 | **N** Change/Guided remediation | 1 change + 3 direct + 4 composite; WRITE chỉ sandbox |
+| 10 | **A còn lại** | SK01 (legacy) cần kịch bản để đạt 8/8 |
+
+Ước lượng: ~14 batch × 3 WP ≈ 42 WP. Pha 0 giảm khối lượng mỗi WP; Codex hết hạn mức thì Claude làm tiếp (đã áp dụng ở WP-A4/A5). Mốc kiểm tra: sau mỗi batch chạy 4 lệnh bắt buộc và chốt số `simulation_verified`.
+
+### Pha 2 — M2: Live trên laptop
+
+| Xong | WP | Việc | Nghiệm thu |
+|---|---|---|---|
+| [ ] | **WP-LV1 — Rà soát khả thi** | Với 120 Skill, ghi Skill nào đo được từ laptop Linux bằng lệnh READ allowlist (ví dụ `nmcli dev wifi list`, `ip -6`, `resolvectl`), Skill nào cần router | Bảng trong `docs/`: ID, lệnh/nguồn, quyền cần, kết luận; không đoán |
+| [ ] | **WP-LV2… — Adapter theo nhóm** | Mỗi nhóm 3–5 Skill: adapter READ, hợp đồng Function/port, action, Claim, test timeout/output hỏng/sai interface/fact hết hạn | Mỗi nhóm một commit; digest `approvals.json` do người duyệt ghi; đo thật trên laptop ghi số vào TODO |
+
+### Pha 3 — M3: Router thật (bị chặn bởi phần cứng)
+
+Điều kiện: người dùng cho biết router/firmware và cách truy cập READ (ví dụ Ubus/SSH) cùng quyền chỉ đọc. Bắt buộc (L2): output Ubus từ board thật, hash firmware, số đo CPU/RAM; metric CI Ubuntu không tính. Chỉ khi đủ mới đặt `router_verified`. Việc: WP-RT1 backend chỉ đọc + allowlist; WP-RT2… adapter theo domain C/E/G/H/I/J; mỗi WP kèm test negative (sai target, thiếu quyền, response hỏng, timeout, fact cũ).
+
+### Khung quản trị
+
+- Mỗi mức đếm riêng trong `cli coverage`; không viết "đủ 120" nếu mới đạt M1. Báo cáo luôn ghi "mô phỏng" hay "thật".
+- Claim phải có ngưỡng ghi trong file, version riêng, kèm kịch bản biên; kết luận là gợi ý, không là nguyên nhân gốc (L5).
+- Mỗi batch kết thúc bằng: 4 lệnh kiểm tra, số `simulation_verified`/`live_launchable`, các digest chờ người duyệt (WP-R1 cũ vẫn mở).
+- Rủi ro đã biết: cụm từ viết tay không mở rộng tốt khi số Skill tăng (WP-S3), Qwen 4B CPU chậm (không phụ thuộc vào Qwen cho đường chính), RAM laptop gần đầy (WP-S1).
+
 ## 15 batch — danh sách nghiệm thu đủ 120 Skill
 
 Mỗi checkbox bên dưới là **nghiệm thu mô phỏng của cả batch**, không phải đánh dấu catalog tồn tại. Dùng ID gốc (gồm SKxx legacy), không đổi tên thành 120 ID mới. Từng ID phải được ghi kết quả riêng trong coverage được sinh từ kiểm thử.
