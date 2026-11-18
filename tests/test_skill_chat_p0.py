@@ -163,7 +163,7 @@ class P0ChatTests(unittest.TestCase):
         self.assertEqual(r['case_status'],'PARTIAL')
         self.assertIn('Wi-Fi',r['answer']);self.assertIn('DNS',r['answer'])
         self.assertTrue(r['evidence_ids'])
-        self.assertEqual(r['stop_reason'],'model_unavailable')
+        self.assertEqual(r['stop_reason'],'model_timeout')
 
     def test_refresh_failure_never_exports_expired_proof_or_raises_budget(self):
         def late(context):

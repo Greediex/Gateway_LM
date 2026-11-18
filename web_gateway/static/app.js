@@ -339,13 +339,13 @@ function renderTimeline(content, result) {
     const row = n('div',`step${verified ? '' : ' failed'}`);
     row.appendChild(n('h4','',`${item.index}. ${item.function_id}`));
     row.appendChild(n('small','',verified ? `${item.evidence_id} · ${JSON.stringify(item.value)}`
-      : `${item.status} · chưa dùng làm bằng chứng`));
+      : item.verified_at_execution ? 'Đã xác minh lúc đo; bằng chứng hiện không còn hiệu lực' : `${item.status} · chưa dùng làm bằng chứng`));
     execute.appendChild(row);
   }
 
   const assess = processStep(content,5,'🔍 Bộ đánh giá kết quả','Đã đủ bằng chứng kết luận chưa, hay phải kiểm tra tiếp?');
   const verdicts = {RESOLVED:'Đã đủ bằng chứng',PARTIAL:'Mới xác minh được một phần',
-    NEEDS_INPUT:'Cần người dùng bổ sung',INCONCLUSIVE:'Chưa đủ bằng chứng',BLOCKED:'Yêu cầu bị chặn'};
+    NEEDS_INPUT:result.user_input_required===false?'Chưa hoàn tất xử lý':'Cần người dùng bổ sung',INCONCLUSIVE:'Chưa đủ bằng chứng',BLOCKED:'Yêu cầu bị chặn'};
   assess.appendChild(n('strong','',verdicts[result.case_status] || result.case_status));
   assess.appendChild(n('p','',result.answer));
   for (const row of result.rca_assessments || []) {

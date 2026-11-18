@@ -32,6 +32,10 @@ def local_model(*, timeout=60):
     return OllamaGoalModel(name, timeout=timeout, max_parameters=limit, chat_context=_chat_context())
 
 
+def _model_error(exc):
+    return 'model_timeout' if isinstance(exc,TimeoutError) or isinstance(getattr(exc,'reason',None),TimeoutError) else 'model_unavailable'
+
+
 def findings(view: dict) -> dict:
     """Render verified values with fixed semantics; model orders IDs, never invents numbers."""
     result = {}
@@ -207,6 +211,15 @@ class SkillChat:
                     'unconfirmed_parts':unconfirmed,
                     'complete':bool(goals) and not missing and not unavailable and not custom_target and not blocked and not unconfirmed,
                     'scope_confirmed':bool(goals) and not custom_target and not blocked and not unconfirmed}
+        def inference_budget():
+            # Re-read remaining TTL locally; catalog/setup may have consumed time.
+            snapshot=view(refresh=False)
+            reserve=min(5,self.max_elapsed_s*.1)
+            remaining=min(deadline-self.clock(),session.expires_at-runtime._clock())-reserve
+            relevant=set(snapshot['facts'])&(set(goals) if goals else set(snapshot['facts']))
+            if relevant:
+                remaining=min(remaining,min(snapshot['facts'][p]['expires_in_s'] for p in relevant)-reserve)
+            return remaining
         def recover(ports):
             nonlocal recovery_attempts,reason
             if recovery_attempts or not ports or not check_deadline():return False
@@ -234,11 +247,12 @@ class SkillChat:
         if blocked:reason='write_intent_requires_approval'
         elif custom_target:reason='custom_target_not_supported'
         elif not check_deadline():reason='turn_deadline_exhausted'
+        elif inference_budget()<=0:reason='finalization_budget_reserved'
         else:
             try:
                 if self.model_factory is local_model:
                     model=timed('inference',self.model_factory,
-                                timeout=min(90 if os.environ.get('GATEWAY_LM_CHAT_MODEL','qwen3:4b')=='qwen3:4b' else 60,max(.001,deadline-self.clock())))
+                                timeout=min(90 if os.environ.get('GATEWAY_LM_CHAT_MODEL','qwen3:4b')=='qwen3:4b' else 60,max(.001,inference_budget())))
                 else:
                     model=timed('inference',self.model_factory)
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
@@ -246,10 +260,10 @@ class SkillChat:
                 ready=True
                 if (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
                     view()
-                    if check_deadline():
+                    if check_deadline() and inference_budget()>0:
                         model_calls+=1
                         original_timeout=getattr(model,'timeout',None)
-                        if original_timeout is not None:model.timeout=min(original_timeout,max(.001,deadline-self.clock()))
+                        if original_timeout is not None:model.timeout=min(original_timeout,max(.001,inference_budget()))
                         try:
                             proposal=timed('inference',BoundedGoalProposer(model).propose,
                                 request,runtime.registry,session.state,TaskDecomposer(runtime.registry))
@@ -269,6 +283,13 @@ class SkillChat:
                              if rows[skill]['availability'] in {'READY','DEGRADED'} and skill not in attempted}
                     missing_actions={port:sorted((skill for skill,ports in outputs.items() if port in ports),
                                                 key=lambda skill:len(outputs[skill])) for port in cov['missing_ports']}
+                    # Leave a rendering/probe window and never spend a fresh
+                    # measurement's remaining lifetime waiting for another RPC.
+                    remaining=inference_budget()
+                    if remaining<=0:
+                        selected=[p for p in current if not goals or p in goals]
+                        reason='finalization_budget_reserved'
+                        break
                     context={'required_unavailable':unavailable,'attempted':attempted,
                              'runnable_outputs':outputs if cov['missing_ports'] or not goals else {},
                              'missing_goal_actions':missing_actions,
@@ -282,14 +303,16 @@ class SkillChat:
                              'remaining_tool_calls':max(0,session.runner.max_calls-session.runner.calls),
                              'last_round':round_index==self.max_rounds-1,
                              'previous_question':entry.get('previous_question',''),
-                             'inference_timeout_s':min(getattr(model,'timeout',60),max(.1,deadline-self.clock())),
+                             'inference_timeout_s':min(getattr(model,'timeout',60),remaining),
                              'scope':'Only this local Linux laptop; never router/client inventory'}
                     try:
                         model_calls+=1
                         raw=timed('inference',model.choose_skills,request,docs,context)
                         choice=validate_choice(raw,rows,current,attempted)
-                    except (OSError,TimeoutError):
-                        ready=False;reason='model_unavailable';break
+                    except (OSError,TimeoutError) as exc:
+                        reason=_model_error(exc)
+                        if reason=='model_unavailable':ready=False
+                        break
                     except Exception:
                         rejections+=1;reason='invalid_model_proposal'
                         feedback={'reason':reason,'instruction':'Return only allowed Skill/finding IDs; no commands or arguments.'}
@@ -334,17 +357,19 @@ class SkillChat:
                               'missing_goals':coverage(view(refresh=False)['facts'])['missing_ports']}
                     if session.runner.calls>=session.runner.max_calls:reason='tool_budget_exhausted';break
             except SkillSessionError:raise
-            except (OSError,TimeoutError):ready=False;reason='model_unavailable'
+            except (OSError,TimeoutError) as exc:
+                reason=_model_error(exc)
+                if reason=='model_unavailable':ready=False
             except (RuntimeError,ValueError,TypeError,PlanError):
                 if session.closed:raise SkillSessionError('session_expired')
                 reason='read_execution_unavailable' if ready else 'model_unavailable'
         def answer_ports(snapshot, proposed):
             current=findings(snapshot)
             ports=[p for p in proposed if p in current]
-            if not blocked and not custom_target and (ports or runs):
+            if not blocked and not custom_target and (ports or runs or reason in {'model_timeout','finalization_budget_reserved'}):
                 ports=list(dict.fromkeys([*ports,*(p for p in goals if p in current)]))
             if not ports and runs:
-                ports=list(dict.fromkeys(p for r in runs for p in r['snapshot']['facts'] if p in current))[:4]
+                ports=list(dict.fromkeys(p for r in runs for p in r['snapshot']['facts'] if p in current))
             return [p for p in ports if p in goals] if goals else ports
 
         draft=None
@@ -406,14 +431,16 @@ class SkillChat:
             if cov['missing_ports'] and not blocked and not custom_target:
                 answer+='\nChưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.'
             if unconfirmed and not blocked and not custom_target:
-                answer+='\nChưa xác minh đầy đủ các phần yêu cầu: '+ '; '.join(unconfirmed)+'.'
+                answer+='\nChưa xác minh đầy đủ phạm vi yêu cầu; các phép đo hiện tại chỉ đánh giá kết nối từ laptop này.'
             if blocked:
                 status='BLOCKED';answer='Ứng dụng chỉ đọc; không tự thay đổi cấu hình hoặc khởi động lại thiết bị.'
             elif custom_target:
                 status='NEEDS_INPUT';answer='Phiên này chỉ đo chính laptop; chưa có backend cho router/AP, thiết bị khác hoặc target/IP/MAC tùy ý.'
             elif not chosen:
                 status='UNAVAILABLE' if unavailable else 'NEEDS_INPUT'
-                if not ready:answer+='\nLLM local chưa sẵn sàng; hãy kiểm tra Ollama và thử lại.'
+                if reason=='turn_deadline_exhausted':answer+='\nĐã hết thời gian xử lý; số đo trước đó không còn hiệu lực để kết luận hiện tại.'
+                elif reason in {'model_timeout','finalization_budget_reserved'}:answer+='\nLLM chưa hoàn tất trong thời gian cho phép; chưa có số đo còn hiệu lực để kết luận.'
+                elif not ready:answer+='\nKhông kết nối được LLM local; hãy kiểm tra dịch vụ Ollama.'
                 elif runs:answer+='\nChưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.'
                 elif not answer.strip():answer='Hãy nêu vấn đề mạng trên laptop này; chưa đủ dữ liệu để trả lời.'
             else:
@@ -429,13 +456,17 @@ class SkillChat:
                 if diagnostic:
                     assessment=assessment_summary(chosen,assessments)
                     if assessment:answer=assessment+'\n'+answer
+                    answer='Trong phạm vi laptop này:\n'+answer
                     answer+='\nChưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
+                    answer+='\nBước tiếp theo: xác định thiết bị/ứng dụng bị ảnh hưởng và kiểm tra đúng lúc gặp lỗi; chưa có cơ sở chọn thay đổi cấu hình cụ thể.'
                 if reason!='model_answer':
                     messages={'incomplete_coverage':'Còn phần yêu cầu chưa đủ bằng chứng',
                               'intent_scope_unconfirmed':'Chưa xác định đủ phạm vi câu hỏi',
                               'invalid_model_proposal':'LLM chưa đưa được lựa chọn hợp lệ sau các lượt sửa',
                               'no_progress':'Các lựa chọn tiếp theo không tạo thêm tiến triển',
-                              'model_unavailable':'LLM chưa hoàn tất; giữ lại các phép đo còn hiệu lực',
+                              'model_unavailable':'Mất kết nối LLM; dưới đây chỉ dùng các phép đo còn hiệu lực',
+                              'model_timeout':'LLM chưa kịp hoàn tất; kết quả trên được tổng hợp từ các số đo còn hiệu lực',
+                              'finalization_budget_reserved':'Đã dừng suy luận để trả kết quả khi bằng chứng còn hiệu lực',
                               'tool_budget_exhausted':'Đã hết số phép đo được phép trong phiên',
                               'round_budget_exhausted':'Đã hết số vòng lựa chọn trong lượt hỏi',
                               'turn_deadline_exhausted':'Đã hết thời gian xử lý lượt hỏi',
@@ -457,8 +488,10 @@ class SkillChat:
                 for node in plan.nodes.values():
                     fact=next((f for f in final['facts'].values() if f['function_id']==node.function_id),None)
                     timeline.append({'index':len(timeline)+1,'function_id':node.function_id,'node_state':node.state,
-                                     'status':'OK' if fact and node.state=='SUCCEEDED' else 'UNVERIFIED',
+                                     'status':'OK' if fact and node.state=='SUCCEEDED' else 'NO_LONGER_VALID' if node.state=='SUCCEEDED' else 'UNVERIFIED',
+                                     'verified_at_execution':node.state=='SUCCEEDED',
                                      'evidence_id':fact['evidence_id'] if fact else None,
+                                     'historical_evidence_ids':list(node.output_evidence.values()),
                                      'value':fact['value'] if fact else None,'reason':node.reason})
             evidence=[{'id':f['evidence_id'],'port':p,'status':'OK',**f} for p,f in final['facts'].items()]
             timings['total']=(self.clock()-started)*1000
@@ -491,6 +524,7 @@ class SkillChat:
                     'model_calls':model_calls,'timings_ms':timings,
                     'answer_synthesis':synthesis,
                     'answer_kind':'diagnostic' if diagnostic_request(request) else 'lookup',
+                    'user_input_required':reason=='needs_clarification' and not bool(runs),
                     'diagnostic_status':'INCONCLUSIVE' if diagnostic_request(request) else None,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
                     'llm_advisor_used':bool(advice),'warnings':[],

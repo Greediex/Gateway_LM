@@ -193,6 +193,26 @@ class SkillModelAdapterTests(unittest.TestCase):
             answer=next(b for b in branches if b['properties']['decision']['const']=='answer')
             self.assertIn('laptop.wifi',answer['properties']['ids']['items']['enum'])
 
+    def test_post_measurement_prompt_keeps_missing_goal_routing_and_evidence(self):
+        import json
+        from gateway_pilot.graph_v3.ollama_goal_model import OllamaGoalModel
+        show={'model_info':{'general.parameter_count':4_022_468_096}}
+        with patch('gateway_pilot.graph_v3.ollama_goal_model.http_json',side_effect=[show,{'message':{'content':json.dumps({'decision':'measure','ids':['laptop.wifi.inspect']})}}]) as http:
+            model=OllamaGoalModel('qwen3:4b',max_parameters=5_000_000_000)
+            docs=[['laptop.wifi.inspect','Wi-Fi','READY','client'],['B04','SNR','UNAVAILABLE','client']]
+            context={'findings':[{'id':'laptop.dns','text':'DNS đã phản hồi'}],
+                     'missing_goals':['laptop.wifi'],'missing_goal_actions':{'laptop.wifi':['laptop.wifi.inspect']},
+                     'runnable_outputs':{'laptop.wifi.inspect':['laptop.wifi']},'required_unavailable':['B04'],
+                     'last_round':True,'previous_question':'DNS thế nào?'}
+            self.assertEqual(model.choose_skills('Wi-Fi thì sao?',docs,context)['skill_ids'],['laptop.wifi.inspect'])
+            payload=http.call_args.args[2]
+            self.assertEqual(len(payload['messages']),2)
+            body=json.loads(payload['messages'][1]['content'])
+            for key in context:self.assertEqual(body[key],context[key])
+            self.assertIn('untrusted data',payload['messages'][0]['content'])
+            self.assertIn('B04',payload['messages'][0]['content'])
+            self.assertFalse(payload['think'])
+
     def test_diagnostic_contract_pin_tampering_is_rejected(self):
         from gateway_pilot.skill_expansion import deployment as module
         original=module.read_json
