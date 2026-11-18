@@ -1,0 +1,223 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-F",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "F02-normal",
+      "skill_id": "F02",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dns_resolvers",
+      "values": {
+        "resolver_count": 3,
+        "healthy_count": 3
+      }
+    },
+    {
+      "id": "F02-fault",
+      "skill_id": "F02",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dns_resolvers",
+      "values": {
+        "resolver_count": 3,
+        "healthy_count": 0
+      }
+    },
+    {
+      "id": "F02-missing",
+      "skill_id": "F02",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dns_resolvers",
+      "values": null
+    },
+    {
+      "id": "F03-normal",
+      "skill_id": "F03",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dns_cache",
+      "values": {
+        "cache_hits": 840,
+        "cache_misses": 60
+      }
+    },
+    {
+      "id": "F03-fault",
+      "skill_id": "F03",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dns_cache",
+      "values": {
+        "cache_hits": 0,
+        "cache_misses": 400
+      }
+    },
+    {
+      "id": "F03-missing",
+      "skill_id": "F03",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dns_cache",
+      "values": null
+    },
+    {
+      "id": "F04-normal",
+      "skill_id": "F04",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.split_dns",
+      "values": {
+        "zones": 2,
+        "conflicts": 0
+      }
+    },
+    {
+      "id": "F04-fault",
+      "skill_id": "F04",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.split_dns",
+      "values": {
+        "zones": 2,
+        "conflicts": 3
+      }
+    },
+    {
+      "id": "F04-missing",
+      "skill_id": "F04",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.split_dns",
+      "values": null
+    },
+    {
+      "id": "F05-normal",
+      "skill_id": "F05",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dhcp_dns",
+      "values": {
+        "resolver_option_present": true
+      }
+    },
+    {
+      "id": "F05-fault",
+      "skill_id": "F05",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dhcp_dns",
+      "values": {
+        "resolver_option_present": false
+      }
+    },
+    {
+      "id": "F05-missing",
+      "skill_id": "F05",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dhcp_dns",
+      "values": null
+    },
+    {
+      "id": "F06-normal",
+      "skill_id": "F06",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.dnssec",
+      "values": {
+        "dnssec_enabled": true,
+        "validation_failures": 0
+      }
+    },
+    {
+      "id": "F06-fault",
+      "skill_id": "F06",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.dnssec",
+      "values": {
+        "dnssec_enabled": true,
+        "validation_failures": 12
+      }
+    },
+    {
+      "id": "F06-missing",
+      "skill_id": "F06",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.dnssec",
+      "values": null
+    },
+    {
+      "id": "F07-normal",
+      "skill_id": "F07",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.encrypted_dns",
+      "values": {
+        "dot_enabled": true,
+        "doh_enabled": false
+      }
+    },
+    {
+      "id": "F07-fault",
+      "skill_id": "F07",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.encrypted_dns",
+      "values": {
+        "dot_enabled": false,
+        "doh_enabled": false
+      }
+    },
+    {
+      "id": "F07-missing",
+      "skill_id": "F07",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.encrypted_dns",
+      "values": null
+    },
+    {
+      "id": "F08-normal",
+      "skill_id": "F08",
+      "state": "normal",
+      "simulated_at": "2026-11-18T08:00:00Z",
+      "function_id": "expansion.ntp_sync",
+      "values": {
+        "synchronized": true,
+        "offset_ms": 12.5
+      }
+    },
+    {
+      "id": "F08-fault",
+      "skill_id": "F08",
+      "state": "fault",
+      "simulated_at": "2026-11-18T08:05:00Z",
+      "function_id": "expansion.ntp_sync",
+      "values": {
+        "synchronized": false,
+        "offset_ms": 0.0
+      }
+    },
+    {
+      "id": "F08-missing",
+      "skill_id": "F08",
+      "state": "missing",
+      "simulated_at": "2026-11-18T08:10:00Z",
+      "function_id": "expansion.ntp_sync",
+      "values": null
+    }
+  ]
+}

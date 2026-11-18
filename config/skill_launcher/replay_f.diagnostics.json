@@ -1,0 +1,488 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-F02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "no_resolvers_v1",
+        "no_healthy_resolver_v1",
+        "resolvers_ok_v1"
+      ]
+    },
+    "REPLAY-F03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "cache_ineffective_v1",
+        "cache_active_v1"
+      ]
+    },
+    "REPLAY-F04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "split_dns_conflicts_v1",
+        "split_dns_ok_v1"
+      ]
+    },
+    "REPLAY-F05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "dhcp_dns_option_missing_v1",
+        "dhcp_dns_option_present_v1"
+      ]
+    },
+    "REPLAY-F06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "dnssec_validation_failing_v1",
+        "dnssec_validating_v1"
+      ]
+    },
+    "REPLAY-F07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "encrypted_dns_disabled_v1",
+        "dot_enabled_v1",
+        "doh_enabled_v1"
+      ]
+    },
+    "REPLAY-F08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ntp_unsynchronized_v1",
+        "ntp_offset_high_v1",
+        "ntp_offset_low_v1",
+        "ntp_synchronized_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "no_resolvers_v1",
+      "diagnosis": "no_resolvers_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "resolver_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "healthy_count",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_resolvers",
+      "workflow": "REPLAY-F02-V1"
+    },
+    {
+      "claim_id": "no_healthy_resolver_v1",
+      "diagnosis": "no_healthy_resolver_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "resolver_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "healthy_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_healthy_resolver",
+      "workflow": "REPLAY-F02-V1"
+    },
+    {
+      "claim_id": "resolvers_ok_v1",
+      "diagnosis": "resolvers_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "resolver_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.dns_resolvers",
+          "field": "healthy_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "resolvers_ok",
+      "workflow": "REPLAY-F02-V1"
+    },
+    {
+      "claim_id": "cache_ineffective_v1",
+      "diagnosis": "cache_ineffective_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dns_cache",
+          "field": "cache_hits",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.dns_cache",
+          "field": "cache_misses",
+          "op": "gt",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "cache_ineffective",
+      "workflow": "REPLAY-F03-V1"
+    },
+    {
+      "claim_id": "cache_active_v1",
+      "diagnosis": "cache_active_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dns_cache",
+          "field": "cache_hits",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.dns_cache",
+          "field": "cache_misses",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "cache_active",
+      "workflow": "REPLAY-F03-V1"
+    },
+    {
+      "claim_id": "split_dns_conflicts_v1",
+      "diagnosis": "split_dns_conflicts_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.split_dns",
+          "field": "conflicts",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.split_dns",
+          "field": "zones",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "split_dns_conflicts",
+      "workflow": "REPLAY-F04-V1"
+    },
+    {
+      "claim_id": "split_dns_ok_v1",
+      "diagnosis": "split_dns_ok_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.split_dns",
+          "field": "conflicts",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.split_dns",
+          "field": "zones",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "split_dns_ok",
+      "workflow": "REPLAY-F04-V1"
+    },
+    {
+      "claim_id": "dhcp_dns_option_missing_v1",
+      "diagnosis": "dhcp_dns_option_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dhcp_dns",
+          "field": "resolver_option_present",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "dhcp_dns_option_missing",
+      "workflow": "REPLAY-F05-V1"
+    },
+    {
+      "claim_id": "dhcp_dns_option_present_v1",
+      "diagnosis": "dhcp_dns_option_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dhcp_dns",
+          "field": "resolver_option_present",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "dhcp_dns_option_present",
+      "workflow": "REPLAY-F05-V1"
+    },
+    {
+      "claim_id": "dnssec_validation_failing_v1",
+      "diagnosis": "dnssec_validation_failing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.dnssec",
+          "field": "dnssec_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.dnssec",
+          "field": "validation_failures",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "dnssec_validation_failing",
+      "workflow": "REPLAY-F06-V1"
+    },
+    {
+      "claim_id": "dnssec_validating_v1",
+      "diagnosis": "dnssec_validating_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.dnssec",
+          "field": "dnssec_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.dnssec",
+          "field": "validation_failures",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "dnssec_validating",
+      "workflow": "REPLAY-F06-V1"
+    },
+    {
+      "claim_id": "encrypted_dns_disabled_v1",
+      "diagnosis": "encrypted_dns_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.encrypted_dns",
+          "field": "dot_enabled",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.encrypted_dns",
+          "field": "doh_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "encrypted_dns_disabled",
+      "workflow": "REPLAY-F07-V1"
+    },
+    {
+      "claim_id": "dot_enabled_v1",
+      "diagnosis": "dot_enabled_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.encrypted_dns",
+          "field": "dot_enabled",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "dot_enabled",
+      "workflow": "REPLAY-F07-V1"
+    },
+    {
+      "claim_id": "doh_enabled_v1",
+      "diagnosis": "doh_enabled_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.encrypted_dns",
+          "field": "doh_enabled",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "doh_enabled",
+      "workflow": "REPLAY-F07-V1"
+    },
+    {
+      "claim_id": "ntp_unsynchronized_v1",
+      "diagnosis": "ntp_unsynchronized_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ntp_sync",
+          "field": "synchronized",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "ntp_unsynchronized",
+      "workflow": "REPLAY-F08-V1"
+    },
+    {
+      "claim_id": "ntp_offset_high_v1",
+      "diagnosis": "ntp_offset_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ntp_sync",
+          "field": "synchronized",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.ntp_sync",
+          "field": "offset_ms",
+          "op": "gt",
+          "value": 500
+        }
+      ],
+      "excludes": [],
+      "message_key": "ntp_offset_high",
+      "workflow": "REPLAY-F08-V1"
+    },
+    {
+      "claim_id": "ntp_offset_low_v1",
+      "diagnosis": "ntp_offset_low_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ntp_sync",
+          "field": "synchronized",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.ntp_sync",
+          "field": "offset_ms",
+          "op": "lt",
+          "value": -500
+        }
+      ],
+      "excludes": [],
+      "message_key": "ntp_offset_low",
+      "workflow": "REPLAY-F08-V1"
+    },
+    {
+      "claim_id": "ntp_synchronized_v1",
+      "diagnosis": "ntp_synchronized_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ntp_sync",
+          "field": "synchronized",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.ntp_sync",
+          "field": "offset_ms",
+          "op": "ge",
+          "value": -500
+        },
+        {
+          "port": "expansion.ntp_sync",
+          "field": "offset_ms",
+          "op": "le",
+          "value": 500
+        }
+      ],
+      "excludes": [],
+      "message_key": "ntp_synchronized",
+      "workflow": "REPLAY-F08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "F02": [
+      "REPLAY-F02-V1"
+    ],
+    "F03": [
+      "REPLAY-F03-V1"
+    ],
+    "F04": [
+      "REPLAY-F04-V1"
+    ],
+    "F05": [
+      "REPLAY-F05-V1"
+    ],
+    "F06": [
+      "REPLAY-F06-V1"
+    ],
+    "F07": [
+      "REPLAY-F07-V1"
+    ],
+    "F08": [
+      "REPLAY-F08-V1"
+    ]
+  }
+}
