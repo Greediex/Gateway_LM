@@ -1,6 +1,6 @@
 """Score synthetic Core evidence and versioned Claims; gold is scorer-only.
 
-Does not approve deployment or mark Skills Simulation verified (WP-A5).
+Can generate simulation acceptance without granting deployment approval.
 FAULT/HEALTHY describe the declared predicates, not causal RCA or repair.
 """
 from __future__ import annotations
@@ -12,7 +12,7 @@ from pathlib import Path
 from gateway_pilot.graph_v3.claims import ClaimBook
 from gateway_pilot.graph_v3.state import CaseState
 from gateway_pilot.skill_expansion.catalog import DATA_DIR
-from gateway_pilot.skill_expansion.coverage import DIRECT_BATCHES
+from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES, DIRECT_BATCHES
 from gateway_pilot.skill_expansion.runtime_bridge import SkillNotReady
 from gateway_pilot.skill_expansion.simulation import (
     SIM_DIR, Scenario, SimulationError, load_gold, load_scenarios,
@@ -85,7 +85,7 @@ def evaluate_all() -> dict:
     """Every direct-Skill batch plus composites, as one report (gold read after each run)."""
     from scripts.simulate_composites import evaluate as evaluate_composites
     reports = [evaluate(sim_dir, diagnostics) for sim_dir, diagnostics in BATCHES]
-    reports.append(evaluate_composites())
+    reports.extend(evaluate_composites(batch) for batch in COMPOSITE_BATCHES)
     return {'synthetic_only': True, 'total': sum(r['total'] for r in reports),
             'passed': sum(r['passed'] for r in reports),
             'rows': [row for r in reports for row in r['rows']]}

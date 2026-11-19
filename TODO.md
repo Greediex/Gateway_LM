@@ -227,6 +227,8 @@ Port/counter/link rate, FDB/bridge/VLAN/STP/MTU; vòng lặp L2 cần nhiều b�
 
 - [ ] **Batch COV-D** · Ưu tiên: P0. Phụ thuộc: A, COV-02…04.
 
+Tiến độ COV-D composite (19/11/2026, `v2`): dùng chung bộ đăng ký batch composite và giữ fixture WP-A4. D04 đạt Simulation verified (3/3 ca qua Core); mẫu neighbor cần ≥ 1 mục và 0 mục lỗi, Claim gắn nhãn theo cờ nhất quán IP–MAC trong mẫu. Bất nhất là dấu hiệu sàng lọc, chưa đủ bằng chứng xác nhận trùng IP, xác định thiết bị hay quy nguyên nhân. D08 chưa nghiệm thu vì thiếu địa chỉ subnet/prefix và next hop để đối chiếu. Tổng mô phỏng 222/222 ca, `simulation_verified` 73 → 74; chưa đo trên router.
+
 IPv4/DHCP lease/pool, duplicate IP, neighbor, IPv6 RA/SLAAC/DHCPv6; dữ liệu client/gateway không trộn scope.
 
 | ID | Skill cần nghiệm thu mô phỏng |

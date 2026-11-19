@@ -13,19 +13,33 @@ from datetime import datetime
 from pathlib import Path
 
 from ..graph_v3.claims import ClaimBook
+from ..graph_v3.contracts import validate
 from ..graph_v3.state import CaseState
+from .catalog import DATA_DIR
+from .coverage import COMPOSITE_BATCHES
 from .simulation import SimulationError, _no_gold
 
 ROOT = Path(__file__).resolve().parents[2]
-DIAGNOSTICS = ROOT / 'config/skill_launcher/replay_a_composite.diagnostics.json'
-SIM_DIR = ROOT / 'data/skill_expansion_v1/simulation_composite_v1'
 
 
-def contracts() -> dict:
-    doc = json.loads(DIAGNOSTICS.read_text(encoding='utf-8'))
+def batch_paths(batch: str) -> tuple[Path, Path]:
+    try:
+        directory, diagnostics = COMPOSITE_BATCHES[batch]
+    except KeyError as exc:
+        raise SimulationError(f'unknown composite batch: {batch}') from exc
+    return DATA_DIR / directory, ROOT / 'config/skill_launcher' / f'{diagnostics}.diagnostics.json'
+
+
+SIM_DIR, DIAGNOSTICS = batch_paths('A')
+
+
+def contracts(batch: str = 'A') -> dict:
+    _, diagnostics = batch_paths(batch)
+    doc = json.loads(diagnostics.read_text(encoding='utf-8'))
     if (doc.get('format') != 'gateway-lm.composite-diagnostics/v1'
             or doc.get('version') != '1.0.0' or doc.get('synthetic_only') is not True):
         raise SimulationError('invalid composite contracts')
+    _no_gold(doc, 'composite contracts')
     return doc
 
 
@@ -39,13 +53,14 @@ def timestamp(value: str) -> datetime:
         raise SimulationError('invalid simulated timestamp') from exc
 
 
-def load_scenarios() -> list[dict]:
-    doc = json.loads((SIM_DIR / 'scenarios.json').read_text(encoding='utf-8'))
+def load_scenarios(batch: str = 'A') -> list[dict]:
+    sim_dir, _ = batch_paths(batch)
+    doc = json.loads((sim_dir / 'scenarios.json').read_text(encoding='utf-8'))
     if (doc.get('format') != 'gateway-lm.composite-simulation/v1'
             or doc.get('version') != '1.0.0' or doc.get('synthetic_only') is not True):
         raise SimulationError('invalid composite scenarios')
     _no_gold(doc, 'composite scenarios')
-    workflows = contracts()['workflows']
+    workflows = contracts(batch)['workflows']
     seen = set()
     for row in doc['scenarios']:
         if (set(row) != {'id', 'skill_id', 'sources'} or row['id'] in seen
@@ -78,14 +93,14 @@ class _ClaimView:
         return self.facts.get(alias)
 
 
-def assess(skill_id: str, sources: dict[str, VerifiedSource]) -> dict:
+def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A') -> dict:
     """Recheck every source before ClaimBook; any missing source fails closed.
 
     History compares two independently verified samples, with distinct proof IDs,
     increasing simulated times, identical environment/target/segment and live TTL
     checks on both Core states. Simulated time never extends an evidence lease.
     """
-    doc = contracts()
+    doc = contracts(batch)
     workflow = doc['workflows'][skill_id]
     rows = [copy.deepcopy(c) for c in doc['claims'] if c['workflow'] == workflow['workflow_id']]
     unknown = {'verdict': 'UNKNOWN', 'claims': {
@@ -110,6 +125,9 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource]) -> dict:
         facts[alias] = fact
         timestamp(source.simulated_at)
         value = fact['value']
+        value_schema = spec.get('value_schema')
+        if value_schema is not None and not validate(value, value_schema):
+            return {**unknown, 'reason': 'insufficient_source:' + alias}
         if ('devices_count' in value and value['devices_count'] < 0
                 or value.get('oui_known') is True and not value.get('oui_vendor', '').strip()):
             return {**unknown, 'reason': 'inconsistent_source:' + alias}

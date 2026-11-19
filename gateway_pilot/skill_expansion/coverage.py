@@ -40,13 +40,19 @@ DIRECT_BATCHES = {
     "L": ("simulation_l_v1", "replay_l"),
     "N": ("simulation_n_v1", "replay_n"),
 }
+# Batch A keeps the original WP-A4 fixture directory.
+COMPOSITE_BATCHES = {
+    "A": ("simulation_composite_v1", "replay_a_composite"),
+    "D": ("simulation_d_composite_v1", "replay_d_composite"),
+}
 # Every file that decides a simulated verdict; editing one invalidates acceptance.
 ACCEPTANCE_INPUTS = tuple(
     [f"{d}/{name}" for d, _ in DIRECT_BATCHES.values()
      for name in ("scenarios.json", "gold_v1.json", "gold_claims_v1.json")]
-    + ["simulation_composite_v1/scenarios.json", "simulation_composite_v1/gold.json"]
+    + [f"{d}/{name}" for d, _ in COMPOSITE_BATCHES.values()
+       for name in ("scenarios.json", "gold.json")]
     + [f"../../config/skill_launcher/{diag}.diagnostics.json" for _, diag in DIRECT_BATCHES.values()]
-    + ["../../config/skill_launcher/replay_a_composite.diagnostics.json"]
+    + [f"../../config/skill_launcher/{diag}.diagnostics.json" for _, diag in COMPOSITE_BATCHES.values()]
 )
 ACCEPTANCE_STATES = ("normal", "fault", "missing")
 

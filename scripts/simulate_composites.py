@@ -1,22 +1,25 @@
 """WP-A4 synthetic orchestration through existing Core; gold only in scorer."""
 from __future__ import annotations
 
+import argparse
 import json
 from collections.abc import Callable
 
 from gateway_pilot.core import PlanError
 from gateway_pilot.skill_expansion.composite import (
-    SIM_DIR, VerifiedSource, assess, contracts, load_scenarios,
+    VerifiedSource, assess, batch_paths, contracts, load_scenarios,
 )
+from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES
+from gateway_pilot.skill_expansion.replay_backend import ReplayFixtureError
 from gateway_pilot.skill_expansion.runtime_bridge import SkillNotReady
 from gateway_pilot.skill_expansion.simulation import SimulationError
 from scripts.core_replay_smoke_v2 import smoke
 
 
-def run_scenario(row: dict, *, inspect: Callable | None = None) -> dict:
+def run_scenario(row: dict, *, batch: str = 'A', inspect: Callable | None = None) -> dict:
     """Trusted fixture harness, with no deployment approvals or gold input."""
     sources, calls, failures = {}, 0, {}
-    specs = contracts()['workflows'][row['skill_id']]['sources']
+    specs = contracts(batch)['workflows'][row['skill_id']]['sources']
     if set(row['sources']) != set(specs):
         raise SimulationError('composite source set mismatch')
     for alias, spec in specs.items():
@@ -28,20 +31,21 @@ def run_scenario(row: dict, *, inspect: Callable | None = None) -> dict:
             result = smoke(spec['function_id'], values=sample['values'],
                            omit=sample['values'] is None, assess=capture, require_fact=False)
             calls += result['core_calls']
-        except (SkillNotReady, PlanError) as exc:
+        except (SkillNotReady, PlanError, ReplayFixtureError) as exc:
             failures[alias] = str(exc)
     if inspect is not None:
         inspect(sources)
-    result = assess(row['skill_id'], sources)
+    result = assess(row['skill_id'], sources, batch=batch)
     return {'id': row['id'], 'skill_id': row['skill_id'], 'core_calls': calls,
             'source_errors': failures, **result}
 
 
-def evaluate() -> dict:
-    scenarios = load_scenarios()
-    rows = [run_scenario(row) for row in scenarios]
+def evaluate(batch: str = 'A') -> dict:
+    sim_dir, _ = batch_paths(batch)
+    scenarios = load_scenarios(batch)
+    rows = [run_scenario(row, batch=batch) for row in scenarios]
     # Deliberately after all execution; never consulted by the backend/Claim view.
-    gold = json.loads((SIM_DIR / 'gold.json').read_text(encoding='utf-8'))
+    gold = json.loads((sim_dir / 'gold.json').read_text(encoding='utf-8'))
     expected = gold.get('expected', {})
     if (gold.get('format') != 'gateway-lm.composite-gold/v1' or gold.get('version') != '1.0.0'
             or gold.get('scenarios_version') != '1.0.0'
@@ -54,6 +58,8 @@ def evaluate() -> dict:
 
 
 if __name__ == '__main__':
-    report = evaluate()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--batch', choices=COMPOSITE_BATCHES, default='A')
+    report = evaluate(parser.parse_args().batch)
     print(json.dumps(report, indent=2, ensure_ascii=False))
     raise SystemExit(report['total'] != report['passed'])

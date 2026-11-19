@@ -1,0 +1,81 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "D04": {
+      "workflow_id": "REPLAY-D04-COMPOSITE-V1",
+      "target_scope": "client",
+      "sources": {
+        "identity": {
+          "function_id": "expansion.identity_consistency",
+          "scope": "client",
+          "target": "synthetic-test-target"
+        },
+        "neighbors": {
+          "function_id": "expansion.neighbor_table",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "neighbor_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "failed_entries": {
+                "type": "integer",
+                "const": 0
+              }
+            },
+            "required": [
+              "neighbor_count",
+              "failed_entries"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "d04_ip_mac_consistent_v1",
+        "d04_ip_mac_inconsistent_v1"
+      ],
+      "limitation": "IP/MAC inconsistency screening only. The aggregate neighbor sample must be nonempty with zero failed entries; it cannot link records to the sampled client. A mismatch cannot confirm a duplicate IP, identify devices sharing an IP, or establish a cause. A consistent sample cannot rule out conflicts beyond that sample."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "d04_ip_mac_consistent_v1",
+      "diagnosis": "d04_ip_mac_consistent_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "identity",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "d04_ip_mac_consistent_v1",
+      "workflow": "REPLAY-D04-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "d04_ip_mac_inconsistent_v1",
+      "diagnosis": "d04_ip_mac_inconsistent_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "identity",
+          "field": "ip_mac_consistent",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "d04_ip_mac_inconsistent_v1",
+      "workflow": "REPLAY-D04-COMPOSITE-V1"
+    }
+  ]
+}

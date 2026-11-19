@@ -1,0 +1,10 @@
+{
+  "format": "gateway-lm.composite-gold/v1",
+  "version": "1.0.0",
+  "scenarios_version": "1.0.0",
+  "expected": {
+    "D04-normal": "HEALTHY",
+    "D04-fault": "FAULT",
+    "D04-missing": "UNKNOWN"
+  }
+}

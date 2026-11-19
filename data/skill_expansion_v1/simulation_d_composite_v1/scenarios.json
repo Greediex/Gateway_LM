@@ -1,0 +1,64 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "D04-normal",
+      "skill_id": "D04",
+      "sources": {
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "ip_mac_consistent": true,
+            "hostname_conflict": false
+          }
+        },
+        "neighbors": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "neighbor_count": 4,
+            "failed_entries": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "D04-fault",
+      "skill_id": "D04",
+      "sources": {
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "ip_mac_consistent": false,
+            "hostname_conflict": false
+          }
+        },
+        "neighbors": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "neighbor_count": 4,
+            "failed_entries": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "D04-missing",
+      "skill_id": "D04",
+      "sources": {
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "ip_mac_consistent": false,
+            "hostname_conflict": false
+          }
+        },
+        "neighbors": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}
