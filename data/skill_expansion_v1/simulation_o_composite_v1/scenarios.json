@@ -1,0 +1,288 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "O01-normal",
+      "skill_id": "O01",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -58.0,
+            "snr_db": 32.0
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O01-fault",
+      "skill_id": "O01",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -58.0,
+            "snr_db": 32.0
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O01-missing",
+      "skill_id": "O01",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -58.0,
+            "snr_db": 32.0
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "O02-normal",
+      "skill_id": "O02",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -58.0,
+            "snr_db": 32.0
+          }
+        },
+        "airtime": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "channel_utilization_pct": 35.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O02-fault",
+      "skill_id": "O02",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -82.0,
+            "snr_db": 12.0
+          }
+        },
+        "airtime": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "channel_utilization_pct": 88.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O02-missing",
+      "skill_id": "O02",
+      "sources": {
+        "signal": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rssi_dbm": -58.0,
+            "snr_db": 32.0
+          }
+        },
+        "airtime": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "O03-normal",
+      "skill_id": "O03",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 600
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "disconnect_events": 1,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "O03-fault",
+      "skill_id": "O03",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 600
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "disconnect_events": 9,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "O03-missing",
+      "skill_id": "O03",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 600
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "O06-normal",
+      "skill_id": "O06",
+      "sources": {
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 18.0,
+            "packet_loss_pct": 0.0
+          }
+        },
+        "jitter": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "jitter_ms": 4.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O06-fault",
+      "skill_id": "O06",
+      "sources": {
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 240.0,
+            "packet_loss_pct": 6.0
+          }
+        },
+        "jitter": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "jitter_ms": 75.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O06-missing",
+      "skill_id": "O06",
+      "sources": {
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 18.0,
+            "packet_loss_pct": 0.0
+          }
+        },
+        "jitter": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "O07-normal",
+      "skill_id": "O07",
+      "sources": {
+        "route": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "default_route": true,
+            "default_route_count": 1
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O07-fault",
+      "skill_id": "O07",
+      "sources": {
+        "route": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "default_route": false,
+            "default_route_count": 0
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100.0
+          }
+        }
+      }
+    },
+    {
+      "id": "O07-missing",
+      "skill_id": "O07",
+      "sources": {
+        "route": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "default_route": true,
+            "default_route_count": 1
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

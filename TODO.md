@@ -428,6 +428,8 @@ Impact/config snapshot/drift/approval/dry-run/readback/rollback/guidance; SK13 t
 
 - [ ] **Batch COV-O** · Ưu tiên: P0 nghiệm thu cuối. Phụ thuộc: A…M; N08 cho hướng dẫn.
 
+Tiến độ COV-O composite (19/11/2026, `v2`). O01, O02, O03, O06 và O07 đạt Simulation verified (15/15 kịch bản qua Core/Verifier), nâng `simulation_verified` từ 84 lên 89/120. Mỗi Claim so một trường với một hằng số. Mẫu thiếu, sai miền, lệch thời điểm hoặc tín hiệu trái chiều cho verdict UNKNOWN. Kết quả mô tả nguồn mô phỏng. O04 thiếu phép đo DNS phía client, O05 thiếu trạng thái kết nối/dịch vụ gắn với thiết bị IoT/camera, O08 thiếu quan sát phân biệt được nhiều client. Chưa đo trên router.
+
 Bài toán tổng hợp nhiều Skill, tiếp tục đo khi thiếu, dừng hữu hạn; hướng dẫn xử lý tương ứng bằng chứng, không chỉ trả danh sách số đo.
 
 | ID | Skill cần nghiệm thu mô phỏng |

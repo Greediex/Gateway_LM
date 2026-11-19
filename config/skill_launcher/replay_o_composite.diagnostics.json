@@ -1,0 +1,696 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "O01": {
+      "workflow_id": "REPLAY-O01-COMPOSITE-V1",
+      "target_scope": "client",
+      "require_same_sample_time": true,
+      "sources": {
+        "signal": {
+          "function_id": "expansion.wireless_signal",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "rssi_dbm": {
+                "type": "number",
+                "minimum": -120,
+                "maximum": 0
+              },
+              "snr_db": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "rssi_dbm",
+              "snr_db"
+            ]
+          }
+        },
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "if": {
+              "properties": {
+                "reachable": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "loss_pct": {
+                  "maximum": 5
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "loss_pct": {
+                  "const": 100
+                }
+              }
+            }
+          }
+        }
+      },
+      "claims": [
+        "o01_upstream_reachable_v1",
+        "o01_upstream_unreachable_v1"
+      ],
+      "limitation": "Reports gateway upstream probe status alongside a usable client RF sample. The RF sample does not establish current AP association, and the gateway probe cannot establish this client's Internet reachability or the cause of its symptoms."
+    },
+    "O02": {
+      "workflow_id": "REPLAY-O02-COMPOSITE-V1",
+      "target_scope": "client",
+      "require_same_sample_time": true,
+      "sources": {
+        "signal": {
+          "function_id": "expansion.wireless_signal",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "rssi_dbm": {
+                "type": "number",
+                "minimum": -120,
+                "maximum": 0
+              },
+              "snr_db": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "rssi_dbm",
+              "snr_db"
+            ]
+          }
+        },
+        "airtime": {
+          "function_id": "expansion.airtime_usage",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "channel_utilization_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "channel_utilization_pct"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "o02_rssi_at_or_above_floor_v1",
+        "o02_rssi_below_floor_v1",
+        "o02_snr_at_or_above_floor_v1",
+        "o02_snr_below_floor_v1",
+        "o02_airtime_at_or_below_limit_v1",
+        "o02_airtime_above_limit_v1"
+      ],
+      "limitation": "Reports RSSI, SNR and gateway channel utilization against replay thresholds. Mixed readings have no overall verdict. The sources do not establish a shared AP or channel, client throughput or the cause of slowness."
+    },
+    "O03": {
+      "workflow_id": "REPLAY-O03-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "link": {
+          "function_id": "expansion.wan_link",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "link_up": {
+                "type": "boolean",
+                "const": true
+              },
+              "uptime_seconds": {
+                "type": "integer",
+                "minimum": 60
+              }
+            },
+            "required": [
+              "link_up",
+              "uptime_seconds"
+            ]
+          }
+        },
+        "events": {
+          "function_id": "expansion.wan_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "disconnect_events": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "observation_window_s": {
+                "type": "integer",
+                "minimum": 3600,
+                "maximum": 3600
+              }
+            },
+            "required": [
+              "disconnect_events",
+              "observation_window_s"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "o03_wan_disconnect_count_at_or_below_limit_v1",
+        "o03_wan_disconnect_count_above_limit_v1"
+      ],
+      "limitation": "Reports the gateway WAN disconnect count in a one-hour summary alongside a currently up WAN link with at least 60 seconds of uptime. The summary lacks event timestamps, affected clients and interface correlation, so it cannot establish the sequence or cause of interruptions."
+    },
+    "O06": {
+      "workflow_id": "REPLAY-O06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "path": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "exclusiveMaximum": 100
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ]
+          }
+        },
+        "jitter": {
+          "function_id": "expansion.network_jitter",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "jitter_ms": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "jitter_ms"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "o06_latency_at_or_below_limit_v1",
+        "o06_latency_above_limit_v1",
+        "o06_loss_at_or_below_limit_v1",
+        "o06_loss_above_limit_v1",
+        "o06_jitter_at_or_below_limit_v1",
+        "o06_jitter_above_limit_v1"
+      ],
+      "limitation": "Reports gateway latency, packet loss and jitter against replay thresholds. Mixed readings or total loss leave the overall status undetermined. These sources contain no call, media-flow, endpoint or path-correlation evidence."
+    },
+    "O07": {
+      "workflow_id": "REPLAY-O07-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "route": {
+          "function_id": "expansion.wan_routes",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "default_route": {
+                "type": "boolean"
+              },
+              "default_route_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "default_route",
+              "default_route_count"
+            ],
+            "if": {
+              "properties": {
+                "default_route": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "default_route_count": {
+                  "minimum": 1
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "default_route_count": {
+                  "const": 0
+                }
+              }
+            }
+          }
+        },
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "if": {
+              "properties": {
+                "reachable": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "loss_pct": {
+                  "maximum": 5
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "loss_pct": {
+                  "const": 100
+                }
+              }
+            }
+          }
+        }
+      },
+      "claims": [
+        "o07_default_route_present_v1",
+        "o07_default_route_absent_v1",
+        "o07_upstream_reachable_v1",
+        "o07_upstream_unreachable_v1"
+      ],
+      "limitation": "Reports the gateway default-route flag and upstream probe status. Mixed readings have no overall verdict. One gateway snapshot does not establish outage breadth, affected clients or sites, a shared probe route or the cause."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "o01_upstream_reachable_v1",
+      "diagnosis": "o01_upstream_reachable_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "o01_upstream_reachable_v1",
+      "workflow": "REPLAY-O01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o01_upstream_unreachable_v1",
+      "diagnosis": "o01_upstream_unreachable_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "o01_upstream_unreachable_v1",
+      "workflow": "REPLAY-O01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_rssi_at_or_above_floor_v1",
+      "diagnosis": "o02_rssi_at_or_above_floor_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "rssi_dbm",
+          "op": "ge",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_rssi_at_or_above_floor_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_rssi_below_floor_v1",
+      "diagnosis": "o02_rssi_below_floor_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "rssi_dbm",
+          "op": "lt",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_rssi_below_floor_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_snr_at_or_above_floor_v1",
+      "diagnosis": "o02_snr_at_or_above_floor_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "snr_db",
+          "op": "ge",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_snr_at_or_above_floor_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_snr_below_floor_v1",
+      "diagnosis": "o02_snr_below_floor_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "snr_db",
+          "op": "lt",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_snr_below_floor_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_airtime_at_or_below_limit_v1",
+      "diagnosis": "o02_airtime_at_or_below_limit_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "airtime",
+          "field": "channel_utilization_pct",
+          "op": "le",
+          "value": 70
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_airtime_at_or_below_limit_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o02_airtime_above_limit_v1",
+      "diagnosis": "o02_airtime_above_limit_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "airtime",
+          "field": "channel_utilization_pct",
+          "op": "gt",
+          "value": 70
+        }
+      ],
+      "excludes": [],
+      "message_key": "o02_airtime_above_limit_v1",
+      "workflow": "REPLAY-O02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o03_wan_disconnect_count_at_or_below_limit_v1",
+      "diagnosis": "o03_wan_disconnect_count_at_or_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "events",
+          "field": "disconnect_events",
+          "op": "le",
+          "value": 3
+        }
+      ],
+      "excludes": [],
+      "message_key": "o03_wan_disconnect_count_at_or_below_limit_v1",
+      "workflow": "REPLAY-O03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o03_wan_disconnect_count_above_limit_v1",
+      "diagnosis": "o03_wan_disconnect_count_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "events",
+          "field": "disconnect_events",
+          "op": "gt",
+          "value": 3
+        }
+      ],
+      "excludes": [],
+      "message_key": "o03_wan_disconnect_count_above_limit_v1",
+      "workflow": "REPLAY-O03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_latency_at_or_below_limit_v1",
+      "diagnosis": "o06_latency_at_or_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "path",
+          "field": "latency_ms",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_latency_at_or_below_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_latency_above_limit_v1",
+      "diagnosis": "o06_latency_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "path",
+          "field": "latency_ms",
+          "op": "gt",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_latency_above_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_loss_at_or_below_limit_v1",
+      "diagnosis": "o06_loss_at_or_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "path",
+          "field": "packet_loss_pct",
+          "op": "le",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_loss_at_or_below_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_loss_above_limit_v1",
+      "diagnosis": "o06_loss_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "path",
+          "field": "packet_loss_pct",
+          "op": "gt",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_loss_above_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_jitter_at_or_below_limit_v1",
+      "diagnosis": "o06_jitter_at_or_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "jitter",
+          "field": "jitter_ms",
+          "op": "le",
+          "value": 30
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_jitter_at_or_below_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o06_jitter_above_limit_v1",
+      "diagnosis": "o06_jitter_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "jitter",
+          "field": "jitter_ms",
+          "op": "gt",
+          "value": 30
+        }
+      ],
+      "excludes": [],
+      "message_key": "o06_jitter_above_limit_v1",
+      "workflow": "REPLAY-O06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o07_default_route_present_v1",
+      "diagnosis": "o07_default_route_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "route",
+          "field": "default_route",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "o07_default_route_present_v1",
+      "workflow": "REPLAY-O07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o07_default_route_absent_v1",
+      "diagnosis": "o07_default_route_absent_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "route",
+          "field": "default_route",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "o07_default_route_absent_v1",
+      "workflow": "REPLAY-O07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o07_upstream_reachable_v1",
+      "diagnosis": "o07_upstream_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "o07_upstream_reachable_v1",
+      "workflow": "REPLAY-O07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "o07_upstream_unreachable_v1",
+      "diagnosis": "o07_upstream_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "o07_upstream_unreachable_v1",
+      "workflow": "REPLAY-O07-COMPOSITE-V1"
+    }
+  ]
+}

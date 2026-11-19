@@ -2,7 +2,7 @@
   "format": "gateway-lm.skill-acceptance/v1",
   "version": "1.0.0",
   "synthetic_only": true,
-  "inputs_digest": "0ffb18954d09a9b2ad3b4a336159b9a49be3e5bbe969ee78f84bac358f1f2d27",
+  "inputs_digest": "9dff4b072c6116f3c8467ca62adcbd9b2c29006600e3d588bafcb3b285f62158",
   "skills": {
     "A02": {
       "normal": {
@@ -1429,6 +1429,91 @@
       "missing": {
         "pass": true,
         "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "O01": {
+      "normal": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "O02": {
+      "normal": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "O03": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "O06": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "O07": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
         "verdict": "UNKNOWN"
       }
     }
