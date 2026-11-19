@@ -1,0 +1,263 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "M03": {
+      "workflow_id": "REPLAY-M03-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "inventory": {
+          "function_id": "expansion.topology_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "node_count": {"type": "integer", "minimum": 1},
+              "edge_count": {"type": "integer", "minimum": 0}
+            },
+            "required": ["node_count", "edge_count"]
+          }
+        },
+        "history": {
+          "function_id": "expansion.evidence_history",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "samples": {"type": "integer", "minimum": 0},
+              "window_seconds": {"type": "integer", "minimum": 1}
+            },
+            "required": ["samples", "window_seconds"]
+          }
+        }
+      },
+      "claims": [
+        "m03_history_sample_minimum_met_v1",
+        "m03_history_sample_gap_reported_v1"
+      ],
+      "limitation": "Checks a minimum of two reported history samples in a positive window with a nonempty gateway topology snapshot. The count does not identify which measurements, devices or time intervals are missing or establish causal sufficiency."
+    },
+    "M05": {
+      "workflow_id": "REPLAY-M05-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "probe": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {"type": "boolean"},
+              "loss_pct": {"type": "number", "minimum": 0, "maximum": 100}
+            },
+            "required": ["reachable", "loss_pct"]
+          }
+        },
+        "history": {
+          "function_id": "expansion.evidence_history",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "samples": {"type": "integer", "minimum": 2},
+              "window_seconds": {"type": "integer", "minimum": 1}
+            },
+            "required": ["samples", "window_seconds"]
+          }
+        }
+      },
+      "claims": [
+        "m05_upstream_reachability_observed_v1",
+        "m05_upstream_unreachability_observed_v1"
+      ],
+      "limitation": "Classifies only the reported upstream reachability observation alongside a usable history summary. The summary does not show persistence of this observation. The verdict carries no causal attribution, device identification or repair status."
+    },
+    "M06": {
+      "workflow_id": "REPLAY-M06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "probe": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {"type": "boolean", "const": true},
+              "loss_pct": {"type": "number", "minimum": 0, "maximum": 100}
+            },
+            "required": ["reachable", "loss_pct"]
+          }
+        },
+        "path": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {"type": "number", "minimum": 0},
+              "packet_loss_pct": {"type": "number", "minimum": 0, "maximum": 100}
+            },
+            "required": ["latency_ms", "packet_loss_pct"]
+          }
+        }
+      },
+      "claims": [
+        "m06_upstream_loss_within_threshold_v1",
+        "m06_upstream_loss_above_threshold_v1",
+        "m06_path_loss_within_threshold_v1",
+        "m06_path_loss_above_threshold_v1"
+      ],
+      "limitation": "Screens two concurrent gateway packet-loss indicators against their respective replay thresholds while upstream reports reachability. Mixed grades have no composite verdict. The sources do not prove identical destinations, per-device impact or a shared cause."
+    },
+    "M08": {
+      "workflow_id": "REPLAY-M08-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "incidents": {
+          "function_id": "expansion.incident_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "incident_events": {"type": "integer", "minimum": 0},
+              "open_incidents": {"type": "integer", "minimum": 0}
+            },
+            "required": ["incident_events", "open_incidents"]
+          }
+        },
+        "history": {
+          "function_id": "expansion.evidence_history",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "samples": {"type": "integer", "minimum": 2},
+              "window_seconds": {"type": "integer", "minimum": 1}
+            },
+            "required": ["samples", "window_seconds"]
+          }
+        }
+      },
+      "claims": [
+        "m08_no_open_incidents_reported_v1",
+        "m08_open_incidents_reported_v1"
+      ],
+      "limitation": "Explains the replay verdict with the reported open-incident count and the Core evidence ID for that count. The history summary supplies context without linking counts to individual incidents, devices or causes."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "m03_history_sample_minimum_met_v1",
+      "diagnosis": "m03_history_sample_minimum_met_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "history", "field": "samples", "op": "ge", "value": 2}],
+      "excludes": [],
+      "message_key": "m03_history_sample_minimum_met_v1",
+      "workflow": "REPLAY-M03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m03_history_sample_gap_reported_v1",
+      "diagnosis": "m03_history_sample_gap_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "history", "field": "samples", "op": "lt", "value": 2}],
+      "excludes": [],
+      "message_key": "m03_history_sample_gap_reported_v1",
+      "workflow": "REPLAY-M03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m05_upstream_reachability_observed_v1",
+      "diagnosis": "m05_upstream_reachability_observed_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "probe", "field": "reachable", "op": "eq", "value": true}],
+      "excludes": [],
+      "message_key": "m05_upstream_reachability_observed_v1",
+      "workflow": "REPLAY-M05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m05_upstream_unreachability_observed_v1",
+      "diagnosis": "m05_upstream_unreachability_observed_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "probe", "field": "reachable", "op": "eq", "value": false}],
+      "excludes": [],
+      "message_key": "m05_upstream_unreachability_observed_v1",
+      "workflow": "REPLAY-M05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m06_upstream_loss_within_threshold_v1",
+      "diagnosis": "m06_upstream_loss_within_threshold_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "probe", "field": "loss_pct", "op": "le", "value": 5}],
+      "excludes": [],
+      "message_key": "m06_upstream_loss_within_threshold_v1",
+      "workflow": "REPLAY-M06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m06_upstream_loss_above_threshold_v1",
+      "diagnosis": "m06_upstream_loss_above_threshold_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "probe", "field": "loss_pct", "op": "gt", "value": 5}],
+      "excludes": [],
+      "message_key": "m06_upstream_loss_above_threshold_v1",
+      "workflow": "REPLAY-M06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m06_path_loss_within_threshold_v1",
+      "diagnosis": "m06_path_loss_within_threshold_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "path", "field": "packet_loss_pct", "op": "le", "value": 2}],
+      "excludes": [],
+      "message_key": "m06_path_loss_within_threshold_v1",
+      "workflow": "REPLAY-M06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m06_path_loss_above_threshold_v1",
+      "diagnosis": "m06_path_loss_above_threshold_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "path", "field": "packet_loss_pct", "op": "gt", "value": 2}],
+      "excludes": [],
+      "message_key": "m06_path_loss_above_threshold_v1",
+      "workflow": "REPLAY-M06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m08_no_open_incidents_reported_v1",
+      "diagnosis": "m08_no_open_incidents_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "incidents", "field": "open_incidents", "op": "eq", "value": 0}],
+      "excludes": [],
+      "message_key": "m08_no_open_incidents_reported_v1",
+      "workflow": "REPLAY-M08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "m08_open_incidents_reported_v1",
+      "diagnosis": "m08_open_incidents_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "incidents", "field": "open_incidents", "op": "gt", "value": 0}],
+      "excludes": [],
+      "message_key": "m08_open_incidents_reported_v1",
+      "workflow": "REPLAY-M08-COMPOSITE-V1"
+    }
+  ]
+}

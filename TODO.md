@@ -405,6 +405,8 @@ Hypothesis ranking, gap, adaptive measurement, multi-source/cross-client, giải
 | `M07` | Liên kết sự cố nhiều thiết bị |
 | `M08` | Giải thích kết luận kèm evidence ID |
 
+Tiến độ COV-M composite (19/11/2026, `v2`). M03, M05, M06, M08 đạt Simulation verified, 12/12 ca qua Core/Verifier, nâng `simulation_verified` từ 80 lên 84/120. M03 kiểm ngưỡng tối thiểu 2 mẫu do nguồn lịch sử báo trong cửa sổ dương với topology có ít nhất 1 nút. M05 chỉ ghi nhận cờ upstream reachable. M06 đối chiếu ngưỡng loss upstream 5% và loss đường đo 2% khi upstream báo reachable, hai nguồn khác mức thì UNKNOWN. M08 dẫn evidence ID của số sự cố đang mở, ngưỡng 0. M05/M08 yêu cầu lịch sử báo ít nhất 2 mẫu trong cửa sổ dương làm ngữ cảnh. M02 thiếu bằng chứng phân biệt các giả thuyết, M04 cần kiểm thử hành vi chọn phép đo, M07 thiếu ID và liên kết sự cố theo thiết bị. Các Claim chỉ dùng cho mẫu tổng hợp cấp gateway, chưa đo trên router.
+
 ### COV-N — N: Change & Guided Remediation · 8 Skill
 
 - [ ] **Batch COV-N** · Ưu tiên: P1; sandbox riêng. Phụ thuộc: H/I/K/L/M và transaction controller hiện có.

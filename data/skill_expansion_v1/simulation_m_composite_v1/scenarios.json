@@ -1,0 +1,235 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "M03-normal",
+      "skill_id": "M03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "node_count": 3,
+            "edge_count": 2
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M03-fault",
+      "skill_id": "M03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "node_count": 3,
+            "edge_count": 2
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 1,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M03-missing",
+      "skill_id": "M03",
+      "sources": {
+        "inventory": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "node_count": 3,
+            "edge_count": 2
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "M05-normal",
+      "skill_id": "M05",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M05-fault",
+      "skill_id": "M05",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M05-missing",
+      "skill_id": "M05",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M06-normal",
+      "skill_id": "M06",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0
+          }
+        },
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 25,
+            "packet_loss_pct": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "M06-fault",
+      "skill_id": "M06",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 12
+          }
+        },
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 35,
+            "packet_loss_pct": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "M06-missing",
+      "skill_id": "M06",
+      "sources": {
+        "probe": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0
+          }
+        },
+        "path": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "M08-normal",
+      "skill_id": "M08",
+      "sources": {
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 2,
+            "open_incidents": 0
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M08-fault",
+      "skill_id": "M08",
+      "sources": {
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 2,
+            "open_incidents": 1
+          }
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "M08-missing",
+      "skill_id": "M08",
+      "sources": {
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "history": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 60
+          }
+        }
+      }
+    }
+  ]
+}

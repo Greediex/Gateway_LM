@@ -1,0 +1,19 @@
+{
+  "format": "gateway-lm.composite-gold/v1",
+  "version": "1.0.0",
+  "scenarios_version": "1.0.0",
+  "expected": {
+    "M03-normal": "HEALTHY",
+    "M03-fault": "FAULT",
+    "M03-missing": "UNKNOWN",
+    "M05-normal": "HEALTHY",
+    "M05-fault": "FAULT",
+    "M05-missing": "UNKNOWN",
+    "M06-normal": "HEALTHY",
+    "M06-fault": "FAULT",
+    "M06-missing": "UNKNOWN",
+    "M08-normal": "HEALTHY",
+    "M08-fault": "FAULT",
+    "M08-missing": "UNKNOWN"
+  }
+}
