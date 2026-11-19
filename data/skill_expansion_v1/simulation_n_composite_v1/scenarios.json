@@ -1,0 +1,176 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "N02-normal",
+      "skill_id": "N02",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "firewall": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rules_count": 12,
+            "invalid_rules": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "N02-fault",
+      "skill_id": "N02",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "firewall": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rules_count": 12,
+            "invalid_rules": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "N02-missing",
+      "skill_id": "N02",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "firewall": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "rules_count": 12,
+            "invalid_rules": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "N06-normal",
+      "skill_id": "N06",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "drift": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "drift_count": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "N06-fault",
+      "skill_id": "N06",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": false,
+            "configuration_revision": ""
+          }
+        },
+        "drift": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "drift_count": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "N06-missing",
+      "skill_id": "N06",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": false,
+            "configuration_revision": ""
+          }
+        },
+        "drift": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "N08-normal",
+      "skill_id": "N08",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 3,
+            "open_incidents": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "N08-fault",
+      "skill_id": "N08",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 3,
+            "open_incidents": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "N08-missing",
+      "skill_id": "N08",
+      "sources": {
+        "snapshot": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "snapshot_available": true,
+            "configuration_revision": "synthetic-rev-1"
+          }
+        },
+        "incidents": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

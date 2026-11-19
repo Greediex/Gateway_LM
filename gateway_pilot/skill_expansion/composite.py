@@ -153,6 +153,9 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
                     or any(isinstance(field, float) and not math.isfinite(field)
                            for field in value.values())):
                 return {**unknown, 'reason': 'insufficient_source:' + alias}
+        if any(value[field] > value[upper_field]
+               for field, upper_field in spec.get('field_maximums', {}).items()):
+            return {**unknown, 'reason': 'inconsistent_source:' + alias}
         if ('devices_count' in value and value['devices_count'] < 0
                 or value.get('oui_known') is True and not value.get('oui_vendor', '').strip()):
             return {**unknown, 'reason': 'inconsistent_source:' + alias}

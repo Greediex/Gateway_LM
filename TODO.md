@@ -411,6 +411,8 @@ Tiến độ COV-M composite (19/11/2026, `v2`). M03, M05, M06, M08 đạt Simul
 
 - [ ] **Batch COV-N** · Ưu tiên: P1; sandbox riêng. Phụ thuộc: H/I/K/L/M và transaction controller hiện có.
 
+Tiến độ COV-N composite (19/11/2026, `v2`). N02, N06 và N08 đạt Simulation verified (9/9 ca READ qua Core/Verifier), nâng `simulation_verified` từ 89 lên 92/120. N02 sàng lọc số rule firewall không hợp lệ trên mẫu có ít nhất một rule và snapshot có revision. N06 kiểm điều kiện lập kế hoạch từ trạng thái snapshot và số mục drift, tín hiệu trái chiều cho UNKNOWN. N08 dùng số sự cố mở để hướng dẫn rà timeline và thu thập evidence READ. Mẫu thiếu, sai miền hoặc lệch thời điểm cho UNKNOWN. N05 thiếu nguồn READ về hồ sơ phê duyệt gắn với thay đổi cụ thể. Phạm vi là hiện trạng mô phỏng, chưa xác minh tác động, nguyên nhân, thiết bị riêng lẻ, tính khả thi của dry-run hay kết quả khắc phục.
+
 Impact/config snapshot/drift/approval/dry-run/readback/rollback/guidance; SK13 thử sandbox approve/reject/in-doubt, không WRITE thiết bị thật.
 
 | ID | Skill cần nghiệm thu mô phỏng |

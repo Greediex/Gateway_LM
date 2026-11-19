@@ -1,0 +1,332 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "N02": {
+      "workflow_id": "REPLAY-N02-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "snapshot": {
+          "function_id": "expansion.config_snapshot",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "snapshot_available": {
+                "type": "boolean",
+                "const": true
+              },
+              "configuration_revision": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "snapshot_available",
+              "configuration_revision"
+            ]
+          }
+        },
+        "firewall": {
+          "function_id": "expansion.firewall_audit",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "field_maximums": {
+            "invalid_rules": "rules_count"
+          },
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "rules_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "invalid_rules": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "rules_count",
+              "invalid_rules"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "n02_baseline_no_invalid_rules_reported_v1",
+        "n02_baseline_invalid_rules_reported_v1"
+      ],
+      "limitation": "Screens the reported firewall baseline before a change when snapshot metadata is available. The sources contain no proposed change, affected rules, dependency list, per-device impact or causal evidence. Impact and change safety remain unknown."
+    },
+    "N06": {
+      "workflow_id": "REPLAY-N06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "snapshot": {
+          "function_id": "expansion.config_snapshot",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "snapshot_available": {
+                "type": "boolean"
+              },
+              "configuration_revision": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "snapshot_available",
+              "configuration_revision"
+            ],
+            "if": {
+              "properties": {
+                "snapshot_available": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "configuration_revision": {
+                  "pattern": "\\S"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "configuration_revision": {
+                  "const": ""
+                }
+              }
+            }
+          }
+        },
+        "drift": {
+          "function_id": "expansion.config_drift",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "drift_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "drift_count"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "n06_snapshot_reported_available_v1",
+        "n06_snapshot_reported_unavailable_v1",
+        "n06_no_baseline_drift_reported_v1",
+        "n06_baseline_drift_reported_v1"
+      ],
+      "limitation": "Checks only two baseline conditions for planning: snapshot metadata and reported drift. Mixed results leave the combined status unknown. The proposed diff, validation scope and plan feasibility are unknown. The sample establishes neither a cause nor an effect on individual devices."
+    },
+    "N08": {
+      "workflow_id": "REPLAY-N08-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "snapshot": {
+          "function_id": "expansion.config_snapshot",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "snapshot_available": {
+                "type": "boolean",
+                "const": true
+              },
+              "configuration_revision": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "snapshot_available",
+              "configuration_revision"
+            ]
+          }
+        },
+        "incidents": {
+          "function_id": "expansion.incident_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "incident_events": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "open_incidents": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "incident_events",
+              "open_incidents"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "n08_no_open_incidents_reported_v1",
+        "n08_open_incidents_reported_v1"
+      ],
+      "limitation": "Use the reported snapshot revision as review context. If an open incident is reported, review its timeline and gather incident-specific READ evidence before choosing a remedy. A zero count describes the sample only. Aggregate counts cannot identify the incident, affected devices, cause or repair outcome."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "n02_baseline_no_invalid_rules_reported_v1",
+      "diagnosis": "n02_baseline_no_invalid_rules_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "firewall",
+          "field": "invalid_rules",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n02_baseline_no_invalid_rules_reported_v1",
+      "workflow": "REPLAY-N02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n02_baseline_invalid_rules_reported_v1",
+      "diagnosis": "n02_baseline_invalid_rules_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "firewall",
+          "field": "invalid_rules",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n02_baseline_invalid_rules_reported_v1",
+      "workflow": "REPLAY-N02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n06_snapshot_reported_available_v1",
+      "diagnosis": "n06_snapshot_reported_available_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "snapshot",
+          "field": "snapshot_available",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "n06_snapshot_reported_available_v1",
+      "workflow": "REPLAY-N06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n06_snapshot_reported_unavailable_v1",
+      "diagnosis": "n06_snapshot_reported_unavailable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "snapshot",
+          "field": "snapshot_available",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "n06_snapshot_reported_unavailable_v1",
+      "workflow": "REPLAY-N06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n06_no_baseline_drift_reported_v1",
+      "diagnosis": "n06_no_baseline_drift_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "drift",
+          "field": "drift_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n06_no_baseline_drift_reported_v1",
+      "workflow": "REPLAY-N06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n06_baseline_drift_reported_v1",
+      "diagnosis": "n06_baseline_drift_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "drift",
+          "field": "drift_count",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n06_baseline_drift_reported_v1",
+      "workflow": "REPLAY-N06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n08_no_open_incidents_reported_v1",
+      "diagnosis": "n08_no_open_incidents_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "incidents",
+          "field": "open_incidents",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n08_no_open_incidents_reported_v1",
+      "workflow": "REPLAY-N08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "n08_open_incidents_reported_v1",
+      "diagnosis": "n08_open_incidents_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "incidents",
+          "field": "open_incidents",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "n08_open_incidents_reported_v1",
+      "workflow": "REPLAY-N08-COMPOSITE-V1"
+    }
+  ]
+}
