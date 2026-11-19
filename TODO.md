@@ -212,6 +212,8 @@ RSSI/SNR đúng đơn vị, airtime/kênh, roaming timeline và mesh nhiều AP;
 
 - [ ] **Batch COV-C** · Ưu tiên: P0. Phụ thuộc: A, COV-02…04.
 
+Tiến độ COV-C composite (19/11/2026, `v2`): C06 đạt Simulation verified (3/3 kịch bản qua Core), coverage tăng từ 78 lên 79/120. Workflow dùng bridge, STP và mất gói cùng thời điểm mô phỏng. Bridge phải up, có ≥2 cổng thành viên và STP phải bật. HEALTHY khi ghi nhận 0 thay đổi STP và mất gói ≤1%; FAULT khi bộ đếm ≥3 và mất gói ≥10%; thiếu nguồn, mẫu không hợp lệ, tín hiệu trung gian hoặc trái chiều đều UNKNOWN. Ngưỡng mô phỏng chưa hiệu chỉnh. Bộ đếm thiếu cửa sổ quan sát và phép đo mất gói thiếu định danh bridge/VLAN, nên kết quả chỉ nêu dấu hiệu, chưa xác nhận vòng lặp, thiết bị hay nguyên nhân. Kiểm tra local: check_project PASS, simulate_skills 237/237, unittest 1033 pass, 0 fail, 5 skip Windows-only. Không có CI mới vì commit chỉ ở local.
+
 Port/counter/link rate, FDB/bridge/VLAN/STP/MTU; vòng lặp L2 cần nhiều bằng chứng, không suy từ một counter.
 
 | ID | Skill cần nghiệm thu mô phỏng |

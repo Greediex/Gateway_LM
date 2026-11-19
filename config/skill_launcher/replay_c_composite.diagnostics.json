@@ -1,0 +1,110 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "C06": {
+      "workflow_id": "REPLAY-C06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "bridge": {
+          "function_id": "expansion.bridge_health",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "bridge_up": {"type": "boolean", "const": true},
+              "member_ports": {"type": "integer", "minimum": 2}
+            },
+            "required": ["bridge_up", "member_ports"]
+          }
+        },
+        "stp": {
+          "function_id": "expansion.stp_status",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "stp_enabled": {"type": "boolean", "const": true},
+              "topology_changes": {"type": "integer", "minimum": 0}
+            },
+            "required": ["stp_enabled", "topology_changes"],
+            "anyOf": [
+              {"properties": {"topology_changes": {"maximum": 0}}},
+              {"properties": {"topology_changes": {"minimum": 3}}}
+            ]
+          }
+        },
+        "loss": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {"type": "number", "minimum": 0},
+              "packet_loss_pct": {"type": "number", "minimum": 0, "maximum": 100}
+            },
+            "required": ["latency_ms", "packet_loss_pct"],
+            "anyOf": [
+              {"properties": {"packet_loss_pct": {"maximum": 1}}},
+              {"properties": {"packet_loss_pct": {"minimum": 10}}}
+            ]
+          }
+        }
+      },
+      "claims": [
+        "c06_no_stp_changes_reported_v1",
+        "c06_high_stp_change_count_v1",
+        "c06_low_sampled_loss_v1",
+        "c06_high_sampled_loss_v1"
+      ],
+      "limitation": "Synthetic gateway screening for a pattern compatible with an L2 loop: a reported STP change count of at least 3 alongside packet loss of at least 10%, with STP enabled and an up bridge with at least two member ports. HEALTHY covers only zero reported changes with loss at most 1%. Thresholds are uncalibrated. The STP counter has no observation window and the loss probe is not bound to a specific bridge or VLAN. The sample cannot establish a temporal relationship, confirm or rule out a loop, identify an individual device or port, or determine a cause."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "c06_no_stp_changes_reported_v1",
+      "diagnosis": "c06_no_stp_changes_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "stp", "field": "topology_changes", "op": "le", "value": 0}],
+      "excludes": [],
+      "message_key": "c06_no_stp_changes_reported_v1",
+      "workflow": "REPLAY-C06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "c06_high_stp_change_count_v1",
+      "diagnosis": "c06_high_stp_change_count_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "stp", "field": "topology_changes", "op": "ge", "value": 3}],
+      "excludes": [],
+      "message_key": "c06_high_stp_change_count_v1",
+      "workflow": "REPLAY-C06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "c06_low_sampled_loss_v1",
+      "diagnosis": "c06_low_sampled_loss_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "loss", "field": "packet_loss_pct", "op": "le", "value": 1}],
+      "excludes": [],
+      "message_key": "c06_low_sampled_loss_v1",
+      "workflow": "REPLAY-C06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "c06_high_sampled_loss_v1",
+      "diagnosis": "c06_high_sampled_loss_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "loss", "field": "packet_loss_pct", "op": "ge", "value": 10}],
+      "excludes": [],
+      "message_key": "c06_high_sampled_loss_v1",
+      "workflow": "REPLAY-C06-COMPOSITE-V1"
+    }
+  ]
+}

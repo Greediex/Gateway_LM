@@ -1,0 +1,61 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "C06-normal",
+      "skill_id": "C06",
+      "sources": {
+        "bridge": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"bridge_up": true, "member_ports": 3}
+        },
+        "stp": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"stp_enabled": true, "topology_changes": 0}
+        },
+        "loss": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"latency_ms": 2.4, "packet_loss_pct": 0}
+        }
+      }
+    },
+    {
+      "id": "C06-fault",
+      "skill_id": "C06",
+      "sources": {
+        "bridge": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"bridge_up": true, "member_ports": 3}
+        },
+        "stp": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"stp_enabled": true, "topology_changes": 8}
+        },
+        "loss": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"latency_ms": 28.0, "packet_loss_pct": 24.5}
+        }
+      }
+    },
+    {
+      "id": "C06-missing",
+      "skill_id": "C06",
+      "sources": {
+        "bridge": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"bridge_up": true, "member_ports": 3}
+        },
+        "stp": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"stp_enabled": true, "topology_changes": 8}
+        },
+        "loss": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

@@ -43,6 +43,7 @@ DIRECT_BATCHES = {
 # Batch A keeps the original WP-A4 fixture directory.
 COMPOSITE_BATCHES = {
     "A": ("simulation_composite_v1", "replay_a_composite"),
+    "C": ("simulation_c_composite_v1", "replay_c_composite"),
     "D": ("simulation_d_composite_v1", "replay_d_composite"),
     "G": ("simulation_g_composite_v1", "replay_g_composite"),
     "J": ("simulation_j_composite_v1", "replay_j_composite"),
