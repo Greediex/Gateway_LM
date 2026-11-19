@@ -333,6 +333,8 @@ Firewall/exposure/isolation/encryption/auth/segmentation/compliance; nguồn mô
 | `I07` | Phát hiện bất thường client có giải thích |
 | `I08` | Kiểm toán tuân thủ cấu hình |
 
+Tiến độ COV-I composite (19/11/2026, `v2`). I07 đạt Simulation verified với 3/3 kịch bản qua Core/Verifier, nâng `simulation_verified` từ 79 lên 80/120. Hai nguồn READ cùng client và cùng thời điểm mô phỏng phải báo liên kết AP có ID khác rỗng và IP–MAC nhất quán. Cờ xung đột hostname `false` → HEALTHY, `true` → FAULT. Thiếu nguồn, sai kiểu hoặc mẫu không đủ điều kiện → UNKNOWN. Các nguồn chỉ có cờ boolean và ID chuỗi. Kết quả mô tả xung đột được báo trong mẫu. Việc xác định thiết bị liên quan, nguyên nhân hay hành vi bất thường khác cần thêm bằng chứng. Chưa đo trên router.
+
 ### COV-J — J: VPN & Remote Connectivity · 8 Skill
 
 - [ ] **Batch COV-J** · Ưu tiên: P1. Phụ thuộc: D/E/F/I.

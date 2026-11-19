@@ -1,0 +1,49 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "I07-normal",
+      "skill_id": "I07",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"associated": true, "access_point_id": "synthetic-ap"}
+        },
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"ip_mac_consistent": true, "hostname_conflict": false}
+        }
+      }
+    },
+    {
+      "id": "I07-fault",
+      "skill_id": "I07",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"associated": true, "access_point_id": "synthetic-ap"}
+        },
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"ip_mac_consistent": true, "hostname_conflict": true}
+        }
+      }
+    },
+    {
+      "id": "I07-missing",
+      "skill_id": "I07",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"associated": true, "access_point_id": "synthetic-ap"}
+        },
+        "identity": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

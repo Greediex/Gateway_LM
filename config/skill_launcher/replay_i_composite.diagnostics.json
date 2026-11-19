@@ -1,0 +1,67 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "I07": {
+      "workflow_id": "REPLAY-I07-COMPOSITE-V1",
+      "target_scope": "client",
+      "require_same_sample_time": true,
+      "sources": {
+        "association": {
+          "function_id": "expansion.client_association",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "associated": {"type": "boolean", "const": true},
+              "access_point_id": {"type": "string", "pattern": "\\S"}
+            },
+            "required": ["associated", "access_point_id"]
+          }
+        },
+        "identity": {
+          "function_id": "expansion.identity_consistency",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "ip_mac_consistent": {"type": "boolean", "const": true},
+              "hostname_conflict": {"type": "boolean"}
+            },
+            "required": ["ip_mac_consistent", "hostname_conflict"]
+          }
+        }
+      },
+      "claims": [
+        "i07_no_hostname_conflict_reported_v1",
+        "i07_hostname_conflict_reported_v1"
+      ],
+      "limitation": "Synthetic screening of the reported hostname-conflict flag in a single client-scoped sample with a reported AP association and consistent IP-MAC mapping. The flag explains the verdict and covers only hostname conflict in that sample. The evidence lacks hostname records, alternate identities, and a behavioral baseline. It cannot identify devices involved, attribute a cause such as spoofing, or characterize other client anomalies."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "i07_no_hostname_conflict_reported_v1",
+      "diagnosis": "i07_no_hostname_conflict_reported_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [{"port": "identity", "field": "hostname_conflict", "op": "eq", "value": false}],
+      "excludes": [],
+      "message_key": "i07_no_hostname_conflict_reported_v1",
+      "workflow": "REPLAY-I07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "i07_hostname_conflict_reported_v1",
+      "diagnosis": "i07_hostname_conflict_reported_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [{"port": "identity", "field": "hostname_conflict", "op": "eq", "value": true}],
+      "excludes": [],
+      "message_key": "i07_hostname_conflict_reported_v1",
+      "workflow": "REPLAY-I07-COMPOSITE-V1"
+    }
+  ]
+}
