@@ -57,7 +57,7 @@
     <main class="main">
       <header class="main-header">
         <div class="header-left"><button class="mobile-menu" id="menuBtn" aria-label="Mở thiết lập">☰</button><div class="header-crumb">Workspace <span>/</span> <b>Diagnostic Chat</b></div></div>
-        <div class="header-right"><button class="light-btn trace-open-btn" type="button" id="traceBtn">◉ Trace</button><span class="mode-pill"><span></span><b id="sourcePill">REPLAY MÔ PHỎNG</b></span><button class="light-btn" type="button" id="historyBtn">Lịch sử phiên</button><button class="light-btn" type="button" id="clearBtn" title="Xóa cuộc hội thoại">↻ <span>Xóa hội thoại</span></button></div>
+        <div class="header-right"><button class="light-btn trace-open-btn" type="button" id="traceBtn" aria-controls="inspector" aria-expanded="false">Mạng Skill</button><span class="mode-pill"><span></span><b id="sourcePill">REPLAY MÔ PHỎNG</b></span><button class="light-btn" type="button" id="historyBtn">Lịch sử phiên</button><button class="light-btn" type="button" id="clearBtn" title="Xóa cuộc hội thoại">↻ <span>Xóa hội thoại</span></button></div>
       </header>
       <div class="chat-scroll" id="chatScroll">
         <div class="chat-content">
@@ -117,10 +117,10 @@
       </div>
     </main>
 
-    <aside class="inspector" id="inspector">
-      <div class="inspector-header"><div><span class="inspector-overline">EXECUTION INSPECTOR</span><h2>Agent Trace</h2></div><span class="trace-live"><i></i> READ ONLY</span></div>
-      <div class="trace-tabs" role="tablist" aria-label="Chi tiết thực thi"><button class="trace-tab active" data-tab="timeline" role="tab">Quy trình</button><button class="trace-tab" data-tab="evidence" role="tab">Bằng chứng</button><button class="trace-tab" data-tab="dag" role="tab">DAG</button><button class="trace-tab" data-tab="contracts" role="tab">Contracts</button></div>
-      <div class="inspector-content" id="inspectorContent"><div class="empty-inspect"><div class="wireframe-icon">◎</div><h3>Chưa có lượt chạy</h3><p>Gửi một câu hỏi để xem Agent chọn function nào, thu evidence gì và lập kế hoạch ra sao.</p><div class="ghost-rows"><span></span><span></span><span></span></div></div></div>
+    <aside class="inspector" id="inspector" hidden>
+      <div class="inspector-header"><div><span class="inspector-overline">EXECUTION INSPECTOR</span><h2>Agent Trace</h2></div><div><span class="trace-live"><i></i> READ ONLY</span><button class="light-btn" id="traceClose" type="button" aria-label="Đóng Inspector">×</button></div></div>
+      <div class="trace-tabs" role="tablist" aria-label="Chi tiết thực thi"><button class="trace-tab active" data-tab="timeline" role="tab" aria-selected="true" aria-controls="inspectorContent">Quy trình</button><button class="trace-tab" data-tab="evidence" role="tab" aria-selected="false" aria-controls="inspectorContent">Bằng chứng</button><button class="trace-tab" data-tab="graph" role="tab" aria-selected="false" aria-controls="inspectorContent">Mạng Skill</button><button class="trace-tab" data-tab="dag" role="tab" aria-selected="false" aria-controls="inspectorContent">DAG</button><button class="trace-tab" data-tab="contracts" role="tab" aria-selected="false" aria-controls="inspectorContent">Contracts</button></div>
+      <div class="inspector-content" id="inspectorContent" role="tabpanel"></div>
       <div class="inspector-footer"><div class="footer-row"><span>Execution engine</span><b>GraphRunner v3</b></div><div class="footer-row"><span>Nguồn đo</span><b id="traceSource">Replay mô phỏng</b></div><div class="footer-row"><span>Quyền</span><b>Chỉ đọc</b></div></div>
     </aside>
   </div>

@@ -49,6 +49,7 @@ Không ép mọi Skill thành một READ call. Skill tổng hợp dùng Function
 
 Mỗi task có negative-path test đúng ranh giới, chạy test fail trước bản sửa khi phù hợp, thực thi qua Core rồi xác minh và commit batch nhỏ lên `v2`. Chỉ cập nhật approval sau review semantic/schema; không cập nhật hash tự động để ép test xanh.
 
+Tiến độ UI-GRAPH (19/11/2026, `v2`) — Mở Mạng Skill từ thanh chat, hiển thị 120 Skill, 72 Function, 15 domain và 129 cạnh. Coverage hiện có là 101 Skill nghiệm thu mô phỏng và 5 Skill có cấu hình gọi từ chat. Đã kiểm tra HTTP live (1 Skill, 2 Function) và replay (8 Function), endpoint 200/503 qua test, cùng thứ tự sáng và nút ngoài catalog qua Node. `check_project` PASS. Unittest 1.083 tổng, 1.078 pass, 0 fail, 5 skip Windows-only (340,999 s). Hai script Node PASS. Trình duyệt tích hợp chưa truy cập được. Không có run CI mới vì commit local.
 ## Giao việc cho Codex (điều phối: Claude)
 
 Codex thực hiện từng gói **WP** dưới đây theo thứ tự; Claude review trước khi đánh dấu. Mỗi gói một nhánh con từ `v2` (`codex/<wp-id>`), commit nhỏ, không sửa `main`.

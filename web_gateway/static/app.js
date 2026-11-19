@@ -10,9 +10,38 @@ function setBusy(b){state.busy=b; $('sendBtn').disabled=b||!$('userInput').value
 function setMethod(m){state.method=m;document.querySelectorAll('.seg').forEach(b=>b.classList.toggle('active',b.dataset.method===m));}
 function showIntro(yes){$('intro').hidden=!yes;$('intro').style.display=yes?'':'none';}
 function scrollBottom(){requestAnimationFrame(()=>$('chatScroll').scrollTo({top:$('chatScroll').scrollHeight,behavior:'smooth'}));}
-function setTab(tab){state.tab=tab;document.querySelectorAll('.trace-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));renderInspector();}
+function setTab(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.trace-tab').forEach(button => {
+    const selected = button.dataset.tab === tab;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-selected', String(selected));
+  });
+  renderInspector();
+}
+function setInspector(open) {
+  const inspector = $('inspector');
+  inspector.hidden = !open;
+  inspector.classList.toggle('open', open);
+  $('traceBtn').setAttribute('aria-expanded', String(open));
+  if (open) {
+    setTab('graph');
+    inspector.querySelector('[data-tab="graph"]').focus();
+  } else {
+    $('inspectorContent').replaceChildren();
+  }
+}
 function releaseChatSession(){if(state.sessionId && state.result?.catalog_total){fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:state.sessionId})}).catch(()=>{});}state.sessionId=null;}
-function clearChat(){state.chatGeneration++;releaseChatSession();state.turns=0;state.result=null;state.sessionId=null;$('messages').replaceChildren();showIntro(true);['statCalls','statEvidence','statRepairs','statSkills'].forEach(x=>$(x).textContent='—');$('inspectorContent').innerHTML='<div class="empty-inspect"><div class="wireframe-icon">◎</div><h3>Chưa có lượt chạy</h3><p>Gửi một câu hỏi để xem Agent chọn function nào, thu evidence gì và lập kế hoạch ra sao.</p><div class="ghost-rows"><span></span><span></span><span></span></div></div>';}
+function clearChat() {
+  state.chatGeneration++;
+  releaseChatSession();
+  state.turns = 0;
+  state.result = null;
+  $('messages').replaceChildren();
+  showIntro(true);
+  ['statCalls', 'statEvidence', 'statRepairs', 'statSkills'].forEach(id => $(id).textContent = '—');
+  renderInspector();
+}
 function updateSource() {
   state.chatGeneration++; releaseChatSession();
   const live = $('sourceSelect').value === 'live';
@@ -236,8 +265,30 @@ async function send(override) {
   } finally {setBusy(false);scrollBottom();}
 }
 function updateStats(r){$('statCalls').textContent=String(r.calls??'—');$('statEvidence').textContent=String(r.evidence?.length??0);$('statRepairs').textContent=String(r.repairs??0);$('statSkills').textContent=String(r.skill_runs?.length??r.stages?.length??0);}
-function renderInspector(){let content=$('inspectorContent');if(!state.result)return;let r=state.result;content.replaceChildren();let top=n('div','trace-overview');top.appendChild(n('span','','LAST RUN · '+r.fixture_id));top.appendChild(n('h3','',r.fixture));top.appendChild(n('p','',r.workflow+' · '+r.method.toUpperCase()+' · '+r.calls+' calls · '+r.repairs+' repairs'));content.appendChild(top);
-if(state.tab==='timeline')renderTimeline(content,r);else if(state.tab==='evidence')renderEvidence(content,r);else if(state.tab==='contracts')renderContracts(content,r);else renderDAG(content,r);}
+function renderInspector() {
+  if ($('inspector').hidden) return;
+  const content = $('inspectorContent');
+  const result = state.result;
+  content.replaceChildren();
+  if (state.tab === 'graph') {
+    renderGraph(content, result);
+    return;
+  }
+  if (!result) {
+    const empty = n('div', 'empty-inspect');
+    empty.append(n('h3', '', 'Chưa có lượt chạy'), n('p', '', 'Gửi một câu hỏi để xem dấu vết thực thi.'));
+    content.appendChild(empty);
+    return;
+  }
+  const top = n('div', 'trace-overview');
+  top.append(n('span', '', 'LAST RUN · ' + result.fixture_id), n('h3', '', result.fixture),
+    n('p', '', result.workflow + ' · ' + result.method.toUpperCase() + ' · ' + result.calls + ' calls · ' + result.repairs + ' repairs'));
+  content.appendChild(top);
+  if (state.tab === 'timeline') renderTimeline(content, result);
+  else if (state.tab === 'evidence') renderEvidence(content, result);
+  else if (state.tab === 'contracts') renderContracts(content, result);
+  else renderDAG(content, result);
+}
 function renderContracts(content,r){content.appendChild(n('p','inspector-note','Route: '+(r.route||'—')+' · '+(r.decision_source||'')));let hist=n('div','kv-body',(r.revisions||[]).map(x=>'Revision '+x.revision+': '+(x.operators||[]).join(' → ')).join(String.fromCharCode(10))||'Không có kế hoạch.');content.appendChild(n('h4','','Lịch sử revision và toán tử repair'));content.appendChild(hist);const c=r.contracts||{};[['c0','Contract 0 · Retrieval → Resolver'],['a','Contract A · Planner → Runner'],['b','Contract B · Runner → Evidence'],['c','Contract C · Evidence → Planner']].forEach(([k,label])=>{let d=n('details','');d.appendChild(n('summary','',label));let pre=n('pre','kv-body',JSON.stringify(c[k]??null,null,2));d.appendChild(pre);content.appendChild(d);});}
 function renderPolicy(content,r) {
   if (r.react) {
@@ -371,14 +422,270 @@ if (check) {
 }
 let nodes=Object.keys(plan.nodes||{});if(!nodes.length){content.appendChild(n('p','inspector-note','Kế hoạch không cần gọi function.'));return;}let deps=plan.edges||[];let levels={};for(let id of nodes)levels[id]=0;for(let j=0;j<nodes.length;j++){let changed=false;for(let edge of deps){if(levels[edge.source]!==undefined&&levels[edge.target]!==undefined&&levels[edge.target]<levels[edge.source]+1){levels[edge.target]=levels[edge.source]+1;changed=true;}}if(!changed)break;}let groups={};for(let id of nodes)(groups[levels[id]]??=[]).push(id);const maxL=Math.max(...Object.keys(groups).map(Number)),maxR=Math.max(...Object.values(groups).map(v=>v.length)),W=660,H=Math.max(210,(maxL+1)*93+30);let svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','Đồ thị thực thi: '+nodes.join(', '));let pos={};Object.entries(groups).forEach(([lev,ids])=>{ids.sort();ids.forEach((id,i)=>{pos[id]={x:(W-(ids.length-1)*175)/2+i*175,y:35+Number(lev)*93};});});function addSVG(tag,attrs,txt){let a=document.createElementNS('http://www.w3.org/2000/svg',tag);for(let [k,v] of Object.entries(attrs))a.setAttribute(k,v);if(txt!==undefined)a.textContent=txt;svg.appendChild(a);return a;}for(let e of deps){let a=pos[e.source],b=pos[e.target];if(!a||!b)continue;addSVG('path',{d:`M ${a.x} ${a.y+29} C ${a.x} ${a.y+57}, ${b.x} ${b.y-28}, ${b.x} ${b.y-16}`,stroke:e.kind==='ORDER'?'#b8a5db':'#4e8f9c','stroke-width':'2',fill:'none'});addSVG('path',{d:`M ${b.x-4} ${b.y-22} L ${b.x} ${b.y-14} L ${b.x+4} ${b.y-22}`,stroke:'#6bb4bd','stroke-width':'1.5',fill:'none'});}for(let id of nodes){let p=pos[id], node=plan.nodes[id];let status=normalize(node?.state);let fill=status==='SUCCEEDED'?'#214a49':status==='FAILED'?'#5a3035':'#1b3147';let stroke=status==='SUCCEEDED'?'#64cfbd':status==='FAILED'?'#e2a7a5':'#51758e';addSVG('rect',{x:p.x-80,y:p.y-13,width:160,height:45,rx:9,fill,stroke,'stroke-width':1});addSVG('text',{x:p.x,y:p.y+5,'text-anchor':'middle','font-size':12,fill:'#e3f4f4','font-family':'ui-monospace,Consolas,monospace'},id.length>21?id.slice(0,20)+'…':id);addSVG('text',{x:p.x,y:p.y+21,'text-anchor':'middle','font-size':8,fill:status==='SUCCEEDED'?'#9bf4ce':'#8baec4'},status||'PENDING');}
 let wrap=n('div','dag-canvas');wrap.appendChild(svg);content.appendChild(wrap);content.appendChild(n('p','dag-caption','Mũi tên biểu thị DATA, STATE hoặc ORDER dependency. DAG là kế hoạch thực thi được tạo bởi Graph Compiler. Mỗi lượt hỏi có thể tạo plan khác nhau.'));content.appendChild(n('div','trace-section-label','DEPENDENCY EDGES'));if(!deps.length)content.appendChild(n('p','inspector-note','Các node không có dependency với nhau.'));for(let e of deps){content.appendChild(n('span','tag',e.source+' → '+e.target+' · '+e.kind));}}
+// Skill network projects the catalog and the most recent chat trace.
+let graphData;
+function loadGraph() {
+  return graphData ??= fetch('/api/graph').then(async response => {
+    if (!response.ok) throw Error('Skill graph unavailable');
+    return response.json();
+  }).catch(error => {
+    graphData = undefined;
+    throw error;
+  });
+}
+
+function planCalls(plan) {
+  const reused = new Set((plan.audit || []).flatMap(event =>
+    event.operator === 'GLOBAL_REPLAN' ? event.reused_evidence || [] : []));
+  return Object.entries(plan.nodes || {}).flatMap(([key, node]) => {
+    if (Object.values(node.output_evidence || {}).some(id => reused.has(id))) return [];
+    const history = node.history || [];
+    const attempts = history.filter(step => step.from === 'RUNNING').map(step => step.to);
+    if (!attempts.length && ['SUCCEEDED', 'FAILED', 'INCONCLUSIVE'].includes(node.state)) {
+      // Older exports can include a terminal state without transition history.
+      attempts.push(node.state);
+    }
+    return attempts.map(status => ({key, id: node.function_id, kind: 'function', status}));
+  });
+}
+
+function orderSkillFunctions(result) {
+  const attempts = (result.plans || []).flatMap(planCalls);
+  const audited = (result.function_retrievals || []).filter(row => row.selected_ready);
+  if (!attempts.length && !result.calls) return {functions: [], ordered: true};
+
+  // Selection audit covers the session. The turn's plans and count bound its tail.
+  if (attempts.length === result.calls && audited.length >= result.calls) {
+    const byNode = new Map();
+    for (const attempt of attempts) {
+      if (!byNode.has(attempt.key)) byNode.set(attempt.key, []);
+      byNode.get(attempt.key).push(attempt);
+    }
+    const functions = audited.slice(-result.calls).map(row => byNode.get(row.selected_ready)?.shift());
+    if (functions.every(Boolean)) return {functions, ordered: true};
+  }
+
+  // Replay Skill chat uses ordered selection; one invocation per plan needs no tie-break.
+  if (result.mode === 'synthetic_replay' && attempts.length === result.calls
+      && (result.plans || []).every(plan => planCalls(plan).length <= 1)) {
+    return {functions: attempts, ordered: true};
+  }
+
+  if (attempts.length) return {functions: attempts, ordered: attempts.length === 1 && result.calls === 1};
+  const functions = (result.timeline || [])
+    .filter(row => row.verified_at_execution || ['SUCCEEDED', 'FAILED', 'INCONCLUSIVE'].includes(row.node_state))
+    .map(row => ({id: row.function_id, kind: 'function', status: row.node_state}));
+  return {functions, ordered: functions.length === 1 && result.calls === 1};
+}
+
+function runCalls(result) {
+  if (!result) return {sequences: [], ordered: true, linked: true, skills: 0, functions: 0};
+  const skillRuns = result.skill_runs || [];
+  const skills = skillRuns.map(run => ({id: run.skill_id, kind: 'skill', status: run.status,
+    count: run.calls_this_run, reused: (run.reused_ports || []).length > 0}));
+  let functions, ordered;
+  if (Array.isArray(result.skill_runs)) {
+    ({functions, ordered} = orderSkillFunctions(result));
+  } else if (result.timeline?.length) {
+    // The workflow endpoint builds timeline from executed calls in order.
+    functions = [...result.timeline].sort((a, b) => a.index - b.index).map(row => ({
+      id: row.function_id, kind: 'function', status: row.status,
+    }));
+    ordered = true;
+  } else {
+    functions = (result.plans || []).flatMap(planCalls);
+    ordered = functions.length <= 1;
+  }
+  // Extra RCA calls can be interleaved with Skill runs. Counts only establish
+  // the boundaries when all invocations were accounted for by the Skill runs.
+  const linked = !skills.length || (ordered && skills.every(skill => Number.isInteger(skill.count) && skill.count >= 0)
+    && skills.reduce((sum, skill) => sum + skill.count, 0) === functions.length
+    && result.calls === functions.length);
+  let sequences;
+  if (linked && skills.length) {
+    let cursor = 0;
+    sequences = [skills.flatMap(skill => {
+      const end = cursor + skill.count;
+      const steps = [skill, ...functions.slice(cursor, end)];
+      cursor = end;
+      return steps;
+    })];
+  } else {
+    sequences = [skills, ...(ordered ? [functions] : functions.map(call => [call]))];
+  }
+  return {sequences: sequences.filter(sequence => sequence.length), ordered, linked,
+    skills: skills.length, functions: functions.length};
+}
+
+const graphKey = (kind, id) => kind + ':' + id;
+function layoutGraph(graph, sequences = []) {
+  const width = 272;
+  const hub = {x: 136, y: 22};
+  const columns = 8;
+  const panels = [];
+  const nodes = new Map();
+  const groups = Object.entries(graph.groups).sort(([a], [b]) => a.localeCompare(b));
+  const split = Math.ceil(groups.length / 2);
+  for (const [index, [id, label]] of groups.entries()) {
+    const x = index < split ? 8 : 200;
+    const y = 45 + index % split * 42;
+    panels.push({id, label, x, y});
+    const skills = graph.nodes.filter(node => node.kind === 'skill' && node.group === id);
+    for (const [i, node] of skills.entries()) {
+      nodes.set(graphKey(node.kind, node.id), {...node, x: x + 11 + i % 4 * 14,
+        y: y + 14 + Math.floor(i / 4) * 12});
+    }
+  }
+  const functions = graph.nodes.filter(node => node.kind === 'function');
+  for (const [i, node] of functions.entries()) {
+    nodes.set(graphKey(node.kind, node.id), {...node, x: 87 + i % columns * 14, y: 62 + Math.floor(i / columns) * 33});
+  }
+  const baseHeight = Math.max(45 + split * 42, 70 + (Math.ceil(functions.length / columns) - 1) * 33);
+  const extras = new Map();
+  for (const call of sequences.flat()) {
+    const key = graphKey(call.kind, call.id);
+    if (nodes.has(key)) continue;
+    const i = extras.size;
+    const dot = {...call, label: call.id, extra: true, x: 22 + i % 12 * 20, y: baseHeight + 26 + Math.floor(i / 12) * 15};
+    nodes.set(key, dot);
+    extras.set(key, dot);
+  }
+  return {width, height: baseHeight + (extras.size ? 20 + Math.ceil(extras.size / 12) * 15 : 0),
+    hub, panels, nodes, extraY: extras.size ? baseHeight : null};
+}
+
+function renderGraph(content, result) {
+  const holder = n('div');
+  holder.appendChild(n('p', 'inspector-note', 'Đang tải mạng Skill…'));
+  content.appendChild(holder);
+  loadGraph().then(graph => {
+    if (holder.isConnected) drawGraph(holder, graph, result);
+  }).catch(() => {
+    if (holder.isConnected) holder.replaceChildren(n('p', 'inspector-note', 'Không tải được mạng Skill. Mở lại tab để thử lại.'));
+  });
+}
+
+function drawGraph(holder, graph, result) {
+  const calls = runCalls(result);
+  const {width, height, hub, panels, nodes, extraY} = layoutGraph(graph, calls.sequences);
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', `Mạng ${graph.nodes.filter(node => node.kind === 'skill').length} Skill theo domain`);
+  function add(tag, attrs, label, parent = svg) {
+    const element = document.createElementNS(svg.namespaceURI, tag);
+    for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
+    if (label !== undefined) element.textContent = label;
+    parent.appendChild(element);
+    return element;
+  }
+  function line(a, b, cls) {
+    return add('line', {x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls});
+  }
+  function circle(point, radius, cls) {
+    return add('circle', {cx: point.x, cy: point.y, r: radius, class: cls});
+  }
+  function caption(x, y, label) {
+    return add('text', {x, y, 'text-anchor': 'middle', class: 'g-label'}, label);
+  }
+  for (const panel of panels) {
+    add('rect', {x: panel.x, y: panel.y, width: 64, height: 34, rx: 5, class: 'g-panel'});
+    const label = caption(panel.x + 32, panel.y + 1, panel.id);
+    add('title', {}, panel.label, label);
+  }
+  for (const edge of graph.edges) {
+    line(nodes.get(graphKey('skill', edge.source)), nodes.get(graphKey('function', edge.target)), 'g-edge');
+  }
+  if (extraY !== null) caption(width / 2, extraY + 10, 'Ngoài đồ thị catalog');
+  let index = 0;
+  for (const sequence of calls.sequences) {
+    let previous = hub;
+    for (const call of sequence) {
+      const node = nodes.get(graphKey(call.kind, call.id));
+      const failed = !['OK', 'SUCCEEDED', 'MEASURED'].includes(call.status);
+      const tone = failed ? ' g-fail' : '';
+      const delay = `${index++ * Math.min(250, 3200 / (calls.skills + calls.functions))}ms`;
+      if (previous !== node) line(previous, node, 'g-path' + tone).style.animationDelay = delay;
+      circle(node, 7, 'g-lit' + tone).style.animationDelay = delay;
+      previous = node;
+    }
+  }
+  for (const node of nodes.values()) {
+    const skill = node.kind === 'skill';
+    const dot = circle(node, skill ? 4.2 : 3, [
+      skill ? 'g-skill' : 'g-fn',
+      node.verified ? 'g-verified' : '',
+      node.extra ? 'g-extra' : '',
+    ].join(' '));
+    const metadata = skill && !node.extra
+      ? ` · ${node.verified ? 'Đã' : 'Chưa'} nghiệm thu mô phỏng${node.chat_callable ? ' · Gọi được từ chat theo cấu hình' : ''}`
+      : node.extra ? ' · Ngoài đồ thị catalog' : '';
+    add('title', {}, (node.id === node.label ? node.id : `${node.id} · ${node.label}`) + metadata, dot);
+    if (node.chat_callable) circle(node, 6.5, 'g-callable');
+  }
+  circle(hub, 6, calls.sequences.length ? 'g-hub g-hub-active' : 'g-hub');
+  caption(hub.x, hub.y - 10, 'Router / LLM');
+  caption(hub.x, 45, 'Function');
+
+  const canvas = n('div', 'graph-canvas');
+  canvas.appendChild(svg);
+  const summary = calls.sequences.length
+    ? `Lượt gần nhất có ${calls.skills} lượt gọi Skill và ${calls.functions} lượt gọi Function được ghi nhận.`
+    : result ? 'Lượt gần nhất chưa ghi nhận cuộc gọi Skill hoặc Function.' : 'Gửi câu hỏi để xem những nút được gọi.';
+  const verified = graph.nodes.filter(node => node.verified).length;
+  const callable = graph.nodes.filter(node => node.chat_callable).length;
+  const legend = n('ul', 'graph-legend');
+  for (const [symbol, label] of [
+    ['verified', `Chấm đặc · ${verified} Skill đã nghiệm thu mô phỏng (chấm rỗng nếu chưa)`],
+    ['callable', `Viền đôi · ${callable} Skill có cấu hình gọi từ chat live hoặc replay`],
+    ['function', 'Chấm xám · Function trong đồ thị'],
+    ['extra', 'Chấm vàng · Skill hoặc Function ngoài đồ thị catalog'],
+    ['edge', 'Đường mảnh · Liên kết khai báo trong catalog'],
+    ['path', 'Đường sáng · Dấu vết lượt hỏi (hồng khi lỗi hoặc chưa xác minh)'],
+  ]) {
+    const item = n('li');
+    item.append(n('span', 'graph-key key-' + symbol), n('span', '', label));
+    legend.appendChild(item);
+  }
+  const domains = n('details', 'graph-details');
+  domains.appendChild(n('summary', '', 'Tên các domain'));
+  const names = n('ul');
+  for (const panel of panels) names.appendChild(n('li', '', `${panel.id} · ${panel.label}`));
+  domains.appendChild(names);
+  holder.replaceChildren(n('p', 'graph-summary', summary), canvas);
+  if (calls.sequences.length) {
+    const trace = n('details', 'graph-details');
+    trace.appendChild(n('summary', '', 'Chi tiết dấu vết'));
+    for (const sequence of calls.sequences) {
+      const list = n(calls.ordered ? 'ol' : 'ul');
+      for (const call of sequence) {
+        const name = nodes.get(graphKey(call.kind, call.id)).label;
+        list.appendChild(n('li', '', `${call.kind === 'skill' ? 'Skill' : 'Function'} · ${name} · ${call.status || 'UNKNOWN'}${call.reused ? ' · Dùng lại evidence' : ''}`));
+      }
+      trace.appendChild(list);
+    }
+    holder.appendChild(trace);
+    if (!calls.linked || !calls.ordered) holder.appendChild(n('p', 'inspector-note',
+      'Bản ghi chỉ xác định một phần thứ tự. Các nhóm được tô riêng khi thiếu thông tin liên kết.'));
+  }
+  holder.append(legend, domains);
+}
 function updateInput(){let ta=$('userInput');$('charCount').textContent=ta.value.length+'/2000';ta.style.height='auto';ta.style.height=Math.min(135,Math.max(34,ta.scrollHeight))+'px';$('sendBtn').disabled=state.busy||!ta.value.trim();}
 $('sendBtn').addEventListener('click',()=>send());$('userInput').addEventListener('input',updateInput);$('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('clearBtn').addEventListener('click',clearChat);
 $('sourceSelect').addEventListener('change',updateSource);
 $('fixtureSelect').addEventListener('change',()=>{releaseChatSession();fixtureNote();});$('llmToggle').addEventListener('change',e=>{ $('modelField').hidden=!e.target.checked; });document.querySelectorAll('.seg').forEach(b=>b.addEventListener('click',()=>setMethod(b.dataset.method)));
 document.querySelectorAll('.trace-tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',()=>{releaseChatSession();setFixture(b.dataset.fixture);send(b.dataset.query);}));
-$('menuBtn').addEventListener('click',()=>{$('sidebar').classList.toggle('open');$('inspector').classList.remove('open')});$('traceBtn').addEventListener('click',()=>{$('inspector').classList.toggle('open');$('sidebar').classList.remove('open')});
-$('chatScroll').addEventListener('click',()=>{$('sidebar').classList.remove('open');$('inspector').classList.remove('open')});
+$('menuBtn').addEventListener('click', () => { $('sidebar').classList.toggle('open'); setInspector(false); });
+$('traceBtn').addEventListener('click', () => setInspector($('inspector').hidden));
+$('traceClose').addEventListener('click', () => { setInspector(false); $('traceBtn').focus(); });
+$('inspector').addEventListener('keydown', event => {
+  if (event.key === 'Escape') { setInspector(false); $('traceBtn').focus(); }
+});
+$('chatScroll').addEventListener('click', () => {
+  $('sidebar').classList.remove('open');
+  if (window.matchMedia('(max-width:1040px)').matches) setInspector(false);
+});
 loadConfig();updateInput();
 
 // The launcher owns its mode, session and evidence independently of diagnostic chat.

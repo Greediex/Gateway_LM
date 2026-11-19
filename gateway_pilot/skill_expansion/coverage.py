@@ -230,3 +230,57 @@ def summarize(rows: list[SkillCoverage]) -> dict:
 def coverage_report(**kwargs) -> dict:
     rows = build_coverage(**kwargs)
     return {"summary": summarize(rows), "skills": [asdict(r) for r in rows]}
+
+
+def _graph_actions(config: Path, mode: str) -> Mapping:
+    """Read pinned launch descriptors without building a registry or probing a backend."""
+    from ..command_catalog.loader import digest, read_json
+
+    approvals = read_json(config / "approvals.json")
+    actions = read_json(config / f"{mode}.actions.json")
+    if (approvals.get("format") != "gateway-lm.skill-launcher-approval/v1"
+            or actions.get("format") != "gateway-lm.skill-actions/v1"
+            or actions.get("mode") != mode
+            or digest(actions) != approvals[mode]["actions_digest"]):
+        raise CoverageError(f"unapproved graph launch metadata: {mode}")
+    return {action["skill_id"]: action for action in actions["actions"]}
+
+
+def skill_graph(data_dir: Path = DATA_DIR) -> dict:
+    """Project catalog links and coverage metadata for display."""
+    config = data_dir.parents[1] / "config" / "skill_launcher"
+    rows = build_coverage(
+        data_dir, actions_for=lambda mode: _graph_actions(config, mode),
+        acceptance_path=data_dir / "simulation_v1" / "acceptance.json",
+    )
+    catalog = SkillCatalog.load(data_dir)
+    groups = {s.domain: s.domain_name for s in catalog.skills.values()}
+    edges = {
+        (mapping["skill_id"], function_id)
+        for mapping in _load(data_dir / "skill_function_mapping_120.json")
+        for function_id in mapping.get("declared_v02_function_refs", [])
+    }
+    for _, diag in COMPOSITE_BATCHES.values():
+        doc = _load(config / f"{diag}.diagnostics.json")
+        edges.update(
+            (skill_id, source["function_id"])
+            for skill_id, workflow in doc["workflows"].items()
+            for source in workflow["sources"].values()
+        )
+    functions = {function_id for _, function_id in edges}
+    if (any(skill_id not in catalog.skills for skill_id, _ in edges)
+            or any(not isinstance(fid, str) or not fid or fid in catalog.skills for fid in functions)):
+        raise CoverageError("invalid skill graph edge")
+    nodes = [
+        {"id": r.skill_id, "kind": "skill", "label": r.name, "group": r.domain,
+         "type": r.skill_type, "verified": r.simulation_verified,
+         "chat_callable": r.replay_launchable or r.live_launchable}
+        for r in rows
+    ]
+    nodes.extend({"id": fid, "kind": "function", "label": fid} for fid in sorted(functions))
+    return {
+        "format": "gateway-lm.skill-graph/v1",
+        "groups": groups,
+        "nodes": nodes,
+        "edges": [{"source": sid, "target": fid} for sid, fid in sorted(edges)],
+    }

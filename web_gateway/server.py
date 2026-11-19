@@ -462,6 +462,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
             except (RuntimeError, ImportError, OSError, KeyError):
                 return self._json({"error": "Skill deployment unavailable"}, HTTPStatus.SERVICE_UNAVAILABLE)
+        if path == "/api/graph":
+            from gateway_pilot.skill_expansion.coverage import skill_graph
+            try:
+                return self._json(skill_graph())
+            except (OSError, ValueError, KeyError, TypeError, AttributeError):
+                return self._json({"error": "Skill graph unavailable"}, HTTPStatus.SERVICE_UNAVAILABLE)
         if path == "/api/health":
             status = _status()
             if getattr(self.server, "default_source", "replay") == "live":
