@@ -1,0 +1,223 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-I",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "I01-normal",
+      "skill_id": "I01",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.firewall_audit",
+      "values": {
+        "rules_count": 18,
+        "invalid_rules": 0
+      }
+    },
+    {
+      "id": "I01-fault",
+      "skill_id": "I01",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.firewall_audit",
+      "values": {
+        "rules_count": 18,
+        "invalid_rules": 2
+      }
+    },
+    {
+      "id": "I01-missing",
+      "skill_id": "I01",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.firewall_audit",
+      "values": null
+    },
+    {
+      "id": "I02-normal",
+      "skill_id": "I02",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.exposed_services",
+      "values": {
+        "listening_services": 4,
+        "exposed_services": 0
+      }
+    },
+    {
+      "id": "I02-fault",
+      "skill_id": "I02",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.exposed_services",
+      "values": {
+        "listening_services": 4,
+        "exposed_services": 1
+      }
+    },
+    {
+      "id": "I02-missing",
+      "skill_id": "I02",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.exposed_services",
+      "values": null
+    },
+    {
+      "id": "I03-normal",
+      "skill_id": "I03",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.guest_isolation",
+      "values": {
+        "enabled": true
+      }
+    },
+    {
+      "id": "I03-fault",
+      "skill_id": "I03",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.guest_isolation",
+      "values": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "I03-missing",
+      "skill_id": "I03",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.guest_isolation",
+      "values": null
+    },
+    {
+      "id": "I04-normal",
+      "skill_id": "I04",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.wifi_security",
+      "values": {
+        "auth_mode": "wpa3",
+        "encryption_enabled": true
+      }
+    },
+    {
+      "id": "I04-fault",
+      "skill_id": "I04",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.wifi_security",
+      "values": {
+        "auth_mode": "open",
+        "encryption_enabled": false
+      }
+    },
+    {
+      "id": "I04-missing",
+      "skill_id": "I04",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.wifi_security",
+      "values": null
+    },
+    {
+      "id": "I05-normal",
+      "skill_id": "I05",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.admin_access",
+      "values": {
+        "remote_admin_enabled": false,
+        "mfa_configured": true
+      }
+    },
+    {
+      "id": "I05-fault",
+      "skill_id": "I05",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.admin_access",
+      "values": {
+        "remote_admin_enabled": true,
+        "mfa_configured": false
+      }
+    },
+    {
+      "id": "I05-missing",
+      "skill_id": "I05",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.admin_access",
+      "values": null
+    },
+    {
+      "id": "I06-normal",
+      "skill_id": "I06",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vlan_segmentation",
+      "values": {
+        "segments": 3,
+        "policy_violations": 0
+      }
+    },
+    {
+      "id": "I06-fault",
+      "skill_id": "I06",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vlan_segmentation",
+      "values": {
+        "segments": 3,
+        "policy_violations": 1
+      }
+    },
+    {
+      "id": "I06-missing",
+      "skill_id": "I06",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vlan_segmentation",
+      "values": null
+    },
+    {
+      "id": "I08-normal",
+      "skill_id": "I08",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.config_compliance",
+      "values": {
+        "checks_passed": 12,
+        "checks_failed": 0
+      }
+    },
+    {
+      "id": "I08-fault",
+      "skill_id": "I08",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.config_compliance",
+      "values": {
+        "checks_passed": 11,
+        "checks_failed": 1
+      }
+    },
+    {
+      "id": "I08-missing",
+      "skill_id": "I08",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.config_compliance",
+      "values": null
+    }
+  ]
+}

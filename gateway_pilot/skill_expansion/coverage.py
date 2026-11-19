@@ -35,6 +35,7 @@ DIRECT_BATCHES = {
     "F": ("simulation_f_v1", "replay_f"),
     "G": ("simulation_g_v1", "replay_g"),
     "H": ("simulation_h_v1", "replay_h"),
+    "I": ("simulation_i_v1", "replay_i"),
 }
 # Every file that decides a simulated verdict; editing one invalidates acceptance.
 ACCEPTANCE_INPUTS = tuple(

@@ -1,0 +1,401 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-I01-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "firewall_invalid_rules_reported_v1",
+        "firewall_audit_no_invalid_rules_v1"
+      ]
+    },
+    "REPLAY-I02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "services_exposed_under_zero_exposure_policy_v1",
+        "no_exposed_services_reported_v1"
+      ]
+    },
+    "REPLAY-I03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "required_guest_isolation_disabled_v1",
+        "guest_isolation_enabled_v1"
+      ]
+    },
+    "REPLAY-I04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "wifi_open_without_encryption_v1",
+        "wifi_approved_mode_encrypted_v1"
+      ]
+    },
+    "REPLAY-I05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "remote_admin_without_configured_mfa_v1",
+        "remote_admin_disabled_v1"
+      ]
+    },
+    "REPLAY-I06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vlan_policy_violations_reported_v1",
+        "segmentation_audit_no_violations_v1"
+      ]
+    },
+    "REPLAY-I08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "config_compliance_checks_failed_v1",
+        "config_compliance_checks_passed_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "firewall_invalid_rules_reported_v1",
+      "diagnosis": "firewall_invalid_rules_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.firewall_audit",
+          "field": "rules_count",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.firewall_audit",
+          "field": "invalid_rules",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "firewall_invalid_rules_reported",
+      "workflow": "REPLAY-I01-V1"
+    },
+    {
+      "claim_id": "firewall_audit_no_invalid_rules_v1",
+      "diagnosis": "firewall_audit_no_invalid_rules_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.firewall_audit",
+          "field": "rules_count",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.firewall_audit",
+          "field": "invalid_rules",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "firewall_audit_no_invalid_rules",
+      "workflow": "REPLAY-I01-V1"
+    },
+    {
+      "claim_id": "services_exposed_under_zero_exposure_policy_v1",
+      "diagnosis": "services_exposed_under_zero_exposure_policy_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.exposed_services",
+          "field": "listening_services",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.exposed_services",
+          "field": "exposed_services",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "services_exposed_under_zero_exposure_policy",
+      "workflow": "REPLAY-I02-V1"
+    },
+    {
+      "claim_id": "no_exposed_services_reported_v1",
+      "diagnosis": "no_exposed_services_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.exposed_services",
+          "field": "listening_services",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.exposed_services",
+          "field": "exposed_services",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_exposed_services_reported",
+      "workflow": "REPLAY-I02-V1"
+    },
+    {
+      "claim_id": "required_guest_isolation_disabled_v1",
+      "diagnosis": "required_guest_isolation_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.guest_isolation",
+          "field": "enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "required_guest_isolation_disabled",
+      "workflow": "REPLAY-I03-V1"
+    },
+    {
+      "claim_id": "guest_isolation_enabled_v1",
+      "diagnosis": "guest_isolation_enabled_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.guest_isolation",
+          "field": "enabled",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "guest_isolation_enabled",
+      "workflow": "REPLAY-I03-V1"
+    },
+    {
+      "claim_id": "wifi_open_without_encryption_v1",
+      "diagnosis": "wifi_open_without_encryption_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.wifi_security",
+          "field": "auth_mode",
+          "op": "eq",
+          "value": "open"
+        },
+        {
+          "port": "expansion.wifi_security",
+          "field": "encryption_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "wifi_open_without_encryption",
+      "workflow": "REPLAY-I04-V1"
+    },
+    {
+      "claim_id": "wifi_approved_mode_encrypted_v1",
+      "diagnosis": "wifi_approved_mode_encrypted_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.wifi_security",
+          "field": "auth_mode",
+          "op": "in",
+          "value": [
+            "wpa2",
+            "wpa3"
+          ]
+        },
+        {
+          "port": "expansion.wifi_security",
+          "field": "encryption_enabled",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "wifi_approved_mode_encrypted",
+      "workflow": "REPLAY-I04-V1"
+    },
+    {
+      "claim_id": "remote_admin_without_configured_mfa_v1",
+      "diagnosis": "remote_admin_without_configured_mfa_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.admin_access",
+          "field": "remote_admin_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.admin_access",
+          "field": "mfa_configured",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "remote_admin_without_configured_mfa",
+      "workflow": "REPLAY-I05-V1"
+    },
+    {
+      "claim_id": "remote_admin_disabled_v1",
+      "diagnosis": "remote_admin_disabled_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.admin_access",
+          "field": "remote_admin_enabled",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "remote_admin_disabled",
+      "workflow": "REPLAY-I05-V1"
+    },
+    {
+      "claim_id": "vlan_policy_violations_reported_v1",
+      "diagnosis": "vlan_policy_violations_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vlan_segmentation",
+          "field": "segments",
+          "op": "ge",
+          "value": 2
+        },
+        {
+          "port": "expansion.vlan_segmentation",
+          "field": "policy_violations",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vlan_policy_violations_reported",
+      "workflow": "REPLAY-I06-V1"
+    },
+    {
+      "claim_id": "segmentation_audit_no_violations_v1",
+      "diagnosis": "segmentation_audit_no_violations_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vlan_segmentation",
+          "field": "segments",
+          "op": "ge",
+          "value": 2
+        },
+        {
+          "port": "expansion.vlan_segmentation",
+          "field": "policy_violations",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "segmentation_audit_no_violations",
+      "workflow": "REPLAY-I06-V1"
+    },
+    {
+      "claim_id": "config_compliance_checks_failed_v1",
+      "diagnosis": "config_compliance_checks_failed_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.config_compliance",
+          "field": "checks_passed",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.config_compliance",
+          "field": "checks_failed",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "config_compliance_checks_failed",
+      "workflow": "REPLAY-I08-V1"
+    },
+    {
+      "claim_id": "config_compliance_checks_passed_v1",
+      "diagnosis": "config_compliance_checks_passed_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.config_compliance",
+          "field": "checks_passed",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.config_compliance",
+          "field": "checks_failed",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "config_compliance_checks_passed",
+      "workflow": "REPLAY-I08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "I01": [
+      "REPLAY-I01-V1"
+    ],
+    "I02": [
+      "REPLAY-I02-V1"
+    ],
+    "I03": [
+      "REPLAY-I03-V1"
+    ],
+    "I04": [
+      "REPLAY-I04-V1"
+    ],
+    "I05": [
+      "REPLAY-I05-V1"
+    ],
+    "I06": [
+      "REPLAY-I06-V1"
+    ],
+    "I08": [
+      "REPLAY-I08-V1"
+    ]
+  }
+}
