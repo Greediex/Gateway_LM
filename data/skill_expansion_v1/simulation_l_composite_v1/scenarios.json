@@ -1,0 +1,58 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "L06-normal",
+      "skill_id": "L06",
+      "sources": {
+        "topology": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"node_count": 4, "edge_count": 3}},
+        "wan": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"disconnect_events": 0, "observation_window_s": 300}},
+        "services": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"running_services": 4, "failed_services": 0}}
+      }
+    },
+    {
+      "id": "L06-fault",
+      "skill_id": "L06",
+      "sources": {
+        "topology": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"node_count": 4, "edge_count": 3}},
+        "wan": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"disconnect_events": 0, "observation_window_s": 300}},
+        "services": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"running_services": 3, "failed_services": 1}}
+      }
+    },
+    {
+      "id": "L06-missing",
+      "skill_id": "L06",
+      "sources": {
+        "topology": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"node_count": 4, "edge_count": 3}},
+        "wan": {"simulated_at": "2026-11-19T08:00:00Z", "values": null},
+        "services": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"running_services": 3, "failed_services": 1}}
+      }
+    },
+    {
+      "id": "L07-normal",
+      "skill_id": "L07",
+      "sources": {
+        "links": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"known_gateways": 2, "reachable_gateways": 2}},
+        "upstream": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"reachable": true, "loss_pct": 0}}
+      }
+    },
+    {
+      "id": "L07-fault",
+      "skill_id": "L07",
+      "sources": {
+        "links": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"known_gateways": 2, "reachable_gateways": 1}},
+        "upstream": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"reachable": true, "loss_pct": 0}}
+      }
+    },
+    {
+      "id": "L07-missing",
+      "skill_id": "L07",
+      "sources": {
+        "links": {"simulated_at": "2026-11-19T08:00:00Z", "values": {"known_gateways": 2, "reachable_gateways": 1}},
+        "upstream": {"simulated_at": "2026-11-19T08:00:00Z", "values": null}
+      }
+    }
+  ]
+}

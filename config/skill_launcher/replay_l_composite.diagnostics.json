@@ -1,0 +1,136 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "L06": {
+      "workflow_id": "REPLAY-L06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "topology": {
+          "function_id": "expansion.topology_inventory",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "node_count": {"type": "integer", "minimum": 2},
+              "edge_count": {"type": "integer", "minimum": 1}
+            },
+            "required": ["node_count", "edge_count"]
+          }
+        },
+        "wan": {
+          "function_id": "expansion.wan_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "disconnect_events": {"type": "integer", "const": 0},
+              "observation_window_s": {"type": "integer", "minimum": 1}
+            },
+            "required": ["disconnect_events", "observation_window_s"]
+          }
+        },
+        "services": {
+          "function_id": "expansion.services_health",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "running_services": {"type": "integer", "minimum": 0},
+              "failed_services": {"type": "integer", "minimum": 0}
+            },
+            "required": ["running_services", "failed_services"],
+            "anyOf": [
+              {"properties": {"running_services": {"minimum": 1}}},
+              {"properties": {"failed_services": {"minimum": 1}}}
+            ]
+          }
+        }
+      },
+      "claims": ["l06_sampled_services_no_failures_v1", "l06_sampled_services_failures_v1"],
+      "limitation": "Summarizes gateway service counters in one synthetic site snapshot with topology inventory and a nonempty WAN window reporting zero disconnects. The sources carry no site, node or service identifiers or coverage denominator. The verdict applies to the reported counters and cannot establish whole-site health, attribute a failure to an individual service or device, or establish a cause."
+    },
+    "L07": {
+      "workflow_id": "REPLAY-L07-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "links": {
+          "function_id": "expansion.gateway_links",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "known_gateways": {"type": "integer", "const": 2},
+              "reachable_gateways": {"type": "integer", "minimum": 1, "maximum": 2}
+            },
+            "required": ["known_gateways", "reachable_gateways"]
+          }
+        },
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {"type": "boolean", "const": true},
+              "loss_pct": {"type": "number", "minimum": 0, "exclusiveMaximum": 100}
+            },
+            "required": ["reachable", "loss_pct"]
+          }
+        }
+      },
+      "claims": ["l07_sampled_gateway_pair_reachable_v1", "l07_sampled_gateway_pair_mixed_v1"],
+      "limitation": "Compares reported reachability within a synthetic snapshot of exactly two known gateways, with at least one reported reachable and a successful upstream probe in the same snapshot. The probe carries no gateway identifier or path and cannot be joined to either gateway. The verdict cannot name an individual device, rank gateways, verify failover or end-to-end health, or establish a cause."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "l06_sampled_services_no_failures_v1",
+      "diagnosis": "l06_sampled_services_no_failures_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "services", "field": "failed_services", "op": "lt", "value": 1}],
+      "excludes": [],
+      "message_key": "l06_sampled_services_no_failures_v1",
+      "workflow": "REPLAY-L06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "l06_sampled_services_failures_v1",
+      "diagnosis": "l06_sampled_services_failures_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "services", "field": "failed_services", "op": "ge", "value": 1}],
+      "excludes": [],
+      "message_key": "l06_sampled_services_failures_v1",
+      "workflow": "REPLAY-L06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "l07_sampled_gateway_pair_reachable_v1",
+      "diagnosis": "l07_sampled_gateway_pair_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [{"port": "links", "field": "reachable_gateways", "op": "ge", "value": 2}],
+      "excludes": [],
+      "message_key": "l07_sampled_gateway_pair_reachable_v1",
+      "workflow": "REPLAY-L07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "l07_sampled_gateway_pair_mixed_v1",
+      "diagnosis": "l07_sampled_gateway_pair_mixed_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [{"port": "links", "field": "reachable_gateways", "op": "lt", "value": 2}],
+      "excludes": [],
+      "message_key": "l07_sampled_gateway_pair_mixed_v1",
+      "workflow": "REPLAY-L07-COMPOSITE-V1"
+    }
+  ]
+}
