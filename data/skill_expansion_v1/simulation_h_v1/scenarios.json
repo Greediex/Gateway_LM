@@ -1,0 +1,221 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-H",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "H02-normal",
+      "skill_id": "H02",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.services_health",
+      "values": {
+        "running_services": 8,
+        "failed_services": 0
+      }
+    },
+    {
+      "id": "H02-fault",
+      "skill_id": "H02",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.services_health",
+      "values": {
+        "running_services": 7,
+        "failed_services": 1
+      }
+    },
+    {
+      "id": "H02-missing",
+      "skill_id": "H02",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.services_health",
+      "values": null
+    },
+    {
+      "id": "H03-normal",
+      "skill_id": "H03",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.storage_health",
+      "values": {
+        "used_pct": 48.0,
+        "wear_pct": 12.0
+      }
+    },
+    {
+      "id": "H03-fault",
+      "skill_id": "H03",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.storage_health",
+      "values": {
+        "used_pct": 96.0,
+        "wear_pct": 21.0
+      }
+    },
+    {
+      "id": "H03-missing",
+      "skill_id": "H03",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.storage_health",
+      "values": null
+    },
+    {
+      "id": "H04-normal",
+      "skill_id": "H04",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.system_events",
+      "values": {
+        "error_count": 0,
+        "warning_count": 0
+      }
+    },
+    {
+      "id": "H04-fault",
+      "skill_id": "H04",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.system_events",
+      "values": {
+        "error_count": 3,
+        "warning_count": 2
+      }
+    },
+    {
+      "id": "H04-missing",
+      "skill_id": "H04",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.system_events",
+      "values": null
+    },
+    {
+      "id": "H05-normal",
+      "skill_id": "H05",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.temperature",
+      "values": {
+        "celsius": 58.0
+      }
+    },
+    {
+      "id": "H05-fault",
+      "skill_id": "H05",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.temperature",
+      "values": {
+        "celsius": 92.0
+      }
+    },
+    {
+      "id": "H05-missing",
+      "skill_id": "H05",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.temperature",
+      "values": null
+    },
+    {
+      "id": "H06-normal",
+      "skill_id": "H06",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.driver_status",
+      "values": {
+        "driver_errors": 0
+      }
+    },
+    {
+      "id": "H06-fault",
+      "skill_id": "H06",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.driver_status",
+      "values": {
+        "driver_errors": 3
+      }
+    },
+    {
+      "id": "H06-missing",
+      "skill_id": "H06",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.driver_status",
+      "values": null
+    },
+    {
+      "id": "H07-normal",
+      "skill_id": "H07",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.reboot_events",
+      "values": {
+        "boot_count": 1,
+        "crash_count": 0
+      }
+    },
+    {
+      "id": "H07-fault",
+      "skill_id": "H07",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.reboot_events",
+      "values": {
+        "boot_count": 3,
+        "crash_count": 2
+      }
+    },
+    {
+      "id": "H07-missing",
+      "skill_id": "H07",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.reboot_events",
+      "values": null
+    },
+    {
+      "id": "H08-normal",
+      "skill_id": "H08",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.firmware_info",
+      "values": {
+        "version": "demo-synthetic",
+        "free_storage_mb": 128.0
+      }
+    },
+    {
+      "id": "H08-fault",
+      "skill_id": "H08",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.firmware_info",
+      "values": {
+        "version": "demo-synthetic",
+        "free_storage_mb": 24.0
+      }
+    },
+    {
+      "id": "H08-missing",
+      "skill_id": "H08",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.firmware_info",
+      "values": null
+    }
+  ]
+}

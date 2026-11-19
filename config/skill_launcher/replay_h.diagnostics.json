@@ -1,0 +1,462 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-H02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "service_failures_reported_v1",
+        "services_running_without_reported_failures_v1"
+      ]
+    },
+    "REPLAY-H03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "storage_usage_high_v1",
+        "storage_wear_high_v1",
+        "storage_usage_and_wear_below_thresholds_v1"
+      ]
+    },
+    "REPLAY-H04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "system_errors_recorded_v1",
+        "system_sample_without_errors_or_warnings_v1"
+      ]
+    },
+    "REPLAY-H05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "device_temperature_high_v1",
+        "device_temperature_below_threshold_v1"
+      ]
+    },
+    "REPLAY-H06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "driver_errors_recorded_v1",
+        "driver_sample_without_errors_v1"
+      ]
+    },
+    "REPLAY-H07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "crashes_recorded_v1",
+        "single_boot_without_recorded_crashes_v1"
+      ]
+    },
+    "REPLAY-H08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "firmware_storage_below_precheck_threshold_v1",
+        "firmware_storage_meets_precheck_threshold_v1"
+      ],
+      "partial_claims": [
+        "firmware_storage_below_precheck_threshold_v1",
+        "firmware_storage_meets_precheck_threshold_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "service_failures_reported_v1",
+      "diagnosis": "service_failures_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.services_health",
+          "field": "running_services",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.services_health",
+          "field": "failed_services",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "service_failures_reported",
+      "workflow": "REPLAY-H02-V1"
+    },
+    {
+      "claim_id": "services_running_without_reported_failures_v1",
+      "diagnosis": "services_running_without_reported_failures_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.services_health",
+          "field": "running_services",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.services_health",
+          "field": "failed_services",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "services_running_without_reported_failures",
+      "workflow": "REPLAY-H02-V1"
+    },
+    {
+      "claim_id": "storage_usage_high_v1",
+      "diagnosis": "storage_usage_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "ge",
+          "value": 90
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "le",
+          "value": 100
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "storage_usage_high",
+      "workflow": "REPLAY-H03-V1"
+    },
+    {
+      "claim_id": "storage_wear_high_v1",
+      "diagnosis": "storage_wear_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "le",
+          "value": 100
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "ge",
+          "value": 80
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "le",
+          "value": 100
+        }
+      ],
+      "excludes": [],
+      "message_key": "storage_wear_high",
+      "workflow": "REPLAY-H03-V1"
+    },
+    {
+      "claim_id": "storage_usage_and_wear_below_thresholds_v1",
+      "diagnosis": "storage_usage_and_wear_below_thresholds_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "used_pct",
+          "op": "lt",
+          "value": 90
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.storage_health",
+          "field": "wear_pct",
+          "op": "lt",
+          "value": 80
+        }
+      ],
+      "excludes": [],
+      "message_key": "storage_usage_and_wear_below_thresholds",
+      "workflow": "REPLAY-H03-V1"
+    },
+    {
+      "claim_id": "system_errors_recorded_v1",
+      "diagnosis": "system_errors_recorded_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.system_events",
+          "field": "error_count",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.system_events",
+          "field": "warning_count",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "system_errors_recorded",
+      "workflow": "REPLAY-H04-V1"
+    },
+    {
+      "claim_id": "system_sample_without_errors_or_warnings_v1",
+      "diagnosis": "system_sample_without_errors_or_warnings_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.system_events",
+          "field": "error_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.system_events",
+          "field": "warning_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "system_sample_without_errors_or_warnings",
+      "workflow": "REPLAY-H04-V1"
+    },
+    {
+      "claim_id": "device_temperature_high_v1",
+      "diagnosis": "device_temperature_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.temperature",
+          "field": "celsius",
+          "op": "ge",
+          "value": 85
+        },
+        {
+          "port": "expansion.temperature",
+          "field": "celsius",
+          "op": "le",
+          "value": 125
+        }
+      ],
+      "excludes": [],
+      "message_key": "device_temperature_high",
+      "workflow": "REPLAY-H05-V1"
+    },
+    {
+      "claim_id": "device_temperature_below_threshold_v1",
+      "diagnosis": "device_temperature_below_threshold_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.temperature",
+          "field": "celsius",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.temperature",
+          "field": "celsius",
+          "op": "lt",
+          "value": 85
+        }
+      ],
+      "excludes": [],
+      "message_key": "device_temperature_below_threshold",
+      "workflow": "REPLAY-H05-V1"
+    },
+    {
+      "claim_id": "driver_errors_recorded_v1",
+      "diagnosis": "driver_errors_recorded_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.driver_status",
+          "field": "driver_errors",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "driver_errors_recorded",
+      "workflow": "REPLAY-H06-V1"
+    },
+    {
+      "claim_id": "driver_sample_without_errors_v1",
+      "diagnosis": "driver_sample_without_errors_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.driver_status",
+          "field": "driver_errors",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "driver_sample_without_errors",
+      "workflow": "REPLAY-H06-V1"
+    },
+    {
+      "claim_id": "crashes_recorded_v1",
+      "diagnosis": "crashes_recorded_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.reboot_events",
+          "field": "boot_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.reboot_events",
+          "field": "crash_count",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "crashes_recorded",
+      "workflow": "REPLAY-H07-V1"
+    },
+    {
+      "claim_id": "single_boot_without_recorded_crashes_v1",
+      "diagnosis": "single_boot_without_recorded_crashes_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.reboot_events",
+          "field": "boot_count",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "port": "expansion.reboot_events",
+          "field": "crash_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "single_boot_without_recorded_crashes",
+      "workflow": "REPLAY-H07-V1"
+    },
+    {
+      "claim_id": "firmware_storage_below_precheck_threshold_v1",
+      "diagnosis": "firmware_storage_below_precheck_threshold_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.firmware_info",
+          "field": "free_storage_mb",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.firmware_info",
+          "field": "free_storage_mb",
+          "op": "lt",
+          "value": 64
+        }
+      ],
+      "excludes": [],
+      "message_key": "firmware_storage_below_precheck_threshold",
+      "workflow": "REPLAY-H08-V1"
+    },
+    {
+      "claim_id": "firmware_storage_meets_precheck_threshold_v1",
+      "diagnosis": "firmware_storage_meets_precheck_threshold_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.firmware_info",
+          "field": "free_storage_mb",
+          "op": "ge",
+          "value": 64
+        }
+      ],
+      "excludes": [],
+      "message_key": "firmware_storage_meets_precheck_threshold",
+      "workflow": "REPLAY-H08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "H02": [
+      "REPLAY-H02-V1"
+    ],
+    "H03": [
+      "REPLAY-H03-V1"
+    ],
+    "H04": [
+      "REPLAY-H04-V1"
+    ],
+    "H05": [
+      "REPLAY-H05-V1"
+    ],
+    "H06": [
+      "REPLAY-H06-V1"
+    ],
+    "H07": [
+      "REPLAY-H07-V1"
+    ],
+    "H08": [
+      "REPLAY-H08-V1"
+    ]
+  }
+}
