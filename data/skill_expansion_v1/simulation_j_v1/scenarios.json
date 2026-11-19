@@ -1,0 +1,195 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-J",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "J01-normal",
+      "skill_id": "J01",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vpn_tunnel",
+      "values": {
+        "tunnel_up": true,
+        "peer_count": 2
+      }
+    },
+    {
+      "id": "J01-fault",
+      "skill_id": "J01",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vpn_tunnel",
+      "values": {
+        "tunnel_up": false,
+        "peer_count": 2
+      }
+    },
+    {
+      "id": "J01-missing",
+      "skill_id": "J01",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vpn_tunnel",
+      "values": null
+    },
+    {
+      "id": "J02-normal",
+      "skill_id": "J02",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vpn_routes",
+      "values": {
+        "expected_routes": 3,
+        "missing_routes": 0
+      }
+    },
+    {
+      "id": "J02-fault",
+      "skill_id": "J02",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vpn_routes",
+      "values": {
+        "expected_routes": 3,
+        "missing_routes": 1
+      }
+    },
+    {
+      "id": "J02-missing",
+      "skill_id": "J02",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vpn_routes",
+      "values": null
+    },
+    {
+      "id": "J04-normal",
+      "skill_id": "J04",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vpn_peers",
+      "values": {
+        "peers_reachable": 2,
+        "peers_unreachable": 0
+      }
+    },
+    {
+      "id": "J04-fault",
+      "skill_id": "J04",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vpn_peers",
+      "values": {
+        "peers_reachable": 1,
+        "peers_unreachable": 1
+      }
+    },
+    {
+      "id": "J04-missing",
+      "skill_id": "J04",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vpn_peers",
+      "values": null
+    },
+    {
+      "id": "J06-normal",
+      "skill_id": "J06",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vpn_ipv6",
+      "values": {
+        "ipv6_enabled": true,
+        "route_present": true
+      }
+    },
+    {
+      "id": "J06-fault",
+      "skill_id": "J06",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vpn_ipv6",
+      "values": {
+        "ipv6_enabled": true,
+        "route_present": false
+      }
+    },
+    {
+      "id": "J06-missing",
+      "skill_id": "J06",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vpn_ipv6",
+      "values": null
+    },
+    {
+      "id": "J07-normal",
+      "skill_id": "J07",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.policy_routes",
+      "values": {
+        "routing_rules": 3,
+        "unresolved_rules": 0
+      }
+    },
+    {
+      "id": "J07-fault",
+      "skill_id": "J07",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.policy_routes",
+      "values": {
+        "routing_rules": 3,
+        "unresolved_rules": 1
+      }
+    },
+    {
+      "id": "J07-missing",
+      "skill_id": "J07",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.policy_routes",
+      "values": null
+    },
+    {
+      "id": "J08-normal",
+      "skill_id": "J08",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.remote_access",
+      "values": {
+        "service_enabled": true,
+        "connections": 2
+      }
+    },
+    {
+      "id": "J08-fault",
+      "skill_id": "J08",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.remote_access",
+      "values": {
+        "service_enabled": false,
+        "connections": 0
+      }
+    },
+    {
+      "id": "J08-missing",
+      "skill_id": "J08",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.remote_access",
+      "values": null
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-J01-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vpn_tunnel_down_v1",
+        "vpn_tunnel_up_with_peers_v1"
+      ]
+    },
+    "REPLAY-J02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vpn_one_expected_route_missing_v1",
+        "vpn_expected_routes_present_v1"
+      ]
+    },
+    "REPLAY-J04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vpn_peer_unreachable_in_sample_v1",
+        "vpn_observed_peers_reachable_v1"
+      ]
+    },
+    "REPLAY-J06-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vpn_ipv6_enabled_without_route_v1",
+        "vpn_ipv6_enabled_with_route_v1"
+      ]
+    },
+    "REPLAY-J07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "pbr_one_rule_unresolved_v1",
+        "pbr_observed_rules_resolved_v1"
+      ]
+    },
+    "REPLAY-J08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "remote_access_service_disabled_v1",
+        "remote_access_service_has_connections_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "vpn_tunnel_down_v1",
+      "diagnosis": "vpn_tunnel_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vpn_tunnel",
+          "field": "tunnel_up",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.vpn_tunnel",
+          "field": "peer_count",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_tunnel_down",
+      "workflow": "REPLAY-J01-V1"
+    },
+    {
+      "claim_id": "vpn_tunnel_up_with_peers_v1",
+      "diagnosis": "vpn_tunnel_up_with_peers_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vpn_tunnel",
+          "field": "tunnel_up",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.vpn_tunnel",
+          "field": "peer_count",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_tunnel_up_with_peers",
+      "workflow": "REPLAY-J01-V1"
+    },
+    {
+      "claim_id": "vpn_one_expected_route_missing_v1",
+      "diagnosis": "vpn_one_expected_route_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vpn_routes",
+          "field": "expected_routes",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.vpn_routes",
+          "field": "missing_routes",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_one_expected_route_missing",
+      "workflow": "REPLAY-J02-V1"
+    },
+    {
+      "claim_id": "vpn_expected_routes_present_v1",
+      "diagnosis": "vpn_expected_routes_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vpn_routes",
+          "field": "expected_routes",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.vpn_routes",
+          "field": "missing_routes",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_expected_routes_present",
+      "workflow": "REPLAY-J02-V1"
+    },
+    {
+      "claim_id": "vpn_peer_unreachable_in_sample_v1",
+      "diagnosis": "vpn_peer_unreachable_in_sample_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vpn_peers",
+          "field": "peers_reachable",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.vpn_peers",
+          "field": "peers_unreachable",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_peer_unreachable_in_sample",
+      "workflow": "REPLAY-J04-V1"
+    },
+    {
+      "claim_id": "vpn_observed_peers_reachable_v1",
+      "diagnosis": "vpn_observed_peers_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vpn_peers",
+          "field": "peers_reachable",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.vpn_peers",
+          "field": "peers_unreachable",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_observed_peers_reachable",
+      "workflow": "REPLAY-J04-V1"
+    },
+    {
+      "claim_id": "vpn_ipv6_enabled_without_route_v1",
+      "diagnosis": "vpn_ipv6_enabled_without_route_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vpn_ipv6",
+          "field": "ipv6_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.vpn_ipv6",
+          "field": "route_present",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_ipv6_enabled_without_route",
+      "workflow": "REPLAY-J06-V1"
+    },
+    {
+      "claim_id": "vpn_ipv6_enabled_with_route_v1",
+      "diagnosis": "vpn_ipv6_enabled_with_route_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vpn_ipv6",
+          "field": "ipv6_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.vpn_ipv6",
+          "field": "route_present",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "vpn_ipv6_enabled_with_route",
+      "workflow": "REPLAY-J06-V1"
+    },
+    {
+      "claim_id": "pbr_one_rule_unresolved_v1",
+      "diagnosis": "pbr_one_rule_unresolved_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.policy_routes",
+          "field": "routing_rules",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.policy_routes",
+          "field": "unresolved_rules",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "pbr_one_rule_unresolved",
+      "workflow": "REPLAY-J07-V1"
+    },
+    {
+      "claim_id": "pbr_observed_rules_resolved_v1",
+      "diagnosis": "pbr_observed_rules_resolved_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.policy_routes",
+          "field": "routing_rules",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.policy_routes",
+          "field": "unresolved_rules",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "pbr_observed_rules_resolved",
+      "workflow": "REPLAY-J07-V1"
+    },
+    {
+      "claim_id": "remote_access_service_disabled_v1",
+      "diagnosis": "remote_access_service_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.remote_access",
+          "field": "service_enabled",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.remote_access",
+          "field": "connections",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "remote_access_service_disabled",
+      "workflow": "REPLAY-J08-V1"
+    },
+    {
+      "claim_id": "remote_access_service_has_connections_v1",
+      "diagnosis": "remote_access_service_has_connections_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.remote_access",
+          "field": "service_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.remote_access",
+          "field": "connections",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "remote_access_service_has_connections",
+      "workflow": "REPLAY-J08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "J01": [
+      "REPLAY-J01-V1"
+    ],
+    "J02": [
+      "REPLAY-J02-V1"
+    ],
+    "J04": [
+      "REPLAY-J04-V1"
+    ],
+    "J06": [
+      "REPLAY-J06-V1"
+    ],
+    "J07": [
+      "REPLAY-J07-V1"
+    ],
+    "J08": [
+      "REPLAY-J08-V1"
+    ]
+  }
+}
