@@ -1,0 +1,242 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-L01-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "topology_edges_missing_v1",
+        "topology_edges_reported_v1"
+      ]
+    },
+    "REPLAY-L02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "client_associations_unresolved_v1",
+        "client_associations_reported_without_gaps_v1"
+      ]
+    },
+    "REPLAY-L03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "no_known_gateway_reachable_v1",
+        "sole_known_gateway_reachable_v1"
+      ]
+    },
+    "REPLAY-L05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "subnet_inventory_empty_with_vlans_v1",
+        "subnet_and_vlan_inventories_populated_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "topology_edges_missing_v1",
+      "diagnosis": "topology_edges_missing_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.topology_inventory",
+          "field": "node_count",
+          "op": "ge",
+          "value": 2
+        },
+        {
+          "port": "expansion.topology_inventory",
+          "field": "edge_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "topology_edges_missing",
+      "workflow": "REPLAY-L01-V1"
+    },
+    {
+      "claim_id": "topology_edges_reported_v1",
+      "diagnosis": "topology_edges_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.topology_inventory",
+          "field": "node_count",
+          "op": "ge",
+          "value": 2
+        },
+        {
+          "port": "expansion.topology_inventory",
+          "field": "edge_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "topology_edges_reported",
+      "workflow": "REPLAY-L01-V1"
+    },
+    {
+      "claim_id": "client_associations_unresolved_v1",
+      "diagnosis": "client_associations_unresolved_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.topology_associations",
+          "field": "known_associations",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.topology_associations",
+          "field": "unresolved_clients",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "client_associations_unresolved",
+      "workflow": "REPLAY-L02-V1"
+    },
+    {
+      "claim_id": "client_associations_reported_without_gaps_v1",
+      "diagnosis": "client_associations_reported_without_gaps_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.topology_associations",
+          "field": "known_associations",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.topology_associations",
+          "field": "unresolved_clients",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "client_associations_reported_without_gaps",
+      "workflow": "REPLAY-L02-V1"
+    },
+    {
+      "claim_id": "no_known_gateway_reachable_v1",
+      "diagnosis": "no_known_gateway_reachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.gateway_links",
+          "field": "known_gateways",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.gateway_links",
+          "field": "reachable_gateways",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_known_gateway_reachable",
+      "workflow": "REPLAY-L03-V1"
+    },
+    {
+      "claim_id": "sole_known_gateway_reachable_v1",
+      "diagnosis": "sole_known_gateway_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.gateway_links",
+          "field": "known_gateways",
+          "op": "eq",
+          "value": 1
+        },
+        {
+          "port": "expansion.gateway_links",
+          "field": "reachable_gateways",
+          "op": "eq",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "sole_known_gateway_reachable",
+      "workflow": "REPLAY-L03-V1"
+    },
+    {
+      "claim_id": "subnet_inventory_empty_with_vlans_v1",
+      "diagnosis": "subnet_inventory_empty_with_vlans_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.subnet_inventory",
+          "field": "subnet_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.subnet_inventory",
+          "field": "vlan_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "subnet_inventory_empty_with_vlans",
+      "workflow": "REPLAY-L05-V1"
+    },
+    {
+      "claim_id": "subnet_and_vlan_inventories_populated_v1",
+      "diagnosis": "subnet_and_vlan_inventories_populated_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.subnet_inventory",
+          "field": "subnet_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.subnet_inventory",
+          "field": "vlan_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "subnet_and_vlan_inventories_populated",
+      "workflow": "REPLAY-L05-V1"
+    }
+  ],
+  "skill_workflows": {
+    "L01": [
+      "REPLAY-L01-V1"
+    ],
+    "L02": [
+      "REPLAY-L02-V1"
+    ],
+    "L03": [
+      "REPLAY-L03-V1"
+    ],
+    "L05": [
+      "REPLAY-L05-V1"
+    ]
+  }
+}

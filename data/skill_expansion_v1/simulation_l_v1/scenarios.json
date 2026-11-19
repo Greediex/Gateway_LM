@@ -1,0 +1,129 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-L",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "scenarios": [
+    {
+      "id": "L01-normal",
+      "skill_id": "L01",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.topology_inventory",
+      "values": {
+        "node_count": 5,
+        "edge_count": 4
+      }
+    },
+    {
+      "id": "L01-fault",
+      "skill_id": "L01",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.topology_inventory",
+      "values": {
+        "node_count": 5,
+        "edge_count": 0
+      }
+    },
+    {
+      "id": "L01-missing",
+      "skill_id": "L01",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.topology_inventory",
+      "values": null
+    },
+    {
+      "id": "L02-normal",
+      "skill_id": "L02",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.topology_associations",
+      "values": {
+        "known_associations": 12,
+        "unresolved_clients": 0
+      }
+    },
+    {
+      "id": "L02-fault",
+      "skill_id": "L02",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.topology_associations",
+      "values": {
+        "known_associations": 9,
+        "unresolved_clients": 3
+      }
+    },
+    {
+      "id": "L02-missing",
+      "skill_id": "L02",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.topology_associations",
+      "values": null
+    },
+    {
+      "id": "L03-normal",
+      "skill_id": "L03",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.gateway_links",
+      "values": {
+        "known_gateways": 1,
+        "reachable_gateways": 1
+      }
+    },
+    {
+      "id": "L03-fault",
+      "skill_id": "L03",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.gateway_links",
+      "values": {
+        "known_gateways": 2,
+        "reachable_gateways": 0
+      }
+    },
+    {
+      "id": "L03-missing",
+      "skill_id": "L03",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.gateway_links",
+      "values": null
+    },
+    {
+      "id": "L05-normal",
+      "skill_id": "L05",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.subnet_inventory",
+      "values": {
+        "subnet_count": 3,
+        "vlan_count": 2
+      }
+    },
+    {
+      "id": "L05-fault",
+      "skill_id": "L05",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.subnet_inventory",
+      "values": {
+        "subnet_count": 0,
+        "vlan_count": 2
+      }
+    },
+    {
+      "id": "L05-missing",
+      "skill_id": "L05",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.subnet_inventory",
+      "values": null
+    }
+  ]
+}
