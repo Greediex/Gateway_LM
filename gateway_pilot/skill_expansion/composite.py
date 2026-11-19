@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -108,7 +109,7 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
         for c in rows}, 'limitation': workflow['limitation']}
     if set(sources) != set(workflow['sources']):
         return {**unknown, 'reason': 'missing_or_foreign_source'}
-    facts, environments = {}, set()
+    facts, environments, sample_times = {}, set(), set()
     for alias, spec in workflow['sources'].items():
         source = sources[alias]
         state = source.state
@@ -123,16 +124,21 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
             return {**unknown, 'reason': 'unusable_source:' + alias}
         environments.add((state.boot_id, state.config_version))
         facts[alias] = fact
-        timestamp(source.simulated_at)
+        sample_times.add(timestamp(source.simulated_at))
         value = fact['value']
         value_schema = spec.get('value_schema')
-        if value_schema is not None and not validate(value, value_schema):
-            return {**unknown, 'reason': 'insufficient_source:' + alias}
+        if value_schema is not None:
+            if (not validate(value, value_schema)
+                    or any(isinstance(field, float) and not math.isfinite(field)
+                           for field in value.values())):
+                return {**unknown, 'reason': 'insufficient_source:' + alias}
         if ('devices_count' in value and value['devices_count'] < 0
                 or value.get('oui_known') is True and not value.get('oui_vendor', '').strip()):
             return {**unknown, 'reason': 'inconsistent_source:' + alias}
     if len(environments) != 1 or len({f['id'] for f in facts.values()}) != len(facts):
         return {**unknown, 'reason': 'environment_or_duplicate_proof'}
+    if workflow.get('require_same_sample_time') and len(sample_times) != 1:
+        return {**unknown, 'reason': 'different_sample_times'}
     history = workflow.get('history')
     if history:
         earlier, later = history['earlier'], history['later']

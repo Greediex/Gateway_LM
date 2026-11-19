@@ -2,7 +2,7 @@
   "format": "gateway-lm.skill-acceptance/v1",
   "version": "1.0.0",
   "synthetic_only": true,
-  "inputs_digest": "3e9e71b4787e580c295da716b9073ab94b52a9c17b590fb1e779821b712dea4c",
+  "inputs_digest": "6c0d94f74aca4cb3b4736c01735f489678d979d24fa805570a04aeba732dfa35",
   "skills": {
     "A02": {
       "normal": {
@@ -800,6 +800,23 @@
       "missing": {
         "pass": true,
         "core_calls": 0,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "G08": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
         "verdict": "UNKNOWN"
       }
     },

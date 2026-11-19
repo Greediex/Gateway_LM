@@ -1,0 +1,49 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "G08-normal",
+      "skill_id": "G08",
+      "sources": {
+        "traffic": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"rx_mbps": 120.0, "tx_mbps": 20.0}
+        },
+        "queue": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"queue_delay_ms": 8.0}
+        }
+      }
+    },
+    {
+      "id": "G08-fault",
+      "skill_id": "G08",
+      "sources": {
+        "traffic": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"rx_mbps": 120.0, "tx_mbps": 20.0}
+        },
+        "queue": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"queue_delay_ms": 180.0}
+        }
+      }
+    },
+    {
+      "id": "G08-missing",
+      "skill_id": "G08",
+      "sources": {
+        "traffic": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "queue": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"queue_delay_ms": 180.0}
+        }
+      }
+    }
+  ]
+}

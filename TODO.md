@@ -293,6 +293,8 @@ Latency/loss/jitter, RX/TX/throughput, băng thông/SQM và bufferbloat; mô ph�
 | `G07` | Kiểm tra chính sách QoS/SQM |
 | `G08` | Khoanh vùng tắc nghẽn |
 
+Tiến độ COV-G composite (19/11/2026, `v2`): G08 đạt Simulation verified (3/3 ca qua Core), sàng lọc độ trễ hàng đợi gateway với mẫu lưu lượng cùng thời điểm và RX hoặc TX > 0 Mbps. Ngưỡng mô phỏng 50 ms: ≤ 50 HEALTHY, > 50 FAULT. Thiếu nguồn, lệch thời điểm, lưu lượng hai chiều đều bằng 0 hoặc giá trị sai miền → UNKNOWN. Mẫu chỉ mô tả hàng đợi đã quan sát, chưa xác định điểm nghẽn, interface, thiết bị hay nguyên nhân. G03 chưa nghiệm thu vì bộ đếm và tốc độ lưu lượng thiếu bằng chứng về tải kiểm soát. Tổng 225/225 ca, `simulation_verified` 74 → 75, chưa đo trên router.
+
 ### COV-H — H: Router/System Health · 8 Skill
 
 - [ ] **Batch COV-H** · Ưu tiên: P1. Phụ thuộc: COV-02…03.

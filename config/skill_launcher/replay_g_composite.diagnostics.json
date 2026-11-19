@@ -1,0 +1,74 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "G08": {
+      "workflow_id": "REPLAY-G08-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "traffic": {
+          "function_id": "expansion.bandwidth_usage",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "rx_mbps": {"type": "number", "minimum": 0},
+              "tx_mbps": {"type": "number", "minimum": 0}
+            },
+            "required": ["rx_mbps", "tx_mbps"],
+            "anyOf": [
+              {"properties": {"rx_mbps": {"exclusiveMinimum": 0}}},
+              {"properties": {"tx_mbps": {"exclusiveMinimum": 0}}}
+            ]
+          }
+        },
+        "queue": {
+          "function_id": "expansion.queue_delay",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "queue_delay_ms": {"type": "number", "minimum": 0}
+            },
+            "required": ["queue_delay_ms"]
+          }
+        }
+      },
+      "claims": [
+        "g08_sampled_queue_delay_within_threshold_v1",
+        "g08_sampled_queue_delay_high_v1"
+      ],
+      "limitation": "Screens the sampled gateway queue using a 50 ms replay threshold when aggregate traffic is present at the same simulated time. Traffic rates do not establish utilization, capacity, or that the traffic traversed the sampled queue. The sample cannot confirm a bottleneck, identify an interface or individual device, establish a cause, or describe the health of the whole path."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "g08_sampled_queue_delay_within_threshold_v1",
+      "diagnosis": "g08_sampled_queue_delay_within_threshold_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {"port": "queue", "field": "queue_delay_ms", "op": "le", "value": 50}
+      ],
+      "excludes": [],
+      "message_key": "g08_sampled_queue_delay_within_threshold_v1",
+      "workflow": "REPLAY-G08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "g08_sampled_queue_delay_high_v1",
+      "diagnosis": "g08_sampled_queue_delay_high_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {"port": "queue", "field": "queue_delay_ms", "op": "gt", "value": 50}
+      ],
+      "excludes": [],
+      "message_key": "g08_sampled_queue_delay_high_v1",
+      "workflow": "REPLAY-G08-COMPOSITE-V1"
+    }
+  ]
+}
