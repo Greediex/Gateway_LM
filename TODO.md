@@ -346,6 +346,8 @@ VPN tunnel/peer/routes/IPv6/PBR/remote-access; DNS leak và site-to-site cần �
 | `J07` | Chẩn đoán policy-based routing |
 | `J08` | Chẩn đoán truy cập từ xa |
 
+Tiến độ COV-J composite (19/11/2026, `v2`): J05 đạt Simulation verified với 3/3 ca qua Core và 2 Claim `_v1`, gold tách riêng; coverage sinh từ acceptance tăng từ 75 lên **76/120**. Chỉ xét ba nguồn cùng thời điểm khi tunnel báo up và có đúng 1 peer, có ≥ 1 route kỳ vọng và thiếu 0 route, mẫu reachability có đúng 1 kết quả. Trong miền này, số peer unreachable bằng 0 cho HEALTHY, bằng 1 cho FAULT; thiếu nguồn, sai kiểu hoặc ngoài miền cho UNKNOWN. Đây là sàng lọc reachability tổng hợp trong mô phỏng; thiếu ID để ghép peer, tunnel, site và prefix, thiếu lưu lượng đầu cuối để xác minh đường đi hoặc quy nguyên nhân. Bỏ J03 vì số đếm resolver/route và cờ DoT/DoH thiếu định danh resolver, chính sách DNS kỳ vọng và đường đi quan sát được của truy vấn; chưa đủ căn cứ đánh giá DNS leak.
+
 ### COV-K — K: History, Monitoring & Incidents · 8 Skill
 
 - [ ] **Batch COV-K** · Ưu tiên: P1. Phụ thuộc: A và snapshot/checkpoint/journal hiện có.

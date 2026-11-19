@@ -105,7 +105,7 @@ class AcceptanceTests(unittest.TestCase):
                           "G01", "G02", "G04", "G05", "G06", "G07", "G08",
                           "H02", "H03", "H04", "H05", "H06", "H07", "H08",
                           "I01", "I02", "I03", "I04", "I05", "I06", "I08",
-                          "J01", "J02", "J04", "J06", "J07", "J08",
+                          "J01", "J02", "J04", "J05", "J06", "J07", "J08",
                           "L01", "L02", "L03", "L05",
                           "N03", "N04", "N07"})
         self.assertFalse(any(r.router_verified for r in rows))

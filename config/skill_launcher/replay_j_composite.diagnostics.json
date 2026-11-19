@@ -1,0 +1,88 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "J05": {
+      "workflow_id": "REPLAY-J05-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "tunnel": {
+          "function_id": "expansion.vpn_tunnel",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "tunnel_up": {"type": "boolean", "const": true},
+              "peer_count": {"type": "integer", "const": 1}
+            },
+            "required": ["tunnel_up", "peer_count"]
+          }
+        },
+        "routes": {
+          "function_id": "expansion.vpn_routes",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "expected_routes": {"type": "integer", "minimum": 1},
+              "missing_routes": {"type": "integer", "const": 0}
+            },
+            "required": ["expected_routes", "missing_routes"]
+          }
+        },
+        "peers": {
+          "function_id": "expansion.vpn_peers",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "peers_reachable": {"type": "integer", "minimum": 0, "maximum": 1},
+              "peers_unreachable": {"type": "integer", "minimum": 0, "maximum": 1}
+            },
+            "required": ["peers_reachable", "peers_unreachable"],
+            "oneOf": [
+              {"properties": {"peers_reachable": {"const": 1}}},
+              {"properties": {"peers_unreachable": {"const": 1}}}
+            ]
+          }
+        }
+      },
+      "claims": [
+        "j05_sampled_peer_reachable_v1",
+        "j05_sampled_peer_unreachable_v1"
+      ],
+      "limitation": "Screens aggregate VPN peer reachability in a single-peer synthetic sample with an up tunnel and no missing expected routes. The sources carry no peer, site, tunnel or prefix identifiers for correlation. The verdict cannot identify an individual peer or device, verify end-to-end traffic between sites, or establish a cause."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "j05_sampled_peer_reachable_v1",
+      "diagnosis": "j05_sampled_peer_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {"port": "peers", "field": "peers_unreachable", "op": "lt", "value": 1}
+      ],
+      "excludes": [],
+      "message_key": "j05_sampled_peer_reachable_v1",
+      "workflow": "REPLAY-J05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "j05_sampled_peer_unreachable_v1",
+      "diagnosis": "j05_sampled_peer_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {"port": "peers", "field": "peers_unreachable", "op": "ge", "value": 1}
+      ],
+      "excludes": [],
+      "message_key": "j05_sampled_peer_unreachable_v1",
+      "workflow": "REPLAY-J05-COMPOSITE-V1"
+    }
+  ]
+}

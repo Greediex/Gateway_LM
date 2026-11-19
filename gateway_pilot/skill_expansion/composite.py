@@ -18,7 +18,7 @@ from ..graph_v3.contracts import validate
 from ..graph_v3.state import CaseState
 from .catalog import DATA_DIR
 from .coverage import COMPOSITE_BATCHES
-from .simulation import SimulationError, _no_gold
+from .simulation import PORTS_DIR, SimulationError, _no_gold
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -34,13 +34,27 @@ def batch_paths(batch: str) -> tuple[Path, Path]:
 SIM_DIR, DIAGNOSTICS = batch_paths('A')
 
 
+def _source_fields(spec: dict) -> frozenset[str]:
+    # Use the existing port contract, never fixture or diagnostics keys, as
+    # the allowlist for measurements such as expected_routes.
+    port = PORTS_DIR / f"{spec['function_id']}.json"
+    schema = json.loads(port.read_text(encoding='utf-8'))['schema']
+    return frozenset(schema.get('properties', {}))
+
+
 def contracts(batch: str = 'A') -> dict:
     _, diagnostics = batch_paths(batch)
     doc = json.loads(diagnostics.read_text(encoding='utf-8'))
     if (doc.get('format') != 'gateway-lm.composite-diagnostics/v1'
             or doc.get('version') != '1.0.0' or doc.get('synthetic_only') is not True):
         raise SimulationError('invalid composite contracts')
-    _no_gold(doc, 'composite contracts')
+    metadata = copy.deepcopy(doc)
+    for workflow in metadata['workflows'].values():
+        for alias, spec in workflow['sources'].items():
+            value_schema = spec.pop('value_schema', None)
+            if value_schema is not None:
+                _no_gold(value_schema, f'composite source schema {alias}', _source_fields(spec))
+    _no_gold(metadata, 'composite contracts')
     return doc
 
 
@@ -60,19 +74,26 @@ def load_scenarios(batch: str = 'A') -> list[dict]:
     if (doc.get('format') != 'gateway-lm.composite-simulation/v1'
             or doc.get('version') != '1.0.0' or doc.get('synthetic_only') is not True):
         raise SimulationError('invalid composite scenarios')
-    _no_gold(doc, 'composite scenarios')
+    _no_gold({key: value for key, value in doc.items() if key != 'scenarios'},
+             'composite scenarios')
     workflows = contracts(batch)['workflows']
     seen = set()
     for row in doc['scenarios']:
+        _no_gold({key: value for key, value in row.items() if key != 'sources'},
+                 'composite scenario metadata')
         if (set(row) != {'id', 'skill_id', 'sources'} or row['id'] in seen
                 or row['skill_id'] not in workflows
                 or set(row['sources']) != set(workflows[row['skill_id']]['sources'])):
             raise SimulationError('invalid composite scenario sources or id')
         seen.add(row['id'])
-        for sample in row['sources'].values():
+        for alias, sample in row['sources'].items():
+            _no_gold({key: value for key, value in sample.items() if key != 'values'},
+                     f'composite sample metadata {alias}')
             if set(sample) != {'simulated_at', 'values'}:
                 raise SimulationError('invalid composite sample')
             timestamp(sample['simulated_at'])
+            spec = workflows[row['skill_id']]['sources'][alias]
+            _no_gold(sample['values'], f"{row['id']}.{alias}", _source_fields(spec))
     if not seen:
         raise SimulationError('empty composite scenarios')
     return doc['scenarios']

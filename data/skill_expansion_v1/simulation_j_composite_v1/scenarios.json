@@ -1,0 +1,61 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "J05-normal",
+      "skill_id": "J05",
+      "sources": {
+        "tunnel": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"tunnel_up": true, "peer_count": 1}
+        },
+        "routes": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"expected_routes": 2, "missing_routes": 0}
+        },
+        "peers": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"peers_reachable": 1, "peers_unreachable": 0}
+        }
+      }
+    },
+    {
+      "id": "J05-fault",
+      "skill_id": "J05",
+      "sources": {
+        "tunnel": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"tunnel_up": true, "peer_count": 1}
+        },
+        "routes": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"expected_routes": 2, "missing_routes": 0}
+        },
+        "peers": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"peers_reachable": 0, "peers_unreachable": 1}
+        }
+      }
+    },
+    {
+      "id": "J05-missing",
+      "skill_id": "J05",
+      "sources": {
+        "tunnel": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"tunnel_up": true, "peer_count": 1}
+        },
+        "routes": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "peers": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {"peers_reachable": 0, "peers_unreachable": 1}
+        }
+      }
+    }
+  ]
+}
