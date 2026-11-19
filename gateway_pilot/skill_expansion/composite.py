@@ -118,9 +118,9 @@ class _ClaimView:
 def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A') -> dict:
     """Recheck every source before ClaimBook; any missing source fails closed.
 
-    History compares two independently verified samples, with distinct proof IDs,
-    increasing simulated times, identical environment/target/segment and live TTL
-    checks on both Core states. Simulated time never extends an evidence lease.
+    History requires independent samples with distinct proofs, increasing times,
+    matching environment/target and live TTL checks on each Core state.
+    Simulated time never extends an evidence lease.
     """
     doc = contracts(batch)
     workflow = doc['workflows'][skill_id]
@@ -130,7 +130,7 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
         for c in rows}, 'limitation': workflow['limitation']}
     if set(sources) != set(workflow['sources']):
         return {**unknown, 'reason': 'missing_or_foreign_source'}
-    facts, environments, sample_times = {}, set(), set()
+    facts, environments, sample_times = {}, set(), {}
     for alias, spec in workflow['sources'].items():
         source = sources[alias]
         state = source.state
@@ -141,11 +141,15 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
         if (fact is None or runtime is None or not state.allowed(state.registry.functions[spec['function_id']])
                 or runtime.context.scope != spec['scope'] or runtime.context.target_id != spec['target']
                 or fact['scope'] != spec['scope'] or fact['target'] != spec['target']
+                or fact['function_id'] != spec['function_id']
                 or not fact['source'].startswith('synthetic_replay/')):
             return {**unknown, 'reason': 'unusable_source:' + alias}
         environments.add((state.boot_id, state.config_version))
         facts[alias] = fact
-        sample_times.add(timestamp(source.simulated_at))
+        try:
+            sample_times[alias] = timestamp(source.simulated_at)
+        except SimulationError:
+            return {**unknown, 'reason': 'invalid_sample_time:' + alias}
         value = fact['value']
         value_schema = spec.get('value_schema')
         if value_schema is not None:
@@ -161,14 +165,28 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
             return {**unknown, 'reason': 'inconsistent_source:' + alias}
     if len(environments) != 1 or len({f['id'] for f in facts.values()}) != len(facts):
         return {**unknown, 'reason': 'environment_or_duplicate_proof'}
-    if workflow.get('require_same_sample_time') and len(sample_times) != 1:
+    if workflow.get('require_same_sample_time') and len(set(sample_times.values())) != 1:
         return {**unknown, 'reason': 'different_sample_times'}
     history = workflow.get('history')
     if history:
         earlier, later = history['earlier'], history['later']
-        if (timestamp(sources[earlier].simulated_at) >= timestamp(sources[later].simulated_at)
-                or facts[earlier]['value'][history['same_field']] != facts[later]['value'][history['same_field']]):
+        aliases = [earlier, *history.get('between', ()), later]
+        if len(set(aliases)) != len(aliases) or not set(aliases) <= facts.keys():
+            return {**unknown, 'reason': 'invalid_history_sources'}
+        bindings = {(facts[a]['function_id'], facts[a]['scope'], facts[a]['target']) for a in aliases}
+        if len(bindings) != 1:
+            return {**unknown, 'reason': 'inconsistent_history_sources'}
+        if any(sample_times[a] >= sample_times[b] for a, b in zip(aliases, aliases[1:])):
             return {**unknown, 'reason': 'history_order_or_segment'}
+        same_field = history.get('same_field')
+        if same_field is not None and any(
+                same_field not in facts[alias]['value']
+                or facts[alias]['value'][same_field] != facts[earlier]['value'][same_field]
+                for alias in aliases):
+            return {**unknown, 'reason': 'history_order_or_segment'}
+        max_span = history.get('max_span_seconds')
+        if max_span is not None and (sample_times[later] - sample_times[earlier]).total_seconds() > max_span:
+            return {**unknown, 'reason': 'history_window_expired'}
     # Resolve cross-sample numeric comparisons only from usable facts. No new
     # evidence is manufactured: ClaimBook returns the original Core proof IDs.
     for row in rows:
@@ -180,5 +198,16 @@ def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A
     book = ClaimBook(rows, facts, {wid: workflow})
     results = book.evaluate_all(_ClaimView(facts), wid)
     severities = {c['severity'] for c in results.values() if c['value'] == 'TRUE' and c['evidence']}
-    return {'verdict': next(iter(severities)) if len(severities) == 1 else 'UNKNOWN',
-            'claims': results, 'limitation': workflow['limitation']}
+    result = {'verdict': next(iter(severities)) if len(severities) == 1 else 'UNKNOWN',
+              'claims': results, 'limitation': workflow['limitation']}
+    if history:
+        # A history verdict depends on all ordered samples, even when a Claim
+        # tests just one field. Keep their original Core proof IDs and times.
+        history_proofs = [facts[a]['id'] for a in aliases]
+        for claim in results.values():
+            if claim['value'] == 'TRUE':
+                claim['evidence'] = list(dict.fromkeys(history_proofs + claim['evidence']))
+        result['history'] = [{'source': a, 'simulated_at': sources[a].simulated_at,
+                              'evidence_id': facts[a]['id'], 'value': copy.deepcopy(facts[a]['value'])}
+                             for a in aliases]
+    return result

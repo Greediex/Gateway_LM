@@ -20,10 +20,10 @@ def run_scenario(row: dict, *, batch: str = 'A', inspect: Callable | None = None
     """Trusted fixture harness, with no deployment approvals or gold input."""
     sources, calls, failures = {}, 0, {}
     specs = contracts(batch)['workflows'][row['skill_id']]['sources']
-    if set(row['sources']) != set(specs):
+    if not set(row['sources']) <= set(specs):
         raise SimulationError('composite source set mismatch')
-    for alias, spec in specs.items():
-        sample = row['sources'][alias]
+    for alias, sample in row['sources'].items():
+        spec = specs[alias]
         def capture(state):
             sources[alias] = VerifiedSource(state, sample['simulated_at'])
             return {}

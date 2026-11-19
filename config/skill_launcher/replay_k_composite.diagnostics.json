@@ -1,0 +1,697 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "K01": {
+      "workflow_id": "REPLAY-K01-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "previous": {
+          "function_id": "expansion.evidence_history",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "samples": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "window_seconds": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "samples",
+              "window_seconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "current": {
+          "function_id": "expansion.evidence_history",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "samples": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "window_seconds": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "samples",
+              "window_seconds"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "claims": [
+        "k01_reported_sample_count_sufficient_v1",
+        "k01_reported_sample_count_low_v1"
+      ],
+      "limitation": "Two verified readings of the reported sample count in equally sized windows. The count does not prove stored records, individual devices or a cause.",
+      "history": {
+        "earlier": "previous",
+        "later": "current",
+        "max_span_seconds": 30,
+        "same_field": "window_seconds"
+      }
+    },
+    "K02": {
+      "workflow_id": "REPLAY-K02-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "baseline": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 2
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "current": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "claims": [
+        "k02_loss_within_baseline_band_v1",
+        "k02_loss_crossed_baseline_band_v1"
+      ],
+      "limitation": "Two gateway loss samples can show an upward crossing from the synthetic baseline band. They cannot establish a sustained trend, identify a device or explain the crossing.",
+      "history": {
+        "earlier": "baseline",
+        "later": "current",
+        "max_span_seconds": 30
+      }
+    },
+    "K03": {
+      "workflow_id": "REPLAY-K03-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "first": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 5,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "middle": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 5,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "current": {
+          "function_id": "expansion.latency_loss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "latency_ms": {
+                "type": "number",
+                "minimum": 0
+              },
+              "packet_loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "latency_ms",
+              "packet_loss_pct"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "claims": [
+        "k03_loss_breach_ended_v1",
+        "k03_loss_breach_at_all_three_samples_v1"
+      ],
+      "limitation": "Evaluates a synthetic warning condition across three gateway loss samples following two breaches. The result covers sampled times only and does not confirm delivery, identify a device or explain the loss.",
+      "history": {
+        "earlier": "first",
+        "later": "current",
+        "max_span_seconds": 30,
+        "between": [
+          "middle"
+        ]
+      }
+    },
+    "K05": {
+      "workflow_id": "REPLAY-K05-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "baseline": {
+          "function_id": "expansion.incident_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "incident_events": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "open_incidents": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 0
+              }
+            },
+            "required": [
+              "incident_events",
+              "open_incidents"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "current": {
+          "function_id": "expansion.incident_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "incident_events": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "open_incidents": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "incident_events",
+              "open_incidents"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "claims": [
+        "k05_no_open_incidents_in_timeline_v1",
+        "k05_open_incidents_appeared_in_timeline_v1"
+      ],
+      "limitation": "Timeline of two gateway-level open-incident counts with a zero baseline. Event timestamps, individual incidents or devices, incident duration and cause are unavailable.",
+      "history": {
+        "earlier": "baseline",
+        "later": "current",
+        "max_span_seconds": 30
+      }
+    },
+    "K06": {
+      "workflow_id": "REPLAY-K06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "previous": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "properties": {
+                  "reachable": {
+                    "const": false
+                  },
+                  "loss_pct": {
+                    "const": 100
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "reachable": {
+                    "const": true
+                  },
+                  "loss_pct": {
+                    "maximum": 5
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "current": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "properties": {
+                  "reachable": {
+                    "const": false
+                  },
+                  "loss_pct": {
+                    "const": 100
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "reachable": {
+                    "const": true
+                  },
+                  "loss_pct": {
+                    "maximum": 5
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "claims": [
+        "k06_both_upstream_samples_reachable_v1",
+        "k06_both_upstream_samples_unreachable_v1"
+      ],
+      "limitation": "Screens for upstream probe failure at both sampled times. The interval between them, device connectivity and cause are unobserved.",
+      "history": {
+        "earlier": "previous",
+        "later": "current",
+        "max_span_seconds": 30,
+        "same_field": "reachable"
+      }
+    },
+    "K07": {
+      "workflow_id": "REPLAY-K07-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "sources": {
+        "before": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "properties": {
+                  "reachable": {
+                    "const": false
+                  },
+                  "loss_pct": {
+                    "const": 100
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "current": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "additionalProperties": false,
+            "oneOf": [
+              {
+                "properties": {
+                  "reachable": {
+                    "const": false
+                  },
+                  "loss_pct": {
+                    "const": 100
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "reachable": {
+                    "const": true
+                  },
+                  "loss_pct": {
+                    "maximum": 5
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "claims": [
+        "k07_upstream_probe_recovered_v1",
+        "k07_upstream_probe_still_unreachable_v1"
+      ],
+      "limitation": "Verifies recovery of the sampled gateway upstream probe after a verified failure. Sustained recovery, incident resolution, individual devices and cause are unobserved.",
+      "history": {
+        "earlier": "before",
+        "later": "current",
+        "max_span_seconds": 30
+      }
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "k01_reported_sample_count_sufficient_v1",
+      "diagnosis": "k01_reported_sample_count_sufficient_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "samples",
+          "op": "ge",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "k01_reported_sample_count_sufficient_v1",
+      "workflow": "REPLAY-K01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k01_reported_sample_count_low_v1",
+      "diagnosis": "k01_reported_sample_count_low_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "samples",
+          "op": "lt",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "k01_reported_sample_count_low_v1",
+      "workflow": "REPLAY-K01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k02_loss_within_baseline_band_v1",
+      "diagnosis": "k02_loss_within_baseline_band_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "packet_loss_pct",
+          "op": "le",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "k02_loss_within_baseline_band_v1",
+      "workflow": "REPLAY-K02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k02_loss_crossed_baseline_band_v1",
+      "diagnosis": "k02_loss_crossed_baseline_band_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "packet_loss_pct",
+          "op": "gt",
+          "value": 2
+        }
+      ],
+      "excludes": [],
+      "message_key": "k02_loss_crossed_baseline_band_v1",
+      "workflow": "REPLAY-K02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k03_loss_breach_ended_v1",
+      "diagnosis": "k03_loss_breach_ended_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "packet_loss_pct",
+          "op": "lt",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "k03_loss_breach_ended_v1",
+      "workflow": "REPLAY-K03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k03_loss_breach_at_all_three_samples_v1",
+      "diagnosis": "k03_loss_breach_at_all_three_samples_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "packet_loss_pct",
+          "op": "ge",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "k03_loss_breach_at_all_three_samples_v1",
+      "workflow": "REPLAY-K03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k05_no_open_incidents_in_timeline_v1",
+      "diagnosis": "k05_no_open_incidents_in_timeline_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "open_incidents",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "k05_no_open_incidents_in_timeline_v1",
+      "workflow": "REPLAY-K05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k05_open_incidents_appeared_in_timeline_v1",
+      "diagnosis": "k05_open_incidents_appeared_in_timeline_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "open_incidents",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "k05_open_incidents_appeared_in_timeline_v1",
+      "workflow": "REPLAY-K05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k06_both_upstream_samples_reachable_v1",
+      "diagnosis": "k06_both_upstream_samples_reachable_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "k06_both_upstream_samples_reachable_v1",
+      "workflow": "REPLAY-K06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k06_both_upstream_samples_unreachable_v1",
+      "diagnosis": "k06_both_upstream_samples_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "k06_both_upstream_samples_unreachable_v1",
+      "workflow": "REPLAY-K06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k07_upstream_probe_recovered_v1",
+      "diagnosis": "k07_upstream_probe_recovered_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "current",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "k07_upstream_probe_recovered_v1",
+      "workflow": "REPLAY-K07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "k07_upstream_probe_still_unreachable_v1",
+      "diagnosis": "k07_upstream_probe_still_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "current",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "k07_upstream_probe_still_unreachable_v1",
+      "workflow": "REPLAY-K07-COMPOSITE-V1"
+    }
+  ]
+}

@@ -358,6 +358,8 @@ Tiến độ COV-J composite (19/11/2026, `v2`): J05 đạt Simulation verified 
 
 - [ ] **Batch COV-K** · Ưu tiên: P1. Phụ thuộc: A và snapshot/checkpoint/journal hiện có.
 
+Tiến độ COV-K composite (19/11/2026, `v2`). K01, K02, K03, K05, K06, K07 đạt Simulation verified (18/18 ca qua Core/Verifier), nâng `simulation_verified` từ 92 lên 98/120. Mỗi workflow dùng 2 hoặc 3 mẫu cùng nguồn, tăng nghiêm ngặt theo thời gian và cách nhau tối đa 30 giây từ đầu đến cuối. Thiếu, sai thứ tự, hết TTL hoặc ngoài miền cho UNKNOWN. Ngưỡng mô phỏng gồm 2 mẫu do nguồn lịch sử báo, loss 2% cho chuyển mức, loss 5% cho điều kiện cảnh báo ba mẫu, 0 sự cố mở và loss ≤5% hoặc 100% cho hai trạng thái probe. K04 thiếu định danh và trạng thái cảnh báo để xác minh chống trùng. K08 thiếu nguồn READ khai báo retention. Timeline chỉ gồm số đếm tổng hợp ở thời điểm lấy mẫu. Chưa xác minh thời lượng mất kết nối, phục hồi bền vững, nguyên nhân hay thiết bị riêng lẻ. Kiểm tra local: check_project PASS, simulate_skills 294/294, unittest 1.067 pass, 0 fail, 5 skip Windows-only. Không có CI mới vì commit chỉ ở local.
+
 Chuỗi evidence có clock, trend/alert/dedup/incident/recovery/retention; không tự tạo lịch sử từ một snapshot hoặc coi hết alert là phục hồi.
 
 | ID | Skill cần nghiệm thu mô phỏng |

@@ -1,0 +1,370 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "K01-normal",
+      "skill_id": "K01",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 2,
+            "window_seconds": 30
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "samples": 3,
+            "window_seconds": 30
+          }
+        }
+      }
+    },
+    {
+      "id": "K01-fault",
+      "skill_id": "K01",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "samples": 2,
+            "window_seconds": 30
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "samples": 1,
+            "window_seconds": 30
+          }
+        }
+      }
+    },
+    {
+      "id": "K01-missing",
+      "skill_id": "K01",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "samples": 1,
+            "window_seconds": 30
+          }
+        }
+      }
+    },
+    {
+      "id": "K02-normal",
+      "skill_id": "K02",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 1
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "K02-fault",
+      "skill_id": "K02",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 1
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "K02-missing",
+      "skill_id": "K02",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "K03-normal",
+      "skill_id": "K03",
+      "sources": {
+        "first": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 6
+          }
+        },
+        "middle": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 5
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:20Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "K03-fault",
+      "skill_id": "K03",
+      "sources": {
+        "first": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 6
+          }
+        },
+        "middle": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 5
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:20Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "K03-missing",
+      "skill_id": "K03",
+      "sources": {
+        "first": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "middle": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 5
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:20Z",
+          "values": {
+            "latency_ms": 22,
+            "packet_loss_pct": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "K05-normal",
+      "skill_id": "K05",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 0,
+            "open_incidents": 0
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "incident_events": 0,
+            "open_incidents": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "K05-fault",
+      "skill_id": "K05",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "incident_events": 0,
+            "open_incidents": 0
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "incident_events": 2,
+            "open_incidents": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "K05-missing",
+      "skill_id": "K05",
+      "sources": {
+        "baseline": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "incident_events": 2,
+            "open_incidents": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "K06-normal",
+      "skill_id": "K06",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 1
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "K06-fault",
+      "skill_id": "K06",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        }
+      }
+    },
+    {
+      "id": "K06-missing",
+      "skill_id": "K06",
+      "sources": {
+        "previous": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        }
+      }
+    },
+    {
+      "id": "K07-normal",
+      "skill_id": "K07",
+      "sources": {
+        "before": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "K07-fault",
+      "skill_id": "K07",
+      "sources": {
+        "before": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        }
+      }
+    },
+    {
+      "id": "K07-missing",
+      "skill_id": "K07",
+      "sources": {
+        "before": {
+          "simulated_at": "2026-11-19T08:00:00Z",
+          "values": null
+        },
+        "current": {
+          "simulated_at": "2026-11-19T08:00:10Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        }
+      }
+    }
+  ]
+}
