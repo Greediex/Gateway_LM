@@ -98,6 +98,7 @@ class AcceptanceTests(unittest.TestCase):
         self.assertEqual({r.skill_id for r in rows},
                          {"A02", "A03", "A04", "A05", "A06", "A07", "A08",
                           "B02", "B03", "B04", "B05", "B06", "B07", "B08",
+                          "C01", "C02", "C03", "C04", "C05", "C07", "C08",
                           "D02", "D03", "D05", "D06", "D07",
                           "E02", "E03", "E04", "E05", "E06", "E07", "E08",
                           "F02", "F03", "F04", "F05", "F06", "F07", "F08",

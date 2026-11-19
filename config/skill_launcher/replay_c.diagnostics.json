@@ -1,0 +1,440 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-C01-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ethernet_no_active_ports_v1",
+        "ethernet_active_ports_present_v1"
+      ]
+    },
+    "REPLAY-C02-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "ethernet_link_no_rate_v1",
+        "ethernet_link_up_zero_errors_v1"
+      ]
+    },
+    "REPLAY-C03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "switch_fdb_at_capacity_v1",
+        "switch_fdb_populated_below_capacity_v1"
+      ]
+    },
+    "REPLAY-C04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "bridge_with_members_down_v1",
+        "bridge_with_members_up_v1"
+      ]
+    },
+    "REPLAY-C05-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "vlan_invalid_membership_reported_v1",
+        "vlan_no_invalid_memberships_reported_v1"
+      ]
+    },
+    "REPLAY-C07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "stp_required_but_disabled_v1",
+        "stp_enabled_zero_reported_changes_v1"
+      ]
+    },
+    "REPLAY-C08-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "mtu_mismatch_reported_v1",
+        "mtu_no_mismatch_reported_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "ethernet_no_active_ports_v1",
+      "diagnosis": "ethernet_no_active_ports_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ethernet_ports",
+          "field": "port_count",
+          "op": "eq",
+          "value": 4
+        },
+        {
+          "port": "expansion.ethernet_ports",
+          "field": "active_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "ethernet_no_active_ports",
+      "workflow": "REPLAY-C01-V1"
+    },
+    {
+      "claim_id": "ethernet_active_ports_present_v1",
+      "diagnosis": "ethernet_active_ports_present_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ethernet_ports",
+          "field": "port_count",
+          "op": "eq",
+          "value": 4
+        },
+        {
+          "port": "expansion.ethernet_ports",
+          "field": "active_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.ethernet_ports",
+          "field": "active_count",
+          "op": "le",
+          "value": 4
+        }
+      ],
+      "excludes": [],
+      "message_key": "ethernet_active_ports_present",
+      "workflow": "REPLAY-C01-V1"
+    },
+    {
+      "claim_id": "ethernet_link_no_rate_v1",
+      "diagnosis": "ethernet_link_no_rate_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "link_mbps",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "rx_errors",
+          "op": "ge",
+          "value": 0
+        },
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "tx_errors",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "ethernet_link_no_rate",
+      "workflow": "REPLAY-C02-V1"
+    },
+    {
+      "claim_id": "ethernet_link_up_zero_errors_v1",
+      "diagnosis": "ethernet_link_up_zero_errors_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "link_mbps",
+          "op": "gt",
+          "value": 0
+        },
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "rx_errors",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "expansion.ethernet_counters",
+          "field": "tx_errors",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "ethernet_link_up_zero_errors",
+      "workflow": "REPLAY-C02-V1"
+    },
+    {
+      "claim_id": "switch_fdb_at_capacity_v1",
+      "diagnosis": "switch_fdb_at_capacity_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.switch_fdb",
+          "field": "mac_entries",
+          "op": "eq",
+          "value": 1024
+        }
+      ],
+      "excludes": [],
+      "message_key": "switch_fdb_at_capacity",
+      "workflow": "REPLAY-C03-V1"
+    },
+    {
+      "claim_id": "switch_fdb_populated_below_capacity_v1",
+      "diagnosis": "switch_fdb_populated_below_capacity_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.switch_fdb",
+          "field": "mac_entries",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.switch_fdb",
+          "field": "mac_entries",
+          "op": "lt",
+          "value": 1024
+        }
+      ],
+      "excludes": [],
+      "message_key": "switch_fdb_populated_below_capacity",
+      "workflow": "REPLAY-C03-V1"
+    },
+    {
+      "claim_id": "bridge_with_members_down_v1",
+      "diagnosis": "bridge_with_members_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.bridge_health",
+          "field": "bridge_up",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.bridge_health",
+          "field": "member_ports",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "bridge_with_members_down",
+      "workflow": "REPLAY-C04-V1"
+    },
+    {
+      "claim_id": "bridge_with_members_up_v1",
+      "diagnosis": "bridge_with_members_up_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.bridge_health",
+          "field": "bridge_up",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.bridge_health",
+          "field": "member_ports",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "bridge_with_members_up",
+      "workflow": "REPLAY-C04-V1"
+    },
+    {
+      "claim_id": "vlan_invalid_membership_reported_v1",
+      "diagnosis": "vlan_invalid_membership_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.vlan_membership",
+          "field": "vlan_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.vlan_membership",
+          "field": "invalid_memberships",
+          "op": "gt",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vlan_invalid_membership_reported",
+      "workflow": "REPLAY-C05-V1"
+    },
+    {
+      "claim_id": "vlan_no_invalid_memberships_reported_v1",
+      "diagnosis": "vlan_no_invalid_memberships_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.vlan_membership",
+          "field": "vlan_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "expansion.vlan_membership",
+          "field": "invalid_memberships",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "vlan_no_invalid_memberships_reported",
+      "workflow": "REPLAY-C05-V1"
+    },
+    {
+      "claim_id": "stp_required_but_disabled_v1",
+      "diagnosis": "stp_required_but_disabled_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.stp_status",
+          "field": "stp_enabled",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.stp_status",
+          "field": "topology_changes",
+          "op": "ge",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "stp_required_but_disabled",
+      "workflow": "REPLAY-C07-V1"
+    },
+    {
+      "claim_id": "stp_enabled_zero_reported_changes_v1",
+      "diagnosis": "stp_enabled_zero_reported_changes_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.stp_status",
+          "field": "stp_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "expansion.stp_status",
+          "field": "topology_changes",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "stp_enabled_zero_reported_changes",
+      "workflow": "REPLAY-C07-V1"
+    },
+    {
+      "claim_id": "mtu_mismatch_reported_v1",
+      "diagnosis": "mtu_mismatch_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.mtu_status",
+          "field": "mtu_bytes",
+          "op": "ge",
+          "value": 68
+        },
+        {
+          "port": "expansion.mtu_status",
+          "field": "mtu_bytes",
+          "op": "le",
+          "value": 9216
+        },
+        {
+          "port": "expansion.mtu_status",
+          "field": "mismatch_detected",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "mtu_mismatch_reported",
+      "workflow": "REPLAY-C08-V1"
+    },
+    {
+      "claim_id": "mtu_no_mismatch_reported_v1",
+      "diagnosis": "mtu_no_mismatch_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.mtu_status",
+          "field": "mtu_bytes",
+          "op": "ge",
+          "value": 68
+        },
+        {
+          "port": "expansion.mtu_status",
+          "field": "mtu_bytes",
+          "op": "le",
+          "value": 9216
+        },
+        {
+          "port": "expansion.mtu_status",
+          "field": "mismatch_detected",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "mtu_no_mismatch_reported",
+      "workflow": "REPLAY-C08-V1"
+    }
+  ],
+  "skill_workflows": {
+    "C01": [
+      "REPLAY-C01-V1"
+    ],
+    "C02": [
+      "REPLAY-C02-V1"
+    ],
+    "C03": [
+      "REPLAY-C03-V1"
+    ],
+    "C04": [
+      "REPLAY-C04-V1"
+    ],
+    "C05": [
+      "REPLAY-C05-V1"
+    ],
+    "C07": [
+      "REPLAY-C07-V1"
+    ],
+    "C08": [
+      "REPLAY-C08-V1"
+    ]
+  }
+}

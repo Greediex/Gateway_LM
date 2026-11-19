@@ -1,0 +1,225 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-C",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "network": {
+    "segment": "lan-192.168.1.0/24",
+    "access_points": [
+      "ap-livingroom-01"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "C01-normal",
+      "skill_id": "C01",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.ethernet_ports",
+      "values": {
+        "port_count": 4,
+        "active_count": 2
+      }
+    },
+    {
+      "id": "C01-fault",
+      "skill_id": "C01",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.ethernet_ports",
+      "values": {
+        "port_count": 4,
+        "active_count": 0
+      }
+    },
+    {
+      "id": "C01-missing",
+      "skill_id": "C01",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.ethernet_ports",
+      "values": null
+    },
+    {
+      "id": "C02-normal",
+      "skill_id": "C02",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.ethernet_counters",
+      "values": {
+        "rx_errors": 0,
+        "tx_errors": 0,
+        "link_mbps": 1000
+      }
+    },
+    {
+      "id": "C02-fault",
+      "skill_id": "C02",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.ethernet_counters",
+      "values": {
+        "rx_errors": 0,
+        "tx_errors": 0,
+        "link_mbps": 0
+      }
+    },
+    {
+      "id": "C02-missing",
+      "skill_id": "C02",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.ethernet_counters",
+      "values": null
+    },
+    {
+      "id": "C03-normal",
+      "skill_id": "C03",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.switch_fdb",
+      "values": {
+        "mac_entries": 24
+      }
+    },
+    {
+      "id": "C03-fault",
+      "skill_id": "C03",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.switch_fdb",
+      "values": {
+        "mac_entries": 1024
+      }
+    },
+    {
+      "id": "C03-missing",
+      "skill_id": "C03",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.switch_fdb",
+      "values": null
+    },
+    {
+      "id": "C04-normal",
+      "skill_id": "C04",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.bridge_health",
+      "values": {
+        "bridge_up": true,
+        "member_ports": 3
+      }
+    },
+    {
+      "id": "C04-fault",
+      "skill_id": "C04",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.bridge_health",
+      "values": {
+        "bridge_up": false,
+        "member_ports": 3
+      }
+    },
+    {
+      "id": "C04-missing",
+      "skill_id": "C04",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.bridge_health",
+      "values": null
+    },
+    {
+      "id": "C05-normal",
+      "skill_id": "C05",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.vlan_membership",
+      "values": {
+        "vlan_count": 3,
+        "invalid_memberships": 0
+      }
+    },
+    {
+      "id": "C05-fault",
+      "skill_id": "C05",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.vlan_membership",
+      "values": {
+        "vlan_count": 3,
+        "invalid_memberships": 2
+      }
+    },
+    {
+      "id": "C05-missing",
+      "skill_id": "C05",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.vlan_membership",
+      "values": null
+    },
+    {
+      "id": "C07-normal",
+      "skill_id": "C07",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.stp_status",
+      "values": {
+        "stp_enabled": true,
+        "topology_changes": 0
+      }
+    },
+    {
+      "id": "C07-fault",
+      "skill_id": "C07",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.stp_status",
+      "values": {
+        "stp_enabled": false,
+        "topology_changes": 0
+      }
+    },
+    {
+      "id": "C07-missing",
+      "skill_id": "C07",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.stp_status",
+      "values": null
+    },
+    {
+      "id": "C08-normal",
+      "skill_id": "C08",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.mtu_status",
+      "values": {
+        "mtu_bytes": 1500,
+        "mismatch_detected": false
+      }
+    },
+    {
+      "id": "C08-fault",
+      "skill_id": "C08",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.mtu_status",
+      "values": {
+        "mtu_bytes": 9000,
+        "mismatch_detected": true
+      }
+    },
+    {
+      "id": "C08-missing",
+      "skill_id": "C08",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.mtu_status",
+      "values": null
+    }
+  ]
+}

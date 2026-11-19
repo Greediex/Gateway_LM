@@ -29,6 +29,7 @@ ACCEPTANCE = DATA_DIR / "simulation_v1" / "acceptance.json"
 DIRECT_BATCHES = {
     "A": ("simulation_v1", "replay_a"),
     "B": ("simulation_b_v1", "replay_b"),
+    "C": ("simulation_c_v1", "replay_c"),
     "D": ("simulation_d_v1", "replay_d"),
     "E": ("simulation_e_v1", "replay_e"),
     "F": ("simulation_f_v1", "replay_f"),
