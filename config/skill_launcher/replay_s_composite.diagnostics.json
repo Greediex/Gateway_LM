@@ -1,0 +1,396 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "SK02": {
+      "workflow_id": "REPLAY-SK02-COMPOSITE-V1",
+      "target_scope": "client",
+      "require_same_sample_time": true,
+      "sources": {
+        "association": {
+          "function_id": "expansion.client_association",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "associated": {
+                "type": "boolean",
+                "const": true
+              },
+              "access_point_id": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "associated",
+              "access_point_id"
+            ]
+          }
+        },
+        "signal": {
+          "function_id": "expansion.wireless_signal",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "rssi_dbm": {
+                "type": "number",
+                "minimum": -120,
+                "maximum": 0
+              },
+              "snr_db": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 120
+              }
+            },
+            "required": [
+              "rssi_dbm",
+              "snr_db"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "sk02_rssi_at_or_above_floor_v1",
+        "sk02_rssi_below_floor_v1",
+        "sk02_snr_at_or_above_floor_v1",
+        "sk02_snr_below_floor_v1"
+      ],
+      "limitation": "Screens RSSI and SNR for a preidentified synthetic client with reported association. Mixed signal grades or an absent association leave the screen inconclusive. The signal port has no AP identifier, PHY rate, or retry measurements. The thresholds describe RF readings from one snapshot and cannot establish end-to-end connectivity or the cause of weak reception."
+    },
+    "SK04": {
+      "workflow_id": "REPLAY-SK04-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "link": {
+          "function_id": "expansion.wan_link",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "link_up": {
+                "type": "boolean",
+                "const": true
+              },
+              "uptime_seconds": {
+                "type": "integer",
+                "minimum": 60,
+                "maximum": 4294967295
+              }
+            },
+            "required": [
+              "link_up",
+              "uptime_seconds"
+            ]
+          }
+        },
+        "route": {
+          "function_id": "expansion.wan_routes",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "default_route": {
+                "type": "boolean",
+                "const": true
+              },
+              "default_route_count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "default_route",
+              "default_route_count"
+            ]
+          }
+        },
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "if": {
+              "properties": {
+                "reachable": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "loss_pct": {
+                  "exclusiveMaximum": 100
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "loss_pct": {
+                  "const": 100
+                }
+              }
+            }
+          }
+        }
+      },
+      "claims": [
+        "sk04_upstream_loss_at_or_below_limit_v1",
+        "sk04_upstream_loss_above_limit_v1"
+      ],
+      "limitation": "Screens packet loss reported by one gateway upstream probe when the WAN link has been up for at least 60 seconds and exactly one default route is reported. Link-down, missing-route and multiple-route samples are outside this screen. Ports lack interface and probe-destination IDs, so the result cannot confirm traffic used that route, client reachability, or the cause of loss."
+    },
+    "SK08": {
+      "workflow_id": "REPLAY-SK08-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "storage": {
+          "function_id": "expansion.storage_health",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "used_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "wear_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "used_pct",
+              "wear_pct"
+            ]
+          }
+        },
+        "temperature": {
+          "function_id": "expansion.temperature",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "celsius": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 125
+              }
+            },
+            "required": [
+              "celsius"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "sk08_storage_below_limit_v1",
+        "sk08_storage_at_or_above_limit_v1",
+        "sk08_temperature_below_limit_v1",
+        "sk08_temperature_at_or_above_limit_v1"
+      ],
+      "limitation": "Screens storage usage and temperature for the same simulated gateway snapshot. The overall grade requires both readings to agree; mixed readings keep their individual Claims and yield UNKNOWN overall. Flash wear is validated but does not affect the grade. The synthetic thresholds are not board-calibrated. CPU, RAM, logs and causal relationships are outside this screen."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "sk02_rssi_at_or_above_floor_v1",
+      "diagnosis": "sk02_rssi_at_or_above_floor_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "rssi_dbm",
+          "op": "ge",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk02_rssi_at_or_above_floor_v1",
+      "workflow": "REPLAY-SK02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk02_rssi_below_floor_v1",
+      "diagnosis": "sk02_rssi_below_floor_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "rssi_dbm",
+          "op": "lt",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk02_rssi_below_floor_v1",
+      "workflow": "REPLAY-SK02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk02_snr_at_or_above_floor_v1",
+      "diagnosis": "sk02_snr_at_or_above_floor_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "snr_db",
+          "op": "ge",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk02_snr_at_or_above_floor_v1",
+      "workflow": "REPLAY-SK02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk02_snr_below_floor_v1",
+      "diagnosis": "sk02_snr_below_floor_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "signal",
+          "field": "snr_db",
+          "op": "lt",
+          "value": 20
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk02_snr_below_floor_v1",
+      "workflow": "REPLAY-SK02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk04_upstream_loss_at_or_below_limit_v1",
+      "diagnosis": "sk04_upstream_loss_at_or_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "loss_pct",
+          "op": "le",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk04_upstream_loss_at_or_below_limit_v1",
+      "workflow": "REPLAY-SK04-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk04_upstream_loss_above_limit_v1",
+      "diagnosis": "sk04_upstream_loss_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "loss_pct",
+          "op": "gt",
+          "value": 5
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk04_upstream_loss_above_limit_v1",
+      "workflow": "REPLAY-SK04-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk08_storage_below_limit_v1",
+      "diagnosis": "sk08_storage_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "storage",
+          "field": "used_pct",
+          "op": "lt",
+          "value": 90
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk08_storage_below_limit_v1",
+      "workflow": "REPLAY-SK08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk08_storage_at_or_above_limit_v1",
+      "diagnosis": "sk08_storage_at_or_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "storage",
+          "field": "used_pct",
+          "op": "ge",
+          "value": 90
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk08_storage_at_or_above_limit_v1",
+      "workflow": "REPLAY-SK08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk08_temperature_below_limit_v1",
+      "diagnosis": "sk08_temperature_below_limit_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "temperature",
+          "field": "celsius",
+          "op": "lt",
+          "value": 85
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk08_temperature_below_limit_v1",
+      "workflow": "REPLAY-SK08-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "sk08_temperature_at_or_above_limit_v1",
+      "diagnosis": "sk08_temperature_at_or_above_limit_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "temperature",
+          "field": "celsius",
+          "op": "ge",
+          "value": 85
+        }
+      ],
+      "excludes": [],
+      "message_key": "sk08_temperature_at_or_above_limit_v1",
+      "workflow": "REPLAY-SK08-COMPOSITE-V1"
+    }
+  ]
+}

@@ -53,6 +53,7 @@ COMPOSITE_BATCHES = {
     "M": ("simulation_m_composite_v1", "replay_m_composite"),
     "N": ("simulation_n_composite_v1", "replay_n_composite"),
     "O": ("simulation_o_composite_v1", "replay_o_composite"),
+    "S": ("simulation_s_composite_v1", "replay_s_composite"),
 }
 # Every file that decides a simulated verdict; editing one invalidates acceptance.
 ACCEPTANCE_INPUTS = tuple(

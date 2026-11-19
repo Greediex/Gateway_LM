@@ -447,6 +447,8 @@ Bài toán tổng hợp nhiều Skill, tiếp tục đo khi thiếu, dừng hữ
 | `O07` | Điều tra mất Internet diện rộng |
 | `O08` | Điều tra bất thường nhiều client |
 
+Tiến độ COV-S legacy composite (19/11/2026, `v2`). SK02 dùng A08/B04 để sàng lọc RSSI/SNR của client đã liên kết. SK04 dùng E02/E03/E08 để sàng lọc mất gói upstream khi link đã up ít nhất 60 giây và có đúng một default route. SK08 dùng H03/H05 để sàng lọc nhiệt độ và mức sử dụng lưu trữ, kết quả chung là UNKNOWN nếu hai chỉ số khác mức. Ba Skill đạt 9/9 kịch bản qua Core/Verifier, coverage sinh từ acceptance tăng từ 98 lên 101/120. SK01 thiếu tra cứu và phân giải danh tính client. SK03 thiếu IPv4, lease của client và trạng thái dịch vụ DHCP. SK05 thiếu kết quả truy vấn DNS theo scope và tên miền. SK09 thiếu sự kiện có định danh và mốc thời gian để đối chiếu. Ngưỡng chỉ dùng cho mô phỏng, chưa đo trên router. Kiểm tra local đạt check_project PASS, simulate_skills 303/303, coverage 101/120 và unittest 1.072 pass, 0 fail, 5 skip Windows-only. Không có CI mới vì commit ở local.
+
 ## Definition of Done cho từng Skill
 
 1. **Contract:** exact ID/version, input/output/completion, nguồn, unit, scope/target, TTL, permission/budget và dependency được review; composite có Claim/workflow và không nhân bản Function sẵn có.

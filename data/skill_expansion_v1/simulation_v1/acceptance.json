@@ -2,7 +2,7 @@
   "format": "gateway-lm.skill-acceptance/v1",
   "version": "1.0.0",
   "synthetic_only": true,
-  "inputs_digest": "e13c635723f7cb3e290475e90c0dd1010493be0b3690946116c0b86072592336",
+  "inputs_digest": "a69fa4e664888dfccc626b5dacf39e2af9574228f5e86c114015029e3244a653",
   "skills": {
     "A02": {
       "normal": {
@@ -1654,6 +1654,57 @@
       }
     },
     "O07": {
+      "normal": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 1,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "SK02": {
+      "normal": {
+        "pass": true,
+        "core_calls": 4,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 4,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "SK04": {
+      "normal": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "HEALTHY"
+      },
+      "fault": {
+        "pass": true,
+        "core_calls": 3,
+        "verdict": "FAULT"
+      },
+      "missing": {
+        "pass": true,
+        "core_calls": 2,
+        "verdict": "UNKNOWN"
+      }
+    },
+    "SK08": {
       "normal": {
         "pass": true,
         "core_calls": 2,

@@ -1,0 +1,197 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "SK02-normal",
+      "skill_id": "SK02",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "synthetic-ap"
+          }
+        },
+        "signal": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "rssi_dbm": -58,
+            "snr_db": 32
+          }
+        }
+      }
+    },
+    {
+      "id": "SK02-fault",
+      "skill_id": "SK02",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "synthetic-ap"
+          }
+        },
+        "signal": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "rssi_dbm": -82,
+            "snr_db": 12
+          }
+        }
+      }
+    },
+    {
+      "id": "SK02-missing",
+      "skill_id": "SK02",
+      "sources": {
+        "association": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "synthetic-ap"
+          }
+        },
+        "signal": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "SK04-normal",
+      "skill_id": "SK04",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 3600
+          }
+        },
+        "route": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "default_route": true,
+            "default_route_count": 1
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "SK04-fault",
+      "skill_id": "SK04",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 3600
+          }
+        },
+        "route": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "default_route": true,
+            "default_route_count": 1
+          }
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "reachable": false,
+            "loss_pct": 100
+          }
+        }
+      }
+    },
+    {
+      "id": "SK04-missing",
+      "skill_id": "SK04",
+      "sources": {
+        "link": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "link_up": true,
+            "uptime_seconds": 3600
+          }
+        },
+        "route": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": null
+        },
+        "upstream": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "SK08-normal",
+      "skill_id": "SK08",
+      "sources": {
+        "storage": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "used_pct": 42,
+            "wear_pct": 12
+          }
+        },
+        "temperature": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "celsius": 51
+          }
+        }
+      }
+    },
+    {
+      "id": "SK08-fault",
+      "skill_id": "SK08",
+      "sources": {
+        "storage": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "used_pct": 96,
+            "wear_pct": 12
+          }
+        },
+        "temperature": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "celsius": 92
+          }
+        }
+      }
+    },
+    {
+      "id": "SK08-missing",
+      "skill_id": "SK08",
+      "sources": {
+        "storage": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": {
+            "used_pct": 42,
+            "wear_pct": 12
+          }
+        },
+        "temperature": {
+          "simulated_at": "2026-11-19T09:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}
