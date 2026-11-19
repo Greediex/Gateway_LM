@@ -1,0 +1,17 @@
+{
+  "format": "gateway-lm.skill-simulation-gold/v1",
+  "version": "1.0.0",
+  "scenarios_version": "1.0.0",
+  "note": "Scorer-only. Never load into prompts, fixtures or evidence.",
+  "expected": {
+    "N03-normal": "VERIFIED",
+    "N03-fault": "VERIFIED",
+    "N03-missing": "NOT_READY",
+    "N04-normal": "VERIFIED",
+    "N04-fault": "VERIFIED",
+    "N04-missing": "NOT_READY",
+    "N07-normal": "VERIFIED",
+    "N07-fault": "VERIFIED",
+    "N07-missing": "NOT_READY"
+  }
+}

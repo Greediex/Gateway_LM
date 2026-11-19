@@ -1,0 +1,161 @@
+{
+  "format": "gateway-lm.laptop-diagnostics/v1",
+  "version": "1.0.0",
+  "workflows": {
+    "REPLAY-N03-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "config_snapshot_reported_unavailable_v1",
+        "config_snapshot_reported_with_revision_v1"
+      ]
+    },
+    "REPLAY-N04-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "config_drift_reported_v1",
+        "no_config_drift_reported_v1"
+      ]
+    },
+    "REPLAY-N07-V1": {
+      "status": "SUPPORTED",
+      "kind": "DIAGNOSE",
+      "target_scope": "gateway",
+      "claims": [
+        "rollback_readback_reported_mismatch_v1",
+        "rollback_readback_reported_match_v1"
+      ]
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "config_snapshot_reported_unavailable_v1",
+      "diagnosis": "config_snapshot_reported_unavailable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.config_snapshot",
+          "field": "snapshot_available",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "expansion.config_snapshot",
+          "field": "configuration_revision",
+          "op": "eq",
+          "value": ""
+        }
+      ],
+      "excludes": [],
+      "message_key": "config_snapshot_reported_unavailable",
+      "workflow": "REPLAY-N03-V1"
+    },
+    {
+      "claim_id": "config_snapshot_reported_with_revision_v1",
+      "diagnosis": "config_snapshot_reported_with_revision_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.config_snapshot",
+          "field": "snapshot_available",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [
+        {
+          "port": "expansion.config_snapshot",
+          "field": "configuration_revision",
+          "op": "eq",
+          "value": ""
+        }
+      ],
+      "message_key": "config_snapshot_reported_with_revision",
+      "workflow": "REPLAY-N03-V1"
+    },
+    {
+      "claim_id": "config_drift_reported_v1",
+      "diagnosis": "config_drift_reported_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.config_drift",
+          "field": "drift_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "config_drift_reported",
+      "workflow": "REPLAY-N04-V1"
+    },
+    {
+      "claim_id": "no_config_drift_reported_v1",
+      "diagnosis": "no_config_drift_reported_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.config_drift",
+          "field": "drift_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "no_config_drift_reported",
+      "workflow": "REPLAY-N04-V1"
+    },
+    {
+      "claim_id": "rollback_readback_reported_mismatch_v1",
+      "diagnosis": "rollback_readback_reported_mismatch_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "expansion.rollback_readback",
+          "field": "expected_match",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "rollback_readback_reported_mismatch",
+      "workflow": "REPLAY-N07-V1"
+    },
+    {
+      "claim_id": "rollback_readback_reported_match_v1",
+      "diagnosis": "rollback_readback_reported_match_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "expansion.rollback_readback",
+          "field": "expected_match",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "rollback_readback_reported_match",
+      "workflow": "REPLAY-N07-V1"
+    }
+  ],
+  "skill_workflows": {
+    "N03": [
+      "REPLAY-N03-V1"
+    ],
+    "N04": [
+      "REPLAY-N04-V1"
+    ],
+    "N07": [
+      "REPLAY-N07-V1"
+    ]
+  }
+}

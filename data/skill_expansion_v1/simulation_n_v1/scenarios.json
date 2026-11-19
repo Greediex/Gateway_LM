@@ -1,0 +1,95 @@
+{
+  "format": "gateway-lm.skill-simulation/v1",
+  "version": "1.0.0",
+  "batch": "COV-N",
+  "synthetic_only": true,
+  "simulated_clock": "declared per scenario; never used to extend live TTL",
+  "scenarios": [
+    {
+      "id": "N03-normal",
+      "skill_id": "N03",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.config_snapshot",
+      "values": {
+        "snapshot_available": true,
+        "configuration_revision": "sim-rev-7"
+      }
+    },
+    {
+      "id": "N03-fault",
+      "skill_id": "N03",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.config_snapshot",
+      "values": {
+        "snapshot_available": false,
+        "configuration_revision": ""
+      }
+    },
+    {
+      "id": "N03-missing",
+      "skill_id": "N03",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.config_snapshot",
+      "values": null
+    },
+    {
+      "id": "N04-normal",
+      "skill_id": "N04",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.config_drift",
+      "values": {
+        "drift_count": 0
+      }
+    },
+    {
+      "id": "N04-fault",
+      "skill_id": "N04",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.config_drift",
+      "values": {
+        "drift_count": 3
+      }
+    },
+    {
+      "id": "N04-missing",
+      "skill_id": "N04",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.config_drift",
+      "values": null
+    },
+    {
+      "id": "N07-normal",
+      "skill_id": "N07",
+      "state": "normal",
+      "simulated_at": "2026-11-19T08:00:00Z",
+      "function_id": "expansion.rollback_readback",
+      "values": {
+        "expected_match": true
+      }
+    },
+    {
+      "id": "N07-fault",
+      "skill_id": "N07",
+      "state": "fault",
+      "simulated_at": "2026-11-19T08:05:00Z",
+      "function_id": "expansion.rollback_readback",
+      "values": {
+        "expected_match": false
+      }
+    },
+    {
+      "id": "N07-missing",
+      "skill_id": "N07",
+      "state": "missing",
+      "simulated_at": "2026-11-19T08:10:00Z",
+      "function_id": "expansion.rollback_readback",
+      "values": null
+    }
+  ]
+}
