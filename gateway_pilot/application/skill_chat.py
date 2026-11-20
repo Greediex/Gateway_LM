@@ -183,7 +183,9 @@ def _replay_candidates(request: str, phrases: dict[str, list[str]]) -> tuple[str
             continue
         rank[sid] = (max(2 * phrase + 1 if phrase else 0, 2 * overlap), overlap / max(1, len(name)))
     if not rank:
-        return 'graph', []
+        # No name overlap (e.g. "sức khỏe router": every word is generic). Offer the
+        # retriever's nearest Skills; the caller only runs one the local model picks.
+        return 'search', [hit.skill_id for hit in retriever.search(request, limit=8, include_proposed=True)]
     best = max(rank.values())
     candidates = {sid for sid, score in rank.items() if score == best}
     hits = retriever.search(request, limit=len(design), include_proposed=True)
@@ -329,12 +331,15 @@ class SkillChat:
             if method == 'compound':
                 reason, status = 'needs_clarification', 'NEEDS_INPUT'
                 message = 'Hãy gửi từng phép kiểm tra mô phỏng trong một câu hỏi.'
-            elif candidates and set(candidates) <= rows.keys():
+            elif method == 'search':
+                # Retrieval hits are suggestions, not matches: keep approved rows only, never auto-run one.
+                candidates = [key for key in candidates if key in rows]
+            if method != 'compound' and candidates and set(candidates) <= rows.keys():
                 candidates = [key for key in candidates if not requested_scopes
                               or requested_scopes == {rows[key]['runtime_scope']}]
-                selected = candidates[0] if len(candidates) == 1 else None
+                selected = candidates[0] if len(candidates) == 1 and method != 'search' else None
                 remaining = min(deadline - self.clock(), replay.expires_at - replay.clock())
-                if len(candidates) > 1 and allow_model and remaining > 1:
+                if (len(candidates) > 1 or method == 'search') and allow_model and remaining > 1:
                     eligible = {key: rows[key] for key in candidates}
                     docs = [[r['skill_id'], r['name'], r['availability'], r['runtime_scope']]
                             for r in eligible.values()]

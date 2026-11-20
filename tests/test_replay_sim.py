@@ -186,6 +186,26 @@ class ReplaySimTests(unittest.TestCase):
             self.assertTrue(all({r[0] for r in call.args[1]} == {'H05', 'H06'}
                                 for call in model.choose_skills.call_args_list))
 
+    def test_generic_question_uses_retrieval_but_only_the_model_can_pick(self):
+        launcher = self.launcher()
+        model = SimpleNamespace(local_only=True, choose_skills=Mock())
+        chat = skill_chat.SkillChat(launcher, model_factory=lambda: model)
+        with self.approve():
+            session = launcher.create_session('replay_sim')['session_id']
+            # Every word of "sức khỏe router" is generic, so the name match is empty.
+            r = chat.chat('Sức khỏe router', mode='replay_sim', session_id=session, allow_model=False)
+            self.assertEqual((r['case_status'], r['calls']), ('NEEDS_INPUT', 0))  # top hit never auto-runs
+            for skill, count in [('SK08', 1), ('F02', 0), ('SK13', 0)]:  # F02/SK13: not offered or not approved
+                with self.subTest(skill=skill):
+                    model.choose_skills.return_value = {'decision': 'measure', 'skill_ids': [skill],
+                                                        'finding_ids': [], 'unavailable_ids': []}
+                    r = chat.chat('Sức khỏe router', mode='replay_sim', session_id=session)
+                    self.assertEqual(r['calls'] > 0, bool(count))
+            offered = {row[0] for row in model.choose_skills.call_args.args[1]}
+            self.assertIn('SK08', offered)
+            self.assertNotIn('SK13', offered)
+            self.assertTrue(offered <= {row['skill_id'] for row in launcher.catalog('replay_sim')['rows']})
+
     def test_wrong_target_scope_malformed_timeout_stale_and_no_permission(self):
         launcher = self.launcher()
         def sample(backend, metadata, arguments, context):
