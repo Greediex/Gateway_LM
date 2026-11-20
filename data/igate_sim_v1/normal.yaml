@@ -1,0 +1,26 @@
+# Fictional household, router_snapshot.yaml §3.8.
+ts: 2026-11-20T07:00:00Z
+mode: demo
+clients_count: 3
+clients_truncated: 0
+clients: |
+  ip name mac band rssi_dbm snr_db rx_mbps tx_mbps link_mbps idle_s conn_s label
+  192.0.2.10 SON-iPad 02:00:00:00:00:01 5g -52 43 12.3 1.1 866 0 4210 Máy_tính_bảng_của_con
+  192.0.2.11 Laptop 02:00:00:00:00:02 5g -59 32 4.2 3.1 540 3 900 Laptop_của_bố
+  192.0.2.12 TV 02:00:00:00:00:03 2g -66 25 3.1 0.2 144 2 7200 TV_phòng_khách
+sys: {cpu_pct: 17, mem_pct: 62, temp_c: 54.5}
+wan: {up: 1, internet: 1, ping_ms: 12, rx_mbps: 8.42, tx_mbps: 1.20, link_mbps: 1000}
+wifi:
+  ssids: |
+    band ssid network enabled hidden encryption password
+    2g Example-Home lan 1 0 psk2 -
+    2g Example-Guest guest 0 0 psk2 -
+speedtest: {state: idle, last_ts: 2026-11-20T06:55:00Z, ok: 1, dl_mbps: 301.2, ul_mbps: 148.6, ping_ms: 14, jitter_ms: 2.2}
+feed: {qos: 1}
+qos: |
+  ip name class session_s flows
+  192.0.2.10 SON-iPad GAMING 3600 42
+  192.0.2.11 Laptop VIDEOCALL 240 8
+  192.0.2.12 TV VSTREAM 900 6
+policy_rows: |
+  mac kind dl_kbps ul_kbps scheds

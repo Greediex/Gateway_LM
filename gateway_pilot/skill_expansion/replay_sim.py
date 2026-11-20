@@ -6,17 +6,18 @@ import json
 import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 
 from jsonschema import Draft202012Validator
 
 from ..adapters.bindings import BindingSelection, TargetContext, binding_digest, declare_binding, require
 from ..command_catalog.builder import build_registry
-from ..command_catalog.loader import digest, read_json
+from ..command_catalog.loader import canonical_bytes, digest, read_json
 from ..command_catalog.runtime import ReadRuntime
 from ..core import ROOT
 from ..graph_v3.claims import ClaimBook
-from . import composite, simulation
-from .catalog import DATA_DIR, SkillCatalog
+from . import composite, igate_data, simulation
+from .catalog import DATA_DIR, Skill, SkillCatalog
 from .coverage import ACCEPTANCE_STATES, COMPOSITE_BATCHES, DIRECT_BATCHES, acceptance_snapshot
 from .replay_backend import StrictSkillReplayBackend
 from .runtime_bridge import RuntimeSkillBridge
@@ -51,16 +52,23 @@ class Sample:
 
 
 @dataclass(frozen=True)
-class ReplayProfile:
+class ReplayCatalog:
     actions: dict
     diagnostics: dict
     samples: dict[str, dict[str, dict[str, Sample]]]
     registries: dict
+
+
+@dataclass(frozen=True)
+class ReplayProfile(ReplayCatalog):
     approval: dict[str, str]
+    igate: ReplayCatalog
+    igate_vendor: dict[str, bytes]
 
     def open_sample(self, sample: Sample, *, environment: str, clock: Callable[[], float],
                     max_calls: int, ttl_s: float, cost_budget: float = 100):
-        artifact, policy, owner = self.registries[sample.function_id]
+        catalog = self if sample.function_id in self.registries else self.igate
+        artifact, policy, owner = catalog.registries[sample.function_id]
         fixture = {} if sample.values is None else {sample.function_id: {sample.function_id: sample.values}}
         if sample.scope == 'client':
             fixture[CLIENT_IDENTITY] = {'client.identity': {'client_id': sample.target}}
@@ -83,10 +91,21 @@ class ReplayProfile:
             clock=clock)
         session = runtime.open_session(max_calls=max_calls, ttl_s=ttl_s, max_plans=1, cost_budget=cost_budget,
                                        context_valid=lambda: digest(backend._fixture) == frozen_fixture)
+        if catalog is self.igate:
+            row = catalog.actions[owner]
+            owner = artifact['skills'][0]['skill_id']
+            design = Skill(owner, row['name'], row['domain'], 'iGate', 'P0', 'PROPOSED',
+                           'Synthetic READ', sample.scope, MODE, 'iGate snapshot', None, 'NOT_BOUND')
+            return session, RuntimeSkillBridge(runtime, SkillCatalog([design], [])), owner
         return session, RuntimeSkillBridge(runtime), owner
 
 
-def _registry(function: dict) -> tuple[dict, dict, str]:
+@lru_cache(maxsize=128)
+def _compile_registry(catalog: bytes, selection: bytes, policy: bytes) -> dict:
+    return build_registry(json.loads(catalog), json.loads(selection), json.loads(policy))
+
+
+def _registry(function: dict, *, port: dict | None = None, owner: dict | None = None) -> tuple[dict, dict, str]:
     """Compile the selected READ Function and its required synthetic identity."""
     function = copy.deepcopy(function)
     fid = function['function_id']
@@ -96,9 +115,10 @@ def _registry(function: dict) -> tuple[dict, dict, str]:
             and set(function['outputs']) == {fid}, 'skill_sim_function_contract')
     function['lifecycle'] = 'IMPLEMENTED'
     ref = function['skill_refs'][0]
-    owner = read_json(simulation.PORTS_DIR.parent / 'skills' / f"{ref['skill_id']}.json")
+    if owner is None:
+        owner = read_json(simulation.PORTS_DIR.parent / 'skills' / f"{ref['skill_id']}.json")
     functions = [function]
-    ports = [read_json(simulation.PORTS_DIR / f'{fid}.json')]
+    ports = [port if port is not None else read_json(simulation.PORTS_DIR / f'{fid}.json')]
     if function['scope'] == 'client':
         identity = read_json(CLIENT_CATALOG / 'functions/skill_expansion' / f'{CLIENT_IDENTITY}.json')
         identity['skill_refs'] = [ref]
@@ -119,7 +139,67 @@ def _registry(function: dict) -> tuple[dict, dict, str]:
             key = row[kind + '_id']
             path = f"{group}/{row['domain']}/{key}.json" if kind == 'function' else f'{group}/{key}.json'
             catalog['source_digests'][path] = catalog['record_digests'][f"{kind}:{key}@{row['version']}"] = digest(row)
-    return build_registry(catalog, selection, policy), policy, ref['skill_id'].split('.')[-1].upper()
+    artifact = _compile_registry(canonical_bytes(catalog), canonical_bytes(selection), canonical_bytes(policy))
+    return copy.deepcopy(artifact), policy, ref['skill_id'].split('.')[-1].upper()
+
+
+def _igate_catalog(vendor: dict) -> tuple[ReplayCatalog, str]:
+    from hashlib import sha256
+
+    from .igate_snapshot import PORT_SCHEMAS, read_snapshot
+
+    definitions = igate_data.catalog()
+    require(len(definitions) == len(PORT_SCHEMAS)
+            and {row['skill'] for row in definitions.values()} == PORT_SCHEMAS.keys()
+            and set(definitions) == {f'IG{i:02d}' for i in range(1, 6)}, 'skill_sim_igate_skills')
+    raw = {state: (igate_data.SCENARIOS / f'{state}.yaml').read_bytes() for state in STATES}
+    snapshots = {state: read_snapshot(data) for state, data in raw.items()}
+    actions, skills, sources, registries = {}, {}, {}, {}
+    for sid, row in definitions.items():
+        actions[sid] = igate_data.action(sid, row)
+        fid = igate_data.function_id(sid)
+        schema = PORT_SCHEMAS[row['skill']]
+        version = '1.0.0'
+        ref = {'skill_id': fid, 'version': version}
+        common = {'schema_version': '0.2.0', 'version': version}
+        port = {**common, 'kind': 'port', 'port_id': fid, 'scope': 'gateway', 'schema': schema,
+                'provenance': 'synthetic_replay/', 'untrusted_text': True}
+        function = {**common, 'kind': 'function', 'function_id': fid, 'description': row['name'],
+                    'domain': igate_data.DOMAIN, 'skill_refs': [ref], 'lifecycle': 'PROPOSED',
+                    'inputs': {}, 'outputs': {fid: version}, 'scope': 'gateway', 'risk': 'READ_ONLY',
+                    'permission': 'network.read', 'arguments_schema': {'type': 'object', 'properties': {},
+                        'required': [], 'additionalProperties': False}, 'argument_sources': {},
+                    'preconditions': [], 'order_after': [], 'effects': [], 'timeout_ms': 2000,
+                    'retry': {'max_attempts': 1}, 'ttl_seconds': 30, 'cost': 1.0, 'latency_ms': 0.0,
+                    'capability_probe': 'probe.' + fid, 'verifier': 'schema_scope_provenance_freshness/v3',
+                    'on_unknown': 'BLOCK_AND_REQUEST_EVIDENCE', 'tags': ['synthetic_replay']}
+        owner = {**common, 'kind': 'skill', **ref, 'name': row['name'], 'description': row['skill'],
+                 'requires': {}, 'produces': {fid: version}, 'completion_ports': {fid: version},
+                 'function_refs': {fid: version}, 'tags': ['replay']}
+        artifact, policy, owner_id = _registry(function, port=port, owner=owner)
+        require(owner_id == sid, 'skill_sim_igate_owner')
+        registries[fid] = artifact, policy, owner_id
+        claims = [{'claim_id': name, 'diagnosis': name, 'scope': 'gateway', 'severity': severity,
+                   'requires': [{'port': fid, 'field': field, 'op': op, 'value': value}], 'excludes': [],
+                   'message_key': name, 'workflow': sid}
+                  for name, severity, field, op, value in row['claims']]
+        require(all(c['claim_id'].endswith('_v1') and c['requires'][0]['field'] in schema['properties']
+                    for c in claims), 'skill_sim_igate_claim_schema')
+        workflows = {sid: {'target_scope': 'gateway', 'claims': [c['claim_id'] for c in claims]}}
+        ClaimBook(claims, {fid: port}, workflows)
+        skills[sid] = {'kind': 'direct', 'workflows': workflows, 'claims': claims}
+        validator = Draft202012Validator(schema)
+        sources[sid] = {}
+        for state, (ts, snapshot) in snapshots.items():
+            value = snapshot[row['skill']] or None
+            require(value is None or validator.is_valid(value), 'skill_sim_igate_fixture_schema')
+            sources[sid][state] = {fid: Sample(fid, 'gateway', TARGET, ts, value)}
+    pin = digest({'catalog': definitions, 'vendor': vendor,
+                  'registries': {fid: a['content_digest'] for fid, (a, _, _) in registries.items()},
+                  'snapshots': {state: sha256(data).hexdigest() for state, data in raw.items()},
+                  'samples': {sid: {state: [asdict(sample) for sample in by_alias.values()]
+                                    for state, by_alias in states.items()} for sid, states in sources.items()}})
+    return ReplayCatalog(actions, {'skills': skills}, sources, registries), pin
 
 
 def prepare_profile() -> ReplayProfile:
@@ -213,7 +293,9 @@ def prepare_profile() -> ReplayProfile:
         'backend_id': 'expansion.simulation_replay', 'backend_revision': SimulationReplayBackend.revision,
         'source': SimulationReplayBackend.source,
     }
-    return ReplayProfile(actions, diagnostics, samples, registries, approval)
+    vendor, contents = igate_data.vendor_data()
+    igate, approval['igate_digest'] = _igate_catalog(vendor)
+    return ReplayProfile(actions, diagnostics, samples, registries, approval, igate, contents)
 
 
 def approved_profile(approval: dict) -> ReplayProfile:

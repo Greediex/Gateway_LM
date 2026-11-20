@@ -1,0 +1,20 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "router-context-live-v1.schema.json",
+ "title": "router-contextd live.json",
+ "description": "One self-contained generation of the records router-contextd derives from router_snapshot.yaml (D01-D04) plus its own findings and package record (D04, D19), written with temp file + rename. A read-only derivative: router_snapshot.yaml stays the source of truth for the planner/grounding/executor. Readable by trusted services only; LLM context goes through the scoped reader. When the source is lost the last good records stay with their real capture time (source.status and source.age_s say so).",
+ "type": "object",
+ "required": ["schema", "generation", "stream", "published_at", "source", "records", "truncated_kinds"],
+ "properties": {
+  "schema": {"const": "router-context-live/1"},
+  "generation": {"type": "number"},
+  "stream": {"type": "string", "description": "changes after every collector start; generations of different streams are not comparable"},
+  "published_at": {"type": ["string", "null"]},
+  "source": {"type": "object", "required": ["path", "status", "captured_at", "age_s", "digest", "origin"], "properties": {
+   "path": {"type": "string"}, "status": {"enum": ["ok", "absent", "parse_error", "too_large", "store_error"]},
+   "captured_at": {"type": ["string", "null"]}, "age_s": {"type": ["number", "null"]}, "digest": {"type": "string"},
+   "origin": {"enum": ["live", "simulated"]}}},
+  "records": {"type": "array", "items": {"$ref": "router-context-record-v1.schema.json"}},
+  "truncated_kinds": {"type": "array", "items": {"type": "string"}, "description": "kinds cut to keep the file under storage_budget.live_file_bytes"}
+ }
+}

@@ -21,6 +21,13 @@ Lần cập nhật này **chỉ lập kế hoạch**, không đánh dấu triể
 - Tiến độ CHAT-CONCISE — Chat laptop ở fast mode ưu tiên phép đo theo chủ đề. Câu WAN nêu phạm vi quyền đọc và các giới hạn nằm trong chi tiết phép đo.
 - Tiến độ REPLAY-SIM — Chat Web dùng 101 Skill lấy từ acceptance với các kịch bản normal/fault/missing, qua Core và Claim Engine. Đã đối chiếu 303/303 verdict mô phỏng bằng approval trong bộ nhớ. Unittest local 1096 pass, 0 fail, 5 skip Windows. Deployment chờ chủ dự án duyệt digest từ `.venv-graph/bin/python -m scripts.prepare_replay_sim_approval`.
 
+## IGATE-PARITY
+
+- Mô phỏng iGate trong `replay_sim` với năm Skill đọc qua Core, câu trả lời tức thì, kho kiến thức song ngữ và 11 loại đề xuất lệnh theo hợp đồng firmware. Theo dõi kết quả iGate riêng khỏi coverage 120 Skill.
+- Sau giai đoạn mô phỏng, đối chiếu schema, nguồn dữ liệu và ngân sách trên router thật. Mọi quyền triển khai và kiểm chứng phần cứng cần một đợt nghiệm thu riêng.
+
+Tiến độ IGATE-PARITY-1 (20/11/2026, `v2`) — Năm Skill IG01–IG05 có 15/15 kịch bản khớp gold qua Core. Coverage riêng `igate_simulated` có 5 Skill. HTTP localhost với approval giả lập đo 30 lượt hỏi nhanh, trung vị 49,064 ms và tối đa 173,020 ms. Đã kiểm tra 11 đề xuất lệnh chỉ hiển thị. Unittest 1.116 tổng, 1.111 pass, 0 fail, 5 skip Windows, 337,548 s. Hai kiểm tra Node và script in pin PASS. Pin `igate_digest` chờ duyệt là `9883919316a93befe57fad38aae54472594faf112abf6071cd48242bfbb5557b`. `check_project` báo 51 lỗi do quy tắc cấm theo dõi file dưới `third_party/` bao gồm gói vendor iGate. Chưa có run CI và chưa nghiệm thu phần cứng.
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

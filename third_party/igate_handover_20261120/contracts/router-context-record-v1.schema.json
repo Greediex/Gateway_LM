@@ -1,0 +1,4308 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "router-context-record-v1.schema.json",
+ "title": "router-contextd record envelope with typed payloads (D01-D19)",
+ "description": "GENERATED from router-context-registry-v1.json by Router_App/router_context_src/tools/gen_schemas.py; do not edit by hand. Trust (producer, epistemic grants) is decided by the importer from the inbox directory, not by this schema.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "kind",
+  "subtype",
+  "record_id",
+  "stream_id",
+  "revision",
+  "site_id",
+  "origin",
+  "epistemic",
+  "observed_at",
+  "source_time_known",
+  "coverage",
+  "visibility",
+  "payload"
+ ],
+ "properties": {
+  "schema": {
+   "const": "router-context-record/1"
+  },
+  "kind": {
+   "enum": [
+    "action_audit_results",
+    "alerts_logs_findings",
+    "automation_schedules",
+    "configurations_diffs",
+    "diagnostics_checks",
+    "entities_topology",
+    "external_metadata",
+    "history_changes",
+    "incidents_evidence",
+    "knowledge_runbooks",
+    "lifecycle_packages",
+    "memory_preferences",
+    "notification_state",
+    "observations",
+    "operations_capabilities",
+    "presentation_capabilities",
+    "previews_options",
+    "principals_scopes",
+    "sessions_requests"
+   ]
+  },
+  "subtype": {
+   "type": "string"
+  },
+  "record_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "producer_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$",
+   "description": "Informational; the importer stamps the trusted producer from the inbox."
+  },
+  "stream_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "revision": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "site_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "entity_refs": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+   },
+   "maxItems": 32
+  },
+  "session_ref": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "incident_ref": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "correlation_ref": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "origin": {
+   "enum": [
+    "live",
+    "simulated"
+   ]
+  },
+  "epistemic": {
+   "enum": [
+    "observed",
+    "computed",
+    "user_reported",
+    "proposed",
+    "inferred",
+    "verified"
+   ]
+  },
+  "observed_at": {
+   "anyOf": [
+    {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "source_time": {
+   "anyOf": [
+    {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "source_time_known": {
+   "type": "boolean"
+  },
+  "clock": {
+   "type": "object",
+   "additionalProperties": false,
+   "properties": {
+    "domain": {
+     "enum": [
+      "wall",
+      "monotonic",
+      "provider"
+     ]
+    },
+    "boot_id": {
+     "type": "string",
+     "maxLength": 48
+    },
+    "uncertainty_s": {
+     "type": "integer",
+     "minimum": 0
+    }
+   }
+  },
+  "valid_from": {
+   "anyOf": [
+    {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "valid_until": {
+   "anyOf": [
+    {
+     "type": "string",
+     "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "coverage": {
+   "enum": [
+    "complete",
+    "partial",
+    "unknown"
+   ]
+  },
+  "visibility": {
+   "enum": [
+    "public",
+    "site",
+    "owner",
+    "principal",
+    "admin"
+   ]
+  },
+  "principal_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "payload": {
+   "type": "object"
+  },
+  "evidence_refs": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+   },
+   "maxItems": 16
+  },
+  "supersedes": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+  },
+  "op": {
+   "enum": [
+    "upsert",
+    "correct",
+    "revoke",
+    "delete"
+   ]
+  },
+  "verifier": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "verifier_id",
+    "method",
+    "evidence_refs"
+   ],
+   "properties": {
+    "verifier_id": {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+    },
+    "method": {
+     "type": "string",
+     "maxLength": 64
+    },
+    "evidence_refs": {
+     "type": "array",
+     "items": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+     },
+     "minItems": 1,
+     "maxItems": 8
+    }
+   }
+  }
+ },
+ "oneOf": [
+  {
+   "properties": {
+    "kind": {
+     "const": "entities_topology"
+    },
+    "subtype": {
+     "const": "entity"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "entities_topology"
+    },
+    "subtype": {
+     "const": "relation"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "entities_topology"
+    },
+    "subtype": {
+     "const": "alias"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "observations"
+    },
+    "subtype": {
+     "const": "metric_sample"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "observations"
+    },
+    "subtype": {
+     "const": "state_sample"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "history_changes"
+    },
+    "subtype": {
+     "const": "bucket_series"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "history_changes"
+    },
+    "subtype": {
+     "const": "observed_change"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "history_changes"
+    },
+    "subtype": {
+     "const": "usage_rank"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "history_changes"
+    },
+    "subtype": {
+     "const": "baseline_marker"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "alerts_logs_findings"
+    },
+    "subtype": {
+     "const": "alert"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "alerts_logs_findings"
+    },
+    "subtype": {
+     "const": "log_excerpt"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "alerts_logs_findings"
+    },
+    "subtype": {
+     "const": "finding"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "knowledge_runbooks"
+    },
+    "subtype": {
+     "const": "passage"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "knowledge_runbooks"
+    },
+    "subtype": {
+     "const": "runbook_step"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "knowledge_runbooks"
+    },
+    "subtype": {
+     "const": "site_guide"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "sessions_requests"
+    },
+    "subtype": {
+     "const": "session"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "sessions_requests"
+    },
+    "subtype": {
+     "const": "turn"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "sessions_requests"
+    },
+    "subtype": {
+     "const": "request"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "incidents_evidence"
+    },
+    "subtype": {
+     "const": "incident"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "incidents_evidence"
+    },
+    "subtype": {
+     "const": "attempt"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "memory_preferences"
+    },
+    "subtype": {
+     "const": "preference"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "memory_preferences"
+    },
+    "subtype": {
+     "const": "proposal"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "configurations_diffs"
+    },
+    "subtype": {
+     "const": "config_state"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "configurations_diffs"
+    },
+    "subtype": {
+     "const": "config_diff"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "operations_capabilities"
+    },
+    "subtype": {
+     "const": "operation"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "action_audit_results"
+    },
+    "subtype": {
+     "const": "action"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "diagnostics_checks"
+    },
+    "subtype": {
+     "const": "check"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "previews_options"
+    },
+    "subtype": {
+     "const": "preview"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "automation_schedules"
+    },
+    "subtype": {
+     "const": "rule"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "principals_scopes"
+    },
+    "subtype": {
+     "const": "grant"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "notification_state"
+    },
+    "subtype": {
+     "const": "subscription"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "notification_state"
+    },
+    "subtype": {
+     "const": "notification"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "presentation_capabilities"
+    },
+    "subtype": {
+     "const": "renderer"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "presentation_capabilities"
+    },
+    "subtype": {
+     "const": "asset_ref"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "external_metadata"
+    },
+    "subtype": {
+     "const": "event"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "lifecycle_packages"
+    },
+    "subtype": {
+     "const": "package"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "lifecycle_packages"
+    },
+    "subtype": {
+     "const": "migration"
+    }
+   }
+  },
+  {
+   "properties": {
+    "kind": {
+     "const": "lifecycle_packages"
+    },
+    "subtype": {
+     "const": "backup"
+    }
+   }
+  }
+ ],
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "entities_topology"
+     },
+     "subtype": {
+      "const": "entity"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "entity_id",
+       "entity_type"
+      ],
+      "properties": {
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "entity_type": {
+        "enum": [
+         "site",
+         "router",
+         "wan",
+         "lan",
+         "ap",
+         "radio",
+         "ssid",
+         "interface",
+         "client",
+         "sensor",
+         "camera",
+         "other"
+        ]
+       },
+       "display_name": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "identity_key": {
+        "type": "string",
+        "maxLength": 64,
+        "x-private": true
+       },
+       "identity_kind": {
+        "enum": [
+         "mac",
+         "serial",
+         "ip",
+         "provider_id",
+         "none"
+        ]
+       },
+       "band": {
+        "enum": [
+         "2g",
+         "5g",
+         "6g",
+         "wired",
+         "unknown"
+        ]
+       },
+       "network": {
+        "enum": [
+         "lan",
+         "guest",
+         "other"
+        ]
+       },
+       "admin_state": {
+        "enum": [
+         "enabled",
+         "disabled",
+         "unknown"
+        ]
+       },
+       "oper_state": {
+        "enum": [
+         "up",
+         "down",
+         "online",
+         "offline",
+         "unknown"
+        ]
+       },
+       "blocked": {
+        "enum": [
+         "yes",
+         "no",
+         "unknown"
+        ]
+       },
+       "channel": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 233
+       },
+       "security_mode": {
+        "type": "string",
+        "maxLength": 24
+       },
+       "hidden": {
+        "type": "boolean"
+       },
+       "ip": {
+        "type": "string",
+        "maxLength": 45,
+        "x-private": true
+       },
+       "first_seen": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "last_seen": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "location_label": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "location_source": {
+        "enum": [
+         "user_reported",
+         "config",
+         "unknown"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "entities_topology"
+     },
+     "subtype": {
+      "const": "relation"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "relation_type",
+       "from_entity",
+       "to_entity",
+       "state"
+      ],
+      "properties": {
+       "relation_type": {
+        "enum": [
+         "connected_to",
+         "depends_on",
+         "member_of",
+         "hosts",
+         "uplink_of",
+         "located_in"
+        ]
+       },
+       "from_entity": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "to_entity": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "since": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "until": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "state": {
+        "enum": [
+         "active",
+         "ended",
+         "unknown"
+        ]
+       },
+       "partial": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "entities_topology"
+     },
+     "subtype": {
+      "const": "alias"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "entity_id",
+       "alias",
+       "confirmed_by",
+       "status"
+      ],
+      "properties": {
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "alias": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "language": {
+        "enum": [
+         "vi",
+         "en",
+         "other"
+        ]
+       },
+       "confirmed_by": {
+        "enum": [
+         "owner",
+         "app",
+         "none"
+        ]
+       },
+       "status": {
+        "enum": [
+         "active",
+         "deleted"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "observations"
+     },
+     "subtype": {
+      "const": "metric_sample"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "metric",
+       "entity_id",
+       "state",
+       "unit",
+       "metric_kind"
+      ],
+      "properties": {
+       "metric": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "value": {
+        "anyOf": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "state": {
+        "enum": [
+         "valid",
+         "missing",
+         "unsupported",
+         "stale",
+         "partial"
+        ]
+       },
+       "unit": {
+        "type": "string",
+        "maxLength": 12
+       },
+       "metric_kind": {
+        "enum": [
+         "gauge",
+         "counter"
+        ]
+       },
+       "window_s": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "sample_count": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "reset_detected": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "observations"
+     },
+     "subtype": {
+      "const": "state_sample"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "field",
+       "entity_id",
+       "state"
+      ],
+      "properties": {
+       "field": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "value_text": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 64
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "state": {
+        "enum": [
+         "valid",
+         "missing",
+         "unsupported",
+         "stale",
+         "partial"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "history_changes"
+     },
+     "subtype": {
+      "const": "bucket_series"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "metric",
+       "entity_id",
+       "bucket_s",
+       "start",
+       "values",
+       "coverage_ratio",
+       "unit",
+       "clock_valid"
+      ],
+      "properties": {
+       "metric": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "bucket_s": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "start": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "values": {
+        "type": "array",
+        "items": {
+         "type": [
+          "number",
+          "null"
+         ]
+        },
+        "maxItems": 168
+       },
+       "coverage_ratio": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+       },
+       "resets": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "unit": {
+        "type": "string",
+        "maxLength": 12
+       },
+       "clock_valid": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "history_changes"
+     },
+     "subtype": {
+      "const": "observed_change"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "change_id",
+       "change_stream",
+       "seq",
+       "entity_id",
+       "field",
+       "from_generation",
+       "to_generation",
+       "change_class"
+      ],
+      "properties": {
+       "change_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "change_stream": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "seq": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "field": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "before": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 64
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "after": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 64
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "from_generation": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "to_generation": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "observed_after": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "observed_by": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "change_class": {
+        "enum": [
+         "value_change",
+         "appeared",
+         "disappeared",
+         "visibility_change",
+         "gap",
+         "origin_change"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "history_changes"
+     },
+     "subtype": {
+      "const": "usage_rank"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "window",
+       "rank",
+       "entity_id",
+       "qos_class",
+       "used_s_approx",
+       "connected"
+      ],
+      "properties": {
+       "window": {
+        "enum": [
+         "today",
+         "7d"
+        ]
+       },
+       "day": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 10
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "rank": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 50
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "qos_class": {
+        "type": "string",
+        "maxLength": 16
+       },
+       "used_s_approx": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "connected": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "history_changes"
+     },
+     "subtype": {
+      "const": "baseline_marker"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "marker_id",
+       "label",
+       "marker_source",
+       "at"
+      ],
+      "properties": {
+       "marker_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "label": {
+        "type": "string",
+        "maxLength": 80
+       },
+       "marker_source": {
+        "enum": [
+         "user_reported",
+         "harness",
+         "system"
+        ]
+       },
+       "at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "alerts_logs_findings"
+     },
+     "subtype": {
+      "const": "alert"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "alert_id",
+       "detector",
+       "alert_type",
+       "severity_source",
+       "state",
+       "feed_ok"
+      ],
+      "properties": {
+       "alert_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "detector": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "detector_version": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 24
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "alert_type": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "severity": {
+        "enum": [
+         "info",
+         "low",
+         "medium",
+         "high"
+        ]
+       },
+       "severity_source": {
+        "enum": [
+         "feed",
+         "router_mapping",
+         "rule"
+        ]
+       },
+       "state": {
+        "enum": [
+         "active",
+         "resolved",
+         "unknown"
+        ]
+       },
+       "first_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "last_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "repeat_count": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "feed_ok": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "inferred"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "alerts_logs_findings"
+     },
+     "subtype": {
+      "const": "log_excerpt"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "log_id",
+       "service",
+       "level",
+       "message"
+      ],
+      "properties": {
+       "log_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "service": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "level": {
+        "enum": [
+         "debug",
+         "info",
+         "warn",
+         "error"
+        ]
+       },
+       "code": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "message": {
+        "type": "string",
+        "maxLength": 240
+       },
+       "at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "inferred"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "alerts_logs_findings"
+     },
+     "subtype": {
+      "const": "finding"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "finding_id",
+       "rule_id",
+       "rule_version",
+       "certainty",
+       "window_s",
+       "sample_count",
+       "min_samples",
+       "statement_code"
+      ],
+      "properties": {
+       "finding_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "rule_id": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "rule_version": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "certainty": {
+        "enum": [
+         "suspected",
+         "supported",
+         "insufficient_evidence"
+        ]
+       },
+       "window_s": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "sample_count": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "min_samples": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "statement_code": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "unknowns": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed",
+       "inferred"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "knowledge_runbooks"
+     },
+     "subtype": {
+      "const": "passage"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "passage_id",
+       "document",
+       "topic",
+       "language",
+       "section",
+       "text",
+       "source_locator",
+       "review_state",
+       "content_hash"
+      ],
+      "properties": {
+       "passage_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "document": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "topic": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "language": {
+        "enum": [
+         "vi",
+         "en"
+        ]
+       },
+       "section": {
+        "type": "string",
+        "maxLength": 96
+       },
+       "text": {
+        "type": "string",
+        "maxLength": 1600
+       },
+       "source_locator": {
+        "type": "string",
+        "maxLength": 160
+       },
+       "as_of": {
+        "type": "string",
+        "maxLength": 10
+       },
+       "review_state": {
+        "enum": [
+         "draft",
+         "fact_checked",
+         "approved"
+        ]
+       },
+       "content_hash": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "fact_ids": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "knowledge_runbooks"
+     },
+     "subtype": {
+      "const": "runbook_step"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "runbook_id",
+       "step_id",
+       "language",
+       "instruction",
+       "disruptive",
+       "review_state"
+      ],
+      "properties": {
+       "runbook_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "step_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "language": {
+        "enum": [
+         "vi",
+         "en"
+        ]
+       },
+       "instruction": {
+        "type": "string",
+        "maxLength": 400
+       },
+       "reads": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       },
+       "condition": {
+        "type": "string",
+        "maxLength": 160
+       },
+       "on_yes": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "on_no": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "escalate": {
+        "type": "boolean"
+       },
+       "disruptive": {
+        "type": "boolean"
+       },
+       "review_state": {
+        "enum": [
+         "draft",
+         "fact_checked",
+         "approved"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "knowledge_runbooks"
+     },
+     "subtype": {
+      "const": "site_guide"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "guide_id",
+       "language",
+       "title",
+       "review_state",
+       "availability"
+      ],
+      "properties": {
+       "guide_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "language": {
+        "enum": [
+         "vi",
+         "en"
+        ]
+       },
+       "title": {
+        "type": "string",
+        "maxLength": 96
+       },
+       "text": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 1600
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "review_state": {
+        "enum": [
+         "draft",
+         "fact_checked",
+         "approved"
+        ]
+       },
+       "availability": {
+        "enum": [
+         "available",
+         "draft",
+         "unavailable"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "sessions_requests"
+     },
+     "subtype": {
+      "const": "session"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "session_id",
+       "principal_ref",
+       "started_at",
+       "state"
+      ],
+      "properties": {
+       "session_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "principal_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "started_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "last_turn_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "state": {
+        "enum": [
+         "active",
+         "closed",
+         "expired"
+        ]
+       },
+       "language": {
+        "enum": [
+         "vi",
+         "en",
+         "other"
+        ]
+       },
+       "current_target": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "current_topic": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "window_since": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "window_until": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "goal": {
+        "type": "string",
+        "maxLength": 160
+       },
+       "constraints": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 6
+       },
+       "pending_question": {
+        "type": "string",
+        "maxLength": 160
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "sessions_requests"
+     },
+     "subtype": {
+      "const": "turn"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "session_id",
+       "turn_no",
+       "speaker",
+       "text_source",
+       "text"
+      ],
+      "properties": {
+       "session_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "turn_no": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "speaker": {
+        "enum": [
+         "user",
+         "assistant",
+         "system"
+        ]
+       },
+       "text_source": {
+        "enum": [
+         "stt",
+         "typed",
+         "user_corrected",
+         "assistant"
+        ]
+       },
+       "text": {
+        "type": "string",
+        "maxLength": 600
+       },
+       "stt_session": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "stt_seq": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "stt_is_final": {
+        "type": "boolean"
+       },
+       "stt_ok": {
+        "type": "boolean"
+       },
+       "lang": {
+        "enum": [
+         "vi",
+         "en",
+         "other"
+        ]
+       },
+       "observation_refs": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 8
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "sessions_requests"
+     },
+     "subtype": {
+      "const": "request"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "request_id",
+       "session_id",
+       "turn_no",
+       "status",
+       "extraction_status"
+      ],
+      "properties": {
+       "request_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "session_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "turn_no": {
+        "type": "integer",
+        "minimum": 1
+       },
+       "intent_code": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "status": {
+        "enum": [
+         "open",
+         "answered",
+         "revoked",
+         "superseded"
+        ]
+       },
+       "candidates": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 8
+       },
+       "extraction_status": {
+        "enum": [
+         "user_stated",
+         "model_proposed",
+         "user_confirmed"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "incidents_evidence"
+     },
+     "subtype": {
+      "const": "incident"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "incident_id",
+       "title",
+       "symptoms",
+       "reported_by",
+       "state"
+      ],
+      "properties": {
+       "incident_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "title": {
+        "type": "string",
+        "maxLength": 96
+       },
+       "symptoms": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       },
+       "reported_by": {
+        "enum": [
+         "user",
+         "detector",
+         "technician"
+        ]
+       },
+       "affected_entities": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 16
+       },
+       "state": {
+        "enum": [
+         "open",
+         "resolved",
+         "reopened",
+         "closed_unresolved"
+        ]
+       },
+       "started_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "ended_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "unresolved": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       },
+       "user_feedback": {
+        "enum": [
+         "improved",
+         "no_change",
+         "worse",
+         "none"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "incidents_evidence"
+     },
+     "subtype": {
+      "const": "attempt"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "incident_id",
+       "attempt_id",
+       "step",
+       "actor",
+       "outcome",
+       "outcome_source"
+      ],
+      "properties": {
+       "incident_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "attempt_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "step": {
+        "type": "string",
+        "maxLength": 160
+       },
+       "actor": {
+        "enum": [
+         "user",
+         "technician",
+         "system"
+        ]
+       },
+       "at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "outcome": {
+        "enum": [
+         "improved",
+         "no_change",
+         "worse",
+         "failed",
+         "unknown"
+        ]
+       },
+       "outcome_source": {
+        "enum": [
+         "user_reported",
+         "observed",
+         "check"
+        ]
+       },
+       "check_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "memory_preferences"
+     },
+     "subtype": {
+      "const": "preference"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "memory_id",
+       "subject_ref",
+       "owner_ref",
+       "key",
+       "value",
+       "consent",
+       "confirmed_by",
+       "status"
+      ],
+      "properties": {
+       "memory_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "subject_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "owner_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "key": {
+        "enum": [
+         "language",
+         "audience",
+         "verbosity",
+         "nickname",
+         "goal",
+         "constraint",
+         "timezone",
+         "opening_hours",
+         "site_name"
+        ]
+       },
+       "value": {
+        "type": "string",
+        "maxLength": 200
+       },
+       "consent": {
+        "enum": [
+         "explicit",
+         "app_default"
+        ]
+       },
+       "confirmed_by": {
+        "enum": [
+         "owner",
+         "app"
+        ]
+       },
+       "status": {
+        "enum": [
+         "active",
+         "deleted",
+         "superseded"
+        ]
+       },
+       "purpose": {
+        "type": "string",
+        "maxLength": 80
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "user_reported",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "memory_preferences"
+     },
+     "subtype": {
+      "const": "proposal"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "proposal_id",
+       "target_subtype",
+       "proposed_value",
+       "proposer",
+       "status"
+      ],
+      "properties": {
+       "proposal_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "target_subtype": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "proposed_value": {
+        "type": "string",
+        "maxLength": 200
+       },
+       "proposer": {
+        "enum": [
+         "model",
+         "app_rule"
+        ]
+       },
+       "status": {
+        "enum": [
+         "pending",
+         "accepted",
+         "rejected",
+         "expired"
+        ]
+       },
+       "reviewed_by": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "user_reported",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "configurations_diffs"
+     },
+     "subtype": {
+      "const": "config_state"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "config_id",
+       "area",
+       "layer",
+       "config_revision",
+       "hash",
+       "values"
+      ],
+      "properties": {
+       "config_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "area": {
+        "enum": [
+         "wifi",
+         "guest",
+         "qos",
+         "firewall",
+         "dhcp",
+         "wan",
+         "schedule",
+         "system"
+        ]
+       },
+       "layer": {
+        "enum": [
+         "effective",
+         "desired",
+         "proposed",
+         "baseline"
+        ]
+       },
+       "config_revision": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "hash": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "values": {
+        "type": "object",
+        "maxProperties": 48,
+        "additionalProperties": {
+         "type": [
+          "string",
+          "number",
+          "boolean",
+          "null"
+         ]
+        },
+        "description": "Secret-looking keys (password, key, psk, secret, token) must carry the value \"[redacted]\"."
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "proposed",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "configurations_diffs"
+     },
+     "subtype": {
+      "const": "config_diff"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "diff_id",
+       "area",
+       "base_revision",
+       "target_revision",
+       "target_layer",
+       "changes",
+       "generated_by"
+      ],
+      "properties": {
+       "diff_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "area": {
+        "enum": [
+         "wifi",
+         "guest",
+         "qos",
+         "firewall",
+         "dhcp",
+         "wan",
+         "schedule",
+         "system"
+        ]
+       },
+       "base_revision": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "target_revision": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "target_layer": {
+        "enum": [
+         "effective",
+         "desired",
+         "proposed"
+        ]
+       },
+       "changes": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "path",
+          "redacted"
+         ],
+         "properties": {
+          "path": {
+           "type": "string",
+           "maxLength": 64
+          },
+          "before": {
+           "anyOf": [
+            {
+             "type": "string",
+             "maxLength": 64
+            },
+            {
+             "type": "null"
+            }
+           ]
+          },
+          "after": {
+           "anyOf": [
+            {
+             "type": "string",
+             "maxLength": 64
+            },
+            {
+             "type": "null"
+            }
+           ]
+          },
+          "redacted": {
+           "type": "boolean"
+          }
+         }
+        },
+        "maxItems": 48
+       },
+       "generated_by": {
+        "enum": [
+         "code"
+        ]
+       },
+       "policy_refs": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 8
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "proposed",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "operations_capabilities"
+     },
+     "subtype": {
+      "const": "operation"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "op_id",
+       "op_type",
+       "title",
+       "target_scope",
+       "availability",
+       "disruption",
+       "cancellable",
+       "needs_confirmation"
+      ],
+      "properties": {
+       "op_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "op_type": {
+        "enum": [
+         "read",
+         "write",
+         "check"
+        ]
+       },
+       "title": {
+        "type": "string",
+        "maxLength": 80
+       },
+       "input_schema_ref": {
+        "type": "string",
+        "maxLength": 96
+       },
+       "target_scope": {
+        "enum": [
+         "device",
+         "ssid",
+         "radio",
+         "site",
+         "none"
+        ]
+       },
+       "preconditions": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 6
+       },
+       "availability": {
+        "enum": [
+         "available",
+         "unavailable",
+         "unknown"
+        ]
+       },
+       "disruption": {
+        "enum": [
+         "none",
+         "brief",
+         "service_interrupting"
+        ]
+       },
+       "cost_s": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "timeout_s": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "cancellable": {
+        "type": "boolean"
+       },
+       "needs_confirmation": {
+        "type": "boolean"
+       },
+       "readback_method": {
+        "type": "string",
+        "maxLength": 80
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "action_audit_results"
+     },
+     "subtype": {
+      "const": "action"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "action_id",
+       "actor",
+       "operation_ref",
+       "target_refs",
+       "authorization",
+       "dispatch",
+       "ack",
+       "execution_report",
+       "postcondition",
+       "user_outcome"
+      ],
+      "properties": {
+       "action_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "request_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "actor": {
+        "enum": [
+         "user",
+         "app",
+         "llm_agent",
+         "technician",
+         "schedule"
+        ]
+       },
+       "operation_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "target_refs": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 8
+       },
+       "authorization": {
+        "enum": [
+         "not_required",
+         "granted",
+         "denied",
+         "pending",
+         "unknown"
+        ]
+       },
+       "dispatch": {
+        "enum": [
+         "not_dispatched",
+         "dispatched",
+         "unknown"
+        ]
+       },
+       "ack": {
+        "enum": [
+         "accepted",
+         "rejected",
+         "none",
+         "unknown"
+        ]
+       },
+       "execution_report": {
+        "enum": [
+         "succeeded",
+         "failed",
+         "none",
+         "unknown"
+        ]
+       },
+       "postcondition": {
+        "enum": [
+         "observed_match",
+         "observed_mismatch",
+         "not_checked",
+         "unknown"
+        ]
+       },
+       "user_outcome": {
+        "enum": [
+         "confirmed_ok",
+         "reported_problem",
+         "none"
+        ]
+       },
+       "error_code": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "proposed_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "dispatched_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "acked_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "reported_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported",
+       "verified"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "diagnostics_checks"
+     },
+     "subtype": {
+      "const": "check"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "check_id",
+       "check_type",
+       "target",
+       "path",
+       "status",
+       "method",
+       "disruption"
+      ],
+      "properties": {
+       "check_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "check_type": {
+        "enum": [
+         "wan_ping",
+         "dns_query",
+         "throughput",
+         "wifi_scan",
+         "client_link",
+         "other"
+        ]
+       },
+       "target": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "path": {
+        "enum": [
+         "wan",
+         "lan",
+         "wifi",
+         "local"
+        ]
+       },
+       "started_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "completed_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "status": {
+        "enum": [
+         "completed",
+         "timeout",
+         "failed",
+         "cancelled",
+         "running"
+        ]
+       },
+       "method": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "sample_count": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "result_value": {
+        "anyOf": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "result_unit": {
+        "type": "string",
+        "maxLength": 12
+       },
+       "baseline_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "disruption": {
+        "enum": [
+         "none",
+         "brief",
+         "service_interrupting"
+        ]
+       },
+       "confidence": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+       },
+       "calibration_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "computed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "previews_options"
+     },
+     "subtype": {
+      "const": "preview"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "preview_id",
+       "goal",
+       "config_revision",
+       "topology_revision",
+       "options",
+       "generated_by"
+      ],
+      "properties": {
+       "preview_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "goal": {
+        "type": "string",
+        "maxLength": 160
+       },
+       "constraints": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 6
+       },
+       "config_revision": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "topology_revision": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "options": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "option_id",
+          "summary_code",
+          "affected_entities",
+          "effects"
+         ],
+         "properties": {
+          "option_id": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+          },
+          "summary_code": {
+           "type": "string",
+           "maxLength": 48
+          },
+          "affected_entities": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+           },
+           "maxItems": 16
+          },
+          "effects": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "maxLength": 160
+           },
+           "maxItems": 6
+          },
+          "assumptions": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "maxLength": 160
+           },
+           "maxItems": 6
+          },
+          "unknowns": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "maxLength": 160
+           },
+           "maxItems": 6
+          },
+          "conflicts": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "maxLength": 160
+           },
+           "maxItems": 6
+          }
+         }
+        },
+        "maxItems": 4
+       },
+       "generated_by": {
+        "enum": [
+         "rule_engine",
+         "fixture"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "computed",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "automation_schedules"
+     },
+     "subtype": {
+      "const": "rule"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "rule_id",
+       "name",
+       "trigger_type",
+       "operation_ref",
+       "target_refs",
+       "timezone",
+       "status"
+      ],
+      "properties": {
+       "rule_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "name": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "trigger_type": {
+        "enum": [
+         "time",
+         "event"
+        ]
+       },
+       "trigger_at": {
+        "type": "string",
+        "maxLength": 5
+       },
+       "trigger_days": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 7
+       },
+       "trigger_event": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "condition": {
+        "type": "string",
+        "maxLength": 120
+       },
+       "operation_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "target_refs": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+        },
+        "maxItems": 8
+       },
+       "timezone": {
+        "type": "string",
+        "maxLength": 40
+       },
+       "starts_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "ends_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "status": {
+        "enum": [
+         "draft",
+         "planned",
+         "active",
+         "paused",
+         "cancelled",
+         "expired"
+        ]
+       },
+       "conflicts": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 6
+       },
+       "last_run_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "last_run_outcome": {
+        "enum": [
+         "ok",
+         "failed",
+         "none",
+         "unknown"
+        ]
+       },
+       "next_run_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "proposed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "principals_scopes"
+     },
+     "subtype": {
+      "const": "grant"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "grant_id",
+       "principal_id",
+       "role",
+       "entity_scope",
+       "topic_scope",
+       "issued_at",
+       "status"
+      ],
+      "properties": {
+       "grant_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "principal_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "role": {
+        "enum": [
+         "anonymous",
+         "guest",
+         "owner",
+         "technician",
+         "lab"
+        ]
+       },
+       "entity_scope": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 64
+       },
+       "topic_scope": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 16
+       },
+       "issued_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "status": {
+        "enum": [
+         "active",
+         "revoked",
+         "expired"
+        ]
+       },
+       "audience": {
+        "enum": [
+         "plain",
+         "technical"
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "notification_state"
+     },
+     "subtype": {
+      "const": "subscription"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "subscription_id",
+       "principal_ref",
+       "topic",
+       "opt_in"
+      ],
+      "properties": {
+       "subscription_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "principal_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "topic": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "opt_in": {
+        "type": "boolean"
+       },
+       "quiet_from": {
+        "type": "string",
+        "maxLength": 5
+       },
+       "quiet_until": {
+        "type": "string",
+        "maxLength": 5
+       },
+       "timezone": {
+        "type": "string",
+        "maxLength": 40
+       },
+       "cooldown_s": {
+        "type": "integer",
+        "minimum": 0
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "notification_state"
+     },
+     "subtype": {
+      "const": "notification"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "notification_id",
+       "subscription_ref",
+       "trigger_ref",
+       "dedupe_key",
+       "priority_source",
+       "state",
+       "state_source",
+       "created_at"
+      ],
+      "properties": {
+       "notification_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "subscription_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "trigger_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "dedupe_key": {
+        "type": "string",
+        "maxLength": 64
+       },
+       "priority": {
+        "enum": [
+         "low",
+         "normal",
+         "high"
+        ]
+       },
+       "priority_source": {
+        "enum": [
+         "notifier",
+         "rule",
+         "fixture"
+        ]
+       },
+       "state": {
+        "enum": [
+         "pending",
+         "delivered",
+         "read",
+         "dismissed",
+         "suppressed",
+         "failed"
+        ]
+       },
+       "state_source": {
+        "enum": [
+         "notifier",
+         "fixture"
+        ]
+       },
+       "created_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "delivered_at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "user_reported"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "presentation_capabilities"
+     },
+     "subtype": {
+      "const": "renderer"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "renderer_id",
+       "surface",
+       "renderer_version",
+       "templates",
+       "languages",
+       "tts"
+      ],
+      "properties": {
+       "renderer_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "surface": {
+        "enum": [
+         "panel",
+         "app",
+         "voice"
+        ]
+       },
+       "renderer_version": {
+        "type": "string",
+        "maxLength": 24
+       },
+       "templates": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "template_id",
+          "template_type",
+          "max_items",
+          "max_bytes"
+         ],
+         "properties": {
+          "template_id": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+          },
+          "template_type": {
+           "enum": [
+            "text",
+            "card",
+            "table",
+            "choice",
+            "checklist"
+           ]
+          },
+          "max_items": {
+           "type": "integer",
+           "minimum": 0
+          },
+          "max_bytes": {
+           "type": "integer",
+           "minimum": 0
+          },
+          "fields_bound": {
+           "type": "array",
+           "items": {
+            "type": "string",
+            "maxLength": 160
+           },
+           "maxItems": 12
+          }
+         }
+        },
+        "maxItems": 12
+       },
+       "languages": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 4
+       },
+       "tts": {
+        "type": "boolean"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "presentation_capabilities"
+     },
+     "subtype": {
+      "const": "asset_ref"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "asset_id",
+       "asset_type",
+       "renderer_ref"
+      ],
+      "properties": {
+       "asset_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "asset_type": {
+        "enum": [
+         "qr_guest_wifi",
+         "image"
+        ]
+       },
+       "renderer_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "purpose": {
+        "type": "string",
+        "maxLength": 64
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "external_metadata"
+     },
+     "subtype": {
+      "const": "event"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "event_id",
+       "provider",
+       "provider_event_type"
+      ],
+      "properties": {
+       "event_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "provider": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "provider_event_type": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "entity_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "location_label": {
+        "type": "string",
+        "maxLength": 48
+       },
+       "at": {
+        "anyOf": [
+         {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+         },
+         {
+          "type": "null"
+         }
+        ]
+       },
+       "time_uncertainty_s": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "detector_confidence": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+       },
+       "confidence_definition": {
+        "type": "string",
+        "maxLength": 80
+       },
+       "asset_ref": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "inferred"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "lifecycle_packages"
+     },
+     "subtype": {
+      "const": "package"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "package_id",
+       "component",
+       "version",
+       "installed",
+       "package_source"
+      ],
+      "properties": {
+       "package_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "component": {
+        "enum": [
+         "firmware",
+         "model",
+         "kb",
+         "config",
+         "router_context"
+        ]
+       },
+       "version": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "installed": {
+        "type": "boolean"
+       },
+       "package_source": {
+        "enum": [
+         "installed",
+         "local_package",
+         "backup"
+        ]
+       },
+       "changelog": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       },
+       "compatible_with": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 8
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "verified"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "lifecycle_packages"
+     },
+     "subtype": {
+      "const": "migration"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "migration_id",
+       "from_version",
+       "to_version",
+       "state"
+      ],
+      "properties": {
+       "migration_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "from_version": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "to_version": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "state": {
+        "enum": [
+         "planned",
+         "verified",
+         "failed",
+         "not_run"
+        ]
+       },
+       "identity_map": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "additionalProperties": false,
+         "required": [
+          "old_ref",
+          "new_ref"
+         ],
+         "properties": {
+          "old_ref": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+          },
+          "new_ref": {
+           "type": "string",
+           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+          }
+         }
+        },
+        "maxItems": 32
+       },
+       "verified_by": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "verified"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "lifecycle_packages"
+     },
+     "subtype": {
+      "const": "backup"
+     }
+    },
+    "required": [
+     "kind",
+     "subtype"
+    ]
+   },
+   "then": {
+    "properties": {
+     "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "backup_id",
+       "created_at",
+       "contents",
+       "restore_verified"
+      ],
+      "properties": {
+       "backup_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+       },
+       "created_at": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})$"
+       },
+       "contents": {
+        "type": "array",
+        "items": {
+         "type": "string",
+         "maxLength": 160
+        },
+        "maxItems": 16
+       },
+       "restore_verified": {
+        "enum": [
+         "verified",
+         "not_verified",
+         "failed"
+        ]
+       },
+       "retention_days": {
+        "type": "integer",
+        "minimum": 0
+       }
+      }
+     },
+     "epistemic": {
+      "enum": [
+       "observed",
+       "verified"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "epistemic": {
+      "const": "verified"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "verifier"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "visibility": {
+      "const": "principal"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "principal_id"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-router-partial-v1.schema.json",
+  "title": "agent_router.partial ubus event (answer text while the model writes it)",
+  "description": "Response-latency plan 2026-11-10 step 3D (llm/docs/llm_response_latency_plan_20261110.md). Published by the agent core (AGENT_ROUTER_PARTIAL, on by default) only for an answer the code will not replace after the model ends (knowledge answers), never for a write, a dry run (dry_run:true) or a read. Display only: nothing is kept for later viewers and nothing is executed from it. `text` is the whole answer so far (not a delta), so a lost event does no harm; `i` grows within one request. The final agent_router.result of the same producer session and seq replaces it; a result that is not ok clears it. router_display maps (input.session_id | boot | input.source, input.seq) to the rid it will use for llm_reply and forwards CDC1 event agent_partial (docs/json_command_protocol.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["source", "request_id", "input", "i", "text"],
+  "properties": {
+    "source": { "const": "agent-router" },
+    "request_id": { "type": "integer", "minimum": 1, "maximum": 2147483647, "description": "= the transcript's seq (the core's request id)." },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seq"],
+      "properties": {
+        "session_id": { "type": "string", "minLength": 1, "maxLength": 95, "description": "The transcript's session_id, verbatim." },
+        "source": { "type": "string", "description": "The transcript's source, verbatim." },
+        "seq": { "type": "integer", "minimum": 1, "maximum": 2147483647 }
+      }
+    },
+    "i": { "type": "integer", "minimum": 1, "description": "Partial index within the request, 1, 2, ..." },
+    "text": { "type": "string", "maxLength": 1000, "description": "The answer so far, at most 1000 bytes cut on a UTF-8 boundary, citing phrases removed as in the final text." }
+  }
+}

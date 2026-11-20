@@ -1,0 +1,50 @@
+<!-- doc: product.vi | topic: igate_product | lang: vi | as_of: 2026-11-08 | review: draft -->
+# iGate A86-C — router này
+
+## iGate A86-C là gì
+<!-- id: prod.vi.what | facts: prod.name, prod.line | src: esp32/main/ui/ui_home_screens.c (About) | aliases: router này là gì, router tên gì, đây là router gì, model router, tên sản phẩm, igate, igate a86-c, a86c, ai gateway, gateway này | say_for: define | say: Router bạn đang dùng là iGate A86-C, một cổng mạng Wi-Fi 8 kiêm nền tảng AI biên; trợ lý giọng nói của router tên là iGate. -->
+Router bạn đang dùng là iGate A86-C, dòng "Edge AI Platform & Wi-Fi 8 Gateway": một cổng mạng Wi-Fi 8 kiêm nền tảng AI biên. Nó gộp ba thứ trong một thiết bị: Wi-Fi 8, mạng nhiều gigabit (multi-gig) và AI chạy ngay trên router để theo dõi mạng theo thời gian thực, tối ưu trải nghiệm (AI QoE) và bảo vệ an ninh chủ động. Trợ lý giọng nói của router tên là iGate, gọi bằng câu "Hey iGate".
+
+## Router này là chuẩn Wi-Fi mấy
+<!-- id: prod.vi.wifi | facts: prod.wifi8, prod.bands, prod.phy | src: esp32/main/ui/ui_showcase_slides.c (cover); esp32/main/ui/ui_wifi_compare.c | aliases: chuẩn wifi mấy, wifi mấy, có phải wifi 8 không, wifi 7 hay wifi 8, 802.11bn, ba băng, tri-band, tốc độ tối đa, tốc độ tối đa router, router nhanh nhất bao nhiêu, 11.5 gbps, thế hệ wifi | say_for: define | say: iGate A86-C là router Wi-Fi 8 (IEEE 802.11bn) ba băng 2,4 GHz, 5 GHz và 6 GHz, tốc độ vật lý tối đa 11,5 Gbps. -->
+iGate A86-C là router Wi-Fi 8 (IEEE 802.11bn) ba băng: 2,4 GHz, 5 GHz và 6 GHz. Tốc độ vật lý tối đa của router là 11,5 Gbps; đây là con số lý thuyết của phần Wi-Fi, không phải tốc độ Internet bạn sẽ đo được. Điện thoại và máy tính đời cũ (Wi-Fi 5, 6, 7) vẫn kết nối bình thường; muốn có đủ lợi ích của Wi-Fi 8 thì thiết bị cũng phải hỗ trợ Wi-Fi 8.
+
+## Cổng mạng và tốc độ có dây
+<!-- id: prod.vi.ports | facts: prod.wan10g, prod.multigig | src: esp32/main/ui/ui_showcase_slides.c (speed test page) | aliases: cổng wan, 10 gbe, 10 gigabit, multi-gig, cổng mạng, cắm dây, tốc độ cổng, gói cước 10 gbps | say_for: - | say: Router có cổng WAN 10 GbE và các cổng LAN nhiều gigabit, tự đo được tốc độ Internet tới 10 Gbps. -->
+Router có cổng WAN 10 GbE (10 gigabit) để nối với đường Internet và các cổng LAN nhiều gigabit cho máy tính, TV, đầu thu cắm dây. Router tự đo được tốc độ Internet tới 10 Gbps mà không cần cài ứng dụng. Tốc độ thực tế bị giới hạn bởi gói cước, dây mạng và thiết bị ở đầu kia, không chỉ bởi router.
+
+## AI chạy ngay trên router
+<!-- id: prod.vi.ai | facts: prod.npu, prod.ai_offline | src: esp32/main/ui/ui_showcase_slides.c (cover, pipeline page) | aliases: npu, 10 tops, ai trên router, edge ai, ai biên, xử lý tại chỗ, không cần cloud, offline | say_for: define | say: Router có bộ xử lý AI tới 10 TOPS cho AI QoS, AI Security và trợ lý giọng nói; mọi xử lý diễn ra ngay trên router. -->
+Router có bộ xử lý AI (NPU) tới 10 TOPS, dùng cho ba việc: AI QoS (nhận biết ai đang chơi game, gọi video, xem phim để ưu tiên), AI Security (phát hiện tấn công, thiết bị lạ) và trợ lý giọng nói. Mọi xử lý diễn ra ngay trên router: nhanh, giữ riêng tư vì dữ liệu không rời khỏi nhà, và vẫn chạy khi mất Internet.
+
+## Trợ lý giọng nói iGate
+<!-- id: prod.vi.voice | facts: prod.voice, prod.voice_lang | src: esp32/main/ui/ui_showcase_slides.c (voice page); docs/web_voice_mic.md | aliases: trợ lý ảo, hey igate, nói chuyện với router, ra lệnh bằng giọng nói, tiếng việt, tiếng anh, ai trả lời, bạn là ai, iGate là ai | say_for: define,ability | say: Tôi là iGate, trợ lý giọng nói của router. Bạn nói "Hey iGate" rồi hỏi hoặc ra lệnh; câu nói được xử lý ngay trên router, không gửi lên cloud. -->
+iGate là trợ lý giọng nói của router. Bạn nói "Hey iGate" hoặc bấm nút nói, rồi hỏi hay ra lệnh bằng tiếng Việt (hoặc tiếng Anh). Câu nói được nhận dạng và hiểu ngay trên router, không gửi lên cloud. iGate trả lời bằng dữ liệu thật của router và tài liệu hướng dẫn có sẵn; lệnh làm thay đổi mạng luôn chờ bạn xác nhận trước khi chạy.
+
+## Màn hình trên router và trên điện thoại
+<!-- id: prod.vi.screens | facts: prod.panel, prod.web | src: docs/web_panel_https.md §1; Router_App/router_screen_src/README.md | aliases: màn hình cảm ứng, panel, màn hình router, dùng trên điện thoại, vnpt.internal, trang web router, điều khiển từ điện thoại | say_for: define,howto | say: Router có màn hình cảm ứng riêng; trên điện thoại hoặc máy tính trong mạng nhà, mở trình duyệt và gõ vnpt.internal để dùng cùng màn hình đó. -->
+Router có màn hình cảm ứng riêng để xem tình trạng mạng và thao tác. Cùng màn hình đó dùng được trên điện thoại hoặc máy tính trong mạng nhà: mở trình duyệt, gõ vnpt.internal, hoặc quét mã QR ở thẻ "Dùng trên điện thoại" trong Cài đặt. Màn hình trên điện thoại giống hệt màn hình router, thao tác ở đâu cũng có tác dụng như nhau.
+
+## Ai làm ra router này
+<!-- id: prod.vi.maker | facts: prod.maker | src: esp32/main/ui/ui_home_screens.c (About) | aliases: hãng nào, router hãng nào, router của hãng nào, hãng sản xuất router, thương hiệu, ai sản xuất, nhà sản xuất, xuất xứ, vnpt qualcomm, excellence center, made in vietnam, của nước nào | say_for: define | say: iGate A86-C được phát triển bởi Trung tâm Xuất sắc VNPT – Qualcomm, thuộc VNPT Technology, và được thiết kế, sản xuất tại Việt Nam. -->
+iGate A86-C được phát triển bởi Trung tâm Xuất sắc VNPT – Qualcomm (VNPT – Qualcomm Excellence Center), thuộc VNPT Technology, công ty công nghệ của Tập đoàn VNPT. Phần cứng dùng nền tảng của Qualcomm Technologies. Sản phẩm được thiết kế và sản xuất tại Việt Nam.
+
+## Router làm được những gì
+<!-- id: prod.vi.features | facts: prod.features | src: esp32/main/ui/ui_showcase_slides.c (product chapter) | aliases: tính năng, router tính năng, router có những tính năng gì, chức năng, router làm được gì, có những tính năng gì, router có gì, igate làm được gì, bạn làm được gì | say_for: ability | say: Router xem được tình trạng Internet và thiết bị, đo tốc độ, thống kê lưu lượng, có AI QoS, AI Security, mạng khách, chặn, giới hạn, ưu tiên, hẹn giờ và gắn nhãn thiết bị. -->
+Những việc chính: xem tình trạng Internet và các thiết bị đang kết nối; đo tốc độ mạng ngay trên router; thống kê lưu lượng theo giờ, theo ngày và theo loại dịch vụ; AI QoS cho biết ai đang chơi game, gọi video, xem phim và ưu tiên đúng thiết bị; AI Security cảnh báo tấn công và thiết bị lạ; mạng khách chia sẻ bằng mã QR; chặn, mở mạng, giới hạn tốc độ, ưu tiên và hẹn giờ cho từng thiết bị; gắn nhãn thiết bị để gọi bằng tên quen như "điện thoại của mẹ"; và trợ lý giọng nói iGate.
+
+## Tính năng đang trên lộ trình (chưa có)
+<!-- id: prod.vi.roadmap | facts: prod.roadmap | src: esp32/main/ui/ui_showcase_slides.c (coming soon page) | aliases: sắp có, sắp ra mắt, chưa có, lộ trình, roadmap, tương lai, bao giờ có, mesh, quản lý từ xa, hạn mức thời gian | say_for: define,ability | say: Một số tính năng còn trên lộ trình, router hiện chưa có: chuyển vùng liền mạch giữa nhiều điểm phát, tự chọn kênh tốt nhất, quản lý từ xa và hạn mức thời gian cho trẻ. -->
+Một số tính năng đang trên lộ trình của nền tảng, router hiện chưa có: chuyển vùng liền mạch giữa nhiều điểm phát (mesh), tự chọn kênh và công suất tốt nhất, tự gợi ý cách sửa lỗi trước khi bạn hỏi, quản lý mạng từ xa khi không ở nhà, hạn mức thời gian dùng mạng hằng ngày cho trẻ, và chặn riêng một trò chơi mà vẫn giữ ứng dụng học tập. Khi được hỏi về các việc này, iGate sẽ nói là chưa làm được.
+
+## iGate chưa làm được gì
+<!-- id: prod.vi.limits | facts: prod.cannot | src: llm/core/README.md (guards W09, W11); Router_App/router_display_src/LLM_JSON_CMD.md §5.10-5.11 | aliases: không làm được, chưa hỗ trợ, khởi động lại router, bật đèn, nhà thông minh, bật đèn phòng khách, tắt đèn, bật quạt, bật điều hòa, thời tiết, tin tức, tra cứu internet, gọi điện, lệnh có điều kiện | say_for: ability | say: iGate chỉ làm các việc về mạng của router; nó chưa điều khiển đồ thông minh, chưa khởi động lại router bằng giọng nói và chưa xem thời tiết hay tin tức. -->
+iGate chỉ làm những việc về mạng của router. Nó chưa: điều khiển đèn, ổ cắm hay đồ thông minh; khởi động lại router bằng giọng nói; xem thời tiết, tin tức hay tra cứu trên Internet; gọi điện hay làm điện thoại đổ chuông; nhận lệnh có điều kiện kiểu "nếu tối nay con còn chơi game thì chặn" (router không tự theo dõi điều kiện đó — hãy ra lệnh khi cần hoặc nêu giờ cụ thể để hẹn giờ). Với câu ngoài khả năng, iGate nói rõ là không làm được thay vì đoán.
+
+## Cái gì chạy được khi mất Internet
+<!-- id: prod.vi.offline | facts: prod.offline | src: llm/docs/demo_capability_inventory_plan_20261107.md (K1); llm/docs/qwen4b_voice_demo_execution_plan_20261104.md §1 | aliases: mất internet, không có mạng, offline, khi rớt mạng, cần internet không, chạy không cần mạng | say_for: define,judge | say: Khi mất Internet, màn hình router, trợ lý iGate, danh sách thiết bị, lịch và chặn, mở mạng vẫn dùng được; chỉ đo tốc độ Internet và truy cập web là không chạy. -->
+Khi mất Internet, trong nhà vẫn dùng được: màn hình router, trợ lý giọng nói iGate (nhận dạng giọng nói và AI đều chạy trên router), xem thiết bị, nhãn, lịch, chặn/mở mạng giữa các máy và mạng Wi-Fi nội bộ. Chỉ những việc cần ra ngoài Internet mới không chạy: đo tốc độ Internet, tự dò múi giờ, và tất nhiên là truy cập web.
+
+## Nền tảng AI Gateway
+<!-- id: prod.vi.platform | facts: prod.platform | src: esp32/main/ui/ui_showcase_slides.c (platform chapter) | aliases: ai gateway platform, nền tảng, kiến trúc, sdk, api, quản lý tập trung, copilot | say_for: define | say: iGate A86-C chạy trên nền tảng AI Gateway của VNPT Technology, nền tảng quản lý thiết bị, mô hình và dịch vụ AI, chạy mô hình AI ngay trên thiết bị. -->
+iGate A86-C chạy trên nền tảng AI Gateway của VNPT Technology, một nền tảng từ chip đến dịch vụ AI: quản lý thiết bị, mô hình, chính sách và dịch vụ tập trung ở quy mô lớn; triển khai và chạy mô hình AI ngay trên thiết bị; trí tuệ tại biên cho QoE, an ninh, IoT và phân tích mạng theo thời gian thực; SDK/API để tích hợp dịch vụ mới nhanh; bảo mật và bảo vệ dữ liệu có sẵn. Trợ lý AI (LLM Agent) là một phần của nền tảng này.

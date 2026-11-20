@@ -1,0 +1,66 @@
+{
+  "t": 1795139568,
+  "seq": 10953906,
+  "state": "dry",
+  "secs": "6.5",
+  "input": {
+    "text": "ưu tiên mạng cho laptop của bố",
+    "seq": 10953906,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_single_pass",
+    "selected_skill": "qos.prioritize",
+    "steps": [
+      {
+        "skill": "qos.prioritize",
+        "domain": "qos",
+        "status": "prepared",
+        "devices": [
+          {
+            "alias": "DESKTOP-01",
+            "label": "Laptop của Bố · Phòng làm việc",
+            "mac": "aa:bb:cc:00:00:07"
+          }
+        ]
+      }
+    ],
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953906,
+      "target": {
+        "type": "device",
+        "selector": "aa:bb:cc:00:00:07"
+      },
+      "arguments": {
+        "application": "GAMING"
+      },
+      "command": "optimize"
+    },
+    "status": "prepared",
+    "request_id": 10953906,
+    "message": "Được, mình đang ưu tiên mạng cho Laptop của Bố · Phòng làm việc (DESKTOP-01)."
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953906,
+      "target": {
+        "type": "device",
+        "selector": "aa:bb:cc:00:00:07"
+      },
+      "arguments": {
+        "application": "GAMING"
+      },
+      "command": "optimize"
+    }
+  }
+}

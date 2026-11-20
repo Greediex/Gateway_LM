@@ -14,7 +14,8 @@ def main() -> int:
     if set(profile.actions) != accepted:
         raise ValueError('skill_sim_acceptance_mismatch')
     print(json.dumps({'mode': MODE, 'proposed_approval': profile.approval,
-                      'skill_count': len(accepted), 'skills': sorted(accepted)}, indent=2))
+                      'skill_count': len(accepted), 'skills': sorted(accepted),
+                      'igate_simulated': sorted(profile.igate.actions)}, indent=2))
     return 0
 
 

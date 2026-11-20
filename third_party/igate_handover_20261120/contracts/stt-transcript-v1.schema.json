@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stt-transcript-v1.schema.json",
+  "title": "stt.transcript ubus event",
+  "description": "Published by router_audio after every decoded speech segment (or every segment cut, whichever happens first). No replay, no persistence -- a consumer that isn't listening when this fires simply never sees it. See docs/llm_integration_ubus.md contact point 1 for the semantics that are easy to get wrong (is_final, ok, seq, empty-but-ok transcripts).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["text", "seq", "dur_ms", "is_final", "ok"],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 95,
+      "description": "Producer lifetime identity, generated once by router_audio's publisher and changed on restart/self-exec; stable across ubus reconnect. Preserve it verbatim in agent_router.result.input. Optional for legacy producers; seq alone cannot distinguish a restart at the same sequence from a duplicate."
+    },
+    "text": {
+      "type": "string",
+      "description": "Decoded text, possibly empty. Empty text can still have ok:true (silence cut by the segment deadline, or a VAD phantom) -- the consumer must filter empty-but-ok transcripts itself; the daemon does not drop them."
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "router_audio's own segment counter. Unrelated to the CDC0 audio wire's frame sequence number, and unrelated to llm_command's request_id -- do not correlate seq across those namespaces."
+    },
+    "dur_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Duration of the audio segment that produced this transcript, in milliseconds."
+    },
+    "is_final": {
+      "type": "boolean",
+      "description": "false means the segment was cut by the --max-segment-ms deadline (see the max_segment_ms row in docs/llm_integration_ubus.md's single-source-of-truth table), NOT that this is the true end of the utterance. More text for the same utterance may follow in a later event. true means the segment ended on its own (silence/VAD boundary)."
+    },
+    "ok": {
+      "type": "boolean",
+      "description": "false means the decoder failed on this segment -- a decode failure, not silence. Silence is ok:true with an empty or near-empty text."
+    },
+    "lang": {
+      "type": "string",
+      "enum": ["en", "vi"],
+      "description": "Language this segment was decoded as, added by the ESP32-UI-language-routing feature. Not in `required`: it is optional/backward-compatible so a consumer written against the pre-language-routing daemon keeps working unchanged. The daemon itself always resolves a segment to one of these two values (never omits it) once it has at least one working STT bundle loaded -- an old-firmware frame that carries no language (LANG byte unspecified) falls back to the daemon's --default-lang, and a segment whose own bundle failed to load is routed to the other, loaded bundle (see Router_App/router_audio_src/README.md's fallback discipline) but still reports the segment's real language here, not which model happened to produce the text."
+    }
+  }
+}

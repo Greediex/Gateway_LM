@@ -1,0 +1,58 @@
+{
+  "t": 1795139561,
+  "seq": 10953905,
+  "state": "dry",
+  "secs": "4.8",
+  "input": {
+    "text": "bật wifi khách",
+    "seq": 10953905,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_single_pass",
+    "selected_skill": "network.guest_wifi",
+    "steps": [
+      {
+        "skill": "network.guest_wifi",
+        "domain": "network",
+        "status": "prepared",
+        "devices": []
+      }
+    ],
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953905,
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "enabled": true
+      },
+      "command": "set_guest_wifi"
+    },
+    "status": "prepared",
+    "request_id": 10953905,
+    "message": "Được, mình đang bật Wi-Fi khách."
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953905,
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "enabled": true
+      },
+      "command": "set_guest_wifi"
+    }
+  }
+}

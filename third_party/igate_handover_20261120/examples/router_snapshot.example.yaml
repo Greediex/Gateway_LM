@@ -1,0 +1,50 @@
+# EXAMPLE (simulated): every value is invented. Format: docs/03_inputs.md section 3.8.
+ts: 2026-10-29T07:00:00Z
+mode: live
+feed: {qos: 1, security: 1, block: 1, svc_qos: 1, svc_sec: 1, devices: 4, dropped: 0}
+wan: {up: 1, internet: 1, proto: pppoe, ip: 10.2.3.4, gw: 10.2.3.1, dns: [8.8.8.8, 1.1.1.1], ping_ms: 12, rx_mbps: 8.42, tx_mbps: 1.20, link_mbps: 1000, uptime_s: 43120}
+client_blocks: {ok: 1, n: 0, macs: []}
+sys: {uptime_s: 43120, cpu_pct: 17, mem_used_kb: 300112, mem_total_kb: 498232, mem_pct: 62, overlay_pct: 82, load1: 0.80, temp_c: 54.5}
+lan: {ip: 192.168.1.1, mask: 255.255.255.0, dhcp_used: 12, dhcp_total: 150, rx_mbps: 1.10, tx_mbps: 8.04}
+wifi:
+  total_clients: 3
+  radios: |
+    band ch enabled clients txpwr_dbm noise_dbm
+    2g 6 1 2 20 -95
+    5g 36 1 1 23 -92
+  ssids: |
+    band ssid network enabled hidden encryption password
+    2g VNPT-Home lan 1 0 psk2 -
+    2g VNPT-Guest guest 0 0 psk2 -
+    5g VNPT-Home-5G lan 1 0 psk2 -
+clients: |
+  ip name mac band rssi_dbm snr_db rx_mbps tx_mbps link_mbps idle_s conn_s
+  192.168.1.10 SON-iPad aa:bb:cc:dd:ee:01 5g -52 43 12.30 1.10 866 0 4210
+  192.168.1.11 iPad_của_mẹ aa:bb:cc:dd:ee:02 2g -78 17 0.40 0.10 72 34 900
+  192.168.1.12 TV_phòng_khách aa:bb:cc:dd:ee:05 2g -71 24 3.10 0.20 144 2 7200
+clients_count: 3
+security: |
+  ip name role victim attacked_by blocked
+  192.168.1.253 unknown-host DDoS 192.168.1.1 0 1
+qos: |
+  ip name class session_s flows
+  192.168.1.10 SON-iPad GAMING 3600 42
+qos_top: {clock: 1, day: 2026-10-29}
+qos_today: |
+  rank name key class used_s connected
+  1 SON-iPad AA:BB:CC:DD:EE:01 GAMING 9900 1
+qos_7d: |
+  rank name key class used_s connected
+  1 SON-iPad AA:BB:CC:DD:EE:01 GAMING 61200 1
+  2 TV_phòng_khách AA:BB:CC:DD:EE:05 VSTREAM 40100 1
+traffic: {clock: 1, since: 2026-10-23T07:00, peak_24h_mbps: 286.4, peak_24h_at: "21:05", peak_hour_24h: "21:00", top_class_7d: VSTREAM, busiest_7d: "Sun evening"}
+traffic_24h: |
+  hour rx_mbps tx_mbps peak_mbps
+  5 12.0 1.1 40.2
+  6 - - -
+  7 30.3 2.7 86.4
+security_summary: {clock: 1, events_24h: 2, high_24h: 0, flagged_24h: 1, active: 1, info_24h: 1}
+security_events: |
+  start end kind role sev status device victim
+  2026-10-29T06:31 - ATTACK Scanport MEDIUM active "MacBook Pro" "Laptop"
+  2026-10-29T05:39 - BLOCKED - INFO ended "Camera" -

@@ -1,0 +1,33 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "router-context-manifest-v1.schema.json",
+ "title": "router-contextd manifest.json",
+ "description": "The 19 logical datasets, their availability and lifecycle, written atomically by router-contextd into its output directory. No entity data. 'live' requires live-origin records from a live provider; fixtures are 'simulated_only'.",
+ "type": "object",
+ "required": ["schema", "generation", "stream", "registry_version", "registry_digest", "health", "kinds"],
+ "properties": {
+  "schema": {"const": "router-context-manifest/1"},
+  "generation": {"type": "number"},
+  "stream": {"type": "string"},
+  "registry_version": {"type": "integer"},
+  "registry_digest": {"type": "string"},
+  "version": {"type": "string"},
+  "health": {"type": "object", "required": ["source_status", "wall_clock_valid", "durable_enabled"], "properties": {
+   "source_status": {"enum": ["ok", "absent", "parse_error", "too_large", "store_error"]},
+   "wall_clock_valid": {"type": "boolean"}, "durable_enabled": {"type": "boolean"},
+   "volatile_recovered": {"type": "boolean"}, "durable_recovered": {"type": "boolean"},
+   "volatile_db_bytes": {"type": "number"}, "durable_db_bytes": {"type": "number"}}},
+  "kinds": {"type": "array", "minItems": 19, "maxItems": 19, "items": {"type": "object",
+   "required": ["id", "kind", "availability", "provider_status", "durability", "retention_s", "records", "subtypes"],
+   "properties": {
+    "id": {"type": "string", "pattern": "^D[0-1][0-9]$"}, "kind": {"type": "string"},
+    "availability": {"enum": ["live", "pack", "simulated_only", "not_collected", "provider_unavailable"]},
+    "provider_status": {"enum": ["live_partial", "pack", "provider_unavailable"]},
+    "missing_reason": {"type": "string"},
+    "durability": {"enum": ["volatile", "durable", "volatile_only"]},
+    "retention_s": {"type": "number"}, "records": {"type": "number"}, "last_import": {"type": "string"},
+    "subtypes": {"type": "array", "items": {"type": "string"}}}}},
+  "kb": {"type": "object", "properties": {"version": {"type": "string"}, "topics": {"type": "array", "items": {"type": "object",
+   "properties": {"topic_id": {"type": "string"}, "availability": {"enum": ["available", "draft", "unavailable"]}, "visibility": {"enum": ["public", "site", "admin"]}}}}}}
+ }
+}

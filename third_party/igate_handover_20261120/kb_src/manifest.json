@@ -1,0 +1,22 @@
+{
+ "schema": "router-context-kb-manifest/1",
+ "pack_version": "2026.11.11-r10",
+ "note": "Offline knowledge pack of router-contextd. Topics are the allowlist: a query naming any other topic answers unsupported_topic. review_state is per document (first-line metadata); nothing here is approved by a content owner yet. Product content only: no plans, journals or test questions.",
+ "topics": [
+  {"topic_id": "metric_glossary", "title": "What router numbers mean", "aliases": ["glossary", "chỉ số", "metrics"], "visibility": "public", "documents": ["metric_glossary.vi", "metric_glossary.en"]},
+  {"topic_id": "troubleshooting", "title": "Non-disruptive troubleshooting guides", "aliases": ["sự cố", "khắc phục", "troubleshoot"], "visibility": "public", "documents": ["troubleshooting.vi", "troubleshooting.en"]},
+  {"topic_id": "vnpt_intro", "title": "About VNPT and VNPT Technology", "aliases": ["VNPT", "VNPT Technology", "công ty"], "visibility": "public", "documents": ["vnpt_intro.vi", "vnpt_intro.en"]},
+  {"topic_id": "wifi8_intro", "title": "Wi-Fi 8 (IEEE 802.11bn, UHR) in plain terms", "aliases": ["wifi8", "Wi-Fi 8", "802.11bn", "UHR"], "visibility": "public", "documents": ["wifi8_intro.vi", "wifi8_intro.en"]},
+  {"topic_id": "igate_product", "title": "About this router: iGate A86-C (Wi-Fi 8 gateway)", "aliases": ["iGate", "iGate A86-C", "router này", "this router", "sản phẩm"], "visibility": "public", "documents": ["product.vi", "product.en"]},
+  {"topic_id": "igate_manual", "title": "Using the router's screen and web page", "aliases": ["hướng dẫn", "cách dùng", "manual", "how to"], "visibility": "public", "documents": ["manual.vi", "manual.en"]},
+  {"topic_id": "igate_voice", "title": "Talking to iGate: what to say, confirmation, limits", "aliases": ["giọng nói", "nói gì", "voice", "what can i say"], "visibility": "public", "documents": ["voice.vi", "voice.en"]},
+  {"topic_id": "wifi_basics", "title": "Wi-Fi basics: bands, generations, signal, placement", "aliases": ["băng tần", "sóng wifi", "wifi basics", "bands"], "visibility": "public", "documents": ["wifi_basics.vi", "wifi_basics.en"]},
+  {"topic_id": "security_tips", "title": "Keeping the home network safe", "aliases": ["bảo mật", "an toàn", "security", "password"], "visibility": "public", "documents": ["security_tips.vi", "security_tips.en"]},
+  {"topic_id": "activity_needs", "title": "How much network each activity needs", "aliases": ["cần bao nhiêu mbps", "livestream", "gaming", "streaming"], "visibility": "public", "documents": ["activity_needs.vi", "activity_needs.en"]},
+  {"topic_id": "ai_features", "title": "The router's AI features: AI QoS, AI Security, iGate, Sensing", "aliases": ["ai", "ai qos", "ai security", "llm"], "visibility": "public", "documents": ["ai_features.vi", "ai_features.en"]},
+  {"topic_id": "technician_notes", "title": "Reading the router's data feeds (owner/technician)", "aliases": ["feed", "kỹ thuật"], "visibility": "site", "documents": ["technician_notes.en"]},
+  {"topic_id": "onboarding", "title": "Product onboarding guide", "visibility": "public", "availability": "unavailable", "documents": []},
+  {"topic_id": "local_manual", "title": "Device manual for this router model", "visibility": "public", "availability": "unavailable", "documents": []},
+  {"topic_id": "site_guide", "title": "Site guide written by the owner (homestay/shop)", "visibility": "site", "availability": "unavailable", "documents": []}
+ ]
+}

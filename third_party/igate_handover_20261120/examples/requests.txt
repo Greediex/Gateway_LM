@@ -1,0 +1,9 @@
+vi|có bao nhiêu thiết bị đang kết nối
+en|how many devices are online right now
+vi|kiểm tra tốc độ mạng
+vi|chặn mạng iPad của con
+vi|bật wifi khách
+vi|ưu tiên mạng cho laptop của bố
+vi|wifi 8 là gì
+en|what is the weather today
+vi|chuyển giao diện sang tiếng Anh

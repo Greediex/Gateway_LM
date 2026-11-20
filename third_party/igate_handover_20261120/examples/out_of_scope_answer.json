@@ -1,0 +1,81 @@
+{
+  "t": 1795139584,
+  "seq": 10953908,
+  "state": "dry",
+  "secs": "13.4",
+  "input": {
+    "text": "what is the weather today",
+    "seq": 10953908,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "en"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_answer_kb",
+    "message": "The router cannot provide weather information. It handles only the network and cannot search the internet or give weather updates.",
+    "answer": {
+      "type": "answer",
+      "sources": [
+        "E1"
+      ],
+      "evidence": [
+        {
+          "id": "E1",
+          "data": {
+            "status": "ok",
+            "records": [
+              {
+                "id": "prod.en.limits",
+                "section": "What iGate cannot do yet | cannot do, not supported, restart the router, turn on the lights, smart home, weather, news, search the internet, make a call, conditional command",
+                "text": "iGate handles the router's network only. It cannot yet: control lights, plugs or smart-home devices; restart the router by voice; give weather, news or search the Internet; place calls or make a phone ring; take conditional commands such as \"if he is still gaming tonight, block him\" (the router does not watch for that condition: give the command when you want it, or name a time to schedule it). For a request outside its abilities, iGate says so instead of guessing.",
+                "source": "llm/core/README.md (guards W09, W11); Router_App/router_display_src/LLM_JSON_CMD.md §5.10-5.11",
+                "review_state": "draft"
+              },
+              {
+                "id": "st.en.encryption",
+                "section": "Wi-Fi security modes: WPA3, WPA2, open | wpa3, wpa2, wifi encryption, wifi security, network without password, open network, sae, psk, mixed",
+                "text": "WPA3 (SAE) is the safest mode today and is required on 6 GHz. WPA2 is still acceptable with a strong password. Mixed WPA2/WPA3 mode lets older devices connect. An open network (no password) lets anyone nearby join and see unencrypted traffic; use it only on purpose, for example a time-limited guest network.",
+                "source": "general: Wi-Fi security modes; docs/json_command_protocol.md §5.3 (encryption values)",
+                "review_state": "draft"
+              }
+            ],
+            "caveats": [
+              "content_not_approved",
+              "retrieval_score_not_probability"
+            ]
+          }
+        }
+      ],
+      "elapsed_ms": 11564.267006,
+      "model_output": "{\"type\":\"answer\",\"text\":\"The router cannot provide weather information. It handles only the network and cannot search the internet or give weather updates.\",\"sources\":[\"E1\"]}",
+      "kb": [
+        {
+          "id": "prod.en.limits",
+          "section": "What iGate cannot do yet | cannot do, not supported, restart the router, turn on the lights, smart home, weather, news, search the internet, make a call, conditional command",
+          "source": "llm/core/README.md (guards W09, W11); Router_App/router_display_src/LLM_JSON_CMD.md §5.10-5.11",
+          "review_state": "draft"
+        },
+        {
+          "id": "st.en.encryption",
+          "section": "Wi-Fi security modes: WPA3, WPA2, open | wpa3, wpa2, wifi encryption, wifi security, network without password, open network, sae, psk, mixed",
+          "source": "general: Wi-Fi security modes; docs/json_command_protocol.md §5.3 (encryption values)",
+          "review_state": "draft"
+        }
+      ],
+      "kb_gate": "not_pinned",
+      "kb_cache": "cache_no_group"
+    },
+    "status": "ok",
+    "request_id": 10953908,
+    "command": null
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": null
+  }
+}

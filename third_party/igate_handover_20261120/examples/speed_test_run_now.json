@@ -1,0 +1,76 @@
+{
+  "t": 1795139550,
+  "seq": 10953903,
+  "state": "dry",
+  "secs": "0.7",
+  "input": {
+    "text": "kiểm tra tốc độ mạng",
+    "seq": 10953903,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_single_pass",
+    "selected_skill": "router.telemetry",
+    "steps": [
+      {
+        "skill": "router.telemetry",
+        "domain": "router",
+        "status": "ok",
+        "telemetry": {
+          "cpu_pct": 18,
+          "memory_pct": 85,
+          "temperature_c": 39.3,
+          "load1": 2.75,
+          "overlay_pct": 28,
+          "wan_up": true,
+          "internet": true,
+          "wan_rx_mbps": 15.86,
+          "wan_tx_mbps": 0.53,
+          "ping_ms": 30
+        }
+      }
+    ],
+    "data_source": "snapshot",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953903,
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "query": "connection_quality"
+      },
+      "command": "get_info"
+    },
+    "status": "ok",
+    "request_id": 10953903,
+    "message": "Đang đo tốc độ mạng trên router (khoảng 20–30 giây); kết quả hiện trên màn hình Chất lượng mạng của panel.",
+    "run_now": true,
+    "answer": {
+      "type": "fact",
+      "field": "speed_test",
+      "core_message": "CPU: 18%; RAM: 85%; Nhiệt độ: 39.3 °C. WAN: đã kết nối. Internet: truy cập được. Lưu lượng: 15.86 Mbps ↓ / 0.53 Mbps ↑. Độ trễ WAN: 30 ms."
+    }
+  },
+  "dry_run": {
+    "would": "send_run_now",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953903,
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "query": "connection_quality"
+      },
+      "command": "get_info"
+    }
+  }
+}

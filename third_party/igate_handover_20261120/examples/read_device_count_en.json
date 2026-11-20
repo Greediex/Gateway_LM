@@ -1,0 +1,96 @@
+{
+  "t": 1795139548,
+  "seq": 10953902,
+  "state": "dry",
+  "secs": "4.2",
+  "input": {
+    "text": "how many devices are online right now",
+    "seq": 10953902,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "en"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_single_pass",
+    "selected_skill": "device.find",
+    "steps": [
+      {
+        "skill": "device.find",
+        "domain": "device",
+        "status": "ok",
+        "count": 6,
+        "devices": [
+          {
+            "alias": "iPhone",
+            "label": "Điện thoại của Mẹ · Phòng ngủ",
+            "mac": "aa:bb:cc:00:00:01"
+          },
+          {
+            "alias": "Galaxy-S24",
+            "label": "Điện thoại của Bố",
+            "mac": "aa:bb:cc:00:00:02"
+          },
+          {
+            "alias": "Xiaomi-13-Pro",
+            "label": "Điện thoại của Con · Phòng làm việc",
+            "mac": "aa:bb:cc:00:00:03"
+          },
+          {
+            "alias": "iPhone",
+            "mac": "aa:bb:cc:00:00:04"
+          },
+          {
+            "alias": "iPad",
+            "label": "Máy tính bảng của Con",
+            "mac": "aa:bb:cc:00:00:05"
+          },
+          {
+            "alias": "Laptop-01",
+            "label": "Laptop của Chị",
+            "mac": "aa:bb:cc:00:00:06"
+          }
+        ]
+      }
+    ],
+    "data_source": "snapshot",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953902,
+      "target": {
+        "type": "devices"
+      },
+      "arguments": {
+        "filter": "online"
+      },
+      "command": "get_info"
+    },
+    "count": 6,
+    "status": "ok",
+    "request_id": 10953902,
+    "message": "There are 6 devices connected: Điện thoại của Mẹ · Phòng ngủ (iPhone), Điện thoại của Bố (Galaxy-S24), Điện thoại của Con · Phòng làm việc (Xiaomi-13-Pro), iPhone, Máy tính bảng của Con (iPad) and 1 other device.",
+    "answer": {
+      "type": "fact",
+      "field": "device_count",
+      "core_message": "There are 6 devices online."
+    }
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953902,
+      "target": {
+        "type": "devices"
+      },
+      "arguments": {
+        "filter": "online"
+      },
+      "command": "get_info"
+    }
+  }
+}

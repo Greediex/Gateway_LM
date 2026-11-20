@@ -1,0 +1,477 @@
+{
+ "registry": "router-context-registry/1",
+ "registry_version": 1,
+ "note": "Single source for router-contextd record kinds D01-D19 (Router_App/router_context_src/README.md). The daemon loads this file at run time; contracts/router-context-record-v1.schema.json is generated from it by Router_App/router_context_src/tools/gen_schemas.py (--check fails on drift). Field spec: [name, type, flags, options]. Types: str int num bool enum ts ref strs refs nums obj objs map. Flags: r required, o optional, n nullable, s secret (never stored; import rejects), p private identity (projected only to owner/technician/lab scopes). Options: unit, min, max, max_len, max_items, values, fields.",
+ "envelope": {
+  "schema": "router-context-record/1",
+  "origins": ["live", "simulated"],
+  "epistemic": ["observed", "computed", "user_reported", "proposed", "inferred", "verified"],
+  "coverage": ["complete", "partial", "unknown"],
+  "ops": ["upsert", "correct", "revoke", "delete"],
+  "visibility": ["public", "site", "owner", "principal", "admin"],
+  "clock_domains": ["wall", "monotonic", "provider"],
+  "max_record_bytes": 16384,
+  "max_entity_refs": 32,
+  "max_evidence_refs": 16,
+  "id_pattern": "^[A-Za-z0-9][A-Za-z0-9._:@-]{0,95}$"
+ },
+ "roles": {
+  "anonymous": {"visibility": ["public"], "private_fields": false, "entity_default": "none"},
+  "guest": {"visibility": ["public", "site"], "private_fields": false, "entity_default": "granted_only"},
+  "owner": {"visibility": ["public", "site", "owner", "principal"], "private_fields": true, "entity_default": "site"},
+  "technician": {"visibility": ["public", "site", "principal"], "private_fields": true, "entity_default": "granted_only"},
+  "lab": {"visibility": ["public", "site", "owner", "principal", "admin"], "private_fields": true, "entity_default": "site"}
+ },
+ "storage_budget": {
+  "volatile_total_bytes": 16777216,
+  "volatile_db_bytes": 10485760,
+  "inbox_bytes": 2097152,
+  "export_bytes": 2097152,
+  "live_file_bytes": 131072,
+  "durable_total_bytes": 4194304,
+  "durable_write_batch_s": 60,
+  "inbox_max_files_per_cycle": 64,
+  "inbox_max_file_bytes": 262144,
+  "inbox_max_records_per_file": 256,
+  "sample_ring_rows": 60000,
+  "changes_rows": 20000,
+  "changes_export_lines": 2000
+ },
+ "metrics": [
+  {"name": "sys.cpu_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "router", "aggregate": "mean,min,max", "source": "snapshot.sys.cpu_pct"},
+  {"name": "sys.mem_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "router", "aggregate": "mean,min,max", "source": "snapshot.sys.mem_pct"},
+  {"name": "sys.mem_used_kb", "unit": "KiB", "kind": "gauge", "min": 0, "entity": "router", "aggregate": "mean,min,max", "source": "snapshot.sys.mem_used_kb"},
+  {"name": "sys.overlay_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "router", "aggregate": "last", "source": "snapshot.sys.overlay_pct"},
+  {"name": "sys.load1", "unit": "1", "kind": "gauge", "min": 0, "entity": "router", "aggregate": "mean,max", "source": "snapshot.sys.load1"},
+  {"name": "sys.temp_c", "unit": "Cel", "kind": "gauge", "min": -40, "max": 150, "entity": "router", "aggregate": "mean,min,max", "source": "snapshot.sys.temp_c (omitted when no thermal zone)"},
+  {"name": "sys.uptime_s", "unit": "s", "kind": "counter", "min": 0, "entity": "router", "aggregate": "last", "source": "snapshot.sys.uptime_s", "reset": "reboot"},
+  {"name": "wan.ping_ms", "unit": "ms", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "mean,min,max", "source": "snapshot.wan.ping_ms (one target chosen by router_display)", "caveat": "one_target_not_all_services"},
+  {"name": "wan.rx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "mean,max", "source": "snapshot.wan.rx_mbps (byte-counter throughput, router view)", "direction": "download_at_router"},
+  {"name": "wan.tx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "mean,max", "source": "snapshot.wan.tx_mbps", "direction": "upload_at_router"},
+  {"name": "wan.link_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "last", "source": "snapshot.wan.link_mbps", "caveat": "phy_rate_not_internet_speed"},
+  {"name": "wan.uptime_s", "unit": "s", "kind": "counter", "min": 0, "entity": "wan", "aggregate": "last", "source": "snapshot.wan.uptime_s", "reset": "reconnect"},
+  {"name": "lan.rx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "lan", "aggregate": "mean,max", "source": "snapshot.lan.rx_mbps"},
+  {"name": "lan.tx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "lan", "aggregate": "mean,max", "source": "snapshot.lan.tx_mbps"},
+  {"name": "lan.dhcp_used", "unit": "1", "kind": "gauge", "min": 0, "entity": "lan", "aggregate": "last,max", "source": "snapshot.lan.dhcp_used"},
+  {"name": "radio.clients", "unit": "1", "kind": "gauge", "min": 0, "entity": "radio", "aggregate": "mean,max", "source": "snapshot.wifi.radios.clients"},
+  {"name": "radio.noise_dbm", "unit": "dBm", "kind": "gauge", "min": -130, "max": 0, "entity": "radio", "aggregate": "mean,min,max", "source": "snapshot.wifi.radios.noise_dbm"},
+  {"name": "radio.txpwr_dbm", "unit": "dBm", "kind": "gauge", "min": -10, "max": 40, "entity": "radio", "aggregate": "last", "source": "snapshot.wifi.radios.txpwr_dbm"},
+  {"name": "client.rssi_dbm", "unit": "dBm", "kind": "gauge", "min": -120, "max": 0, "entity": "client", "aggregate": "mean,min,max", "source": "snapshot.clients.rssi_dbm (Wi-Fi only)"},
+  {"name": "client.snr_db", "unit": "dB", "kind": "gauge", "min": -20, "max": 100, "entity": "client", "aggregate": "mean,min,max", "source": "snapshot.clients.snr_db"},
+  {"name": "client.rx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "client", "aggregate": "mean,max", "source": "snapshot.clients.rx_mbps"},
+  {"name": "client.tx_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "client", "aggregate": "mean,max", "source": "snapshot.clients.tx_mbps"},
+  {"name": "client.link_mbps", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "client", "aggregate": "mean,min,max", "source": "snapshot.clients.link_mbps", "caveat": "phy_rate_not_internet_speed"},
+  {"name": "client.idle_s", "unit": "s", "kind": "gauge", "min": 0, "entity": "client", "aggregate": "last", "source": "snapshot.clients.idle_s"},
+  {"name": "client.conn_s", "unit": "s", "kind": "counter", "min": 0, "entity": "client", "aggregate": "last", "source": "snapshot.clients.conn_s", "reset": "reassociation"},
+  {"name": "traffic.rx_mbps_hour", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "series", "source": "snapshot.traffic_24h.rx_mbps ('-' = gap)"},
+  {"name": "traffic.tx_mbps_hour", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "series", "source": "snapshot.traffic_24h.tx_mbps"},
+  {"name": "traffic.peak_mbps_hour", "unit": "Mbit/s", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "series", "source": "snapshot.traffic_24h.peak_mbps"},
+  {"name": "traffic.rx_gb_day", "unit": "GB", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "series", "source": "snapshot.traffic_7d.rx_gb"},
+  {"name": "wan.dns_query_ms", "unit": "ms", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "no DNS probe producer; configured DNS servers prove nothing about resolution"},
+  {"name": "wan.loss_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "wan", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "no loss/jitter producer"},
+  {"name": "wan.jitter_ms", "unit": "ms", "kind": "gauge", "min": 0, "entity": "wan", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "no loss/jitter producer"},
+  {"name": "radio.utilization_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "radio", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "airtime/utilization not exported by router_display"},
+  {"name": "client.retry_pct", "unit": "%", "kind": "gauge", "min": 0, "max": 100, "entity": "client", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "retries not exported"},
+  {"name": "energy.power_w", "unit": "W", "kind": "gauge", "min": 0, "entity": "sensor", "aggregate": "mean,max", "source": "none", "provider": "unsupported", "missing_reason": "no energy sensor provider"}
+ ],
+ "kinds": [
+  {
+   "id": "D01", "kind": "entities_topology", "title": "Entities, identity, relations and aliases",
+   "store": "volatile", "retention_s": 86400, "max_rows": 4000,
+   "epistemic": ["observed", "user_reported", "computed"],
+   "default_visibility": "site", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "live_partial", "source": "snapshot adapter (router, wan, lan, radios, ssids, clients); aliases/locations via app inbox", "owner": "router-contextd snapshot adapter; app for aliases", "missing_reason": "no AP/mesh topology, no owner-declared rooms on a live producer yet"},
+   "subtypes": {
+    "entity": {"fields": [
+      ["entity_id", "ref", "r"], ["entity_type", "enum", "r", {"values": ["site", "router", "wan", "lan", "ap", "radio", "ssid", "interface", "client", "sensor", "camera", "other"]}],
+      ["display_name", "str", "o", {"max_len": 64}], ["identity_key", "str", "op", {"max_len": 64}],
+      ["identity_kind", "enum", "o", {"values": ["mac", "serial", "ip", "provider_id", "none"]}],
+      ["band", "enum", "o", {"values": ["2g", "5g", "6g", "wired", "unknown"]}], ["network", "enum", "o", {"values": ["lan", "guest", "other"]}],
+      ["admin_state", "enum", "o", {"values": ["enabled", "disabled", "unknown"]}], ["oper_state", "enum", "o", {"values": ["up", "down", "online", "offline", "unknown"]}],
+      ["blocked", "enum", "o", {"values": ["yes", "no", "unknown"]}], ["channel", "int", "o", {"min": 0, "max": 233}],
+      ["security_mode", "str", "o", {"max_len": 24}], ["hidden", "bool", "o"], ["ip", "str", "op", {"max_len": 45}],
+      ["first_seen", "ts", "o"], ["last_seen", "ts", "o"],
+      ["location_label", "str", "o", {"max_len": 48}], ["location_source", "enum", "o", {"values": ["user_reported", "config", "unknown"]}]],
+     "projection": ["entity_id", "entity_type", "display_name", "band", "network", "admin_state", "oper_state", "blocked", "channel", "location_label", "location_source"]},
+    "relation": {"fields": [
+      ["relation_type", "enum", "r", {"values": ["connected_to", "depends_on", "member_of", "hosts", "uplink_of", "located_in"]}],
+      ["from_entity", "ref", "r"], ["to_entity", "ref", "r"], ["since", "ts", "o"], ["until", "ts", "o"],
+      ["state", "enum", "r", {"values": ["active", "ended", "unknown"]}], ["partial", "bool", "o"]],
+     "projection": ["relation_type", "from_entity", "to_entity", "state", "partial"]},
+    "alias": {"fields": [
+      ["entity_id", "ref", "r"], ["alias", "str", "r", {"max_len": 48}], ["language", "enum", "o", {"values": ["vi", "en", "other"]}],
+      ["confirmed_by", "enum", "r", {"values": ["owner", "app", "none"]}], ["status", "enum", "r", {"values": ["active", "deleted"]}]],
+     "projection": ["entity_id", "alias", "confirmed_by", "status"]}
+   }
+  },
+  {
+   "id": "D02", "kind": "observations", "title": "Metric and state samples",
+   "store": "volatile", "retention_s": 3600, "max_rows": 20000,
+   "epistemic": ["observed", "computed"],
+   "default_visibility": "site", "correctable": false, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "live_partial", "source": "snapshot adapter: sys/wan/lan/radio/client metrics of the metric registry", "owner": "router-contextd snapshot adapter", "missing_reason": "DNS success, loss/jitter, airtime, retries, energy: unsupported (metric registry provider=unsupported)"},
+   "subtypes": {
+    "metric_sample": {"fields": [
+      ["metric", "str", "r", {"max_len": 48}], ["entity_id", "ref", "r"], ["value", "num", "on"],
+      ["state", "enum", "r", {"values": ["valid", "missing", "unsupported", "stale", "partial"]}], ["unit", "str", "r", {"max_len": 12}],
+      ["metric_kind", "enum", "r", {"values": ["gauge", "counter"]}], ["window_s", "int", "o", {"min": 0}], ["sample_count", "int", "o", {"min": 0}],
+      ["reset_detected", "bool", "o"]],
+     "projection": ["metric", "entity_id", "value", "unit", "state"]},
+    "state_sample": {"fields": [
+      ["field", "str", "r", {"max_len": 48}], ["entity_id", "ref", "r"], ["value_text", "str", "on", {"max_len": 64}],
+      ["state", "enum", "r", {"values": ["valid", "missing", "unsupported", "stale", "partial"]}]],
+     "projection": ["field", "entity_id", "value_text", "state"]}
+   }
+  },
+  {
+   "id": "D03", "kind": "history_changes", "title": "Bucketed history, observed changes, usage rankings and baseline markers",
+   "store": "volatile", "retention_s": 604800, "max_rows": 20000,
+   "epistemic": ["observed", "computed", "user_reported"],
+   "default_visibility": "site", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "live_partial", "source": "snapshot traffic_24h/traffic_7d/qos_today/qos_7d + publisher observed changes; markers via app inbox", "owner": "router-contextd", "missing_reason": "no event-level association/disconnect log; changes are poll-observed only"},
+   "subtypes": {
+    "bucket_series": {"fields": [
+      ["metric", "str", "r", {"max_len": 48}], ["entity_id", "ref", "r"], ["bucket_s", "int", "r", {"min": 1}], ["start", "ts", "r"],
+      ["values", "nums", "r", {"max_items": 168}], ["coverage_ratio", "num", "r", {"min": 0, "max": 1}], ["resets", "int", "o", {"min": 0}],
+      ["unit", "str", "r", {"max_len": 12}], ["clock_valid", "bool", "r"]],
+     "projection": ["metric", "entity_id", "bucket_s", "start", "values", "unit", "coverage_ratio"]},
+    "observed_change": {"fields": [
+      ["change_id", "ref", "r"], ["change_stream", "ref", "r"], ["seq", "int", "r", {"min": 1}], ["entity_id", "ref", "r"], ["field", "str", "r", {"max_len": 48}],
+      ["before", "str", "on", {"max_len": 64}], ["after", "str", "on", {"max_len": 64}], ["from_generation", "int", "r", {"min": 0}], ["to_generation", "int", "r", {"min": 1}],
+      ["observed_after", "ts", "on"], ["observed_by", "ts", "on"],
+      ["change_class", "enum", "r", {"values": ["value_change", "appeared", "disappeared", "visibility_change", "gap", "origin_change"]}]],
+     "projection": ["change_id", "entity_id", "field", "before", "after", "observed_after", "observed_by", "change_class"]},
+    "usage_rank": {"fields": [
+      ["window", "enum", "r", {"values": ["today", "7d"]}], ["day", "str", "on", {"max_len": 10}], ["rank", "int", "r", {"min": 1, "max": 50}],
+      ["entity_id", "ref", "r"], ["qos_class", "str", "r", {"max_len": 16}], ["used_s_approx", "int", "r", {"min": 0}], ["connected", "bool", "r"]],
+     "projection": ["window", "rank", "entity_id", "qos_class", "used_s_approx", "connected"]},
+    "baseline_marker": {"fields": [
+      ["marker_id", "ref", "r"], ["label", "str", "r", {"max_len": 80}], ["marker_source", "enum", "r", {"values": ["user_reported", "harness", "system"]}],
+      ["at", "ts", "r"], ["entity_id", "ref", "o"]],
+     "projection": ["marker_id", "label", "marker_source", "at", "entity_id"]}
+   }
+  },
+  {
+   "id": "D04", "kind": "alerts_logs_findings", "title": "Alerts, structured log excerpts and rule findings",
+   "store": "volatile", "retention_s": 86400, "max_rows": 4000,
+   "epistemic": ["observed", "computed", "inferred"],
+   "default_visibility": "site", "correctable": true, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "live_partial", "source": "snapshot security/security_events/feed + publisher findings (versioned rules)", "owner": "router-contextd; AI Security feed belongs to another team", "missing_reason": "no structured service log producer; detector rule versions not exported by the feed"},
+   "subtypes": {
+    "alert": {"fields": [
+      ["alert_id", "ref", "r"], ["detector", "str", "r", {"max_len": 32}], ["detector_version", "str", "on", {"max_len": 24}], ["entity_id", "ref", "o"],
+      ["alert_type", "str", "r", {"max_len": 32}], ["severity", "enum", "o", {"values": ["info", "low", "medium", "high"]}],
+      ["severity_source", "enum", "r", {"values": ["feed", "router_mapping", "rule"]}], ["state", "enum", "r", {"values": ["active", "resolved", "unknown"]}],
+      ["first_at", "ts", "on"], ["last_at", "ts", "on"], ["repeat_count", "int", "o", {"min": 0}], ["feed_ok", "bool", "r"]],
+     "projection": ["alert_id", "alert_type", "entity_id", "severity", "severity_source", "state", "first_at", "feed_ok"]},
+    "log_excerpt": {"fields": [
+      ["log_id", "ref", "r"], ["service", "str", "r", {"max_len": 32}], ["level", "enum", "r", {"values": ["debug", "info", "warn", "error"]}],
+      ["code", "str", "o", {"max_len": 32}], ["message", "str", "r", {"max_len": 240}], ["at", "ts", "on"]],
+     "projection": ["service", "level", "code", "message", "at"]},
+    "finding": {"fields": [
+      ["finding_id", "ref", "r"], ["rule_id", "str", "r", {"max_len": 48}], ["rule_version", "int", "r", {"min": 1}], ["entity_id", "ref", "o"],
+      ["certainty", "enum", "r", {"values": ["suspected", "supported", "insufficient_evidence"]}], ["window_s", "int", "r", {"min": 1}],
+      ["sample_count", "int", "r", {"min": 0}], ["min_samples", "int", "r", {"min": 1}], ["statement_code", "str", "r", {"max_len": 48}],
+      ["unknowns", "strs", "o", {"max_items": 8}]],
+     "projection": ["rule_id", "entity_id", "certainty", "statement_code", "window_s", "sample_count", "unknowns"]}
+   }
+  },
+  {
+   "id": "D05", "kind": "knowledge_runbooks", "title": "Knowledge passages, branching runbooks and site guides",
+   "store": "durable", "retention_s": 0, "max_rows": 4000,
+   "epistemic": ["observed", "user_reported"],
+   "default_visibility": "public", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "pack", "source": "versioned KB pack built offline (kb/), site guides via owner app inbox", "owner": "KB pack maintainer; site owner for site guides", "missing_reason": "no owner-approved site guide or local manual yet: unavailable/draft"},
+   "subtypes": {
+    "passage": {"fields": [
+      ["passage_id", "ref", "r"], ["document", "str", "r", {"max_len": 48}], ["topic", "str", "r", {"max_len": 32}], ["language", "enum", "r", {"values": ["vi", "en"]}],
+      ["section", "str", "r", {"max_len": 96}], ["text", "str", "r", {"max_len": 1600}], ["source_locator", "str", "r", {"max_len": 160}],
+      ["as_of", "str", "o", {"max_len": 10}], ["review_state", "enum", "r", {"values": ["draft", "fact_checked", "approved"]}],
+      ["content_hash", "str", "r", {"max_len": 64}], ["fact_ids", "strs", "o", {"max_items": 8}]],
+     "projection": ["passage_id", "section", "text", "source_locator", "review_state"]},
+    "runbook_step": {"fields": [
+      ["runbook_id", "ref", "r"], ["step_id", "ref", "r"], ["language", "enum", "r", {"values": ["vi", "en"]}], ["instruction", "str", "r", {"max_len": 400}],
+      ["reads", "strs", "o", {"max_items": 8}], ["condition", "str", "o", {"max_len": 160}], ["on_yes", "ref", "o"], ["on_no", "ref", "o"],
+      ["escalate", "bool", "o"], ["disruptive", "bool", "r"], ["review_state", "enum", "r", {"values": ["draft", "fact_checked", "approved"]}]],
+     "projection": ["runbook_id", "step_id", "instruction", "condition", "on_yes", "on_no", "escalate"]},
+    "site_guide": {"fields": [
+      ["guide_id", "ref", "r"], ["language", "enum", "r", {"values": ["vi", "en"]}], ["title", "str", "r", {"max_len": 96}], ["text", "str", "on", {"max_len": 1600}],
+      ["review_state", "enum", "r", {"values": ["draft", "fact_checked", "approved"]}], ["availability", "enum", "r", {"values": ["available", "draft", "unavailable"]}]],
+     "projection": ["guide_id", "title", "text", "availability", "review_state"]}
+   }
+  },
+  {
+   "id": "D06", "kind": "sessions_requests", "title": "Sessions, turns and requests",
+   "store": "volatile", "retention_s": 7200, "max_rows": 4000,
+   "epistemic": ["observed", "user_reported", "proposed"],
+   "default_visibility": "principal", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "app/STT interaction adapter (inbox)", "owner": "voice/app front end", "missing_reason": "STT transcripts go to the agent (stt-transcript-v1) but no producer writes session records to router-contextd yet"},
+   "subtypes": {
+    "session": {"fields": [
+      ["session_id", "ref", "r"], ["principal_ref", "ref", "r"], ["started_at", "ts", "r"], ["last_turn_at", "ts", "o"],
+      ["state", "enum", "r", {"values": ["active", "closed", "expired"]}], ["language", "enum", "o", {"values": ["vi", "en", "other"]}],
+      ["current_target", "ref", "o"], ["current_topic", "str", "o", {"max_len": 32}], ["window_since", "ts", "o"], ["window_until", "ts", "o"],
+      ["goal", "str", "o", {"max_len": 160}], ["constraints", "strs", "o", {"max_items": 6}], ["pending_question", "str", "o", {"max_len": 160}]],
+     "projection": ["session_id", "state", "current_target", "current_topic", "goal", "constraints", "pending_question"]},
+    "turn": {"fields": [
+      ["session_id", "ref", "r"], ["turn_no", "int", "r", {"min": 1}], ["speaker", "enum", "r", {"values": ["user", "assistant", "system"]}],
+      ["text_source", "enum", "r", {"values": ["stt", "typed", "user_corrected", "assistant"]}], ["text", "str", "r", {"max_len": 600}],
+      ["stt_session", "int", "o", {"min": 0}], ["stt_seq", "int", "o", {"min": 0}], ["stt_is_final", "bool", "o"], ["stt_ok", "bool", "o"],
+      ["lang", "enum", "o", {"values": ["vi", "en", "other"]}], ["observation_refs", "refs", "o", {"max_items": 8}]],
+     "projection": ["session_id", "turn_no", "speaker", "text_source", "text", "stt_is_final"]},
+    "request": {"fields": [
+      ["request_id", "ref", "r"], ["session_id", "ref", "r"], ["turn_no", "int", "r", {"min": 1}], ["intent_code", "str", "o", {"max_len": 48}],
+      ["status", "enum", "r", {"values": ["open", "answered", "revoked", "superseded"]}], ["candidates", "refs", "o", {"max_items": 8}],
+      ["extraction_status", "enum", "r", {"values": ["user_stated", "model_proposed", "user_confirmed"]}]],
+     "projection": ["request_id", "session_id", "intent_code", "status", "candidates", "extraction_status"]}
+   }
+  },
+  {
+   "id": "D07", "kind": "incidents_evidence", "title": "Incidents and attempted steps",
+   "store": "durable", "retention_s": 2592000, "max_rows": 2000,
+   "epistemic": ["observed", "user_reported", "computed"],
+   "default_visibility": "owner", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "app/harness incident producer (inbox)", "owner": "support app", "missing_reason": "no incident producer exists"},
+   "subtypes": {
+    "incident": {"fields": [
+      ["incident_id", "ref", "r"], ["title", "str", "r", {"max_len": 96}], ["symptoms", "strs", "r", {"max_items": 8}],
+      ["reported_by", "enum", "r", {"values": ["user", "detector", "technician"]}], ["affected_entities", "refs", "o", {"max_items": 16}],
+      ["state", "enum", "r", {"values": ["open", "resolved", "reopened", "closed_unresolved"]}], ["started_at", "ts", "on"], ["ended_at", "ts", "on"],
+      ["unresolved", "strs", "o", {"max_items": 8}], ["user_feedback", "enum", "o", {"values": ["improved", "no_change", "worse", "none"]}]],
+     "projection": ["incident_id", "title", "symptoms", "state", "affected_entities", "unresolved", "user_feedback"]},
+    "attempt": {"fields": [
+      ["incident_id", "ref", "r"], ["attempt_id", "ref", "r"], ["step", "str", "r", {"max_len": 160}],
+      ["actor", "enum", "r", {"values": ["user", "technician", "system"]}], ["at", "ts", "on"],
+      ["outcome", "enum", "r", {"values": ["improved", "no_change", "worse", "failed", "unknown"]}],
+      ["outcome_source", "enum", "r", {"values": ["user_reported", "observed", "check"]}], ["check_ref", "ref", "o"]],
+     "projection": ["incident_id", "attempt_id", "step", "outcome", "outcome_source"]}
+   }
+  },
+  {
+   "id": "D08", "kind": "memory_preferences", "title": "Confirmed memory and pending proposals",
+   "store": "durable", "retention_s": 31536000, "max_rows": 1000,
+   "epistemic": ["user_reported", "proposed"],
+   "default_visibility": "owner", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "owner app confirmation (inbox); model proposals only into the proposal subtype", "owner": "owner app", "missing_reason": "no confirmation UI producer exists"},
+   "subtypes": {
+    "preference": {"fields": [
+      ["memory_id", "ref", "r"], ["subject_ref", "ref", "r"], ["owner_ref", "ref", "r"],
+      ["key", "enum", "r", {"values": ["language", "audience", "verbosity", "nickname", "goal", "constraint", "timezone", "opening_hours", "site_name"]}],
+      ["value", "str", "r", {"max_len": 200}], ["consent", "enum", "r", {"values": ["explicit", "app_default"]}],
+      ["confirmed_by", "enum", "r", {"values": ["owner", "app"]}], ["status", "enum", "r", {"values": ["active", "deleted", "superseded"]}],
+      ["purpose", "str", "o", {"max_len": 80}]],
+     "projection": ["memory_id", "subject_ref", "key", "value", "status"]},
+    "proposal": {"fields": [
+      ["proposal_id", "ref", "r"], ["target_subtype", "str", "r", {"max_len": 32}], ["proposed_value", "str", "r", {"max_len": 200}],
+      ["proposer", "enum", "r", {"values": ["model", "app_rule"]}], ["status", "enum", "r", {"values": ["pending", "accepted", "rejected", "expired"]}],
+      ["reviewed_by", "ref", "o"]],
+     "projection": ["proposal_id", "target_subtype", "proposed_value", "status"]}
+   }
+  },
+  {
+   "id": "D09", "kind": "configurations_diffs", "title": "Configuration layers and code-made diffs",
+   "store": "durable", "retention_s": 2592000, "max_rows": 1000,
+   "epistemic": ["observed", "proposed", "computed"],
+   "default_visibility": "owner", "correctable": true, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "config adapter with UCI read permission (not the publisher)", "owner": "router_display (only component allowed to touch uci, CLAUDE.md 2)", "missing_reason": "router_display exports no config revision/diff; snapshot gives only observed SSID/WAN state"},
+   "subtypes": {
+    "config_state": {"fields": [
+      ["config_id", "ref", "r"], ["area", "enum", "r", {"values": ["wifi", "guest", "qos", "firewall", "dhcp", "wan", "schedule", "system"]}],
+      ["layer", "enum", "r", {"values": ["effective", "desired", "proposed", "baseline"]}], ["config_revision", "str", "r", {"max_len": 32}],
+      ["hash", "str", "r", {"max_len": 64}], ["values", "map", "r", {"max_items": 48}]],
+     "projection": ["config_id", "area", "layer", "config_revision", "values"]},
+    "config_diff": {"fields": [
+      ["diff_id", "ref", "r"], ["area", "enum", "r", {"values": ["wifi", "guest", "qos", "firewall", "dhcp", "wan", "schedule", "system"]}],
+      ["base_revision", "str", "r", {"max_len": 32}], ["target_revision", "str", "r", {"max_len": 32}],
+      ["target_layer", "enum", "r", {"values": ["effective", "desired", "proposed"]}],
+      ["changes", "objs", "r", {"max_items": 48, "fields": [["path", "str", "r", {"max_len": 64}], ["before", "str", "on", {"max_len": 64}], ["after", "str", "on", {"max_len": 64}], ["redacted", "bool", "r"]]}],
+      ["generated_by", "enum", "r", {"values": ["code"]}], ["policy_refs", "refs", "o", {"max_items": 8}]],
+     "projection": ["diff_id", "area", "base_revision", "target_revision", "target_layer", "changes"]}
+   }
+  },
+  {
+   "id": "D10", "kind": "operations_capabilities", "title": "Operation catalog (read/write/check)",
+   "store": "durable", "retention_s": 0, "max_rows": 500,
+   "epistemic": ["observed"],
+   "default_visibility": "site", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "pack", "source": "trusted catalog file shipped with the package, derived from contracts/firmware-command-v1 and LLM_JSON_CMD.md", "owner": "router-contextd package maintainer", "missing_reason": "runtime availability (operation can run now) has no producer; catalog says supported, not runnable"},
+   "subtypes": {
+    "operation": {"fields": [
+      ["op_id", "ref", "r"], ["op_type", "enum", "r", {"values": ["read", "write", "check"]}], ["title", "str", "r", {"max_len": 80}],
+      ["input_schema_ref", "str", "o", {"max_len": 96}], ["target_scope", "enum", "r", {"values": ["device", "ssid", "radio", "site", "none"]}],
+      ["preconditions", "strs", "o", {"max_items": 6}], ["availability", "enum", "r", {"values": ["available", "unavailable", "unknown"]}],
+      ["disruption", "enum", "r", {"values": ["none", "brief", "service_interrupting"]}], ["cost_s", "int", "o", {"min": 0}],
+      ["timeout_s", "int", "o", {"min": 0}], ["cancellable", "bool", "r"], ["needs_confirmation", "bool", "r"], ["readback_method", "str", "o", {"max_len": 80}]],
+     "projection": ["op_id", "op_type", "title", "target_scope", "availability", "disruption", "needs_confirmation", "readback_method"]}
+   }
+  },
+  {
+   "id": "D11", "kind": "action_audit_results", "title": "Action audit with independent result dimensions",
+   "store": "durable", "retention_s": 2592000, "max_rows": 2000,
+   "epistemic": ["observed", "user_reported", "verified"],
+   "default_visibility": "owner", "correctable": true, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "dispatcher/result handover adapter (inbox)", "owner": "router_display / agent integration", "missing_reason": "ubus transport returns ack only (llm-command-ack-v1); execution results go to the panel; no handover to router-contextd"},
+   "subtypes": {
+    "action": {"fields": [
+      ["action_id", "ref", "r"], ["request_ref", "ref", "o"], ["actor", "enum", "r", {"values": ["user", "app", "llm_agent", "technician", "schedule"]}],
+      ["operation_ref", "ref", "r"], ["target_refs", "refs", "r", {"max_items": 8}],
+      ["authorization", "enum", "r", {"values": ["not_required", "granted", "denied", "pending", "unknown"]}],
+      ["dispatch", "enum", "r", {"values": ["not_dispatched", "dispatched", "unknown"]}], ["ack", "enum", "r", {"values": ["accepted", "rejected", "none", "unknown"]}],
+      ["execution_report", "enum", "r", {"values": ["succeeded", "failed", "none", "unknown"]}],
+      ["postcondition", "enum", "r", {"values": ["observed_match", "observed_mismatch", "not_checked", "unknown"]}],
+      ["user_outcome", "enum", "r", {"values": ["confirmed_ok", "reported_problem", "none"]}], ["error_code", "str", "o", {"max_len": 48}],
+      ["proposed_at", "ts", "on"], ["dispatched_at", "ts", "on"], ["acked_at", "ts", "on"], ["reported_at", "ts", "on"]],
+     "projection": ["action_id", "operation_ref", "target_refs", "authorization", "dispatch", "ack", "execution_report", "postcondition", "user_outcome", "error_code"]}
+   }
+  },
+  {
+   "id": "D12", "kind": "diagnostics_checks", "title": "Results of checks that actually ran",
+   "store": "volatile", "retention_s": 86400, "max_rows": 2000,
+   "epistemic": ["observed", "computed"],
+   "default_visibility": "site", "correctable": true, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "check worker / app (inbox); publisher never runs checks", "owner": "future check worker", "missing_reason": "no worker hands check results to router-contextd; speed test results stay on the panel"},
+   "subtypes": {
+    "check": {"fields": [
+      ["check_id", "ref", "r"], ["check_type", "enum", "r", {"values": ["wan_ping", "dns_query", "throughput", "wifi_scan", "client_link", "other"]}],
+      ["target", "str", "r", {"max_len": 64}], ["path", "enum", "r", {"values": ["wan", "lan", "wifi", "local"]}],
+      ["started_at", "ts", "on"], ["completed_at", "ts", "on"], ["status", "enum", "r", {"values": ["completed", "timeout", "failed", "cancelled", "running"]}],
+      ["method", "str", "r", {"max_len": 64}], ["sample_count", "int", "o", {"min": 0}], ["result_value", "num", "on"], ["result_unit", "str", "o", {"max_len": 12}],
+      ["baseline_ref", "ref", "o"], ["disruption", "enum", "r", {"values": ["none", "brief", "service_interrupting"]}],
+      ["confidence", "num", "o", {"min": 0, "max": 1}], ["calibration_ref", "ref", "o"]],
+     "projection": ["check_id", "check_type", "target", "path", "status", "result_value", "result_unit", "sample_count", "completed_at"]}
+   }
+  },
+  {
+   "id": "D13", "kind": "previews_options", "title": "Previews and options bound to input revisions",
+   "store": "volatile", "retention_s": 3600, "max_rows": 500,
+   "epistemic": ["computed", "proposed"],
+   "default_visibility": "owner", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "rule/preview engine (inbox)", "owner": "future preview engine", "missing_reason": "no preview engine exists"},
+   "subtypes": {
+    "preview": {"fields": [
+      ["preview_id", "ref", "r"], ["goal", "str", "r", {"max_len": 160}], ["constraints", "strs", "o", {"max_items": 6}],
+      ["config_revision", "str", "r", {"max_len": 32}], ["topology_revision", "str", "r", {"max_len": 32}],
+      ["options", "objs", "r", {"max_items": 4, "fields": [["option_id", "ref", "r"], ["summary_code", "str", "r", {"max_len": 48}], ["affected_entities", "refs", "r", {"max_items": 16}], ["effects", "strs", "r", {"max_items": 6}], ["assumptions", "strs", "o", {"max_items": 6}], ["unknowns", "strs", "o", {"max_items": 6}], ["conflicts", "strs", "o", {"max_items": 6}]]}],
+      ["generated_by", "enum", "r", {"values": ["rule_engine", "fixture"]}]],
+     "projection": ["preview_id", "goal", "config_revision", "topology_revision", "options"]}
+   }
+  },
+  {
+   "id": "D14", "kind": "automation_schedules", "title": "Automation rules and schedules",
+   "store": "durable", "retention_s": 7776000, "max_rows": 500,
+   "epistemic": ["observed", "proposed"],
+   "default_visibility": "owner", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "scheduler / owner app (inbox)", "owner": "future scheduler", "missing_reason": "firmware schedules exist as commands but no producer reports rule state"},
+   "subtypes": {
+    "rule": {"fields": [
+      ["rule_id", "ref", "r"], ["name", "str", "r", {"max_len": 64}], ["trigger_type", "enum", "r", {"values": ["time", "event"]}],
+      ["trigger_at", "str", "o", {"max_len": 5}], ["trigger_days", "strs", "o", {"max_items": 7}], ["trigger_event", "str", "o", {"max_len": 48}],
+      ["condition", "str", "o", {"max_len": 120}], ["operation_ref", "ref", "r"], ["target_refs", "refs", "r", {"max_items": 8}],
+      ["timezone", "str", "r", {"max_len": 40}], ["starts_at", "ts", "o"], ["ends_at", "ts", "o"],
+      ["status", "enum", "r", {"values": ["draft", "planned", "active", "paused", "cancelled", "expired"]}], ["conflicts", "strs", "o", {"max_items": 6}],
+      ["last_run_at", "ts", "on"], ["last_run_outcome", "enum", "o", {"values": ["ok", "failed", "none", "unknown"]}], ["next_run_at", "ts", "on"]],
+     "projection": ["rule_id", "name", "trigger_type", "trigger_at", "timezone", "operation_ref", "target_refs", "status", "ends_at", "last_run_outcome", "conflicts"]}
+   }
+  },
+  {
+   "id": "D15", "kind": "principals_scopes", "title": "Grants issued by the trusted app",
+   "store": "durable", "retention_s": 0, "max_rows": 500,
+   "epistemic": ["observed"],
+   "default_visibility": "admin", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "trusted app authentication (inbox, issuer=app_auth only)", "owner": "app (no login system is added here)", "missing_reason": "no caller authentication exists on the router; lab grants only"},
+   "subtypes": {
+    "grant": {"fields": [
+      ["grant_id", "ref", "r"], ["principal_id", "ref", "r"], ["role", "enum", "r", {"values": ["anonymous", "guest", "owner", "technician", "lab"]}],
+      ["entity_scope", "strs", "r", {"max_items": 64}], ["topic_scope", "strs", "r", {"max_items": 16}],
+      ["issued_at", "ts", "r"], ["status", "enum", "r", {"values": ["active", "revoked", "expired"]}], ["audience", "enum", "o", {"values": ["plain", "technical"]}]],
+     "projection": ["grant_id", "principal_id", "role", "status"]}
+   }
+  },
+  {
+   "id": "D16", "kind": "notification_state", "title": "Notification subscriptions and delivery state",
+   "store": "durable", "retention_s": 2592000, "max_rows": 2000,
+   "epistemic": ["observed", "user_reported"],
+   "default_visibility": "principal", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "notifier (inbox)", "owner": "future notifier", "missing_reason": "no notifier exists; publisher never sends messages"},
+   "subtypes": {
+    "subscription": {"fields": [
+      ["subscription_id", "ref", "r"], ["principal_ref", "ref", "r"], ["topic", "str", "r", {"max_len": 32}], ["opt_in", "bool", "r"],
+      ["quiet_from", "str", "o", {"max_len": 5}], ["quiet_until", "str", "o", {"max_len": 5}], ["timezone", "str", "o", {"max_len": 40}], ["cooldown_s", "int", "o", {"min": 0}]],
+     "projection": ["subscription_id", "topic", "opt_in", "quiet_from", "quiet_until"]},
+    "notification": {"fields": [
+      ["notification_id", "ref", "r"], ["subscription_ref", "ref", "r"], ["trigger_ref", "ref", "r"], ["dedupe_key", "str", "r", {"max_len": 64}],
+      ["priority", "enum", "o", {"values": ["low", "normal", "high"]}], ["priority_source", "enum", "r", {"values": ["notifier", "rule", "fixture"]}],
+      ["state", "enum", "r", {"values": ["pending", "delivered", "read", "dismissed", "suppressed", "failed"]}],
+      ["state_source", "enum", "r", {"values": ["notifier", "fixture"]}], ["created_at", "ts", "r"], ["delivered_at", "ts", "on"]],
+     "projection": ["notification_id", "trigger_ref", "priority", "state", "created_at"]}
+   }
+  },
+  {
+   "id": "D17", "kind": "presentation_capabilities", "title": "Renderer catalogs and secure asset references",
+   "store": "durable", "retention_s": 0, "max_rows": 200,
+   "epistemic": ["observed"],
+   "default_visibility": "public", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "UI/app renderer catalog (inbox)", "owner": "panel firmware / app", "missing_reason": "panel shows agent replies on NSP boards but publishes no renderer catalog; no QR asset service"},
+   "subtypes": {
+    "renderer": {"fields": [
+      ["renderer_id", "ref", "r"], ["surface", "enum", "r", {"values": ["panel", "app", "voice"]}], ["renderer_version", "str", "r", {"max_len": 24}],
+      ["templates", "objs", "r", {"max_items": 12, "fields": [["template_id", "ref", "r"], ["template_type", "enum", "r", {"values": ["text", "card", "table", "choice", "checklist"]}], ["max_items", "int", "r", {"min": 0}], ["max_bytes", "int", "r", {"min": 0}], ["fields_bound", "strs", "o", {"max_items": 12}]]}],
+      ["languages", "strs", "r", {"max_items": 4}], ["tts", "bool", "r"]],
+     "projection": ["renderer_id", "surface", "templates", "languages", "tts"]},
+    "asset_ref": {"fields": [
+      ["asset_id", "ref", "r"], ["asset_type", "enum", "r", {"values": ["qr_guest_wifi", "image"]}], ["renderer_ref", "ref", "r"], ["purpose", "str", "o", {"max_len": 64}]],
+     "projection": ["asset_id", "asset_type", "renderer_ref", "purpose"]}
+   }
+  },
+  {
+   "id": "D18", "kind": "external_metadata", "title": "Camera/sensor/IoT event metadata from local providers",
+   "store": "volatile", "retention_s": 86400, "max_rows": 2000,
+   "epistemic": ["observed", "inferred"],
+   "default_visibility": "owner", "correctable": true, "revocable": true, "deletable": true, "exportable": true,
+   "provider": {"status": "provider_unavailable", "source": "local detector/IoT provider (inbox, text metadata only)", "owner": "future provider", "missing_reason": "no camera/sensor provider on the router"},
+   "subtypes": {
+    "event": {"fields": [
+      ["event_id", "ref", "r"], ["provider", "str", "r", {"max_len": 32}], ["provider_event_type", "str", "r", {"max_len": 32}], ["entity_id", "ref", "o"],
+      ["location_label", "str", "o", {"max_len": 48}], ["at", "ts", "on"], ["time_uncertainty_s", "int", "o", {"min": 0}],
+      ["detector_confidence", "num", "o", {"min": 0, "max": 1}], ["confidence_definition", "str", "o", {"max_len": 80}], ["asset_ref", "ref", "o"]],
+     "projection": ["event_id", "provider", "provider_event_type", "entity_id", "location_label", "at", "time_uncertainty_s", "detector_confidence", "confidence_definition"]}
+   }
+  },
+  {
+   "id": "D19", "kind": "lifecycle_packages", "title": "Installed packages, migrations and backups",
+   "store": "durable", "retention_s": 0, "max_rows": 500,
+   "epistemic": ["observed", "verified"],
+   "default_visibility": "owner", "correctable": true, "revocable": false, "deletable": true, "exportable": true,
+   "provider": {"status": "live_partial", "source": "router-contextd itself (own package/KB version); installer/backup app (inbox)", "owner": "router-contextd; installer app", "missing_reason": "firmware/model versions and backups have no producer; no online update check by design"},
+   "subtypes": {
+    "package": {"fields": [
+      ["package_id", "ref", "r"], ["component", "enum", "r", {"values": ["firmware", "model", "kb", "config", "router_context"]}],
+      ["version", "str", "r", {"max_len": 32}], ["installed", "bool", "r"], ["package_source", "enum", "r", {"values": ["installed", "local_package", "backup"]}],
+      ["changelog", "strs", "o", {"max_items": 8}], ["compatible_with", "strs", "o", {"max_items": 8}]],
+     "projection": ["package_id", "component", "version", "installed", "package_source", "changelog"]},
+    "migration": {"fields": [
+      ["migration_id", "ref", "r"], ["from_version", "str", "r", {"max_len": 32}], ["to_version", "str", "r", {"max_len": 32}],
+      ["state", "enum", "r", {"values": ["planned", "verified", "failed", "not_run"]}],
+      ["identity_map", "objs", "o", {"max_items": 32, "fields": [["old_ref", "ref", "r"], ["new_ref", "ref", "r"]]}], ["verified_by", "ref", "o"]],
+     "projection": ["migration_id", "from_version", "to_version", "state"]},
+    "backup": {"fields": [
+      ["backup_id", "ref", "r"], ["created_at", "ts", "r"], ["contents", "strs", "r", {"max_items": 16}],
+      ["restore_verified", "enum", "r", {"values": ["verified", "not_verified", "failed"]}], ["retention_days", "int", "o", {"min": 0}]],
+     "projection": ["backup_id", "created_at", "contents", "restore_verified"]}
+   }
+  }
+ ],
+ "issuers": {
+  "note": "Default issuer policy for the package. Trust comes from the inbox directory (file owner/permissions on the router), never from producer_id inside a record. Deploy config may narrow it.",
+  "snapshot": {"kinds": ["D01", "D02", "D03", "D04"], "epistemic": ["observed", "computed"], "internal": true},
+  "publisher": {"kinds": ["D03", "D04", "D19"], "epistemic": ["computed", "observed"], "internal": true},
+  "kb_pack": {"kinds": ["D05", "D10"], "epistemic": ["observed"], "internal": true},
+  "app": {"kinds": ["D01", "D03", "D05", "D06", "D07", "D08", "D13", "D14", "D16", "D17", "D19"], "epistemic": ["observed", "user_reported", "proposed", "computed"]},
+  "app_auth": {"kinds": ["D15"], "epistemic": ["observed"]},
+  "dispatcher": {"kinds": ["D11"], "epistemic": ["observed", "verified"], "verify": true},
+  "check_worker": {"kinds": ["D12"], "epistemic": ["observed", "computed"]},
+  "config_adapter": {"kinds": ["D09"], "epistemic": ["observed", "proposed", "computed"]},
+  "provider_local": {"kinds": ["D18"], "epistemic": ["observed", "inferred"]},
+  "llm_proposals": {"kinds": ["D08"], "epistemic": ["proposed"], "subtypes": ["proposal"]}
+ }
+}

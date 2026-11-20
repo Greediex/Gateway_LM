@@ -1,0 +1,45 @@
+{
+  "t": 1795139570,
+  "seq": 10953907,
+  "state": "dry",
+  "secs": "1.4",
+  "input": {
+    "text": "wifi 8 là gì",
+    "seq": 10953907,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_answer_kb",
+    "message": "Wi-Fi 8 là chuẩn IEEE 802.11bn, còn gọi là UHR (độ tin cậy cực cao). Khác các thế hệ trước vốn quảng bá tốc độ đỉnh, Wi-Fi 8 tập trung vào tốc độ thực tế ổn định, độ tin cậy, độ trễ thấp và giữ kết nối liên tục, nhất là ở nhà đông thiết bị và ở rìa vùng phủ sóng.",
+    "answer": {
+      "type": "kb_cache",
+      "cache_group": "c.vi.wifi8.define",
+      "form": "define",
+      "sources": [
+        "E1"
+      ],
+      "kb": [
+        {
+          "id": "w8.vi.what",
+          "section": "Wi-Fi 8 là gì | wifi 8 là gì, wi-fi 8, wifi8, 802.11bn, UHR, ultra high reliability",
+          "source": "docs/wifi8_overview.md §1",
+          "review_state": "draft"
+        }
+      ]
+    },
+    "status": "ok",
+    "request_id": 10953907,
+    "command": null
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": null
+  }
+}

@@ -1,0 +1,23 @@
+ts: 2026-11-20T07:01:00Z
+mode: demo
+clients_count: 4
+clients_truncated: 1
+clients: |
+  ip name mac band rssi_dbm snr_db rx_mbps tx_mbps link_mbps idle_s conn_s label
+  192.0.2.10 SON-iPad 02:00:00:00:00:01 5g -82 12 0.6 0.2 24 0 4210 Máy_tính_bảng_của_con
+  192.0.2.11 Laptop 02:00:00:00:00:02 5g -61 30 - 2.2 540 3 900 Máy_tính
+  192.0.2.12 Laptop 02:00:00:00:00:03 2g -78 15 0.7 0.3 52 2 7200 Máy_tính
+sys: {cpu_pct: 96, mem_pct: 94, temp_c: '-'}
+wan: {up: 1, internet: 0, ping_ms: '-', rx_mbps: 0, tx_mbps: 0, link_mbps: 1000}
+wifi:
+  ssids: |
+    band ssid network enabled hidden encryption password
+    2g Example-Guest guest 1 0 psk2 -
+speedtest: {state: idle, last_ts: 2026-11-20T06:55:00Z, ok: 0}
+feed: {qos: 0}
+qos: |
+  ip name class session_s flows
+  192.0.2.10 SON-iPad GAMING 3600 42
+policy_rows: |
+  mac kind dl_kbps ul_kbps scheds
+  02:00:00:00:00:01 block - - 2

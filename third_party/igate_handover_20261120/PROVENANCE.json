@@ -1,0 +1,258 @@
+{
+  "package": "igate-llm-handover-20261120",
+  "source_commit": "c00fe2e81ddcad2784bb4f641bd2a152861385fe",
+  "manifest_sha256": "92fd7032a88e9a39d43ea55f2d71d543e764665430c91da9d7d0253ce01b87b9",
+  "files": {
+    "contracts/README.md": {
+      "source_path": "contracts/README.md",
+      "source_sha256": "e3d336067ea1290c7ca5b5957aa7fea4081ecd10eaa4c246a1aa0624b8f64d78",
+      "vendored_sha256": "e3d336067ea1290c7ca5b5957aa7fea4081ecd10eaa4c246a1aa0624b8f64d78"
+    },
+    "contracts/agent-router-partial-v1.schema.json": {
+      "source_path": "contracts/agent-router-partial-v1.schema.json",
+      "source_sha256": "0d8f87ad4f0b603e0fb37ac2e1540fa9bc841101c9c779c5635746a0e3aee6ac",
+      "vendored_sha256": "0d8f87ad4f0b603e0fb37ac2e1540fa9bc841101c9c779c5635746a0e3aee6ac"
+    },
+    "contracts/agent-router-result-v1.schema.json": {
+      "source_path": "contracts/agent-router-result-v1.schema.json",
+      "source_sha256": "4e34e1303225d8b2527621e442bf6050559ddf9c4b39ef667bad62673cf5a43c",
+      "vendored_sha256": "4e34e1303225d8b2527621e442bf6050559ddf9c4b39ef667bad62673cf5a43c"
+    },
+    "contracts/agent-router-stage-v1.schema.json": {
+      "source_path": "contracts/agent-router-stage-v1.schema.json",
+      "source_sha256": "5ccf34b44ced063c2c7ad308608a704bfd829ddfae74a6e418661a54ffff08ab",
+      "vendored_sha256": "5ccf34b44ced063c2c7ad308608a704bfd829ddfae74a6e418661a54ffff08ab"
+    },
+    "contracts/firmware-command-v1.schema.json": {
+      "source_path": "contracts/firmware-command-v1.schema.json",
+      "source_sha256": "8ff1938201501ee85a7beae787d8a6a6cae423b2079f8029f38ebaddeaf5c5db",
+      "vendored_sha256": "8ff1938201501ee85a7beae787d8a6a6cae423b2079f8029f38ebaddeaf5c5db"
+    },
+    "contracts/llm-command-ack-v1.schema.json": {
+      "source_path": "contracts/llm-command-ack-v1.schema.json",
+      "source_sha256": "c0ed5ebd784c60f33a20f67fcc291dccc2f72c72502c59ce078a85ac94be098a",
+      "vendored_sha256": "c0ed5ebd784c60f33a20f67fcc291dccc2f72c72502c59ce078a85ac94be098a"
+    },
+    "contracts/router-context-live-v1.schema.json": {
+      "source_path": "contracts/router-context-live-v1.schema.json",
+      "source_sha256": "91f1f6bdbcd4e0602bfdc5dcda4525e10065c834464147875dcaadef10ba86a7",
+      "vendored_sha256": "91f1f6bdbcd4e0602bfdc5dcda4525e10065c834464147875dcaadef10ba86a7"
+    },
+    "contracts/router-context-manifest-v1.schema.json": {
+      "source_path": "contracts/router-context-manifest-v1.schema.json",
+      "source_sha256": "4537d6e37b39fc37a159ff3ae67baf30514774f987bd073c0a7a2eb04cec6067",
+      "vendored_sha256": "4537d6e37b39fc37a159ff3ae67baf30514774f987bd073c0a7a2eb04cec6067"
+    },
+    "contracts/router-context-query-v1.schema.json": {
+      "source_path": "contracts/router-context-query-v1.schema.json",
+      "source_sha256": "287a2b8b713c0cd36a34a81be66c2bac78144883864cc0510d46bb274d935d9a",
+      "vendored_sha256": "287a2b8b713c0cd36a34a81be66c2bac78144883864cc0510d46bb274d935d9a"
+    },
+    "contracts/router-context-record-v1.schema.json": {
+      "source_path": "contracts/router-context-record-v1.schema.json",
+      "source_sha256": "743d1edccc414185a8cd5562b3704c7416e013f22d7c2dd262556411ada97d03",
+      "vendored_sha256": "743d1edccc414185a8cd5562b3704c7416e013f22d7c2dd262556411ada97d03"
+    },
+    "contracts/router-context-registry-v1.json": {
+      "source_path": "contracts/router-context-registry-v1.json",
+      "source_sha256": "d2fd77bb79c687d76c6df1a86b3f7f020230ea95140fc9dbc051ae5e79aa325e",
+      "vendored_sha256": "d2fd77bb79c687d76c6df1a86b3f7f020230ea95140fc9dbc051ae5e79aa325e"
+    },
+    "contracts/router-context-view-v1.schema.json": {
+      "source_path": "contracts/router-context-view-v1.schema.json",
+      "source_sha256": "c2dad4bce9ce63d8326dd72f21f562d78770eb1cf952bcd28aca7f0caf47c145",
+      "vendored_sha256": "c2dad4bce9ce63d8326dd72f21f562d78770eb1cf952bcd28aca7f0caf47c145"
+    },
+    "contracts/stt-transcript-v1.schema.json": {
+      "source_path": "contracts/stt-transcript-v1.schema.json",
+      "source_sha256": "8ac09ec0995ad5d8383341ac68db696f637a3c0100b086785fe0d730bb124cd4",
+      "vendored_sha256": "8ac09ec0995ad5d8383341ac68db696f637a3c0100b086785fe0d730bb124cd4"
+    },
+    "examples/README.md": {
+      "source_path": "examples/README.md",
+      "source_sha256": "17baa9425103f1c3d61592ee95cef42e9f115c6cae737f48d8c952d259cf1e04",
+      "vendored_sha256": "17baa9425103f1c3d61592ee95cef42e9f115c6cae737f48d8c952d259cf1e04"
+    },
+    "examples/knowledge_cached_answer.json": {
+      "source_path": "examples/knowledge_cached_answer.json",
+      "source_sha256": "a34a638842e409a55b12a9588418e2ad06a101f0988033157d7a9307ec27a751",
+      "vendored_sha256": "a34a638842e409a55b12a9588418e2ad06a101f0988033157d7a9307ec27a751"
+    },
+    "examples/out_of_scope_answer.json": {
+      "source_path": "examples/out_of_scope_answer.json",
+      "source_sha256": "5983bade7f381c7199e04f061f4428ec1079abf40cf68512e53704ebbf42f1c7",
+      "vendored_sha256": "5983bade7f381c7199e04f061f4428ec1079abf40cf68512e53704ebbf42f1c7"
+    },
+    "examples/read_device_count_en.json": {
+      "source_path": "examples/read_device_count_en.json",
+      "source_sha256": "32cbe1bd43be3742ac1e6954883b3d913549f5e76b2a404f4f69863a5fea7235",
+      "vendored_sha256": "32cbe1bd43be3742ac1e6954883b3d913549f5e76b2a404f4f69863a5fea7235"
+    },
+    "examples/read_device_count_vi.json": {
+      "source_path": "examples/read_device_count_vi.json",
+      "source_sha256": "3bca54996464c9e920f3ee3fba9eff4d94c6306cabbeea835ef633c077fae5c8",
+      "vendored_sha256": "3bca54996464c9e920f3ee3fba9eff4d94c6306cabbeea835ef633c077fae5c8"
+    },
+    "examples/requests.txt": {
+      "source_path": "examples/requests.txt",
+      "source_sha256": "29cd62b5e459a78489d3567fb3799eaab28019447e52fb8fd13544cfd950e15f",
+      "vendored_sha256": "29cd62b5e459a78489d3567fb3799eaab28019447e52fb8fd13544cfd950e15f"
+    },
+    "examples/router_snapshot.example.yaml": {
+      "source_path": "examples/router_snapshot.example.yaml",
+      "source_sha256": "a60a4e6638b70e51f709d9d8f9b8d2cb6004b5c3c675d785cd8c3dbac44b85f4",
+      "sanitization": "Replaced all three wifi.ssids password cells with -.",
+      "vendored_sha256": "e244c5105467200b230766f3f0711bf6c7950017432faf859687cc0f6bbc9543"
+    },
+    "examples/speed_test_run_now.json": {
+      "source_path": "examples/speed_test_run_now.json",
+      "source_sha256": "8088dd853eef4364c529995712812c0b19777426dcee82bc35d3586a9bb8a882",
+      "vendored_sha256": "8088dd853eef4364c529995712812c0b19777426dcee82bc35d3586a9bb8a882"
+    },
+    "examples/ui_set_language.json": {
+      "source_path": "examples/ui_set_language.json",
+      "source_sha256": "cfa0667e57edff6b6171a4d37e1b0d9b0dab0edfc30fb717d3797bca940a18f5",
+      "vendored_sha256": "cfa0667e57edff6b6171a4d37e1b0d9b0dab0edfc30fb717d3797bca940a18f5"
+    },
+    "examples/write_block_device.json": {
+      "source_path": "examples/write_block_device.json",
+      "source_sha256": "6a42df2c9eddb698a23a61cf6cceaed2f5eec8a3907741f4c92d39fc1c371f43",
+      "vendored_sha256": "6a42df2c9eddb698a23a61cf6cceaed2f5eec8a3907741f4c92d39fc1c371f43"
+    },
+    "examples/write_guest_wifi_on.json": {
+      "source_path": "examples/write_guest_wifi_on.json",
+      "source_sha256": "f8ad101633bbfed420648e880c15e675a24dd45728a807d63f2eb56c5edaeb9f",
+      "vendored_sha256": "f8ad101633bbfed420648e880c15e675a24dd45728a807d63f2eb56c5edaeb9f"
+    },
+    "examples/write_prioritize_device.json": {
+      "source_path": "examples/write_prioritize_device.json",
+      "source_sha256": "b3f8b2b94f710e745c9ca890af7526dfda47e1945cfae29dcdb00d921dd0d40a",
+      "vendored_sha256": "b3f8b2b94f710e745c9ca890af7526dfda47e1945cfae29dcdb00d921dd0d40a"
+    },
+    "kb_src/activity_needs.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/activity_needs.en.md",
+      "source_sha256": "f2d6de586dc9a1fdb814037bea45e2df6fac974e313d2983bd1163ab6b6c33f0",
+      "vendored_sha256": "f2d6de586dc9a1fdb814037bea45e2df6fac974e313d2983bd1163ab6b6c33f0"
+    },
+    "kb_src/activity_needs.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/activity_needs.vi.md",
+      "source_sha256": "1e880255f4d8ed439704dccef306e73c17d8cf6a5e1826538efbd536ff070065",
+      "vendored_sha256": "1e880255f4d8ed439704dccef306e73c17d8cf6a5e1826538efbd536ff070065"
+    },
+    "kb_src/ai_features.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/ai_features.en.md",
+      "source_sha256": "e7c0a703272cbcadf700038f8af4450ab8e8575ceece627e711181ba39f86721",
+      "vendored_sha256": "e7c0a703272cbcadf700038f8af4450ab8e8575ceece627e711181ba39f86721"
+    },
+    "kb_src/ai_features.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/ai_features.vi.md",
+      "source_sha256": "6bdc1389332876055ed9e380d738359d90ccb07fc7788cef0796e05e3e75311f",
+      "vendored_sha256": "6bdc1389332876055ed9e380d738359d90ccb07fc7788cef0796e05e3e75311f"
+    },
+    "kb_src/answer_cache.json": {
+      "source_path": "source/Router_App/router_context_src/kb/src/answer_cache.json",
+      "source_sha256": "a3db79928a7d1f08158e086c14e825ea204bd720302d18ef0be116eec08a17ae",
+      "vendored_sha256": "a3db79928a7d1f08158e086c14e825ea204bd720302d18ef0be116eec08a17ae"
+    },
+    "kb_src/manifest.json": {
+      "source_path": "source/Router_App/router_context_src/kb/src/manifest.json",
+      "source_sha256": "19ddc317c738611a1e89a5202d1f4cbc8dc68ade5d007ad6aa713335e753fa42",
+      "vendored_sha256": "19ddc317c738611a1e89a5202d1f4cbc8dc68ade5d007ad6aa713335e753fa42"
+    },
+    "kb_src/manual.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/manual.en.md",
+      "source_sha256": "3195c42b1a70ff7f68cb6a536677ab59c1c6953f93ac8897da218e2be0cbed3f",
+      "vendored_sha256": "3195c42b1a70ff7f68cb6a536677ab59c1c6953f93ac8897da218e2be0cbed3f"
+    },
+    "kb_src/manual.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/manual.vi.md",
+      "source_sha256": "075dbb15729dafcb07e006dbb646f8ff43e30e15bed9593d8c763b78cfbc6a79",
+      "vendored_sha256": "075dbb15729dafcb07e006dbb646f8ff43e30e15bed9593d8c763b78cfbc6a79"
+    },
+    "kb_src/metric_glossary.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/metric_glossary.en.md",
+      "source_sha256": "cf4acf76eff1bfea6a80896b7c1353b6d4e846736211e956da203b84e831ddc2",
+      "vendored_sha256": "cf4acf76eff1bfea6a80896b7c1353b6d4e846736211e956da203b84e831ddc2"
+    },
+    "kb_src/metric_glossary.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/metric_glossary.vi.md",
+      "source_sha256": "dbdf3dcace0732befb48df5e2527a4e1a0e316c50372035e202596ef78077fe4",
+      "vendored_sha256": "dbdf3dcace0732befb48df5e2527a4e1a0e316c50372035e202596ef78077fe4"
+    },
+    "kb_src/product.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/product.en.md",
+      "source_sha256": "5ad1fa335e7277a69ba75b783eb319d46678eb9a0dbacb6762851161a423912f",
+      "vendored_sha256": "5ad1fa335e7277a69ba75b783eb319d46678eb9a0dbacb6762851161a423912f"
+    },
+    "kb_src/product.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/product.vi.md",
+      "source_sha256": "4f26514107be452d2ea2dff7907ca2252abc2e958af6276a3502f8c37740e3e8",
+      "vendored_sha256": "4f26514107be452d2ea2dff7907ca2252abc2e958af6276a3502f8c37740e3e8"
+    },
+    "kb_src/security_tips.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/security_tips.en.md",
+      "source_sha256": "73eda57bc424bf65f990a8fed5fbd680d41b8ba968d9ffb036361b7816ad4620",
+      "vendored_sha256": "73eda57bc424bf65f990a8fed5fbd680d41b8ba968d9ffb036361b7816ad4620"
+    },
+    "kb_src/security_tips.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/security_tips.vi.md",
+      "source_sha256": "6ee8aa07dd58320e5984662d2ba37920cdfcfd4b3ccbbbdf7c78beefe49cb796",
+      "vendored_sha256": "6ee8aa07dd58320e5984662d2ba37920cdfcfd4b3ccbbbdf7c78beefe49cb796"
+    },
+    "kb_src/technician_notes.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/technician_notes.en.md",
+      "source_sha256": "263a7e2be637b226e390464669c6a7be2086f8b1fbb30f74ea311d593cb2eb60",
+      "vendored_sha256": "263a7e2be637b226e390464669c6a7be2086f8b1fbb30f74ea311d593cb2eb60"
+    },
+    "kb_src/troubleshooting.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/troubleshooting.en.md",
+      "source_sha256": "9f2543084dffbb8bdd4522b97e69eb50bdb846bd6b6f167a23862349c9b4b3db",
+      "vendored_sha256": "9f2543084dffbb8bdd4522b97e69eb50bdb846bd6b6f167a23862349c9b4b3db"
+    },
+    "kb_src/troubleshooting.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/troubleshooting.vi.md",
+      "source_sha256": "7fe27a84b51d7277f68ee5a2c699da798643c974d5f0493ae19f8b726a9fe69f",
+      "vendored_sha256": "7fe27a84b51d7277f68ee5a2c699da798643c974d5f0493ae19f8b726a9fe69f"
+    },
+    "kb_src/vnpt_intro.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/vnpt_intro.en.md",
+      "source_sha256": "6931ec3324ad66d536b4dc7cd485a0078f7ccd9d751f39817f8e520fa415f2c2",
+      "vendored_sha256": "6931ec3324ad66d536b4dc7cd485a0078f7ccd9d751f39817f8e520fa415f2c2"
+    },
+    "kb_src/vnpt_intro.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/vnpt_intro.vi.md",
+      "source_sha256": "892e0f81fc92b402e87da1e7222b826ceecef1b79e494199cb3ca37690bb6616",
+      "vendored_sha256": "892e0f81fc92b402e87da1e7222b826ceecef1b79e494199cb3ca37690bb6616"
+    },
+    "kb_src/voice.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/voice.en.md",
+      "source_sha256": "9984e7caa4302cf5c678c96c54a274366d016e23089e4f80f0aacb39be26ad23",
+      "vendored_sha256": "9984e7caa4302cf5c678c96c54a274366d016e23089e4f80f0aacb39be26ad23"
+    },
+    "kb_src/voice.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/voice.vi.md",
+      "source_sha256": "2d66fee62e22f33b7c52fa55f0d597b7132468d92e4fe84075d5799334c34d6b",
+      "vendored_sha256": "2d66fee62e22f33b7c52fa55f0d597b7132468d92e4fe84075d5799334c34d6b"
+    },
+    "kb_src/wifi8_intro.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/wifi8_intro.en.md",
+      "source_sha256": "5ed2523de2ee908949cf2b8ab8c7c84b9f1f4098315942f1aae28ed70bb10e3b",
+      "vendored_sha256": "5ed2523de2ee908949cf2b8ab8c7c84b9f1f4098315942f1aae28ed70bb10e3b"
+    },
+    "kb_src/wifi8_intro.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/wifi8_intro.vi.md",
+      "source_sha256": "32ed00506e6d9d83f74140a9d6ec48a084596cd0f8ddd1d38d88f3b636fa5cf3",
+      "vendored_sha256": "32ed00506e6d9d83f74140a9d6ec48a084596cd0f8ddd1d38d88f3b636fa5cf3"
+    },
+    "kb_src/wifi_basics.en.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/wifi_basics.en.md",
+      "source_sha256": "112f794d296eb6c9e213dcf716d244a951e84817a6afa4761b635e1ef3618b0a",
+      "vendored_sha256": "112f794d296eb6c9e213dcf716d244a951e84817a6afa4761b635e1ef3618b0a"
+    },
+    "kb_src/wifi_basics.vi.md": {
+      "source_path": "source/Router_App/router_context_src/kb/src/wifi_basics.vi.md",
+      "source_sha256": "d5f7ffd0d4cdca4f47d97451bafbc6192cc9d2fa682aaa414298aefa5a3cc4c8",
+      "vendored_sha256": "d5f7ffd0d4cdca4f47d97451bafbc6192cc9d2fa682aaa414298aefa5a3cc4c8"
+    }
+  }
+}

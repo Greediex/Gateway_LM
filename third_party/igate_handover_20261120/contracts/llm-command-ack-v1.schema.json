@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "llm-command-ack-v1.schema.json",
+  "title": "llm_command synchronous ack",
+  "description": "The reply body of `ubus call router_display llm_command <envelope>`. Returned in microseconds to milliseconds — it means 'received and either accepted or rejected', never 'applied'. This ack is the ONLY thing the LLM/agent side of this contract ever receives about a command: the real execution outcome is never sent back to the LLM at all -- it goes only to the ESP32 LCD panel over CDC1, or syslog. See docs/llm_integration_ubus.md, contact point 2 and 'Direction, at a glance', for the full error-table semantics and what this design deliberately does not tell the caller.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accepted", "request_id"],
+  "properties": {
+    "accepted": {
+      "type": "boolean",
+      "description": "true = envelope was valid, not rate-limited, and no other LLM action is currently applying; the command has been queued for async execution. This does NOT mean the command succeeded, or has even run yet -- there is no further signal to the LLM caller once it starts executing (see docs/llm_integration_ubus.md). false = rejected, see `error`."
+    },
+    "request_id": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Echoes the request's request_id when it could be parsed; 0 if the envelope was malformed before request_id could be read."
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1,
+      "examples": [
+        "malformed JSON",
+        "request_id must be a positive integer",
+        "Invalid command envelope",
+        "Invalid request_id sequence",
+        "Rate limit exceeded",
+        "Unknown command",
+        "Another LLM action is still applying",
+        "Guest WiFi setting did not survive the read-back",
+        "Guest WiFi interface disappeared while applying"
+      ],
+      "description": "Present only when accepted is false. The examples are the envelope-level rejections plus the two set_guest_wifi verify failures; they are NOT the complete set, because any command that finishes synchronously inside the method handler reports its own failure here too (set_guest_wifi is the only such command today - it commits UCI, reads it back and answers within the call - so its per-command messages such as 'No guest WiFi interface found' are reachable as ack errors as well). They are deliberately NOT an enum, because pinning them would make this schema reject a legitimate ack the moment a new rejection reason is added — the same additive-only rule that applies to every other payload here. Match on them if you must, but always have a default branch. See docs/llm_integration_ubus.md contact point 2 for what the caller should do for each value (retry / backoff / don't retry / poll status and retry once clear)."
+    }
+  }
+}

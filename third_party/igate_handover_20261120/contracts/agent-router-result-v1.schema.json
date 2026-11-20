@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-router-result-v1.schema.json",
+  "title": "agent_router.result ubus event (what router_display reads)",
+  "description": "Published by the agent bridge once per transcript. On NSP boards router_display relays replies and keeps get_info for Details or prepared writes for explicit panel Confirm. Bridge-dispatched requests (input.confirm:true, prepared) are never kept for local execution. Voice replies use session-scoped dedupe and unique panel tokens; docs/json_command_protocol.md describes the CDC1 mapping. No execution result is published back to the agent.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["result"],
+  "properties": {
+    "source": { "type": "string", "description": "Producer source, fallback when input.source is absent." },
+    "session_id": { "type": "string", "minLength": 1, "maxLength": 95, "description": "Fallback producer lifetime identity when input.session_id is absent." },
+    "boot_id": { "type": "string", "description": "Optional boot identity; a kernel boot ID does not change when STT restarts." },
+    "seq": { "type": "integer", "minimum": 0, "description": "Fallback producer sequence when input.seq is absent." },
+    "input": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Preserve the transcript metadata verbatim. The transcript text is not displayed.",
+      "properties": {
+        "session_id": { "type": "string", "minLength": 1, "maxLength": 95 },
+        "boot_id": { "type": "string" },
+        "source": { "type": "string" },
+        "seq": { "type": "integer", "minimum": 0 },
+        "confirm": { "type": "boolean", "description": "true with prepared means the bridge owns dispatch; no command is retained for a panel tap." }
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["request_id", "status"],
+      "properties": {
+        "request_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647,
+          "description": "Producer correlation ID (usually STT seq). Locally kept commands are rewritten to a unique router-issued panel token; llm_reply.producer_rid retains this original ID. Direct bridge-dispatched requests keep the original rid. 0 = adapter error with no known request."
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 31,
+          "description": "ok | prepared | clarify | not_found | data_unavailable | unsupported | unknown | error. Any non-empty string is relayed; the panel shows the message only for ok, prepared, not_found and data_unavailable."
+        },
+        "message": {
+          "type": ["string", "null"],
+          "description": "User-facing text, or null. Absent is read as null (a blob producer may omit a null). Cut at 1000 bytes on a UTF-8 boundary before it reaches the panel."
+        },
+        "command": {
+          "type": ["object", "null"],
+          "description": "The firmware command (firmware-command-v1.schema.json) or null. Absent is read as null. Only command, target and arguments are copied, for the panel's Details card."
+        }
+      }
+    }
+  }
+}

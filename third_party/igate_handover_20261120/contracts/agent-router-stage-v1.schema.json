@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-router-stage-v1.schema.json",
+  "title": "agent_router.stage ubus event (what router_display relays as agent_stage)",
+  "description": "Published by the agent bridge and core while a voice request is worked on. Display only: it drives the Thinking text and how long Thinking lasts on the panel and the web (docs/web_voice_mic.md); nothing is executed from it. Bridge: process before the core takes the transcript, done after every outcome. Core: answer right before a model call that writes the answer. answer and done count only with the seq of the last process. The opposite direction is the event agent_router.cancel from router_display (no required fields): the user cancelled, stop working on the request.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["seq", "stage"],
+  "properties": {
+    "source": { "type": "string", "description": "Producer, agent-router today." },
+    "seq": { "type": "integer", "minimum": 1, "maximum": 2147483647, "description": "The request id: the transcript's seq." },
+    "stage": { "enum": ["process", "answer", "done"] }
+  }
+}

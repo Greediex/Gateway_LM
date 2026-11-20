@@ -47,13 +47,16 @@ class SkillLauncher:
     def catalog(self, mode='live', *, entry=None):
         mode=self._mode(mode)
         if mode == 'replay_sim':
-            actions = entry['actions'] if entry is not None else deployment(mode).actions
-            rows = [{k: action[k] for k in ('skill_id', 'name', 'domain', 'kind')}
+            profile = entry['session'].profile if entry is not None else deployment(mode)
+            def catalog_rows(actions):
+                return [{k: action[k] for k in ('skill_id', 'name', 'domain', 'kind')}
                     | {'availability': 'READY' if entry else 'UNVERIFIED',
                        'reason': 'SCENARIO_AVAILABLE' if entry else 'INITIALIZE_SESSION',
                        'runtime_scope': action['scope'], 'mode': mode}
                     for _, action in sorted(actions.items())]
+            rows = catalog_rows(profile.actions)
             return {'mode': mode, 'design_total': len(rows), 'native_total': 0, 'rows': rows,
+                    'igate_rows': catalog_rows(profile.igate.actions),
                     'counts': dict(Counter(r['availability'] for r in rows)),
                     'requires_session': entry is None, 'synthetic_only': True}
         _,_,_,actions=deployment(mode)

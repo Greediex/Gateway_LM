@@ -1,0 +1,50 @@
+{
+  "t": 1795139588,
+  "seq": 10953909,
+  "state": "dry",
+  "secs": "3.2",
+  "input": {
+    "text": "chuyển giao diện sang tiếng Anh",
+    "seq": 10953909,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm",
+    "selected_skill": "ui.set_language",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953909,
+      "command": "set_language",
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "language": "en"
+      }
+    },
+    "message": "Switching the screen to English.",
+    "status": "prepared",
+    "request_id": 10953909
+  },
+  "dry_run": {
+    "would": "publish",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953909,
+      "command": "set_language",
+      "target": {
+        "type": "gateway"
+      },
+      "arguments": {
+        "language": "en"
+      }
+    }
+  }
+}

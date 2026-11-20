@@ -1,0 +1,62 @@
+{
+  "t": 1795139555,
+  "seq": 10953904,
+  "state": "dry",
+  "secs": "5.0",
+  "input": {
+    "text": "chặn mạng iPad của con",
+    "seq": 10953904,
+    "session_id": "handover-doc",
+    "source": "handover-doc",
+    "is_final": true,
+    "ok": true,
+    "confirm": false,
+    "dry_run": true,
+    "lang": "vi"
+  },
+  "result": {
+    "framework": "QC-Claw",
+    "execution_path": "llm_single_pass",
+    "selected_skill": "device.block",
+    "steps": [
+      {
+        "skill": "device.block",
+        "domain": "device",
+        "status": "prepared",
+        "devices": [
+          {
+            "alias": "iPad",
+            "label": "Máy tính bảng của Con",
+            "mac": "aa:bb:cc:00:00:05"
+          }
+        ]
+      }
+    ],
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953904,
+      "target": {
+        "type": "device",
+        "selector": "aa:bb:cc:00:00:05"
+      },
+      "arguments": {},
+      "command": "block"
+    },
+    "status": "prepared",
+    "request_id": 10953904,
+    "message": "Mình sẽ chặn Internet của Máy tính bảng của Con (iPad). Bạn bấm Confirm trên màn hình router để mình thực hiện nhé. Lưu ý: máy này dùng địa chỉ Wi-Fi riêng tư; nếu máy đổi địa chỉ (quên mạng, bật đổi địa chỉ tự động), lệnh chặn sẽ mất tác dụng. Nên tắt địa chỉ riêng tư cho Wi-Fi nhà."
+  },
+  "dry_run": {
+    "would": "panel_confirm",
+    "command": {
+      "schema_version": "1.0",
+      "request_id": 10953904,
+      "target": {
+        "type": "device",
+        "selector": "aa:bb:cc:00:00:05"
+      },
+      "arguments": {},
+      "command": "block"
+    }
+  }
+}

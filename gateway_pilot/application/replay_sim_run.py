@@ -13,7 +13,8 @@ from ..skill_expansion.runtime_bridge import SkillNotReady
 
 def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, deadline: float | None) -> dict:
     profile = replay.profile
-    if skill_id not in profile.actions:
+    catalog = profile.igate if skill_id in profile.igate.actions else profile
+    if skill_id not in catalog.actions:
         return {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
                 'skill_id': skill_id, 'status': 'UNAVAILABLE', 'verdict': 'UNKNOWN',
                 'summary': f'{NOTICE} Skill này chưa được hỗ trợ trong Replay mô phỏng.',
@@ -24,8 +25,8 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
     limit = replay.expires_at if deadline is None else min(replay.expires_at, deadline)
     before = replay.calls
     sessions, plans, attempts, errors = {}, [], [], {}
-    samples = profile.samples[skill_id][replay.scenario]
-    diagnostic = profile.diagnostics['skills'][skill_id]
+    samples = catalog.samples[skill_id][replay.scenario]
+    diagnostic = catalog.diagnostics['skills'][skill_id]
 
     for alias, sample in samples.items():
         time_left = limit - replay.clock()
@@ -131,7 +132,7 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
         row['port'] != 'client.identity' for row in evidence) else 'UNAVAILABLE'
     return {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
             'skill_id': skill_id, 'status': status, 'verdict': verdict, 'assessment': assessment,
-            'summary': f"{NOTICE} {profile.actions[skill_id]['name']} · {verdict}.",
+            'summary': f"{NOTICE} {catalog.actions[skill_id]['name']} · {verdict}.",
             'calls_this_run': replay.calls - before, 'calls_total': replay.calls, 'reused_ports': [],
             'missing_ports': sorted({samples[alias].function_id for alias in missing}), 'missing_sources': missing,
             'source_errors': errors, 'evidence': evidence, 'evidence_ids': proof,

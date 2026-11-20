@@ -1,0 +1,20 @@
+{
+  "normal": {
+    "IG01": ["UNKNOWN", ["igate_inventory_complete_v1"]],
+    "IG02": ["UNKNOWN", ["igate_device_metrics_recorded_v1"]],
+    "IG03": ["HEALTHY", ["igate_internet_reachable_v1", "igate_router_metrics_recorded_v1"]],
+    "IG04": ["UNKNOWN", ["igate_application_sessions_recorded_v1"]],
+    "IG05": ["UNKNOWN", ["igate_schedule_counts_recorded_v1"]]
+  },
+  "fault": {
+    "IG01": ["UNKNOWN", ["igate_inventory_truncated_v1"]],
+    "IG02": ["FAULT", ["igate_device_metrics_recorded_v1", "igate_weak_signal_present_v1"]],
+    "IG03": ["FAULT", ["igate_internet_unreachable_v1", "igate_router_metrics_recorded_v1"]],
+    "IG04": ["FAULT", ["igate_qos_feed_unavailable_v1"]],
+    "IG05": ["UNKNOWN", ["igate_schedule_counts_recorded_v1", "igate_schedules_present_v1"]]
+  },
+  "missing": {
+    "IG01": ["UNKNOWN", []], "IG02": ["UNKNOWN", []], "IG03": ["UNKNOWN", []],
+    "IG04": ["UNKNOWN", []], "IG05": ["UNKNOWN", []]
+  }
+}

@@ -241,8 +241,11 @@ def summarize(rows: list[SkillCoverage]) -> dict:
 
 
 def coverage_report(**kwargs) -> dict:
+    from .igate_data import catalog
+
     rows = build_coverage(**kwargs)
-    return {"summary": summarize(rows), "skills": [asdict(r) for r in rows]}
+    return {"summary": summarize(rows), "skills": [asdict(r) for r in rows],
+            "igate_simulated": {sid: item["skill"] for sid, item in catalog().items()}}
 
 
 def _graph_actions(config: Path, mode: str) -> Mapping:
@@ -300,6 +303,18 @@ def skill_graph(data_dir: Path = DATA_DIR, *, replay_sim: bool = False) -> dict:
         for r in rows
     ]
     nodes.extend({"id": fid, "kind": "function", "label": fid} for fid in sorted(functions))
+    if replay_sim:
+        from . import igate_data
+
+        groups[igate_data.DOMAIN] = "iGate mô phỏng"
+        for sid, item in igate_data.catalog().items():
+            fid = igate_data.function_id(sid)
+            nodes.extend([
+                {"id": sid, "kind": "skill", "label": item["name"], "group": igate_data.DOMAIN,
+                 "type": igate_data.KIND, "verified": False, "chat_callable": False},
+                {"id": fid, "kind": "function", "label": item["skill"]},
+            ])
+            edges.add((sid, fid))
     return {
         "format": "gateway-lm.skill-graph/v1",
         "groups": groups,

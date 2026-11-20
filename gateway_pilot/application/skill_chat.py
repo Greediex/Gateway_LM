@@ -281,11 +281,18 @@ class SkillChat:
             raise ValueError('chat_diagnostics_not_approved')
         with self.launcher._lock:lock=entry.setdefault('chat_lock',threading.Lock())
         if not lock.acquire(blocking=False):raise SkillSessionError('session_busy')
-        if not _MODEL_SLOT.acquire(blocking=False):
-            lock.release()
-            if created:self.launcher.close(session_id)
-            raise SkillSessionError('model_busy')
+        model_slot = False
         try:
+            if mode == REPLAY_SIM:
+                from .igate_chat import answer, route
+
+                routed = route(request.strip(), entry['session'].profile.igate_vendor)
+                if routed is not None:
+                    return answer(routed, self.launcher, session_id, entry, started=started,
+                                  clock=self.clock, max_elapsed_s=self.max_elapsed_s)
+            model_slot = _MODEL_SLOT.acquire(blocking=False)
+            if not model_slot:
+                raise SkillSessionError('model_busy')
             if mode == REPLAY_SIM:
                 return self._replay_sim_turn(request.strip(), session_id, entry, started, allow_model=allow_model)
             result=self._turn(request.strip(),session_id,entry,started)
@@ -298,7 +305,9 @@ class SkillChat:
                 except SkillSessionError:pass
             raise
         finally:
-            _MODEL_SLOT.release();lock.release()
+            if model_slot:
+                _MODEL_SLOT.release()
+            lock.release()
 
     def _replay_sim_turn(self, request: str, sid: str, entry: dict, started: float, *, allow_model: bool) -> dict:
         replay = entry['session']
@@ -407,6 +416,8 @@ class SkillChat:
                                                        'client': 'Client mô phỏng'}.get(scope)},
                 'notice': SIM_NOTICE, 'model_calls': calls, 'advice': advice, 'llm_advisor_used': bool(advice),
                 'routing': {'method': method, 'plan': [result['skill_id']] if result else []},
+                'answer_kind': 'evidence' if measurements else None,
+                'timings_ms': {'total': round((self.clock() - started) * 1000, 3)},
                 'user_input_required': status == 'NEEDS_INPUT'}
 
     def _turn(self, request, sid, entry, started):

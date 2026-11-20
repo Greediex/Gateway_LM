@@ -228,7 +228,10 @@ state.livePlatform = health.live_platform === 'Linux' || state.linuxLiveAvailabl
 const liveAvailable = !!(health.live_available ?? (health.windows_live_available || health.linux_live_available));
 source.querySelector('option[value=live]').disabled = !liveAvailable;
 source.querySelector('option[value=live]').textContent = `Đo thật từ ${state.livePlatform}`;
-if (Number.isInteger(config.replay_sim_skill_count)) $('replaySimOption').textContent = `Replay mô phỏng (${config.replay_sim_skill_count} Skill)`;
+if (Number.isInteger(config.replay_sim_skill_count)) {
+  const igate = Number.isInteger(config.igate_simulated) ? ` + ${config.igate_simulated} iGate` : '';
+  $('replaySimOption').textContent = `Replay mô phỏng (${config.replay_sim_skill_count} Skill${igate})`;
+}
 // Owner's choice: open on the simulated 101-Skill replay; laptop live stays selectable.
 source.value = Number.isInteger(config.replay_sim_skill_count) ? 'replay_sim'
   : config.default_source === 'live' && liveAvailable ? 'live' : 'replay';
@@ -236,6 +239,20 @@ updateSource();}catch(e){state.connected=false;$('healthText').textContent='Back
 function renderFixtures(){let el=$('fixtureSelect');el.replaceChildren();let current='';for(let f of state.fixtures){if(f.group!==current){current=f.group;let g=n('optgroup');g.label=current;el.appendChild(g);}let option=n('option','',f.label);option.value=f.id;el.appendChild(option);}if(!state.fixtures.length){let op=n('option','','Cần khởi động backend');op.value='GLM-21-1';el.appendChild(op);return;}setFixture(state.fixtures.some(x=>x.id==='GLM-21-1')?'GLM-21-1':state.fixtures[0].id);}
 function message(kind,text,label,status){const item=n('div','message '+kind);let avatar=n('div','message-avatar '+(kind==='user'?'user-avatar':''),kind==='user'?'U':'✳');let bubble=n('div','bubble');let lbl=n('div','message-label',label|| (kind==='user'?'BẠN':'GATEWAY LM'));if(status){let st=n('span','answer-status '+(status==='PARTIAL'||status==='INCONCLUSIVE'?'partial':['BLOCKED','NEEDS_INPUT','UNAVAILABLE'].includes(status)?'blocked':''),({MEASURED:'Đã có số đo',INCONCLUSIVE:'Chưa đủ chẩn đoán',PARTIAL:'Còn thiếu dữ liệu',NEEDS_INPUT:'Cần làm rõ',BLOCKED:'Chỉ đọc',UNAVAILABLE:'Chưa có dữ liệu'})[status]||status);st.title=status==='MEASURED'?'Phép đo hoàn tất, không phải kết luận sức khỏe hoặc đã khắc phục.':status;lbl.appendChild(st);}bubble.appendChild(lbl);bubble.appendChild(n('div','bubble-body',text));if(kind==='assistant')item.appendChild(avatar);item.appendChild(bubble);if(kind==='user')item.appendChild(avatar);$('messages').appendChild(item);scrollBottom();return bubble;}
 function enrichMessage(bubble,result){const details=n('details','answer-details');details.appendChild(n('summary','','Chi tiết phép đo'));let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',String(result.method||'core').toUpperCase()],['LLM',(result.model_calls>0||result.llm_advisor_used)?`${result.model_calls ?? ((result.advice||[]).length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection))} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}details.appendChild(meta);bubble.appendChild(details);
+if (result.mode === 'replay_sim') {
+  const badge = {instant:'Tức thì',evidence:'Có bằng chứng',proposal:'Đề xuất lệnh',knowledge:'Kiến thức'}[result.answer_kind];
+  if (badge) bubble.children[0].appendChild(n('span','answer-status answer-kind',badge));
+  if (Number.isFinite(result.timings_ms?.total)) {
+    meta.appendChild(n('span','meta-chip',`Thời gian: ${result.timings_ms.total} ms`));
+  }
+  if (result.command_proposal?.executed === false && result.command_proposal.envelope) {
+    details.children[0].textContent = 'Chi tiết đề xuất';
+    details.appendChild(n('pre','kv-body',JSON.stringify(result.command_proposal.envelope,null,2)));
+  } else if (result.knowledge) {
+    details.children[0].textContent = 'Nguồn kiến thức (draft)';
+    details.appendChild(n('p','inspector-note',(result.knowledge.passages || []).join(', ')));
+  }
+}
 if(result.runtime_features){const r=n('pre','kv-body',JSON.stringify(result.runtime_features,null,2));details.appendChild(r);}
 const notes = [...(result.measurement_details || []), ...(result.claim_details || []), ...(result.caveats || [])];
 if (notes.length) {
@@ -381,7 +398,7 @@ function renderTimeline(content, result) {
     'LIVE-QUALITY':'Chất lượng kết nối từ laptop','LIVE-THROUGHPUT':'Tốc độ tải và chất lượng kết nối',
     'LIVE-DNS':'Phân giải DNS từ laptop','WF-001':'Thiết bị đang kết nối','WF-006':'Tín hiệu và kênh Wi-Fi'};
   const target = result.target?.selector || (result.target?.scope === 'gateway' ? 'Router' : 'Chưa xác định');
-  understand.appendChild(n('p','',result.request));
+  if (result.request) understand.appendChild(n('p','',result.request));
   understand.appendChild(n('div','inspector-note',`${workflows[result.workflow] || 'Chưa xác định yêu cầu'} · ${target}`));
   if (result.intake?.source === 'llm') {
     const outcome = result.intake.accepted ? 'đã nhận diện yêu cầu' : 'chưa xác định được luồng phù hợp';
@@ -1142,10 +1159,11 @@ loadConfig();updateInput();
     const rows = launcher.rows.filter(row => (!domain || row.domain === domain) &&
       (!supported || runnable(row)) && [row.skill_id,row.name,row.reason].some(value => normalize(value).toLocaleLowerCase().includes(query)));
     const box = ui('skillCatalog'); box.replaceChildren();
-    for (const kind of ['design','laptop']) {
+    for (const kind of ['design','igate_simulated','laptop']) {
       const group = rows.filter(row => row.kind === kind);
       if (!group.length) continue;
-      box.appendChild(n('h3','skill-group-title',kind === 'laptop' ? 'Action laptop · namespace riêng, không tính hoàn thành 120 thiết kế' : 'Danh mục 120 Skill thiết kế'));
+      const title = {laptop:'Action laptop',igate_simulated:'Skill iGate mô phỏng',design:'Skill thiết kế'}[kind];
+      box.appendChild(n('h3','skill-group-title',title));
       for (const row of group) {
         const button = n('button', 'skill-row'); button.type = 'button';
         button.setAttribute('aria-pressed',String(launcher.selected === row.skill_id));
@@ -1161,7 +1179,7 @@ loadConfig();updateInput();
   }
   function acceptCatalog(catalog) {
     if (catalog.mode !== launcher.mode || !Array.isArray(catalog.rows)) throw new Error('Danh mục trả về sai nguồn hoặc sai định dạng.');
-    launcher.rows = catalog.rows;
+    launcher.rows = [...catalog.rows, ...(catalog.igate_rows || [])];
     const currentDomain = ui('skillDomain').value;
     ui('skillDomain').replaceChildren();
     const all = n('option','','Tất cả domain'); all.value = ''; ui('skillDomain').appendChild(all);
@@ -1170,7 +1188,8 @@ loadConfig();updateInput();
     }
     if (launcher.rows.some(row => row.domain === currentDomain)) ui('skillDomain').value = currentDomain;
     const counts = Object.entries(catalog.counts || {}).map(([key,value]) => `${key}: ${describe(value)}`).join(' · ');
-    ui('skillCatalogCounts').textContent = `${catalog.design_total} Skill thiết kế + ${catalog.native_total} action laptop riêng. ${counts}`;
+    const igate = catalog.igate_rows?.length ? ` + ${catalog.igate_rows.length} Skill iGate mô phỏng` : '';
+    ui('skillCatalogCounts').textContent = `${catalog.design_total} Skill thiết kế + ${catalog.native_total} action laptop${igate}. ${counts}`;
     renderCatalog();
   }
   async function request(path, body) {

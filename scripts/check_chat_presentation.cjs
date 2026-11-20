@@ -55,4 +55,25 @@ sandbox.enrichMessage(rejected,{calls:0,repairs:0,model_calls:2,llm_advisor_used
   llm_advisor_ready:true,case_status:'NEEDS_INPUT'});
 assert(rejected.children.find(n=>n.tag==='details').children.find(n=>n.className==='answer-meta')
   .children.some(n=>n.textContent==='LLM: 2 lượt'));
-console.log('Chat presentation: PASS (closed details, caveats, truthful badges, RPC count, warnings)');
+for (const [kind, label] of Object.entries({
+  instant: 'Tức thì', evidence: 'Có bằng chứng', proposal: 'Đề xuất lệnh', knowledge: 'Kiến thức',
+})) {
+  const answer = sandbox.message('assistant', 'Dữ liệu mô phỏng.');
+  const envelope = {schema_version:'1.0',request_id:1,command:'set_guest_wifi',
+    target:{type:'gateway'},arguments:{enabled:true}};
+  sandbox.enrichMessage(answer, {
+    mode:'replay_sim',answer_kind:kind, calls:0, timings_ms:{total:30.4},
+    command_proposal:kind === 'proposal' ? {executed:false, envelope} : undefined,
+    knowledge:kind === 'knowledge' ? {passages:['wb.vi.placement']} : undefined,
+  });
+  assert(answer.children[0].children.some(node=>node.textContent===label));
+  const details = answer.children.find(node=>node.tag==='details');
+  assert(details.children.find(node=>node.className==='answer-meta')
+    .children.some(node=>node.textContent==='Thời gian: 30.4 ms'));
+  if (kind === 'proposal') {
+    assert.equal(details.children[0].textContent,'Chi tiết đề xuất');
+    assert.deepEqual(JSON.parse(details.children.find(node=>node.tag==='pre').textContent), envelope);
+    assert(!details.children.some(node=>node.tag==='button'), 'Proposal is display-only');
+  }
+}
+console.log('Chat presentation: PASS (details, caveats, RPC count, four replay badges, display-only proposal)');

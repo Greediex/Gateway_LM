@@ -56,7 +56,9 @@ REPLAY_SIM_APPROVAL = "Cần duyệt digest cho Replay mô phỏng. Chạy .venv
 
 
 def _replay_sim_approval_error(exc):
-    if str(exc) == "binding_v02:skill_deployment_not_approved":
+    reason = str(exc)
+    if reason == "binding_v02:skill_deployment_not_approved" or (
+            reason.startswith("binding_v02:skill_sim_") and reason.endswith("_pin")):
         return {"error": "Dữ liệu mô phỏng, không phải mạng thật. " + REPLAY_SIM_APPROVAL,
                 "reason": "skill_deployment_not_approved", "synthetic_only": True}
     return None
@@ -494,6 +496,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/config":
             try:
                 from gateway_pilot.skill_expansion.coverage import acceptance_snapshot
+                from gateway_pilot.skill_expansion.igate_data import catalog as igate_catalog
 
                 status = _status()
                 default_source = getattr(self.server, "default_source", "replay")
@@ -505,6 +508,7 @@ class Handler(BaseHTTPRequestHandler):
                     replay_sim_count = None
                 return self._json({"status": status, "fixtures": fixture_summaries(),
                                    "replay_sim_skill_count": replay_sim_count,
+                                   "igate_simulated": len(igate_catalog()),
                                    "default_fixture_id": DEFAULT_FIXTURE,
                                    "default_source": default_source,
                                    "default_method": "gos" if status["gos_available"] else "bm25",
@@ -631,6 +635,14 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
     with ThreadingHTTPServer((args.host, args.port), Handler) as httpd:
         httpd.default_source = args.source
+        from gateway_pilot.skill_expansion.deployment import deployment
+
+        # Warm validated registry compilations before the first replay turn.
+        try:
+            deployment("replay_sim")
+        except (ValueError, OSError, KeyError, ImportError) as exc:
+            if not _replay_sim_approval_error(exc):
+                print(f"Replay mô phỏng: chưa khởi tạo được ({type(exc).__name__}).")
         # Index the catalog off the request path so the first Qwen turn finds it ready.
         def _warm():
             from gateway_pilot.application.chat_context import trusted_context

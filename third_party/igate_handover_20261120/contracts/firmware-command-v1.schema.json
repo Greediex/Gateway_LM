@@ -1,0 +1,823 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "firmware-command-v1.schema.json",
+  "title": "LLM command envelope (schema_version 1.0 / 1.1)",
+  "description": "The exactly-5-field envelope an LLM/agent process sends as the ubus call argument to `router_display`'s `llm_command` method. This is also the argument object itself, not a nested/escaped JSON string. See Router_App/router_display_src/LLM_JSON_CMD.md for the prose spec and docs/llm_integration_ubus.md for the transport (ubus object/method/ack/event).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "command",
+    "target",
+    "arguments"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0",
+        "1.1"
+      ],
+      "description": "Contract version. \"1.0\" = the base commands. \"1.1\" (since 2026-10-07) = 1.0 plus `arguments.schedule` on block / unblock / set_guest_wifi and the schedule commands (`cancel_schedule`, get_info `query:schedule_list`). Any other value is rejected with ack error 'Invalid command envelope'. A 1.0 envelope carrying a schedule is refused during execution ('schedule requires schema_version 1.1'). `router_display status` lists both under `schema_versions`."
+    },
+    "request_id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Monotonic per-caller sequence number, starting at 1. Must be a JSON integer, not a numeric string — a string value is rejected with ack error 'request_id must be a positive integer'. Sequence is tracked per ubus caller connection (peer), not globally."
+    },
+    "command": {
+      "type": "string",
+      "enum": [
+        "get_info",
+        "block",
+        "unblock",
+        "optimize",
+        "limit",
+        "set_guest_wifi",
+        "cancel_schedule",
+        "show_intro",
+        "set_language",
+        "open_qos",
+        "device_control"
+      ],
+      "description": "`cancel_schedule` needs schema_version 1.1 and target {\"type\":\"schedules\"}. Any value outside this set is rejected with ack error 'Unknown command'. The last two are ACCEPTED BUT NOT ACTED ON: `open_qos` and `device_control` are in llm_dispatch.c's s_llm_commands_planned[], so the ack says accepted:true and execution answers ok:false 'Not implemented yet: ...' to the LCD panel/syslog only. They are in the enum because a caller emitting them is not making a schema error - it is exercising a command whose implementation is pending. Read `commands` vs `commands_planned` from `router_display status` to tell the two groups apart at runtime. `show_intro` (2026-11-13) is UI only: target gateway, `arguments.topic` product|wifi8|vnpt; the panel opens that intro chapter (docs/json_command_protocol.md section 4.2). `set_language` (2026-11-13) is UI only too: target gateway, `arguments.language` en|vi (absolute, never a toggle); the panel and the web engine switch their UI language and, through the audio frames' LANG byte, the STT language (docs/json_command_protocol.md section 4.3)."
+    },
+    "target": {
+      "$ref": "#/$defs/target"
+    },
+    "arguments": {
+      "type": "object",
+      "description": "Command-specific arguments. Exact shape depends on `command` — see the per-command $defs below and Router_App/router_display_src/LLM_JSON_CMD.md §4-5."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "get_info"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_get_info"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "block"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/target_device"
+              },
+              {
+                "$ref": "#/$defs/target_group"
+              }
+            ]
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_block"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "unblock"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/target_device"
+              },
+              {
+                "$ref": "#/$defs/target_group"
+              }
+            ]
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_unblock"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "optimize"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_device"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_optimize"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "limit"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_device"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_limit"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "set_guest_wifi"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_gateway"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_set_guest_wifi"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "open_qos"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_gateway"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_open_qos"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "device_control"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_device"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_device_control"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "cancel_schedule"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_schedules"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_cancel_schedule"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "arguments": {
+            "type": "object",
+            "required": [
+              "schedule"
+            ]
+          }
+        },
+        "required": [
+          "arguments"
+        ]
+      },
+      "then": {
+        "properties": {
+          "schema_version": {
+            "const": "1.1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "show_intro"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_gateway"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_show_intro"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": {
+            "const": "set_language"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "$ref": "#/$defs/target_gateway"
+          },
+          "arguments": {
+            "$ref": "#/$defs/args_set_language"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "target_gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "const": "gateway"
+        }
+      }
+    },
+    "target_device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "selector"
+      ],
+      "properties": {
+        "type": {
+          "const": "device"
+        },
+        "selector": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Either a MAC address the caller resolved itself from router_snapshot.yaml (six hex pairs, ':' or '-', any case -- what the router agent sends for every device write since 2026-10-07), or a raw device NAME taken from the user's utterance, e.g. \"SON\", \"con\", \"iPad cua me\". A MAC-shaped selector is matched exactly against the client table and never falls through to the name stages. A name is resolved daemon-side -- exact name, then substring name. Both stages fold case AND Vietnamese diacritics before comparing (vn_fold() in llm_dispatch.c), so an accented selector matches a client whose DHCP hostname is unaccented (\"Quoc\"), in either case, and decomposed (NFD) input folds the same as precomposed. minLength stays 1 because a 1-character exact name is still resolvable, but the daemon's substring stage requires at least 3 characters (UTF-8 characters, not bytes: \"bo\" with a Vietnamese tone mark is 2 characters / 4 bytes and is below the floor). Ambiguous or unresolvable selectors are not rejected at the ack stage -- the failure is written only to the LCD panel/syslog and never reaches the LLM caller (see docs/llm_integration_ubus.md)."
+        }
+      }
+    },
+    "target_devices": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "description": "Plural gateway-wide scope, accepted by `get_info` with query=online_clients (or its `filter: \"online\"` spelling) as an alias for target_gateway. No other command accepts it: llm_expected_target() in llm_dispatch.c pins every other command to gateway or device, and this alias is checked only inside the online_clients branch.",
+      "properties": {
+        "type": {
+          "const": "devices"
+        }
+      }
+    },
+    "target": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/target_gateway"
+        },
+        {
+          "$ref": "#/$defs/target_device"
+        },
+        {
+          "$ref": "#/$defs/target_devices"
+        },
+        {
+          "$ref": "#/$defs/target_schedules"
+        }
+      ]
+    },
+    "args_get_info": {
+      "description": "Either a `query` (the normal form) or the `filter: \"online\"` alias, which llm_cmd_get_info() resolves to query=online_clients before dispatching. Send exactly one of the two.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "application": {
+              "type": "string",
+              "description": "Which AI QoS traffic class to list, for query=active_application_sessions ONLY - required there, meaningless elsewhere. The four a person actually asks about are GAMING, VSTREAM, VOICE and VIDEOCALL; BACKGROUND is accepted by the same code path. The daemon resolves the name with sec_qos_tc_from_name(), the same resolver the feed parser uses, so common variants (VIDEO_STREAM, VOIP, GAME, ...) also work - the enum here is the canonical set the LLM should emit, which is why it is not `additionalProperties: false` territory. An unknown name is a result failure (`Unknown application '<x>'`), not an ack rejection.",
+              "enum": [
+                "GAMING",
+                "VSTREAM",
+                "VOICE",
+                "VIDEOCALL",
+                "BACKGROUND"
+              ]
+            },
+            "query": {
+              "type": "string",
+              "enum": [
+                "connection_quality",
+                "router_status",
+                "online_clients",
+                "client_detail",
+                "active_application_sessions",
+                "active_gaming_sessions",
+                "schedule_list"
+              ],
+              "description": "Target type depends on the query: gateway for connection_quality / router_status / online_clients / active_application_sessions, device for client_detail (online_clients and active_application_sessions also accept target_devices). That dependency is why llm_validate() cannot check it and a mismatch surfaces as a result msg instead of an ack error. `router_status` returns the router's own health (sys/board, same field names as the periodic stats packet) and makes the panel open its System Monitor screen. `active_application_sessions` lists the devices the other team's AI QoS feed put one traffic class on, selected by `arguments.application` (required); with the feed unreadable it answers ok:false 'AI QoS feed unavailable' rather than an empty list, because empty would assert something never observed. `active_gaming_sessions` is the RETIRED spelling of that query fixed to application=GAMING - still accepted so an un-updated prompt keeps working, but new callers should send active_application_sessions. Every get_info answer reaches only the LCD panel/syslog, never the LLM (see docs/llm_integration_ubus.md)."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "filter"
+          ],
+          "properties": {
+            "filter": {
+              "type": "string",
+              "const": "online"
+            }
+          }
+        }
+      ]
+    },
+    "args_block": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An empty object is valid and is the common case: `scope` is OPTIONAL and defaults to \"internet\" (llm_scope_is_internet() in llm_dispatch.c), because a spoken \"block Nam's internet\" carries no scope of its own. Any other `scope` spelling (without `application`) is refused during execution.",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "internet",
+            "application"
+          ],
+          "description": "Omit it for the whole-device internet block. \"application\" is equivalent to sending `application`."
+        },
+        "application": {
+          "type": "string",
+          "description": "WIDENED TO THE WHOLE DEVICE (product decision 2026-10-07). There is no per-application rule (the firewall rules are per-MAC, no DPI), so a request naming an application (e.g. \"GAMING\") blocks the device's whole Internet. The result says so: msg suffix '(whole device: per-application <app> not supported)', data.requested_application and data.applied_to:\"device\", and a syslog 'degraded' line."
+        },
+        "schedule": {
+          "$ref": "#/$defs/schedule",
+          "description": "Schema 1.1 only. See $defs.schedule."
+        }
+      }
+    },
+    "args_unblock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Mirror of args_block: `scope` optional, defaults to \"internet\"; `application` is widened to the whole device the same way.",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "internet",
+            "application"
+          ]
+        },
+        "application": {
+          "type": "string",
+          "description": "Widened to the whole device, named in the result exactly as for block."
+        },
+        "schedule": {
+          "$ref": "#/$defs/schedule",
+          "description": "Schema 1.1 only. See $defs.schedule."
+        }
+      }
+    },
+    "args_optimize": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "priority": {
+          "type": "string",
+          "const": "high",
+          "description": "OPTIONAL, defaults to \"high\" (the router agent's qos.prioritize sends only `application`). Any other value is refused during execution."
+        },
+        "scope": {
+          "type": "string",
+          "description": "Accepted syntactically (e.g. \"gaming\") but currently ignored entirely by the daemon — present for forward compatibility with LLM_JSON_CMD.md §5.7's examples, has no effect on today's firmware. NOTE this is NOT the same as `application` below: scope stays silently ignored, application is recognised and refused."
+        },
+        "application": {
+          "type": "string",
+          "description": "WIDENED TO THE WHOLE DEVICE (product decision 2026-10-07): LLM_EXEC_OPTIMIZE builds a per-MAC QoS class covering ALL of that device's traffic. The result names the widening exactly as for block."
+        },
+        "schedule": {
+          "$ref": "#/$defs/schedule",
+          "description": "Schema 1.1 only. See $defs.schedule."
+        }
+      }
+    },
+    "args_limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "At least one direction. A direction left out KEEPS the device's current limit in that direction (persisted policy, or the demo world's), or stays unlimited when there is none. Neither present -> ok:false 'Invalid bandwidth limits' during execution.",
+      "anyOf": [
+        {
+          "required": [
+            "download_limit_mbps"
+          ]
+        },
+        {
+          "required": [
+            "upload_limit_mbps"
+          ]
+        }
+      ],
+      "properties": {
+        "download_limit_mbps": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 10000,
+          "description": "jint_required() in llm_dispatch.c requires a JSON integer -- a decimal like 12.5 is rejected during execution (ok:false, msg:'Invalid bandwidth limits' written only to the LCD panel/syslog), not in the ack -- the LLM caller is never told. Upper bound is LLM_MAX_LIMIT_MBPS = 10000; the same message covers both the range check and the type check."
+        },
+        "upload_limit_mbps": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 10000,
+          "description": "Same constraints as download_limit_mbps."
+        },
+        "schedule": {
+          "$ref": "#/$defs/schedule",
+          "description": "Schema 1.1 only. See $defs.schedule."
+        }
+      }
+    },
+    "args_set_guest_wifi": {
+      "description": "Two accepted shapes: a boolean `enabled` (LLM_JSON_CMD.md §5.9), or a string `action` (used by the legacy test scripts). Send exactly one of the two, not both.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "schedule": {
+              "$ref": "#/$defs/schedule",
+              "description": "Schema 1.1 only. See $defs.schedule."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "action"
+          ],
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": [
+                "enable",
+                "disable"
+              ]
+            },
+            "schedule": {
+              "$ref": "#/$defs/schedule",
+              "description": "Schema 1.1 only. See $defs.schedule."
+            }
+          }
+        }
+      ]
+    },
+    "args_open_qos": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "ACCEPTED BUT NOT IMPLEMENTED. Opening a screen is a display command, and the panel has no QoS screen yet (action_forward_qos() in esp32/main/ui_controller/actions.c is an empty body), so the daemon answers ok:false 'Not implemented yet: open_qos screen navigation'. Both fields are hints for the eventual implementation and are not read today.",
+      "properties": {
+        "page": {
+          "type": "string"
+        },
+        "route": {
+          "type": "string"
+        }
+      }
+    },
+    "args_device_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action"
+      ],
+      "description": "ACCEPTED BUT NOT IMPLEMENTED. Controlling a smart plug or lamp needs a home-automation bridge router_display does not talk to; it answers ok:false 'Not implemented yet: external device control'. Note target.selector here names an APPLIANCE, not a Wi-Fi client - whatever implements this must not resolve it against the DHCP client table.",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "on",
+            "off"
+          ]
+        }
+      }
+    },
+    "target_schedules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "description": "The schedule table (schema 1.1): required by cancel_schedule (checked in the ack) and used by get_info query=schedule_list (gateway is accepted there too).",
+      "properties": {
+        "type": {
+          "const": "schedules"
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Relative or clock-time schedule (llm_schedule.c; docs/wallclock_schedules_timezone.md; LLM_JSON_CMD.md 5.12). Allowed on block, unblock, set_guest_wifi, limit, optimize. RELATIVE: {duration_minutes} act now, restore after N min; {after_minutes} act after M and keep; both = act after M, restore after N. Monotonic clock, RAM only (persistent:false). CLOCK TIME, in the router's own timezone (sys.tz), persisted to flash and reloaded at boot (persistent:true): start_time HH:MM with exactly one anchor of day (today|tomorrow), date (YYYY-MM-DD, 2000..2099) or recurrence (daily|weekdays|weekends); optional end_time (a window may cross midnight) OR duration_minutes. Refused by name, never run immediately instead: start_time with after_minutes, end_time with duration_minutes, end_time/day/date/recurrence without start_time, a router clock that is not set ('Router clock not set; clock-time schedules unavailable'), a single start already past ('Start time has already passed'). A window already in progress starts now. 'Restore' happens only while the state is still the one the schedule set - a person who changed it in between wins; for limit/optimize the state is the device's QoS policy. At most 8 live schedules. Guest Wi-Fi and QoS schedules are refused in demo mode.",
+      "properties": {
+        "after_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10080
+        },
+        "duration_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10080
+        },
+        "start_time": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "end_time": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "day": {
+          "type": "string",
+          "enum": [
+            "today",
+            "tomorrow"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^20[0-9]{2}-[0-9]{2}-[0-9]{2}$"
+        },
+        "recurrence": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "weekdays",
+            "weekends"
+          ]
+        }
+      },
+      "dependentRequired": {
+        "end_time": [
+          "start_time"
+        ],
+        "day": [
+          "start_time"
+        ],
+        "date": [
+          "start_time"
+        ],
+        "recurrence": [
+          "start_time"
+        ]
+      },
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "start_time",
+              "after_minutes"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "end_time",
+              "duration_minutes"
+            ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "start_time"
+            ]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": [
+                  "day"
+                ]
+              },
+              {
+                "required": [
+                  "date"
+                ]
+              },
+              {
+                "required": [
+                  "recurrence"
+                ]
+              }
+            ]
+          },
+          "else": {
+            "anyOf": [
+              {
+                "required": [
+                  "after_minutes"
+                ]
+              },
+              {
+                "required": [
+                  "duration_minutes"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "args_cancel_schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schedule_id"
+      ],
+      "properties": {
+        "schedule_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Id from a 'Scheduled ...' result (data.schedule.schedule_id) or from schedule_list. A pending schedule is dropped; an active one ends now and its restore runs. Unknown id -> ok:false 'Schedule N not found'."
+        }
+      }
+    },
+    "target_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "selectors"
+      ],
+      "properties": {
+        "type": {
+          "const": "group"
+        },
+        "selectors": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9A-Fa-f]{2}([:-][0-9A-Fa-f]{2}){5}$"
+          },
+          "description": "Response-latency plan 2026-11-10 L3: the devices of one person (\"chặn mạng của con\"), each a MAC the caller resolved; block / unblock only, never with a schedule. router_display writes them in one commit, reloads the firewall once and answers one llm_result with a row per device (data.devices[]: selector, client_name, mac, status ok | unverified | failed)."
+        }
+      }
+    },
+    "args_show_intro": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topic"
+      ],
+      "properties": {
+        "topic": {
+          "type": "string",
+          "enum": [
+            "product",
+            "wifi8",
+            "vnpt"
+          ],
+          "description": "Which showcase chapter the panel opens: the product itself, Wi-Fi 8, or VNPT."
+        }
+      }
+    },
+    "args_set_language": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language"
+      ],
+      "properties": {
+        "language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "vi"
+          ],
+          "description": "The UI (and STT) language to switch to."
+        }
+      }
+    }
+  }
+}

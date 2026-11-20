@@ -1,0 +1,26 @@
+{
+  "format": "gateway-lm.replay-sim-igate/v1",
+  "skills": {
+    "IG01": {"skill": "device.find", "name": "Tìm thiết bị iGate", "claims": [
+      ["igate_inventory_complete_v1", "OBSERVATION", "complete", "eq", true],
+      ["igate_inventory_truncated_v1", "OBSERVATION", "truncated", "eq", true]
+    ]},
+    "IG02": {"skill": "device.telemetry", "name": "Đo tín hiệu và tốc độ thiết bị iGate", "claims": [
+      ["igate_device_metrics_recorded_v1", "OBSERVATION", "sampled_clients", "gt", 0],
+      ["igate_weak_signal_present_v1", "FAULT", "weak_clients", "gt", 0]
+    ]},
+    "IG03": {"skill": "router.telemetry", "name": "Đo sức khỏe và kết nối router iGate", "claims": [
+      ["igate_router_metrics_recorded_v1", "OBSERVATION", "system_metrics", "gt", 0],
+      ["igate_internet_reachable_v1", "HEALTHY", "internet", "eq", true],
+      ["igate_internet_unreachable_v1", "FAULT", "internet", "eq", false]
+    ]},
+    "IG04": {"skill": "traffic.application_sessions", "name": "Xem phiên ứng dụng iGate", "claims": [
+      ["igate_application_sessions_recorded_v1", "OBSERVATION", "sessions_complete", "eq", true],
+      ["igate_qos_feed_unavailable_v1", "FAULT", "qos_available", "eq", false]
+    ]},
+    "IG05": {"skill": "schedule.list", "name": "Xem lịch iGate", "claims": [
+      ["igate_schedule_counts_recorded_v1", "OBSERVATION", "known_counts", "ge", 0],
+      ["igate_schedules_present_v1", "OBSERVATION", "total", "gt", 0]
+    ]}
+  }
+}
