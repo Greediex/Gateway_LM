@@ -1,502 +1,1676 @@
 {
   "format": "gateway-lm.symptom-taxonomy/v1",
-  "note_vi": "Bản seed từ mẫu sự cố và câu định tuyến của incidents_v1. Các thẻ gợi ý phép kiểm tra trên dữ liệu mô phỏng.",
+  "note_vi": "Tri thức gợi ý chẩn đoán, không phải bằng chứng; ngưỡng/khuyến nghị chưa hiệu chỉnh. Nguồn lấy từ kết quả tìm kiếm (đoạn trích), chưa đọc toàn văn từng trang; một số nhóm chỉ có nguồn liên quan gián tiếp.",
   "groups": [
     {
-      "id": "INC-DHCP-EXHAUST",
-      "label_vi": "Hết địa chỉ DHCP",
+      "id": "SYM-01-dhcp-het-ip",
+      "label_vi": "Thiết bị mới không vào được mạng",
       "user_says": [
         "điện thoại mới không vào được mạng",
         "Wi-Fi có nhưng không có Internet trên máy mới",
-        "khách đến nhà không kết nối được"
+        "khách đến nhà không kết nối được",
+        "dt moi bat wifi bao dang lay dia chi IP hoai",
+        "may moi vao khong duoc ma may cu van xai binh thuong"
       ],
       "cards": [
         {
           "skill_id": "D02",
-          "plain_vi": "Xem còn địa chỉ mạng để cấp không",
-          "why_vi": "Thiết bị mới có thể kết nối Wi-Fi nhưng không nhận được địa chỉ khi vùng cấp phát đã đầy."
+          "plain_vi": "Kiểm tra router còn địa chỉ IP để cấp cho thiết bị không",
+          "why_vi": "Nếu kho địa chỉ đầy thì thiết bị mới không nhận được IP"
         },
         {
           "skill_id": "D03",
-          "plain_vi": "Xem thời hạn địa chỉ đã cấp",
-          "why_vi": "Xem các thiết bị đang giữ địa chỉ và địa chỉ nào đã hết hạn."
+          "plain_vi": "Xem các thiết bị cũ đang giữ địa chỉ bao lâu",
+          "why_vi": "Thiết bị lâu không dùng có thể vẫn chiếm chỗ"
         },
         {
           "skill_id": "A02",
-          "plain_vi": "Đếm thiết bị trong mạng",
-          "why_vi": "Kiểm tra số thiết bị đang xuất hiện trong danh sách mạng."
+          "plain_vi": "Liệt kê thiết bị đang có trong nhà",
+          "why_vi": "Biết có bao nhiêu thiết bị đang chiếm địa chỉ"
         },
         {
           "skill_id": "O01",
-          "plain_vi": "Kiểm tra vì sao máy có Wi-Fi nhưng mất mạng",
-          "why_vi": "Đối chiếu các phép kiểm tra kết nối từ thiết bị đến Internet."
+          "plain_vi": "Điều tra thiết bị có Wi-Fi nhưng mất Internet",
+          "why_vi": "Gom các dấu hiệu của máy bị lỗi để kết luận"
         }
       ],
       "sources": [
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/",
-        "https://networkengineering.stackexchange.com/questions/18882/options-when-facing-dhcp-exhaustion",
-        "https://www.reddit.com/r/Ubiquiti/comments/syyz24/dhcp_pool_exhausted_with_multiple_access_points/"
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368",
+        "https://www.dienmayxanh.com/kinh-nghiem-hay/loi-wifi-da-ket-noi-nhung-khong-ket-noi-internet-1526704"
       ]
     },
     {
-      "id": "INC-DNS-FAIL",
-      "label_vi": "DNS không phân giải được",
+      "id": "SYM-02-dns-hong",
+      "label_vi": "Có Wi-Fi nhưng không mở được web",
       "user_says": [
         "có Wi-Fi mà không vào được web",
         "web không mở được nhưng Zalo vẫn chạy",
-        "báo không tìm thấy trang"
+        "báo không tìm thấy trang",
+        "vao web bao DNS_PROBE_FINISHED, app van chay",
+        "mang co ma chrome khong vao duoc trang nao"
       ],
       "cards": [
         {
           "skill_id": "GP01",
-          "plain_vi": "Kiểm tra tra cứu tên trang web",
-          "why_vi": "So sánh việc truy cập bằng địa chỉ IP với việc tìm địa chỉ theo tên trang."
+          "plain_vi": "Kiểm tra lỗi tra tên miền (DNS) khi mạng vẫn thông",
+          "why_vi": "Phân biệt hỏng DNS với mất mạng thật"
         },
         {
           "skill_id": "F02",
-          "plain_vi": "Thử các máy chủ tra cứu tên trang",
-          "why_vi": "Xem các máy chủ DNS có trả lời được truy vấn hay không."
+          "plain_vi": "So sánh các máy chủ DNS đang dùng",
+          "why_vi": "Tìm máy chủ DNS chậm hoặc không trả lời"
         },
         {
           "skill_id": "F03",
-          "plain_vi": "Kiểm tra bộ nhớ tra cứu tên trang",
-          "why_vi": "Xem bộ nhớ đệm DNS đang trả kết quả ra sao."
+          "plain_vi": "Xem bộ nhớ đệm DNS của router",
+          "why_vi": "Cache lỗi có thể giữ kết quả sai"
         },
         {
           "skill_id": "E08",
-          "plain_vi": "Thử đường từ router ra Internet",
-          "why_vi": "Kiểm tra router có liên lạc được với điểm kiểm tra phía ngoài hay không."
-        },
-        {
-          "skill_id": "O01",
-          "plain_vi": "Kiểm tra vì sao máy có Wi-Fi nhưng mất mạng",
-          "why_vi": "Đối chiếu các phép kiểm tra kết nối từ thiết bị đến Internet."
+          "plain_vi": "Thử kết nối ra ngoài bằng địa chỉ IP",
+          "why_vi": "Cho biết đường ra Internet còn sống không"
         }
       ],
       "sources": [
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+        "https://www.tp-link.com/us/blog/2451/how-to-fix-dns-server-not-responding-a-step-by-step-guide/",
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368"
       ]
     },
     {
-      "id": "INC-WAN-DOWN",
-      "label_vi": "Mất kết nối WAN / sự cố nhà mạng",
+      "id": "SYM-03-mat-mang-ca-nha",
+      "label_vi": "Cả nhà mất mạng",
       "user_says": [
         "cả nhà mất mạng",
-        "tất cả thiết bị đều không vào được Internet"
+        "tất cả thiết bị đều không vào được Internet",
+        "wifi van hien nhung khong co mang o moi may",
+        "mat mang het roi"
       ],
       "cards": [
         {
           "skill_id": "O07",
-          "plain_vi": "Kiểm tra đường Internet của cả nhà",
-          "why_vi": "Đối chiếu đường mặc định và kết nối từ router tới mạng phía ngoài."
+          "plain_vi": "Điều tra mất Internet diện rộng",
+          "why_vi": "Gộp bằng chứng của nhiều thiết bị"
         },
         {
           "skill_id": "SK04",
-          "plain_vi": "Kiểm tra kết nối với nhà mạng",
-          "why_vi": "Xem trạng thái đường Internet tại router."
+          "plain_vi": "Chẩn đoán kết nối ra Internet của router",
+          "why_vi": "Nhìn tổng thể phía WAN để biết lỗi nằm ở đâu"
         },
         {
           "skill_id": "E02",
-          "plain_vi": "Xem cổng nối với nhà mạng",
-          "why_vi": "Kiểm tra đường vật lý ở cổng Internet của router."
+          "plain_vi": "Kiểm tra dây/đường truyền WAN",
+          "why_vi": "Đường truyền vật lý đứt là nguyên nhân hay gặp"
         },
         {
           "skill_id": "E03",
           "plain_vi": "Kiểm tra đường đi mặc định ra Internet",
-          "why_vi": "Xem router có tuyến để chuyển lưu lượng ra Internet hay không."
+          "why_vi": "Thiếu đường đi thì mọi máy đều không ra được"
         },
         {
           "skill_id": "E08",
-          "plain_vi": "Thử đường từ router ra Internet",
-          "why_vi": "Kiểm tra router có liên lạc được với điểm kiểm tra phía ngoài hay không."
+          "plain_vi": "Thử kết nối tới phía nhà mạng",
+          "why_vi": "Xác định lỗi ở nhà hay ở nhà mạng"
         }
       ],
       "sources": [
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+        "https://www.dienmayxanh.com/kinh-nghiem-hay/khac-phuc-loi-den-do-pon-los-tren-modem-1402464",
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/"
       ]
     },
     {
-      "id": "INC-24G-COCHANNEL",
-      "label_vi": "Nghẽn kênh 2.4 GHz do hàng xóm",
+      "id": "SYM-04-wifi-cham-toi",
+      "label_vi": "Wi-Fi chậm buổi tối ở chung cư",
       "user_says": [
         "Wi-Fi chậm buổi tối",
         "ở chung cư mạng rất chậm",
-        "tốc độ lúc được lúc không"
+        "tốc độ lúc được lúc không",
+        "toi nao wifi cung lag, ban ngay thi ok"
       ],
       "cards": [
         {
-          "skill_id": "B06",
-          "plain_vi": "Kiểm tra Wi-Fi có trùng kênh không",
-          "why_vi": "Xem có nhiều điểm phát dùng chung kênh với Wi-Fi đang kiểm tra hay không."
+          "skill_id": "B05",
+          "plain_vi": "Xem kênh Wi-Fi có đang bị chiếm nhiều không",
+          "why_vi": "Kênh đông thì tốc độ giảm vào giờ cao điểm"
         },
         {
-          "skill_id": "B05",
-          "plain_vi": "Kiểm tra mức độ bận của kênh Wi-Fi",
-          "why_vi": "Xem kênh đang được dùng nhiều đến mức nào."
+          "skill_id": "B06",
+          "plain_vi": "Tìm Wi-Fi hàng xóm đang trùng kênh",
+          "why_vi": "Trùng kênh gây nhiễu"
         },
         {
           "skill_id": "B02",
-          "plain_vi": "Xem băng tần và tên mạng Wi-Fi",
-          "why_vi": "Kiểm tra trạng thái phát sóng của router."
+          "plain_vi": "Xem trạng thái sóng Wi-Fi của router",
+          "why_vi": "Biết băng tần và kênh đang dùng"
         },
         {
           "skill_id": "O02",
-          "plain_vi": "Kiểm tra tình trạng Wi-Fi chậm",
-          "why_vi": "Đối chiếu các tín hiệu để tìm điểm bất thường trong kết nối Wi-Fi."
+          "plain_vi": "Điều tra Wi-Fi chậm",
+          "why_vi": "Tổng hợp để chỉ ra nguyên nhân chính"
         }
       ],
       "sources": [
-        "https://www.ekahau.com/blog/channel-planning-best-practices-for-better-wi-fi/",
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+        "https://digishop.vnpt.vn/tin-tuc-km/tu-van/cach-khac-phuc-mang-cham-vao-ban-dem-cuc-hieu-qua",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     },
     {
-      "id": "INC-WEAK-SIGNAL",
-      "label_vi": "Sóng yếu do vị trí router",
+      "id": "SYM-05-song-yeu",
+      "label_vi": "Phòng xa router sóng yếu",
       "user_says": [
         "phòng ngủ sóng yếu",
         "đi xa router là chậm",
-        "tivi hay bị mất mạng"
+        "tivi hay bị mất mạng",
+        "phong ngu bat wifi 1 vach la yeu",
+        "tv o phong khach hay mat ket noi"
       ],
       "cards": [
         {
           "skill_id": "B04",
-          "plain_vi": "Đo độ mạnh và độ nhiễu của sóng",
-          "why_vi": "Xem sóng tới thiết bị có yếu hoặc bị nhiễu nhiều không."
+          "plain_vi": "Đánh giá độ mạnh sóng của thiết bị",
+          "why_vi": "Sóng yếu hay nhiễu là lý do thường gặp nhất"
         },
         {
           "skill_id": "SK02",
-          "plain_vi": "Kiểm tra kết nối Wi-Fi",
-          "why_vi": "Xem các số đo kết nối Wi-Fi có dấu hiệu bất thường không."
+          "plain_vi": "Chẩn đoán kết nối Wi-Fi của thiết bị",
+          "why_vi": "Xem thiết bị bắt sóng ra sao"
         },
         {
           "skill_id": "A08",
-          "plain_vi": "Xem thiết bị đang nối điểm phát nào",
-          "why_vi": "Xác nhận thiết bị có đang gắn với điểm phát dự kiến hay không."
+          "plain_vi": "Xem thiết bị đang bám vào điểm phát nào",
+          "why_vi": "Có thể đang bám điểm phát xa"
         },
         {
           "skill_id": "O02",
-          "plain_vi": "Kiểm tra tình trạng Wi-Fi chậm",
-          "why_vi": "Đối chiếu các tín hiệu để tìm điểm bất thường trong kết nối Wi-Fi."
+          "plain_vi": "Điều tra Wi-Fi chậm",
+          "why_vi": "Tổng hợp nguyên nhân"
         }
       ],
       "sources": [
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/tim-hieu-mot-so-nguyen-nhan-khien-wifi-chap-chon-yeu-song-va-giai-phap-khac-phuc/17925972",
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha"
       ]
     },
     {
-      "id": "INC-BUFFERBLOAT",
-      "label_vi": "Bufferbloat: trễ tăng vọt khi có người tải",
+      "id": "SYM-06-bufferbloat",
+      "label_vi": "Lag khi có người tải phim",
       "user_says": [
         "đang chơi game thì lag khi có người tải phim",
         "gọi video bị giật khi ai đó xem YouTube",
-        "ping bình thường mà vẫn lag"
+        "ping bình thường mà vẫn lag",
+        "co nguoi down phim la game lag dung hinh"
       ],
       "cards": [
         {
           "skill_id": "G06",
-          "plain_vi": "Đo độ trễ khi mạng có tải",
-          "why_vi": "Xem dữ liệu có phải chờ lâu trong hàng đợi khi đường truyền bận không."
+          "plain_vi": "Kiểm tra router có bị đầy hàng đợi khi tải nặng không",
+          "why_vi": "Đây là thủ phạm hay gặp khi lag lúc có người tải"
         },
         {
           "skill_id": "G07",
-          "plain_vi": "Kiểm tra cách router ưu tiên lưu lượng",
-          "why_vi": "Xem cấu hình quản lý hàng đợi và ưu tiên lưu lượng."
+          "plain_vi": "Xem router có bật ưu tiên băng thông không",
+          "why_vi": "Chưa có QoS thì mọi luồng tranh nhau"
         },
         {
           "skill_id": "G01",
-          "plain_vi": "Đo độ trễ và lượng gói bị mất",
-          "why_vi": "Kiểm tra phản hồi của đường truyền trong kịch bản."
+          "plain_vi": "Đo độ trễ và mất gói",
+          "why_vi": "Cho số liệu lag cụ thể"
         },
         {
           "skill_id": "O06",
-          "plain_vi": "Kiểm tra nguyên nhân gọi video bị giật",
-          "why_vi": "Đối chiếu các số đo ảnh hưởng đến cuộc gọi qua mạng."
+          "plain_vi": "Điều tra gọi video/VoIP giật",
+          "why_vi": "Gom các dấu hiệu liên quan"
         }
       ],
       "sources": [
-        "https://www.bufferbloat.net/projects/bloat/wiki/Bufferbloat_FAQs/",
-        "https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm",
-        "https://docs.opnsense.org/manual/how-tos/shaper_bufferbloat.html"
+        "https://www.reddit.com/r/HomeNetworking/comments/1pp83k8/psa_my_wifi_is_trash_checklist_that_fixed_90_of/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1r95579/bad_wifi_on_video_calls_and_social_media_but/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1x7yz6u/advice_on_fixing_lag_spikes/"
       ]
     },
     {
-      "id": "INC-PPPOE-MTU",
-      "label_vi": "Lỗi MTU/MSS trên PPPoE",
+      "id": "SYM-07-mtu-pppoe",
+      "label_vi": "Một số web treo giữa chừng",
       "user_says": [
         "một số trang web không tải xong",
         "web mở được nhưng treo giữa chừng",
-        "ngân hàng điện tử không vào được"
+        "ngân hàng điện tử không vào được",
+        "trang tai duoc nua roi dung, trang khac thi binh thuong"
       ],
       "cards": [
         {
           "skill_id": "GP02",
-          "plain_vi": "Thử kích cỡ gói tin trên đường Internet",
-          "why_vi": "Đối chiếu giới hạn kích thước gói tin trên đường PPPoE."
+          "plain_vi": "Kiểm tra lỗi kích thước gói (MTU/MSS) trên PPPoE",
+          "why_vi": "Gói lớn bị chặn làm trang treo"
         },
         {
           "skill_id": "C08",
-          "plain_vi": "Kiểm tra giới hạn kích cỡ gói tin",
-          "why_vi": "Xem số đo có dấu hiệu gói quá lớn đối với đường truyền hay không."
+          "plain_vi": "Phát hiện lệch kích thước gói trên đường truyền",
+          "why_vi": "Xác nhận có chỗ không khớp"
         },
         {
           "skill_id": "E04",
-          "plain_vi": "Kiểm tra phiên kết nối nhà mạng",
-          "why_vi": "Xem trạng thái PPPoE hoặc cấp địa chỉ từ nhà mạng."
+          "plain_vi": "Kiểm tra phiên PPPoE với nhà mạng",
+          "why_vi": "Phiên PPPoE đặt sai gây lỗi này"
         },
         {
           "skill_id": "E02",
-          "plain_vi": "Xem cổng nối với nhà mạng",
-          "why_vi": "Kiểm tra đường vật lý ở cổng Internet của router."
+          "plain_vi": "Kiểm tra đường truyền WAN",
+          "why_vi": "Loại trừ lỗi đường truyền"
         }
       ],
       "sources": [
-        "https://digitize.au/library/networking/understanding-and-fixing-mtu-mss/",
-        "https://networkingtoolbox.net/reference/mtu-mss",
-        "https://bufferspeed.com/blog/mtu-black-hole-fix"
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     },
     {
-      "id": "INC-CGNAT",
-      "label_vi": "Bị CGNAT: không mở được port / truy cập từ xa",
+      "id": "SYM-08-cgnat-camera",
+      "label_vi": "Mở port mà vẫn không xem camera từ xa được",
       "user_says": [
         "mở port mà camera vẫn không xem từ xa được",
         "không truy cập NAS từ ngoài được",
-        "game báo NAT strict"
+        "game báo NAT strict",
+        "da mo port roi ma van khong vao tu ngoai duoc"
       ],
       "cards": [
         {
-          "skill_id": "GP05",
-          "plain_vi": "Kiểm tra các lớp chuyển tiếp địa chỉ",
-          "why_vi": "Đối chiếu địa chỉ và đường đi để tìm dấu hiệu NAT hai lớp hoặc CGNAT."
-        },
-        {
           "skill_id": "E05",
-          "plain_vi": "Xem địa chỉ Internet của router",
-          "why_vi": "Kiểm tra địa chỉ phía ngoài có dấu hiệu nằm sau lớp NAT của nhà mạng không."
+          "plain_vi": "Kiểm tra nhà mạng có dùng chung IP (CGNAT) không",
+          "why_vi": "Dùng chung IP thì mở port vô ích"
         },
         {
           "skill_id": "J08",
-          "plain_vi": "Kiểm tra truy cập thiết bị từ xa",
-          "why_vi": "Xem các điều kiện kết nối từ bên ngoài vào."
+          "plain_vi": "Chẩn đoán truy cập từ xa",
+          "why_vi": "Xem đường vào từ ngoài có thông không"
         }
       ],
       "sources": [
-        "https://www.ip-trackers.com/blog/cgnat-ip-address-range",
-        "https://getastatic.com/port-forwarding-not-working"
+        "https://www.reddit.com/r/HomeNetworking/comments/1dn6mye/would_double_nat_be_an_issue/",
+        "https://support.google.com/googlehome/answer/6277579?hl=en"
       ]
     },
     {
-      "id": "INC-DOUBLE-NAT",
-      "label_vi": "NAT hai lớp (modem nhà mạng + router riêng)",
+      "id": "SYM-09-double-nat",
+      "label_vi": "Lắp thêm router thì game báo NAT",
       "user_says": [
         "lắp thêm router thì game báo NAT",
-        "UPnP không hoạt động"
+        "UPnP không hoạt động",
+        "lap them con wifi la choi game bao nat chat",
+        "may in/camera khong thay nhau sau khi them router"
       ],
       "cards": [
         {
-          "skill_id": "GP05",
-          "plain_vi": "Kiểm tra các lớp chuyển tiếp địa chỉ",
-          "why_vi": "Đối chiếu địa chỉ và đường đi để tìm dấu hiệu NAT hai lớp hoặc CGNAT."
-        },
-        {
           "skill_id": "E05",
-          "plain_vi": "Xem địa chỉ Internet của router",
-          "why_vi": "Kiểm tra địa chỉ phía ngoài có dấu hiệu nằm sau lớp NAT của nhà mạng không."
+          "plain_vi": "Kiểm tra có hai lớp NAT chồng nhau không",
+          "why_vi": "Hai router cùng chia mạng gây lỗi NAT"
         },
         {
           "skill_id": "L03",
-          "plain_vi": "Xem router nối lên thiết bị nào",
-          "why_vi": "Đối chiếu đường nối từ router tới gateway phía trên."
+          "plain_vi": "Xem router nào đang nối ra Internet",
+          "why_vi": "Biết router nào là cửa chính"
         }
       ],
       "sources": [
-        "https://getastatic.com/port-forwarding-not-working"
+        "https://support.google.com/googlehome/answer/6277579?hl=en",
+        "https://www.xda-developers.com/ran-double-nat-without-knowing-fixing-it-explained-problems/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1dn6mye/would_double_nat_be_an_issue/"
       ]
     },
     {
-      "id": "INC-IPV6-BROKEN",
-      "label_vi": "IPv6 hỏng làm web tải chậm",
+      "id": "SYM-10-ipv6-cham",
+      "label_vi": "Mở web lần đầu rất lâu rồi mới vào",
       "user_says": [
         "mở web lần đầu rất lâu rồi mới vào",
-        "có trang lúc vào được lúc không"
+        "có trang lúc vào được lúc không",
+        "moi lan vao trang la doi lau, f5 lai thi nhanh"
       ],
       "cards": [
         {
-          "skill_id": "GP03",
-          "plain_vi": "Kiểm tra đường đi IPv6",
-          "why_vi": "Xem thiết bị đã có địa chỉ IPv6 và có tuyến để dùng địa chỉ đó hay chưa."
-        },
-        {
           "skill_id": "D06",
-          "plain_vi": "Xem thiết bị có tự nhận IPv6 không",
-          "why_vi": "Kiểm tra thông báo IPv6 từ router và quá trình tự đặt địa chỉ."
+          "plain_vi": "Kiểm tra IPv6 có được thông báo đúng không",
+          "why_vi": "IPv6 lỗi làm máy chờ rồi mới chuyển IPv4"
         },
         {
           "skill_id": "D07",
-          "plain_vi": "Kiểm tra cấp địa chỉ DHCPv6",
-          "why_vi": "Xem quá trình cấp thông tin IPv6 qua DHCPv6 có hoạt động không."
+          "plain_vi": "Kiểm tra cấp IPv6 (DHCPv6)",
+          "why_vi": "Xem router có cấp địa chỉ IPv6 đúng không"
+        },
+        {
+          "skill_id": "GP03",
+          "plain_vi": "Kiểm tra có địa chỉ IPv6 mà không có đường đi",
+          "why_vi": "Triệu chứng kinh điển của IPv6 hỏng"
         },
         {
           "skill_id": "J06",
-          "plain_vi": "Kiểm tra IPv6 qua VPN",
-          "why_vi": "Xem đường VPN có mang lưu lượng IPv6 như dự kiến hay không."
+          "plain_vi": "Kiểm tra IPv6 khi đi qua VPN",
+          "why_vi": "VPN có thể làm lệch IPv6"
         }
       ],
       "sources": [
-        "https://www.rfc-editor.org/info/rfc6555/",
-        "https://labs.ripe.net/author/emileaben/hampering-eyeballs-observations-on-two-happy-eyeballs-implementations/",
-        "https://oneuptime.com/blog/post/2026-03-20-ipv6-happy-eyeballs-issues/view"
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/",
+        "https://www.tp-link.com/us/blog/2451/how-to-fix-dns-server-not-responding-a-step-by-step-guide/"
       ]
     },
     {
-      "id": "INC-DFS-RADAR",
-      "label_vi": "Wi-Fi 5 GHz rớt do radar (kênh DFS)",
+      "id": "SYM-11-dfs-5g-rot",
+      "label_vi": "Wi-Fi 5G tự mất khoảng một phút",
       "user_says": [
         "Wi-Fi 5G tự mất khoảng một phút rồi có lại",
-        "gần sân bay hay mất sóng 5G"
+        "gần sân bay hay mất sóng 5G",
+        "5g hay bien mat roi lai hien"
       ],
       "cards": [
         {
           "skill_id": "GP06",
-          "plain_vi": "Kiểm tra Wi-Fi 5 GHz có phải đổi kênh",
-          "why_vi": "Xem sự kiện radar và trạng thái kênh DFS khi Wi-Fi bị gián đoạn."
+          "plain_vi": "Kiểm tra radar DFS có buộc đổi kênh không",
+          "why_vi": "Radar làm router tạm ngưng phát 5G"
         },
         {
           "skill_id": "B02",
-          "plain_vi": "Xem băng tần và tên mạng Wi-Fi",
-          "why_vi": "Kiểm tra trạng thái phát sóng của router."
-        },
-        {
-          "skill_id": "B06",
-          "plain_vi": "Kiểm tra Wi-Fi có trùng kênh không",
-          "why_vi": "Xem có nhiều điểm phát dùng chung kênh với Wi-Fi đang kiểm tra hay không."
+          "plain_vi": "Xem trạng thái và kênh Wi-Fi 5G",
+          "why_vi": "Thấy kênh bị đổi hay tắt"
         },
         {
           "skill_id": "H04",
-          "plain_vi": "Xem lỗi đã ghi trong nhật ký hệ thống",
-          "why_vi": "Tìm sự kiện được ghi nhận cùng thời điểm có dấu hiệu gián đoạn."
+          "plain_vi": "Đọc nhật ký hệ thống tìm sự kiện đổi kênh",
+          "why_vi": "Nhật ký ghi lại lý do ngưng phát"
         }
       ],
       "sources": [
-        "https://blog.iptel.com.au/wifi-and-the-problem-with-radar",
-        "https://www.purple.ai/en-us/guides/dfs-channels-what-they-are-and-when-to-avoid-them",
-        "https://forums.raspberrypi.com/viewtopic.php?t=212107"
+        "https://www.reddit.com/r/HomeNetworking/comments/1pp83k8/psa_my_wifi_is_trash_checklist_that_fixed_90_of/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     },
     {
-      "id": "INC-STICKY-CLIENT",
-      "label_vi": "Thiết bị bám điểm phát xa (sticky client)",
+      "id": "SYM-12-bam-diem-phat-xa",
+      "label_vi": "Nhà có mesh mà vẫn chậm",
       "user_says": [
         "nhà có mesh mà điện thoại vẫn chậm",
-        "lên tầng mà vẫn bắt điểm phát dưới nhà"
+        "lên tầng mà vẫn bắt điểm phát dưới nhà",
+        "di chuyen trong nha ma dt khong chuyen wifi"
       ],
       "cards": [
         {
           "skill_id": "GP07",
-          "plain_vi": "Kiểm tra thiết bị có bám điểm phát xa không",
-          "why_vi": "Đối chiếu tín hiệu với thông tin điểm phát mà thiết bị đang dùng."
+          "plain_vi": "Tìm thiết bị cứ bám điểm phát xa",
+          "why_vi": "Thiết bị bám sai điểm phát nên chậm"
         },
         {
           "skill_id": "B07",
-          "plain_vi": "Kiểm tra việc chuyển điểm phát Wi-Fi",
-          "why_vi": "Xem có dấu hiệu chuyển điểm phát chậm hoặc thất bại không."
+          "plain_vi": "Chẩn đoán chuyển vùng giữa các điểm phát",
+          "why_vi": "Xem thiết bị có chịu chuyển sang điểm gần hơn"
         },
         {
           "skill_id": "B08",
-          "plain_vi": "Kiểm tra đường nối giữa các bộ mesh",
-          "why_vi": "Xem các điểm mesh kết nối với nhau có ổn định không."
-        },
-        {
-          "skill_id": "A08",
-          "plain_vi": "Xem thiết bị đang nối điểm phát nào",
-          "why_vi": "Xác nhận thiết bị có đang gắn với điểm phát dự kiến hay không."
+          "plain_vi": "Kiểm tra đường nối giữa các điểm mesh",
+          "why_vi": "Đường nối yếu thì mesh cũng yếu"
         },
         {
           "skill_id": "L02",
-          "plain_vi": "Xem đường kết nối từ thiết bị tới router",
-          "why_vi": "Xác định thiết bị đang đi qua điểm phát nào."
+          "plain_vi": "Xem thiết bị đang nối với điểm phát nào",
+          "why_vi": "Có bản đồ để so sánh"
         }
       ],
       "sources": [
-        "https://openwrt.org/docs/guide-user/network/wifi/roaming",
-        "https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/221671-understand-802-11r-11k-11v-fast-roams-on.html",
-        "https://support.apple.com/guide/deployment/wi-fi-roaming-support-dep98f116c0f/web"
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/tim-hieu-mot-so-nguyen-nhan-khien-wifi-chap-chon-yeu-song-va-giai-phap-khac-phuc/17925972",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     },
     {
-      "id": "INC-OVERHEAT-REBOOT",
-      "label_vi": "Router quá nhiệt, tự khởi động lại",
+      "id": "SYM-13-router-nong-reboot",
+      "label_vi": "Router hay tự khởi động lại",
       "user_says": [
         "router hay tự khởi động lại",
         "mạng mất vài phút mỗi ngày",
-        "router nóng ran"
+        "router nóng ran",
+        "modem tu tat mo, may hom mat mang"
       ],
       "cards": [
         {
-          "skill_id": "H05",
-          "plain_vi": "Kiểm tra router có quá nóng không",
-          "why_vi": "Đối chiếu nhiệt độ và số lần khởi động lại trong kịch bản sự cố."
+          "skill_id": "H07",
+          "plain_vi": "Phân tích lần khởi động lại/treo máy",
+          "why_vi": "Xem router có tự khởi động lại và vì sao"
         },
         {
-          "skill_id": "H07",
-          "plain_vi": "Xem router có từng khởi động lại hay treo",
-          "why_vi": "Kiểm tra bộ đếm và sự kiện khởi động lại."
+          "skill_id": "H05",
+          "plain_vi": "Kiểm tra nhiệt độ router",
+          "why_vi": "Quá nóng là nguyên nhân thường gặp"
         },
         {
           "skill_id": "SK08",
-          "plain_vi": "Kiểm tra tài nguyên của router",
-          "why_vi": "Xem CPU, bộ nhớ và các dấu hiệu tải hệ thống."
+          "plain_vi": "Kiểm tra tài nguyên router (CPU, bộ nhớ)",
+          "why_vi": "Quá tải cũng làm treo"
         },
         {
           "skill_id": "H08",
-          "plain_vi": "Kiểm tra dung lượng dành cho cập nhật",
-          "why_vi": "Xem router còn đủ tài nguyên theo điều kiện kiểm tra cập nhật không."
+          "plain_vi": "Đánh giá có nên cập nhật firmware không",
+          "why_vi": "Lỗi phần mềm cũ có thể gây tự khởi động"
         }
       ],
       "sources": [
-        "https://www.glofiber.com/en/blog/how-to-tell-if-your-router-is-bad",
-        "https://www.engadget.com/2306359/how-to-keep-router-from-overheating/"
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     },
     {
-      "id": "INC-CAPACITY",
-      "label_vi": "Router cũ quá tải giờ cao điểm",
+      "id": "SYM-14-qua-tai-toi",
+      "label_vi": "Tối đông người dùng là chậm",
       "user_says": [
         "tối đông người dùng là chậm",
         "nhà nhiều thiết bị thì mạng yếu",
-        "tối đông người là mạng chậm",
-        "buổi tối nhiều người dùng thì mạng chậm"
+        "cang nhieu may ket noi cang lag",
+        "tối đông người là mạng chậm"
       ],
       "cards": [
         {
           "skill_id": "GP04",
-          "plain_vi": "Kiểm tra router có quá tải không",
-          "why_vi": "Đối chiếu tải hệ thống và số thiết bị khi nhiều người dùng mạng."
+          "plain_vi": "Kiểm tra router có bị quá tải không",
+          "why_vi": "Router cũ hay nghẽn CPU"
         },
         {
           "skill_id": "SK08",
-          "plain_vi": "Kiểm tra tài nguyên của router",
-          "why_vi": "Xem CPU, bộ nhớ và các dấu hiệu tải hệ thống."
+          "plain_vi": "Kiểm tra router có quá tải không",
+          "why_vi": "Router yếu không kham nổi nhiều thiết bị"
         },
         {
           "skill_id": "G05",
-          "plain_vi": "Tìm nơi đang dùng nhiều băng thông",
-          "why_vi": "Xem nơi nào đang chiếm phần lớn lưu lượng được đo."
+          "plain_vi": "Xem thiết bị nào đang dùng nhiều băng thông",
+          "why_vi": "Tìm thủ phạm ngốn mạng"
         },
         {
           "skill_id": "A02",
-          "plain_vi": "Đếm thiết bị trong mạng",
-          "why_vi": "Kiểm tra số thiết bị đang xuất hiện trong danh sách mạng."
+          "plain_vi": "Liệt kê các thiết bị đang kết nối",
+          "why_vi": "Biết có bao nhiêu thiết bị"
         },
         {
           "skill_id": "G04",
-          "plain_vi": "Xem lượng dữ liệu qua từng cổng",
-          "why_vi": "So sánh lưu lượng giữa các cổng hoặc giao diện mạng."
+          "plain_vi": "Thống kê lưu lượng từng cổng",
+          "why_vi": "Xem đường nào đang đầy"
         }
       ],
       "sources": [
-        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-15-router-qua-tai",
+      "label_vi": "Router cũ chạy không nổi",
+      "user_says": [
+        "modem dùng mấy năm rồi giờ hay đứng",
+        "bật nhiều thiết bị là router đơ",
+        "web load cham du toc do goi cuoc cao"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP04",
+          "plain_vi": "Kiểm tra router có bị quá tải không",
+          "why_vi": "Router cũ hay nghẽn CPU"
+        },
+        {
+          "skill_id": "SK08",
+          "plain_vi": "Xem CPU và bộ nhớ router",
+          "why_vi": "Số liệu cụ thể để kết luận"
+        },
+        {
+          "skill_id": "H02",
+          "plain_vi": "Kiểm tra các dịch vụ trong router có chạy ổn không",
+          "why_vi": "Dịch vụ chết làm mạng hỏng từng phần"
+        },
+        {
+          "skill_id": "H03",
+          "plain_vi": "Kiểm tra bộ nhớ lưu trữ của router",
+          "why_vi": "Bộ nhớ đầy hoặc mòn gây treo"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-16-led-los-do",
+      "label_vi": "Đèn LOS đỏ hoặc nhấp nháy",
+      "user_says": [
+        "đèn LOS đỏ rồi",
+        "modem nhấp nháy đèn đỏ không có mạng",
+        "den PON tat, LOS do chop",
+        "sang day wifi co cham than, kiem tra modem thay den do"
+      ],
+      "cards": [
+        {
+          "skill_id": "E02",
+          "plain_vi": "Kiểm tra trạng thái đường truyền WAN",
+          "why_vi": "Cho biết cổng WAN có nhận được tín hiệu không"
+        },
+        {
+          "skill_id": "SK04",
+          "plain_vi": "Chẩn đoán kết nối ra Internet",
+          "why_vi": "Tổng quan lỗi phía nhà mạng"
+        },
+        {
+          "skill_id": "K06",
+          "plain_vi": "Tìm các khoảng thời gian mất kết nối",
+          "why_vi": "Xem lỗi xảy ra một lần hay lặp lại"
+        }
+      ],
+      "sources": [
+        "https://www.dienmayxanh.com/kinh-nghiem-hay/khac-phuc-loi-den-do-pon-los-tren-modem-1402464",
+        "https://cellphones.com.vn/sforum/wifi-bi-loi-los"
+      ],
+      "gap_vi": "Thiếu Skill đọc trực tiếp đèn/công suất quang của ONT; hiện chỉ suy ra từ trạng thái WAN."
+    },
+    {
+      "id": "SYM-17-cap-quang-ont",
+      "label_vi": "Dây cáp quang hoặc ONT có vấn đề",
+      "user_says": [
+        "dây quang bị gập, bị đè",
+        "modem hu, mang rot hoai",
+        "mat mang sau khi ttho sua dien nuoc",
+        "cap quang bi cat hay lo"
+      ],
+      "cards": [
+        {
+          "skill_id": "E07",
+          "plain_vi": "Phân tích WAN chập chờn",
+          "why_vi": "Dây/ONT hỏng thường gây rớt lặp đi lặp lại"
+        },
+        {
+          "skill_id": "E02",
+          "plain_vi": "Kiểm tra đường truyền WAN",
+          "why_vi": "Thấy link lên xuống liên tục"
+        },
+        {
+          "skill_id": "C02",
+          "plain_vi": "Xem lỗi gói và tốc độ liên kết cổng mạng",
+          "why_vi": "Cáp mạng lỏng hay hỏng hiện ở đây"
+        }
+      ],
+      "sources": [
+        "https://cellphones.com.vn/sforum/wifi-bi-loi-los",
+        "https://www.dienmayxanh.com/kinh-nghiem-hay/khac-phuc-loi-den-do-pon-los-tren-modem-1402464"
+      ],
+      "gap_vi": "Thiếu Skill đo công suất quang/độ suy hao ONT."
+    },
+    {
+      "id": "SYM-18-rot-theo-gio",
+      "label_vi": "Mạng rớt theo giờ cố định",
+      "user_says": [
+        "cứ 8-9 giờ tối là mạng rớt",
+        "mang chap chon vao ban dem",
+        "giữa trưa mạng ổn, tối thì lag",
+        "moi ngay dung gio do la mat mang"
+      ],
+      "cards": [
+        {
+          "skill_id": "K02",
+          "plain_vi": "Phân tích xu hướng theo thời gian",
+          "why_vi": "Thấy lỗi có lặp theo giờ không"
+        },
+        {
+          "skill_id": "K06",
+          "plain_vi": "Tìm các khoảng mất kết nối",
+          "why_vi": "Cho thời điểm cụ thể"
+        },
+        {
+          "skill_id": "G08",
+          "plain_vi": "Khoanh vùng nơi bị nghẽn",
+          "why_vi": "Xem nghẽn ở nhà hay ở đường ra"
+        },
+        {
+          "skill_id": "E07",
+          "plain_vi": "Phân tích WAN chập chờn",
+          "why_vi": "Phân biệt lỗi nhà mạng với lỗi nhà mình"
+        }
+      ],
+      "sources": [
+        "https://digishop.vnpt.vn/tin-tuc-km/tu-van/cach-khac-phuc-mang-cham-vao-ban-dem-cuc-hieu-qua",
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/"
+      ]
+    },
+    {
+      "id": "SYM-19-chap-chon-wan",
+      "label_vi": "Mạng nhà mạng chập chờn lúc được lúc không",
+      "user_says": [
+        "mạng FPT hay chập chờn",
+        "wifi lúc có lúc không dù không đi đâu",
+        "net chap chon lien tuc",
+        "mat ket noi vai giay roi co lai"
+      ],
+      "cards": [
+        {
+          "skill_id": "E07",
+          "plain_vi": "Phân tích WAN chập chờn",
+          "why_vi": "Đo tần suất rớt phía nhà mạng"
+        },
+        {
+          "skill_id": "O03",
+          "plain_vi": "Điều tra mạng chập chờn",
+          "why_vi": "Gom các dấu hiệu chập chờn"
+        },
+        {
+          "skill_id": "E08",
+          "plain_vi": "Thử kết nối ra phía nhà mạng",
+          "why_vi": "Biết lỗi ở nhà hay ngoài đường dây"
+        },
+        {
+          "skill_id": "K05",
+          "plain_vi": "Dựng dòng thời gian sự cố",
+          "why_vi": "Có bằng chứng để báo nhà mạng"
+        }
+      ],
+      "sources": [
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028",
+        "https://www.reddit.com/r/HomeNetworking/comments/194zbm9/how_can_i_diagnose_internet_randomly_dropping/"
+      ]
+    },
+    {
+      "id": "SYM-20-chi-mot-thiet-bi",
+      "label_vi": "Chỉ một thiết bị bị lỗi, máy khác bình thường",
+      "user_says": [
+        "chỉ điện thoại tôi là không vào được mạng",
+        "laptop bị còn máy khác thì ổn",
+        "chi mot may bi chap chon",
+        "wifi bao co mang ma mot mình may nay khong dung duoc"
+      ],
+      "cards": [
+        {
+          "skill_id": "O01",
+          "plain_vi": "Điều tra thiết bị có Wi-Fi nhưng mất Internet",
+          "why_vi": "Tập trung vào đúng thiết bị đó"
+        },
+        {
+          "skill_id": "SK02",
+          "plain_vi": "Chẩn đoán kết nối Wi-Fi của thiết bị",
+          "why_vi": "Xem sóng và liên kết của riêng máy đó"
+        },
+        {
+          "skill_id": "I07",
+          "plain_vi": "Phát hiện hành vi bất thường của thiết bị",
+          "why_vi": "Có thể máy đó bị chặn hoặc cấu hình sai"
+        },
+        {
+          "skill_id": "A06",
+          "plain_vi": "Đối chiếu địa chỉ IP, MAC và tên thiết bị",
+          "why_vi": "Xem máy có nhận đúng địa chỉ không"
+        }
+      ],
+      "sources": [
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368",
+        "https://support.apple.com/vi-vn/111786"
+      ]
+    },
+    {
+      "id": "SYM-21-wifi-co-cham-than",
+      "label_vi": "Wi-Fi hiện dấu chấm than",
+      "user_says": [
+        "wifi có chấm than",
+        "đã kết nối nhưng không có internet",
+        "bat wifi len thi hien dau cham than do",
+        "ket noi nhung khong ra mang"
+      ],
+      "cards": [
+        {
+          "skill_id": "O01",
+          "plain_vi": "Điều tra thiết bị có Wi-Fi nhưng mất Internet",
+          "why_vi": "Đây đúng là triệu chứng này"
+        },
+        {
+          "skill_id": "GP01",
+          "plain_vi": "Kiểm tra lỗi DNS khi mạng vẫn thông",
+          "why_vi": "Một nguyên nhân phổ biến"
+        },
+        {
+          "skill_id": "E08",
+          "plain_vi": "Thử kết nối ra ngoài",
+          "why_vi": "Xem đường ra Internet còn không"
+        },
+        {
+          "skill_id": "D03",
+          "plain_vi": "Xem vòng đời cấp địa chỉ IP của thiết bị",
+          "why_vi": "Nhận IP lỗi sẽ hiện dấu chấm than"
+        }
+      ],
+      "sources": [
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368",
+        "https://www.dienmayxanh.com/kinh-nghiem-hay/loi-wifi-da-ket-noi-nhung-khong-ket-noi-internet-1526704",
+        "https://support.apple.com/vi-vn/111786"
+      ]
+    },
+    {
+      "id": "SYM-22-wifi-rot",
+      "label_vi": "Wi-Fi tự rớt rồi kết nối lại",
+      "user_says": [
+        "wifi tự ngắt rồi tự nối lại",
+        "điện thoại cứ mất wifi giữa chừng",
+        "wifi bi ngat hoai",
+        "vua dung xong la bi vang wifi"
+      ],
+      "cards": [
+        {
+          "skill_id": "O03",
+          "plain_vi": "Điều tra mạng chập chờn",
+          "why_vi": "Gom dấu hiệu rớt"
+        },
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá chất lượng sóng thiết bị",
+          "why_vi": "Sóng yếu là lý do hay gặp"
+        },
+        {
+          "skill_id": "B06",
+          "plain_vi": "Phân tích nhiễu và trùng kênh",
+          "why_vi": "Nhiễu làm rớt liên kết"
+        },
+        {
+          "skill_id": "K06",
+          "plain_vi": "Tìm các khoảng mất kết nối",
+          "why_vi": "Thấy chu kỳ rớt"
+        }
+      ],
+      "sources": [
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028",
+        "https://www.reddit.com/r/HomeNetworking/comments/194zbm9/how_can_i_diagnose_internet_randomly_dropping/",
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/tim-hieu-mot-so-nguyen-nhan-khien-wifi-chap-chon-yeu-song-va-giai-phap-khac-phuc/17925972"
+      ]
+    },
+    {
+      "id": "SYM-23-game-lag",
+      "label_vi": "Chơi game bị lag, ping nhảy",
+      "user_says": [
+        "chơi game ping nhảy lung tung",
+        "game giật dù mạng 300Mbps",
+        "lag game vao toi",
+        "pubg lien quan dung hinh mot luc"
+      ],
+      "cards": [
+        {
+          "skill_id": "G01",
+          "plain_vi": "Đo độ trễ và mất gói",
+          "why_vi": "Biết lag do trễ hay do rớt gói"
+        },
+        {
+          "skill_id": "G02",
+          "plain_vi": "Phân tích độ dao động độ trễ (jitter)",
+          "why_vi": "Ping nhảy làm game giật"
+        },
+        {
+          "skill_id": "G06",
+          "plain_vi": "Kiểm tra router có đầy hàng đợi khi tải nặng",
+          "why_vi": "Có người tải thì game lag"
+        },
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá sóng Wi-Fi của máy chơi game",
+          "why_vi": "Wi-Fi yếu cũng gây lag"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/HomeNetworking/comments/1x7yz6u/advice_on_fixing_lag_spikes/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1pp83k8/psa_my_wifi_is_trash_checklist_that_fixed_90_of/"
+      ]
+    },
+    {
+      "id": "SYM-24-goi-video-giat",
+      "label_vi": "Gọi video, họp online bị giật",
+      "user_says": [
+        "họp Zoom bị đứng hình",
+        "gọi video thấy hình vỡ, tiếng đứt",
+        "goi zalo video bi giat",
+        "ping on ma meet van giat"
+      ],
+      "cards": [
+        {
+          "skill_id": "O06",
+          "plain_vi": "Điều tra gọi video/VoIP giật",
+          "why_vi": "Đúng triệu chứng"
+        },
+        {
+          "skill_id": "G02",
+          "plain_vi": "Phân tích jitter",
+          "why_vi": "Jitter là nguyên nhân chính của giật"
+        },
+        {
+          "skill_id": "G01",
+          "plain_vi": "Đo trễ và mất gói",
+          "why_vi": "Mất gói làm đứt tiếng"
+        },
+        {
+          "skill_id": "G06",
+          "plain_vi": "Kiểm tra bufferbloat",
+          "why_vi": "Upload đầy làm gọi giật"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/HomeNetworking/comments/1sovyxu/trying_to_stabilise_video_calls_and_i_am_confused/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1r95579/bad_wifi_on_video_calls_and_social_media_but/"
+      ]
+    },
+    {
+      "id": "SYM-25-youtube-buffering",
+      "label_vi": "Xem phim, YouTube cứ quay vòng",
+      "user_says": [
+        "xem Netflix hay quay vòng",
+        "youtube bi load mai khong chay",
+        "tv xem phim buffer lien tuc dù mạng mạnh"
+      ],
+      "cards": [
+        {
+          "skill_id": "G04",
+          "plain_vi": "Thống kê lưu lượng từng cổng",
+          "why_vi": "Xem đường vào có đầy không"
+        },
+        {
+          "skill_id": "G05",
+          "plain_vi": "Xem thiết bị nào dùng nhiều băng thông",
+          "why_vi": "Máy khác có thể đang chiếm"
+        },
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá sóng Wi-Fi của TV",
+          "why_vi": "TV xa router hay yếu"
+        },
+        {
+          "skill_id": "G08",
+          "plain_vi": "Khoanh vùng nơi nghẽn",
+          "why_vi": "Biết nghẽn ở đâu"
+        }
+      ],
+      "sources": [
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha",
+        "https://digishop.vnpt.vn/tin-tuc-km/tu-van/cach-khac-phuc-mang-cham-vao-ban-dem-cuc-hieu-qua"
+      ]
+    },
+    {
+      "id": "SYM-26-camera-offline",
+      "label_vi": "Camera / thiết bị IoT mất kết nối",
+      "user_says": [
+        "camera báo offline",
+        "camera wifi hay rớt mạng",
+        "cam khong xem duoc tu xa",
+        "den thong minh bi mat ket noi"
+      ],
+      "cards": [
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá sóng Wi-Fi của camera",
+          "why_vi": "Camera xa router thường yếu sóng"
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Kiểm tra camera còn trong danh sách thiết bị không",
+          "why_vi": "Biết camera có còn kết nối router"
+        },
+        {
+          "skill_id": "A07",
+          "plain_vi": "Theo dõi vòng đời của thiết bị",
+          "why_vi": "Xem camera rớt khi nào"
+        },
+        {
+          "skill_id": "D04",
+          "plain_vi": "Phát hiện trùng địa chỉ IP",
+          "why_vi": "IP trùng làm camera lúc có lúc không"
+        }
+      ],
+      "sources": [
+        "https://dsssecurity.vn/camera-bi-mat-ket-noi/",
+        "https://ecovivo.vn/camera-bi-mat-ket-noi-internet-la-loi-gi-cach-khac-phuc"
+      ]
+    },
+    {
+      "id": "SYM-27-camera-tu-xa",
+      "label_vi": "Xem camera từ xa không được",
+      "user_says": [
+        "ở nhà xem được, ra ngoài thì không",
+        "cam bao online nhung app khong len hinh",
+        "xem camera 4G khong duoc"
+      ],
+      "cards": [
+        {
+          "skill_id": "E05",
+          "plain_vi": "Kiểm tra CGNAT / hai lớp NAT",
+          "why_vi": "Hay là nguyên nhân khi truy cập từ ngoài"
+        },
+        {
+          "skill_id": "J08",
+          "plain_vi": "Chẩn đoán truy cập từ xa",
+          "why_vi": "Xem đường vào từ ngoài"
+        },
+        {
+          "skill_id": "I02",
+          "plain_vi": "Kiểm tra cổng đang mở ra ngoài",
+          "why_vi": "Cổng chưa mở thì không vào được"
+        }
+      ],
+      "sources": [
+        "https://dsssecurity.vn/camera-bi-mat-ket-noi/",
+        "https://www.reddit.com/r/HomeNetworking/comments/1dn6mye/would_double_nat_be_an_issue/"
+      ]
+    },
+    {
+      "id": "SYM-28-may-in",
+      "label_vi": "Máy tính không tìm thấy máy in",
+      "user_says": [
+        "máy in không kết nối được",
+        "máy tính báo không tìm thấy máy in wifi",
+        "doi mat khau wifi xong may in khong in duoc",
+        "may in bi mat ket noi hoai"
+      ],
+      "cards": [
+        {
+          "skill_id": "A06",
+          "plain_vi": "Đối chiếu IP, MAC của máy in",
+          "why_vi": "Địa chỉ máy in có thể đã đổi"
+        },
+        {
+          "skill_id": "I03",
+          "plain_vi": "Kiểm tra cách ly thiết bị (guest/isolation)",
+          "why_vi": "Mạng khách chặn máy in"
+        },
+        {
+          "skill_id": "D04",
+          "plain_vi": "Phát hiện trùng địa chỉ IP",
+          "why_vi": "IP trùng làm máy in mất"
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Kiểm tra máy in có trong danh sách thiết bị",
+          "why_vi": "Biết máy in còn trong mạng không"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/printers/comments/1f91fjh/why_does_my_computer_say_wifi_printer_is_not/?tl=vi",
+        "https://www.facebook.com/leanplbl/posts/h%C3%B4m-qua-c%C3%B2n-in-ngon-l%C3%A0nh-s%C3%A1ng-nay-b%E1%BA%A5m-in-th%C3%AC-m%C3%A1y-t%C3%ADnh-b%C3%A1o-kh%C3%B4ng-t%C3%ACm-th%E1%BA%A5y-m%C3%A1y-in-/29346364974960137/"
+      ]
+    },
+    {
+      "id": "SYM-29-mesh-ap",
+      "label_vi": "Mesh hoặc bộ phát phụ không ổn định",
+      "user_says": [
+        "thêm bộ kích sóng mà vẫn yếu",
+        "mesh bi mat ket noi voi node chinh",
+        "node phu hay offline",
+        "extender nối rồi mà chậm hơn"
+      ],
+      "cards": [
+        {
+          "skill_id": "B08",
+          "plain_vi": "Chẩn đoán đường nối mesh",
+          "why_vi": "Xem đường nối giữa các điểm phát"
+        },
+        {
+          "skill_id": "L01",
+          "plain_vi": "Khám phá sơ đồ mạng",
+          "why_vi": "Xem các điểm phát nối với nhau thế nào"
+        },
+        {
+          "skill_id": "B07",
+          "plain_vi": "Chẩn đoán chuyển vùng",
+          "why_vi": "Chuyển giữa điểm phát có trơn không"
+        },
+        {
+          "skill_id": "A08",
+          "plain_vi": "Xem thiết bị nối với điểm phát nào",
+          "why_vi": "Thiết bị có nối sai điểm không"
+        }
+      ],
+      "sources": [
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/tim-hieu-mot-so-nguyen-nhan-khien-wifi-chap-chon-yeu-song-va-giai-phap-khac-phuc/17925972",
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
+      ]
+    },
+    {
+      "id": "SYM-30-dns-cham",
+      "label_vi": "Tra tên miền chậm",
+      "user_says": [
+        "mở web lần đầu chậm nhưng sau nhanh",
+        "doi doi moi vao duoc trang",
+        "web nao cung cho mot luc",
+        "chuyen sang 8.8.8.8 thi nhanh hon"
+      ],
+      "cards": [
+        {
+          "skill_id": "F02",
+          "plain_vi": "So sánh chất lượng các DNS",
+          "why_vi": "Chọn DNS nhanh hơn"
+        },
+        {
+          "skill_id": "F05",
+          "plain_vi": "Kiểm tra DNS được nhà mạng gửi xuống",
+          "why_vi": "Xem router đang dùng DNS nào"
+        },
+        {
+          "skill_id": "F03",
+          "plain_vi": "Xem cache DNS của router",
+          "why_vi": "Cache đầy hoặc sai gây chậm"
+        },
+        {
+          "skill_id": "F07",
+          "plain_vi": "Xem cấu hình DoT/DoH",
+          "why_vi": "Mã hóa DNS cấu hình sai gây chậm"
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2451/how-to-fix-dns-server-not-responding-a-step-by-step-guide/"
+      ]
+    },
+    {
+      "id": "SYM-31-dns-noi-bo",
+      "label_vi": "Vào tên nội bộ hoặc NAS không được",
+      "user_says": [
+        "gõ tên NAS không vào được, gõ IP thì vào",
+        "nas.local khong mo",
+        "vao duoc bang ip nhung khong bang ten"
+      ],
+      "cards": [
+        {
+          "skill_id": "F04",
+          "plain_vi": "Chẩn đoán DNS nội bộ khác DNS công cộng",
+          "why_vi": "Tên nội bộ cần DNS riêng"
+        },
+        {
+          "skill_id": "F05",
+          "plain_vi": "Kiểm tra DNS nhận từ DHCP",
+          "why_vi": "DHCP gửi sai DNS"
+        },
+        {
+          "skill_id": "A06",
+          "plain_vi": "Đối chiếu IP, MAC và tên thiết bị",
+          "why_vi": "Tên thiết bị có đăng ký đúng không"
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2451/how-to-fix-dns-server-not-responding-a-step-by-step-guide/"
+      ]
+    },
+    {
+      "id": "SYM-32-ipv6-khong-vao",
+      "label_vi": "Có trang vào được, có trang không (IPv6)",
+      "user_says": [
+        "facebook vào được còn web khác thì không",
+        "chi mot so trang bi loi ket noi",
+        "bat ipv6 xong thi mang loi"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP03",
+          "plain_vi": "Kiểm tra có IPv6 nhưng không có đường đi",
+          "why_vi": "Triệu chứng kinh điển"
+        },
+        {
+          "skill_id": "D06",
+          "plain_vi": "Kiểm tra thông báo IPv6 (RA/SLAAC)",
+          "why_vi": "Thông báo sai làm máy dùng IPv6 hỏng"
+        },
+        {
+          "skill_id": "D07",
+          "plain_vi": "Kiểm tra cấp địa chỉ DHCPv6",
+          "why_vi": "Có cấp IPv6 không"
+        }
+      ],
+      "sources": [
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/"
+      ]
+    },
+    {
+      "id": "SYM-33-mat-khau-wifi",
+      "label_vi": "Quên hoặc vừa đổi mật khẩu Wi-Fi",
+      "user_says": [
+        "quên mật khẩu wifi",
+        "đổi pass xong các thiết bị không vào",
+        "dt hien sai mat khau du da nhap dung",
+        "thiet bi cu khong ket noi duoc sau khi doi pass"
+      ],
+      "cards": [
+        {
+          "skill_id": "I04",
+          "plain_vi": "Kiểm tra chuẩn mã hóa Wi-Fi",
+          "why_vi": "Thiết bị cũ không hỗ trợ chuẩn mới"
+        },
+        {
+          "skill_id": "B03",
+          "plain_vi": "Kiểm tra cấu hình tên Wi-Fi",
+          "why_vi": "Xem tên Wi-Fi có bị trùng/sai không"
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Xem thiết bị nào đang kết nối",
+          "why_vi": "Thấy thiết bị nào đã rớt sau khi đổi"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/leanplbl/posts/h%C3%B4m-qua-c%C3%B2n-in-ngon-l%C3%A0nh-s%C3%A1ng-nay-b%E1%BA%A5m-in-th%C3%AC-m%C3%A1y-t%C3%ADnh-b%C3%A1o-kh%C3%B4ng-t%C3%ACm-th%E1%BA%A5y-m%C3%A1y-in-/29346364974960137/",
+        "https://support.apple.com/vi-vn/111786"
+      ],
+      "gap_vi": "Không có Skill nào xem/khôi phục mật khẩu (cố ý, vì nhạy cảm); chỉ có hướng dẫn tay."
+    },
+    {
+      "id": "SYM-34-nhieu-thiet-bi",
+      "label_vi": "Quá nhiều thiết bị cùng kết nối",
+      "user_says": [
+        "nhà có hơn 30 thiết bị",
+        "khach den dong la mang yem",
+        "them thiet bi la bi cham",
+        "camera, tv, dien thoai cung ket noi la rot"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP04",
+          "plain_vi": "Kiểm tra router có bị quá tải không",
+          "why_vi": "Router cũ hay nghẽn CPU"
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Kiểm kê thiết bị trong mạng",
+          "why_vi": "Biết thực sự đang có bao nhiêu thiết bị"
+        },
+        {
+          "skill_id": "D02",
+          "plain_vi": "Xem kho địa chỉ IP còn bao nhiêu",
+          "why_vi": "Hết địa chỉ thì không thêm được"
+        },
+        {
+          "skill_id": "G05",
+          "plain_vi": "Xem thiết bị nào dùng nhiều băng thông",
+          "why_vi": "Tìm máy chiếm mạng"
+        },
+        {
+          "skill_id": "B05",
+          "plain_vi": "Xem kênh Wi-Fi bận ra sao",
+          "why_vi": "Nhiều máy làm kênh đầy"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-35-ip-trung",
+      "label_vi": "Báo trùng địa chỉ IP",
+      "user_says": [
+        "báo xung đột địa chỉ IP",
+        "may tinh bao co thiet bi khac dung cung IP",
+        "mang lúc có lúc không sau khi đặt IP tĩnh",
+        "trung ip"
+      ],
+      "cards": [
+        {
+          "skill_id": "D04",
+          "plain_vi": "Phát hiện xung đột địa chỉ IP",
+          "why_vi": "Đúng triệu chứng"
+        },
+        {
+          "skill_id": "D05",
+          "plain_vi": "Xem bảng ARP/lân cận",
+          "why_vi": "Thấy hai máy giành một IP"
+        },
+        {
+          "skill_id": "A06",
+          "plain_vi": "Đối chiếu IP, MAC, tên thiết bị",
+          "why_vi": "Biết máy nào trùng"
+        },
+        {
+          "skill_id": "D02",
+          "plain_vi": "Kiểm tra vùng cấp địa chỉ DHCP",
+          "why_vi": "IP tĩnh nằm trong vùng DHCP gây trùng"
+        }
+      ],
+      "sources": [
+        "https://voz.vn/t/cach-fix-loi-xung-dot-dia-chi-ip-tren-mang-noi-bo.1097148/"
+      ]
+    },
+    {
+      "id": "SYM-36-vong-lap",
+      "label_vi": "Mạng bỗng chết sau khi cắm thêm dây",
+      "user_says": [
+        "cắm thêm dây thì cả nhà đứng",
+        "mang nghet hang loat sau khi noi switch",
+        "den cong mang chop lien tuc"
+      ],
+      "cards": [
+        {
+          "skill_id": "C06",
+          "plain_vi": "Phát hiện dấu hiệu vòng lặp mạng",
+          "why_vi": "Cắm vòng dây gây bão gói"
+        },
+        {
+          "skill_id": "C07",
+          "plain_vi": "Kiểm tra STP/RSTP",
+          "why_vi": "Chống vòng lặp có hoạt động không"
+        },
+        {
+          "skill_id": "C04",
+          "plain_vi": "Kiểm tra sức khỏe bridge",
+          "why_vi": "Bridge quá tải khi có vòng"
+        },
+        {
+          "skill_id": "C01",
+          "plain_vi": "Xem trạng thái các cổng Ethernet",
+          "why_vi": "Thấy cổng nào chớp liên tục"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
+      ]
+    },
+    {
+      "id": "SYM-37-cong-lan-cham",
+      "label_vi": "Cắm dây LAN mà vẫn chậm",
+      "user_says": [
+        "cắm dây mạng mà chỉ được 100Mbps",
+        "day lan nhung toc do thap",
+        "mang day cham hon wifi"
+      ],
+      "cards": [
+        {
+          "skill_id": "C02",
+          "plain_vi": "Xem lỗi gói và tốc độ liên kết cổng mạng",
+          "why_vi": "Cáp hỏng làm tụt tốc độ"
+        },
+        {
+          "skill_id": "C01",
+          "plain_vi": "Xem trạng thái các cổng Ethernet",
+          "why_vi": "Cổng chạy 100M thay vì 1G"
+        },
+        {
+          "skill_id": "G04",
+          "plain_vi": "Thống kê lưu lượng từng cổng",
+          "why_vi": "Cổng có đang đầy không"
+        }
+      ],
+      "sources": [
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha"
+      ]
+    },
+    {
+      "id": "SYM-38-vpn",
+      "label_vi": "VPN không vào được hoặc chậm",
+      "user_says": [
+        "bật VPN thì mất mạng",
+        "vpn cong ty khong ket noi duoc",
+        "vpn vao duoc nhung khong thay may trong"
+      ],
+      "cards": [
+        {
+          "skill_id": "J01",
+          "plain_vi": "Kiểm tra sức khỏe VPN",
+          "why_vi": "Xem đường hầm còn sống không"
+        },
+        {
+          "skill_id": "J04",
+          "plain_vi": "Kiểm tra có tới được máy VPN không",
+          "why_vi": "Máy chủ VPN không tới được"
+        },
+        {
+          "skill_id": "J02",
+          "plain_vi": "Xác minh đường đi qua VPN",
+          "why_vi": "Định tuyến sai thì không thấy máy trong"
+        },
+        {
+          "skill_id": "GP02",
+          "plain_vi": "Kiểm tra lỗi kích thước gói MTU/MSS",
+          "why_vi": "VPN hay hỏng vì MTU"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/HomeNetworking/comments/1dn6mye/would_double_nat_be_an_issue/",
+        "https://support.google.com/googlehome/answer/6277579?hl=en"
+      ]
+    },
+    {
+      "id": "SYM-39-cham-dot-ngot",
+      "label_vi": "Mạng đang tốt bỗng chậm đột ngột",
+      "user_says": [
+        "hôm qua còn nhanh, hôm nay chậm",
+        "đang ổn tự nhiên chậm",
+        "tu nhien mang cham han",
+        "sau khi nha mang lap dat thi cham"
+      ],
+      "cards": [
+        {
+          "skill_id": "N04",
+          "plain_vi": "Phát hiện thay đổi cấu hình",
+          "why_vi": "Có ai đổi cấu hình không"
+        },
+        {
+          "skill_id": "K02",
+          "plain_vi": "Phân tích xu hướng theo thời gian",
+          "why_vi": "Xem bắt đầu chậm từ lúc nào"
+        },
+        {
+          "skill_id": "K01",
+          "plain_vi": "Xem lịch sử bằng chứng đã xác minh",
+          "why_vi": "So sánh trước và sau"
+        },
+        {
+          "skill_id": "M03",
+          "plain_vi": "Nhận diện bằng chứng còn thiếu",
+          "why_vi": "Cho biết cần đo thêm gì"
+        }
+      ],
+      "sources": [
+        "https://digishop.vnpt.vn/tin-tuc-km/tu-van/cach-khac-phuc-mang-cham-vao-ban-dem-cuc-hieu-qua",
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha"
+      ]
+    },
+    {
+      "id": "SYM-40-nghi-bi-xam-nhap",
+      "label_vi": "Nghi có người lạ dùng Wi-Fi",
+      "user_says": [
+        "có người lạ dùng wifi nhà tôi",
+        "thay thiet bi la trong danh sach",
+        "mang bi chiem ma khong biet ai",
+        "bi hack wifi"
+      ],
+      "cards": [
+        {
+          "skill_id": "A02",
+          "plain_vi": "Kiểm kê thiết bị",
+          "why_vi": "Xem thiết bị lạ"
+        },
+        {
+          "skill_id": "A04",
+          "plain_vi": "Nhận diện hãng từ MAC",
+          "why_vi": "Gợi ý thiết bị lạ là máy gì"
+        },
+        {
+          "skill_id": "I07",
+          "plain_vi": "Phát hiện hành vi bất thường",
+          "why_vi": "Thiết bị lạ dùng nhiều"
+        },
+        {
+          "skill_id": "I04",
+          "plain_vi": "Kiểm tra chuẩn mã hóa Wi-Fi",
+          "why_vi": "Mã hóa yếu dễ bị dùng trộm"
+        }
+      ],
+      "sources": [
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-41-khach-guest",
+      "label_vi": "Wi-Fi khách không dùng được hoặc thấy máy nhà",
+      "user_says": [
+        "khách vào được nhưng không có mạng",
+        "wifi khach thay duoc may trong nha",
+        "khach khong in duoc"
+      ],
+      "cards": [
+        {
+          "skill_id": "I03",
+          "plain_vi": "Kiểm tra cách ly mạng khách",
+          "why_vi": "Cách ly quá chặt hay quá lỏng"
+        },
+        {
+          "skill_id": "B03",
+          "plain_vi": "Kiểm tra cấu hình Wi-Fi",
+          "why_vi": "Cấu hình sai"
+        },
+        {
+          "skill_id": "I06",
+          "plain_vi": "Xác minh phân đoạn mạng",
+          "why_vi": "Mạng khách có tách khỏi mạng chính không"
+        }
+      ],
+      "sources": [
+        "https://support.google.com/googlehome/answer/6277579?hl=en",
+        "https://www.reddit.com/r/printers/comments/1f91fjh/why_does_my_computer_say_wifi_printer_is_not/?tl=vi"
+      ]
+    },
+    {
+      "id": "SYM-42-cap-nhat-fw",
+      "label_vi": "Mạng hỏng sau khi cập nhật hoặc đổi cấu hình",
+      "user_says": [
+        "sau khi nâng cấp firmware thì mất mạng",
+        "mới doi cai dat router xong la loi",
+        "muon quay lai cau hinh cu"
+      ],
+      "cards": [
+        {
+          "skill_id": "N04",
+          "plain_vi": "Phát hiện thay đổi cấu hình",
+          "why_vi": "Biết chỗ nào đã đổi"
+        },
+        {
+          "skill_id": "N03",
+          "plain_vi": "Lưu ảnh cấu hình hiện tại",
+          "why_vi": "Có cái để so"
+        },
+        {
+          "skill_id": "N07",
+          "plain_vi": "Xác minh việc quay lại cấu hình",
+          "why_vi": "Chắc chắn đã trở về trạng thái cũ"
+        },
+        {
+          "skill_id": "N08",
+          "plain_vi": "Hướng dẫn khắc phục không tự sửa",
+          "why_vi": "Chỉ dẫn từng bước an toàn"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
+      ]
+    },
+    {
+      "id": "SYM-43-loi-gio-ntp",
+      "label_vi": "Thiết bị báo sai giờ hoặc lỗi chứng chỉ",
+      "user_says": [
+        "trang báo lỗi chứng chỉ bảo mật",
+        "dong ho thiet bi sai gio",
+        "app ngan hang bao loi ket noi an toan"
+      ],
+      "cards": [
+        {
+          "skill_id": "F08",
+          "plain_vi": "Chẩn đoán đồng bộ giờ NTP",
+          "why_vi": "Giờ lệch gây lỗi chứng chỉ"
+        },
+        {
+          "skill_id": "F06",
+          "plain_vi": "Kiểm tra DNSSEC",
+          "why_vi": "Giờ sai làm DNSSEC lỗi"
+        },
+        {
+          "skill_id": "F02",
+          "plain_vi": "So sánh chất lượng DNS",
+          "why_vi": "Loại trừ DNS"
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2451/how-to-fix-dns-server-not-responding-a-step-by-step-guide/"
+      ]
+    },
+    {
+      "id": "SYM-44-nhieu-tu-thiet-bi-khac",
+      "label_vi": "Wi-Fi bị nhiễu bởi thiết bị khác",
+      "user_says": [
+        "lò vi sóng chạy là wifi rớt",
+        "wifi 2.4G nhieu qua",
+        "bluetooth gay nhieu wifi"
+      ],
+      "cards": [
+        {
+          "skill_id": "B06",
+          "plain_vi": "Phân tích nhiễu và trùng kênh",
+          "why_vi": "Nhiễu là nguyên nhân chính"
+        },
+        {
+          "skill_id": "B05",
+          "plain_vi": "Xem mức dùng kênh",
+          "why_vi": "Kênh đông"
+        },
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá chất lượng sóng",
+          "why_vi": "Sóng/nhiễu thấp"
+        }
+      ],
+      "sources": [
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-45-cham-mot-bang-tan",
+      "label_vi": "Chỉ băng 2.4G hoặc 5G có vấn đề",
+      "user_says": [
+        "wifi 5G mất nhưng 2.4G còn",
+        "bat 5ghz khong thay ten wifi",
+        "may cu chi bat duoc 2.4"
+      ],
+      "cards": [
+        {
+          "skill_id": "B02",
+          "plain_vi": "Xem trạng thái từng băng tần",
+          "why_vi": "Biết băng nào đang tắt"
+        },
+        {
+          "skill_id": "B03",
+          "plain_vi": "Kiểm tra cấu hình tên Wi-Fi",
+          "why_vi": "Tên/băng cấu hình sai"
+        },
+        {
+          "skill_id": "GP06",
+          "plain_vi": "Kiểm tra radar DFS",
+          "why_vi": "5G bị ngắt vì radar"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/HomeNetworking/comments/1pp83k8/psa_my_wifi_is_trash_checklist_that_fixed_90_of/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
+      ]
+    },
+    {
+      "id": "SYM-46-nha-mang-su-co",
+      "label_vi": "Sự cố từ phía nhà mạng hoặc cước",
+      "user_says": [
+        "nhà mạng báo bảo trì",
+        "bi cat mang vi het cuoc",
+        "dien thoai nha mang bao dang xu ly"
+      ],
+      "cards": [],
+      "sources": [
+        "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/",
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
+      ],
+      "gap_vi": "Cần Skill đối chiếu thông báo sự cố/bảo trì của nhà mạng và tình trạng hợp đồng; hiện không có nguồn dữ liệu đó. Có thể dùng E08 để chứng minh lỗi nằm phía nhà mạng."
+    },
+    {
+      "id": "SYM-47-thiet-bi-hong",
+      "label_vi": "Điện thoại/laptop có thể đang lỗi",
+      "user_says": [
+        "chỉ máy tính tôi lỗi driver",
+        "dt reset network settings roi van loi",
+        "card wifi may tinh bi hong"
+      ],
+      "cards": [],
+      "sources": [
+        "https://support.apple.com/vi-vn/111786",
+        "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368"
+      ],
+      "gap_vi": "Cần hướng dẫn kiểm tra phía thiết bị khách (driver, đặt lại mạng, bật tắt chế độ máy bay) vì router không thấy được trạng thái bên trong máy khách."
+    },
+    {
+      "id": "SYM-48-ket-qua-speedtest-thap",
+      "label_vi": "Đo tốc độ ra thấp hơn gói cước",
+      "user_says": [
+        "đo speedtest chỉ được nửa gói cước",
+        "goi 500M ma do duoc co 100M",
+        "toc do thuc te thap hon quang cao"
+      ],
+      "cards": [
+        {
+          "skill_id": "G04",
+          "plain_vi": "Thống kê lưu lượng từng cổng",
+          "why_vi": "Cổng WAN thực sự đạt bao nhiêu"
+        },
+        {
+          "skill_id": "C02",
+          "plain_vi": "Xem tốc độ liên kết cổng",
+          "why_vi": "Cổng 100M giới hạn tốc độ"
+        },
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đánh giá sóng Wi-Fi",
+          "why_vi": "Đo qua Wi-Fi yếu"
+        },
+        {
+          "skill_id": "G08",
+          "plain_vi": "Khoanh vùng nơi nghẽn",
+          "why_vi": "Điểm nghẽn thực sự"
+        }
+      ],
+      "sources": [
+        "https://vn.store.tp-link.com/blogs/bo-phat-wifi/khac-phuc-loi-wifi-manh-nhung-mang-cham-don-gian-tai-nha",
+        "https://digishop.vnpt.vn/tin-tuc-km/tu-van/cach-khac-phuc-mang-cham-vao-ban-dem-cuc-hieu-qua"
+      ]
+    },
+    {
+      "id": "SYM-49-igate-xem-router",
+      "label_vi": "Xem thiết bị iGate/router của nhà mạng",
+      "user_says": [
+        "router nhà mạng báo sóng sao rồi",
+        "xem thử modem iGate co on khong",
+        "tim modem igate"
+      ],
+      "cards": [
+        {
+          "skill_id": "IG01",
+          "plain_vi": "Tìm thiết bị iGate",
+          "why_vi": "Tìm đúng thiết bị trước"
+        },
+        {
+          "skill_id": "IG02",
+          "plain_vi": "Đo tín hiệu và tốc độ iGate",
+          "why_vi": "Xem sóng và tốc độ"
+        },
+        {
+          "skill_id": "IG03",
+          "plain_vi": "Đo sức khỏe và kết nối router iGate",
+          "why_vi": "Tổng quan thiết bị"
+        }
+      ],
+      "sources": [
+        "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
+      ]
+    },
+    {
+      "id": "SYM-50-khong-biet-bat-dau",
+      "label_vi": "Mạng có vấn đề nhưng không rõ là gì",
+      "user_says": [
+        "mạng có gì đó không ổn",
+        "khong biet loi o dau",
+        "wifi la lam sao do",
+        "mang yeu qua giup voi"
+      ],
+      "cards": [
+        {
+          "skill_id": "L06",
+          "plain_vi": "Tổng hợp sức khỏe toàn nhà",
+          "why_vi": "Có bức tranh chung trước"
+        },
+        {
+          "skill_id": "M03",
+          "plain_vi": "Nhận diện bằng chứng còn thiếu",
+          "why_vi": "Biết cần đo thêm gì"
+        },
+        {
+          "skill_id": "M05",
+          "plain_vi": "Phân biệt quan sát và nguyên nhân",
+          "why_vi": "Tránh kết luận vội"
+        },
+        {
+          "skill_id": "K05",
+          "plain_vi": "Dựng dòng thời gian sự cố",
+          "why_vi": "Sắp xếp sự kiện"
+        }
+      ],
+      "sources": [
+        "https://www.reddit.com/r/HomeNetworking/comments/1pp83k8/psa_my_wifi_is_trash_checklist_that_fixed_90_of/",
+        "https://vietteltelecom.vn/tin-tuc/9-nguyen-nhan-wifi-chap-chon-va-cach-xu-ly-don-gian-tai-nha/18564028"
       ]
     }
   ]

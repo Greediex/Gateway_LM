@@ -50,10 +50,10 @@ class SkillTriageTests(unittest.TestCase):
         with (patch.object(self.launcher, 'run', side_effect=AssertionError('triage executed a Skill')),
               patch.object(replay_sim.ReplayProfile, 'open_sample', side_effect=AssertionError('triage opened READ'))):
             for text, group, first_ids in [
-                ('Chào bạn, tối đông người là mạng chậm lắm.', 'INC-CAPACITY', ['GP04', 'SK08', 'G05']),
-                ('Có Wi-Fi mà không vào được web', 'INC-DNS-FAIL', ['GP01', 'F02', 'F03']),
+                ('Chào bạn, tối đông người là mạng chậm lắm.', 'SYM-14-qua-tai-toi', ['GP04', 'SK08', 'G05']),
+                ('Có Wi-Fi mà không vào được web', 'SYM-02-dns-hong', ['GP01', 'F02', 'F03']),
                 ('Chào bạn, router hay tự khởi động lại. Nhờ bạn xem giúp.',
-                 'INC-OVERHEAT-REBOOT', ['H05', 'H07', 'SK08']),
+                 'SYM-13-router-nong-reboot', ['H07', 'H05', 'SK08']),
             ]:
                 with self.subTest(text=text):
                     result = self.chat.triage(text)
@@ -85,6 +85,8 @@ class SkillTriageTests(unittest.TestCase):
                 ('Kiểm tra 192.168.1.9', 'custom_target_not_supported'),
                 ('Kiểm tra 2001:db8::1', 'custom_target_not_supported'),
                 ('Kiểm tra router khác', 'custom_target_not_supported'),
+                ('Kiểm tra router này', 'custom_target_not_supported'),
+                ('Đây là mạng thật', 'custom_target_not_supported'),
             ]:
                 with self.subTest(question=question):
                     result = self.chat.triage(question, sid, allow_model=True)
@@ -94,6 +96,11 @@ class SkillTriageTests(unittest.TestCase):
                     self.assertEqual(result['answer'], direct['answer'])
                     self.assertEqual(result['case_status'], direct['case_status'])
             self.assertEqual(self.chat.triage('Đổi mật khẩu Wi-Fi', sid)['cards'], [])
+            # Role-play speaks as the simulated home owner; direct chat keeps refusing the same phrase.
+            owner = 'Có người lạ dùng wifi nhà tôi'
+            self.assertEqual(self.chat.triage(owner, sid)['symptom_groups'][0]['id'], 'SYM-40-nghi-bi-xam-nhap')
+            self.assertEqual(self.chat.chat(owner, session_id=sid, mode='replay_sim', allow_model=False)['stop_reason'],
+                             'custom_target_not_supported')
             run.assert_not_called()
         self.model.choose_skills.assert_not_called()
 
@@ -123,12 +130,14 @@ class SkillTriageTests(unittest.TestCase):
     def test_taxonomy_schema_is_strict(self):
         seed = read_json(TAXONOMY)
         groups = load_taxonomy(self.approved)
-        self.assertEqual(len(groups), 14)
+        self.assertEqual(len(groups), 50)
+        self.assertEqual(sum(not g['cards'] for g in groups), 2)
+        self.assertTrue(all('gap_vi' in g for g in groups if not g['cards']))
         with TemporaryDirectory() as directory:
             path = Path(directory) / 'taxonomy.json'
             for defect, reason in [('format', 'format'), ('group', 'group_id'), ('skill', 'unknown_skill'),
                                    ('duplicate_skill', 'duplicate_skill'), ('extra', 'group_fields'),
-                                   ('phrases', 'phrases'), ('source', 'group')]:
+                                   ('phrases', 'phrases'), ('source', 'group'), ('no_cards', 'group')]:
                 with self.subTest(defect=defect):
                     doc = copy.deepcopy(seed)
                     group = doc['groups'][0]
@@ -146,6 +155,9 @@ class SkillTriageTests(unittest.TestCase):
                         group['user_says'] = ['abc', 'ABC']
                     elif defect == 'source':
                         group['sources'] = ['file:///local']
+                    elif defect == 'no_cards':  # empty cards are allowed only as a documented gap
+                        group['cards'] = []
+                        group.pop('gap_vi', None)
                     path.write_text(json.dumps(doc), encoding='utf-8')
                     with self.assertRaisesRegex(PlanError, f'skill_triage_taxonomy_{reason}$'):
                         load_taxonomy(self.approved, path)

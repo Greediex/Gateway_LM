@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from .skill_chat import SkillChat
 
 MAX_CARDS = 6
+OWN_HOME_PHRASES = frozenset({'router nha toi', 'router cua toi', 'wifi nha toi'})
 TAXONOMY = DATA_DIR / 'symptom_taxonomy_v1.json'
 
 
@@ -41,7 +42,8 @@ def load_taxonomy(approved_ids: set[str], path: Path = TAXONOMY) -> list[dict]:
         require(_text(group['label_vi']) and _text(group.get('gap_vi', '—'))
                 and _texts(group['user_says']) and _texts(group['sources'])
                 and all(map(_source_url, group['sources']))
-                and type(group['cards']) is list and bool(group['cards']),
+                # A surveyed symptom with no fitting Skill is kept as a documented gap.
+                and type(group['cards']) is list and (bool(group['cards']) or 'gap_vi' in group),
                 'skill_triage_taxonomy_group')
         phrases = list(map(normalize, group['user_says']))
         require(all(phrases) and len(set(phrases)) == len(phrases), 'skill_triage_taxonomy_phrases')
@@ -72,7 +74,10 @@ def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started
     text = normalize(request)
     response = {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
                 'cards': [], 'symptom_groups': [], 'notice': NOTICE}
-    refusal = _replay_refusal(request, text, rows, routing, incident_phrases.get(text))
+    # Role-play speaks as the owner of the simulated home; other real-device phrases stay refused.
+    role_play = {**routing, 'nonlocal_scope_phrases': [
+        p for p in routing['nonlocal_scope_phrases'] if p not in OWN_HOME_PHRASES]}
+    refusal = _replay_refusal(request, text, rows, role_play, incident_phrases.get(text))
     if refusal:
         reason, status, message = refusal
         return dict(response, stop_reason=reason, case_status=status, answer=f'{NOTICE}\n{message}')
