@@ -28,6 +28,7 @@ function setInspector(open) {
     setTab('graph');
     inspector.querySelector('[data-tab="graph"]').focus();
   } else {
+    removeGraphPanel();
     $('inspectorContent').replaceChildren();
   }
 }
@@ -269,11 +270,12 @@ function renderInspector() {
   if ($('inspector').hidden) return;
   const content = $('inspectorContent');
   const result = state.result;
-  content.replaceChildren();
   if (state.tab === 'graph') {
     renderGraph(content, result);
     return;
   }
+  removeGraphPanel();
+  content.replaceChildren();
   if (!result) {
     const empty = n('div', 'empty-inspect');
     empty.append(n('h3', '', 'Chưa có lượt chạy'), n('p', '', 'Gửi một câu hỏi để xem dấu vết thực thi.'));
@@ -518,117 +520,323 @@ function runCalls(result) {
 }
 
 const graphKey = (kind, id) => kind + ':' + id;
+const graphDomainColors = ['#71caff', '#c6a5ff', '#75dfbc', '#fa9ac1', '#f5bc73',
+  '#8b9bff', '#e0de80', '#63d6e4', '#fc9a87', '#d9a0ed', '#a4d278', '#8eb3d3',
+  '#f18eb9', '#b5c9ff', '#e7be9d'];
+const compareGraphKeys = (a, b) => (a > b) - (a < b);
+const graphClamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
 function layoutGraph(graph, sequences = []) {
-  const width = 272;
-  const hub = {x: 136, y: 22};
-  const columns = 8;
-  const panels = [];
-  const nodes = new Map();
-  const groups = Object.entries(graph.groups).sort(([a], [b]) => a.localeCompare(b));
-  const split = Math.ceil(groups.length / 2);
-  for (const [index, [id, label]] of groups.entries()) {
-    const x = index < split ? 8 : 200;
-    const y = 45 + index % split * 42;
-    panels.push({id, label, x, y});
-    const skills = graph.nodes.filter(node => node.kind === 'skill' && node.group === id);
-    for (const [i, node] of skills.entries()) {
-      nodes.set(graphKey(node.kind, node.id), {...node, x: x + 11 + i % 4 * 14,
-        y: y + 14 + Math.floor(i / 4) * 12});
-    }
-  }
-  const functions = graph.nodes.filter(node => node.kind === 'function');
-  for (const [i, node] of functions.entries()) {
-    nodes.set(graphKey(node.kind, node.id), {...node, x: 87 + i % columns * 14, y: 62 + Math.floor(i / columns) * 33});
-  }
-  const baseHeight = Math.max(45 + split * 42, 70 + (Math.ceil(functions.length / columns) - 1) * 33);
-  const extras = new Map();
+  const halfSize = Math.max(240, Math.sqrt(graph.nodes.length) * 30);
+  const domainIds = Object.keys(graph.groups).sort(compareGraphKeys);
+  const domains = new Map(domainIds.map((id, index) => {
+    const angle = index * Math.PI * (3 - Math.sqrt(5));
+    const radius = halfSize * .78 * Math.sqrt((index + .5) / domainIds.length);
+    return [id, {label: graph.groups[id], color: graphDomainColors[index % graphDomainColors.length],
+      x: Math.cos(angle) * radius, y: Math.sin(angle) * radius}];
+  }));
+  const catalog = new Map(graph.nodes.map(node => [graphKey(node.kind, node.id), node]));
   for (const call of sequences.flat()) {
     const key = graphKey(call.kind, call.id);
-    if (nodes.has(key)) continue;
-    const i = extras.size;
-    const dot = {...call, label: call.id, extra: true, x: 22 + i % 12 * 20, y: baseHeight + 26 + Math.floor(i / 12) * 15};
-    nodes.set(key, dot);
-    extras.set(key, dot);
+    if (!catalog.has(key)) catalog.set(key, {id: call.id, kind: call.kind, label: call.id, extra: true});
   }
-  return {width, height: baseHeight + (extras.size ? 20 + Math.ceil(extras.size / 12) * 15 : 0),
-    hub, panels, nodes, extraY: extras.size ? baseHeight : null};
+  const nodes = new Map([...catalog.keys()].sort(compareGraphKeys).map(key => [
+    key, {...catalog.get(key), neighbors: new Set(), vx: 0, vy: 0},
+  ]));
+  const edges = [...graph.edges].sort((a, b) => compareGraphKeys(a.source, b.source)
+    || compareGraphKeys(a.target, b.target)).map(edge => {
+    const from = nodes.get(graphKey('skill', edge.source));
+    const to = nodes.get(graphKey('function', edge.target));
+    from.neighbors.add(to);
+    to.neighbors.add(from);
+    return {from, to};
+  });
+  function seededPoint(key) {
+    let seed = 0x811c9dc5;
+    for (const char of key) seed = Math.imul(seed ^ char.codePointAt(0), 0x01000193);
+    const angle = (seed >>> 0) / 0x100000000 * 2 * Math.PI;
+    seed ^= seed << 13;
+    seed ^= seed >>> 17;
+    seed ^= seed << 5;
+    return {angle, radius: Math.sqrt((seed >>> 0) / 0x100000000)};
+  }
+  for (const [key, node] of nodes) {
+    const groups = new Map();
+    if (domains.has(node.group)) groups.set(node.group, 1);
+    for (const neighbor of node.neighbors) {
+      if (domains.has(neighbor.group)) groups.set(neighbor.group, (groups.get(neighbor.group) || 0) + 1);
+    }
+    // A shared Function sits between its linked domains and uses the most frequent color.
+    node.domains = [...groups.keys()].sort((a, b) => groups.get(b) - groups.get(a) || compareGraphKeys(a, b));
+    const anchor = {x: 0, y: 0};
+    for (const id of node.domains) {
+      anchor.x += domains.get(id).x / node.domains.length;
+      anchor.y += domains.get(id).y / node.domains.length;
+    }
+    const {angle, radius} = seededPoint(key);
+    const distance = radius * (node.domains.length ? 45 : halfSize * .52);
+    Object.assign(node, {anchor, x: anchor.x + distance * Math.cos(angle),
+      y: anchor.y + distance * Math.sin(angle), radius: 5.5 + Math.min(8, 2.4 * Math.sqrt(node.neighbors.size))});
+  }
+  const hub = {x: 0, y: 0, vx: 0, vy: 0, pinned: true, radius: 10, label: 'Router / LLM'};
+  return {halfSize, hub, nodes, domains, edges};
+}
+
+function graphSimulation({nodes, hub, edges, halfSize}) {
+  const points = [...nodes.values(), hub];
+  let heat = 1;
+  let stepsLeft = 120;
+  function step() {
+    if (!stepsLeft || heat < .0025) return false;
+    for (let i = 0; i < points.length - 1; i++) {
+      const a = points[i];
+      for (let j = i + 1; j < points.length; j++) {
+        const b = points[j];
+        let dx = b.x - a.x;
+        const dy = b.y - a.y;
+        if (!dx && !dy) dx = .01;
+        const square = dx * dx + dy * dy;
+        const distance = Math.sqrt(square);
+        const overlap = Math.max(0, a.radius + b.radius + 4 - distance);
+        const force = heat * (2200 / (square + 100) + .6 * overlap) / distance;
+        a.vx -= dx * force;
+        a.vy -= dy * force;
+        b.vx += dx * force;
+        b.vy += dy * force;
+      }
+    }
+    for (const {from, to} of edges) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const distance = Math.hypot(dx, dy) || 1;
+      const force = heat * .035 * (distance - 36) / distance;
+      from.vx += dx * force;
+      from.vy += dy * force;
+      to.vx -= dx * force;
+      to.vy -= dy * force;
+    }
+    for (const node of points) {
+      if (node.pinned) {
+        node.vx = 0;
+        node.vy = 0;
+        continue;
+      }
+      const pull = heat * (node.domains.length ? .012 : .004);
+      node.vx = (node.vx + (node.anchor.x - node.x) * pull) * .78;
+      node.vy = (node.vy + (node.anchor.y - node.y) * pull) * .78;
+      const limit = halfSize - node.radius - 4;
+      node.x = graphClamp(node.x + node.vx, -limit, limit);
+      node.y = graphClamp(node.y + node.vy, -limit, limit);
+    }
+    heat *= .94;
+    stepsLeft--;
+    return stepsLeft > 0 && heat >= .0025;
+  }
+  function reheat() {
+    if (heat > .20) return;
+    heat = .20;
+    stepsLeft = 48;
+  }
+  return {step, reheat};
+}
+
+let graphPanel;
+function createGraphPanel(content) {
+  const holder = n('div', 'graph-view');
+  const overlay = n('dialog', 'graph-overlay');
+  overlay.setAttribute('aria-label', 'Mạng Skill toàn màn hình');
+  const expand = n('button', 'light-btn', 'Toàn màn hình');
+  expand.type = 'button';
+  expand.setAttribute('aria-haspopup', 'dialog');
+  const close = n('button', 'light-btn', 'Đóng toàn màn hình');
+  close.type = 'button';
+  overlay.appendChild(close);
+  expand.addEventListener('click', () => {
+    overlay.showModal();
+    overlay.appendChild(holder);
+    close.focus();
+  });
+  close.addEventListener('click', () => overlay.close());
+  overlay.addEventListener('close', () => {
+    if (!overlay.isConnected) return;
+    content.insertBefore(holder, overlay);
+    expand.focus();
+  });
+  overlay.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    event.stopPropagation();
+    overlay.close();
+  });
+  holder.appendChild(n('p', 'inspector-note', 'Đang tải mạng Skill…'));
+  content.replaceChildren(holder, overlay);
+  return {holder, expand, overlay};
+}
+
+function removeGraphPanel() {
+  graphPanel?.dispose?.();
+  graphPanel = undefined;
 }
 
 function renderGraph(content, result) {
-  const holder = n('div');
-  holder.appendChild(n('p', 'inspector-note', 'Đang tải mạng Skill…'));
-  content.appendChild(holder);
+  const panel = graphPanel ??= createGraphPanel(content);
+  if (panel.result === result) return;
+  panel.result = result;
   loadGraph().then(graph => {
-    if (holder.isConnected) drawGraph(holder, graph, result);
+    if (panel !== graphPanel || panel.result !== result) return;
+    panel.dispose?.();
+    panel.dispose = drawGraph(panel, graph, result);
   }).catch(() => {
-    if (holder.isConnected) holder.replaceChildren(n('p', 'inspector-note', 'Không tải được mạng Skill. Mở lại tab để thử lại.'));
+    if (panel !== graphPanel || panel.result !== result) return;
+    panel.holder.replaceChildren(n('p', 'inspector-note', 'Không tải được mạng Skill. Mở lại tab để thử lại.'));
   });
 }
 
-function drawGraph(holder, graph, result) {
+function drawGraph({holder, expand}, graph, result) {
   const calls = runCalls(result);
-  const {width, height, hub, panels, nodes, extraY} = layoutGraph(graph, calls.sequences);
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-  svg.setAttribute('role', 'img');
-  svg.setAttribute('aria-label', `Mạng ${graph.nodes.filter(node => node.kind === 'skill').length} Skill theo domain`);
-  function add(tag, attrs, label, parent = svg) {
-    const element = document.createElementNS(svg.namespaceURI, tag);
+  const layout = layoutGraph(graph, calls.sequences);
+  const {hub, domains, nodes, edges} = layout;
+  const viewport = n('div', 'graph-canvas');
+  const tooltip = n('div', 'graph-tooltip');
+  const detail = n('section', 'graph-node-detail');
+  tooltip.hidden = true;
+  detail.hidden = true;
+  detail.setAttribute('aria-label', 'Chi tiết nút');
+  const svg = svgElement('svg', {'aria-label': 'Mạng Skill theo domain'});
+  viewport.append(svg, tooltip, detail);
+
+  function svgElement(tag, attrs, parent, label) {
+    const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (const [key, value] of Object.entries(attrs)) element.setAttribute(key, value);
     if (label !== undefined) element.textContent = label;
-    parent.appendChild(element);
+    parent?.appendChild(element);
     return element;
   }
-  function line(a, b, cls) {
-    return add('line', {x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls});
+  const links = [];
+  function line(from, to, cls, parent = svg) {
+    const layer = svgElement('g', {class: 'g-link'}, parent);
+    const element = svgElement('line', {class: cls, 'vector-effect': 'non-scaling-stroke'}, layer);
+    links.push({from, to, layer, element});
+    return element;
   }
-  function circle(point, radius, cls) {
-    return add('circle', {cx: point.x, cy: point.y, r: radius, class: cls});
+  for (const {from, to} of edges) line(from, to, 'g-edge');
+  const traceLayer = svgElement('g', {class: 'g-trace'}, svg);
+  const nodeLayers = new Map();
+  const neighborsOnScreen = new Map();
+  for (const node of [...nodes.values(), hub]) {
+    const name = node.id && node.id !== node.label ? `${node.id} · ${node.label}` : node.label;
+    const layer = svgElement('g', {class: 'g-node', 'aria-label': name}, svg);
+    nodeLayers.set(node, layer);
+    neighborsOnScreen.set(node, new Set(node.neighbors));
+    layer.style.setProperty('--node-color', domains.get(node.domains?.[0])?.color || '#9eb0c4');
   }
-  function caption(x, y, label) {
-    return add('text', {x, y, 'text-anchor': 'middle', class: 'g-label'}, label);
+  function circle(node, radius, cls) {
+    return svgElement('circle', {r: radius, class: cls, 'vector-effect': 'non-scaling-stroke'}, nodeLayers.get(node));
   }
-  for (const panel of panels) {
-    add('rect', {x: panel.x, y: panel.y, width: 64, height: 34, rx: 5, class: 'g-panel'});
-    const label = caption(panel.x + 32, panel.y + 1, panel.id);
-    add('title', {}, panel.label, label);
-  }
-  for (const edge of graph.edges) {
-    line(nodes.get(graphKey('skill', edge.source)), nodes.get(graphKey('function', edge.target)), 'g-edge');
-  }
-  if (extraY !== null) caption(width / 2, extraY + 10, 'Ngoài đồ thị catalog');
   let index = 0;
   for (const sequence of calls.sequences) {
     let previous = hub;
     for (const call of sequence) {
       const node = nodes.get(graphKey(call.kind, call.id));
-      const failed = !['OK', 'SUCCEEDED', 'MEASURED'].includes(call.status);
-      const tone = failed ? ' g-fail' : '';
+      const tone = ['OK', 'SUCCEEDED', 'MEASURED'].includes(call.status) ? '' : ' g-fail';
       const delay = `${index++ * Math.min(250, 3200 / (calls.skills + calls.functions))}ms`;
-      if (previous !== node) line(previous, node, 'g-path' + tone).style.animationDelay = delay;
-      circle(node, 7, 'g-lit' + tone).style.animationDelay = delay;
+      if (previous !== node) {
+        line(previous, node, 'g-path' + tone, traceLayer).style.animationDelay = delay;
+        neighborsOnScreen.get(previous).add(node);
+        neighborsOnScreen.get(node).add(previous);
+      }
+      circle(node, node.radius + 3, 'g-lit' + tone).style.animationDelay = delay;
       previous = node;
     }
   }
-  for (const node of nodes.values()) {
-    const skill = node.kind === 'skill';
-    const dot = circle(node, skill ? 4.2 : 3, [
-      skill ? 'g-skill' : 'g-fn',
-      node.verified ? 'g-verified' : '',
-      node.extra ? 'g-extra' : '',
-    ].join(' '));
-    const metadata = skill && !node.extra
-      ? ` · ${node.verified ? 'Đã' : 'Chưa'} nghiệm thu mô phỏng${node.chat_callable ? ' · Gọi được từ chat theo cấu hình' : ''}`
-      : node.extra ? ' · Ngoài đồ thị catalog' : '';
-    add('title', {}, (node.id === node.label ? node.id : `${node.id} · ${node.label}`) + metadata, dot);
-    if (node.chat_callable) circle(node, 6.5, 'g-callable');
+  const hitTargets = new Map();
+  for (const [node, layer] of nodeLayers) {
+    const classes = node === hub ? (calls.sequences.length ? 'g-hub g-hub-active' : 'g-hub') :
+      [node.kind === 'skill' ? 'g-skill' : 'g-fn', node.verified ? 'g-verified' : '',
+        node.extra ? 'g-extra' : ''].filter(Boolean).join(' ');
+    circle(node, node.radius, classes);
+    if (node.chat_callable) circle(node, node.radius + 2.5, 'g-callable');
+    if (node === hub) svgElement('text', {y: -17, 'text-anchor': 'middle', class: 'g-label'}, layer, node.label);
+    hitTargets.set(circle(node, Math.max(node.radius + 3, 13), 'g-hit'), node);
   }
-  circle(hub, 6, calls.sequences.length ? 'g-hub g-hub-active' : 'g-hub');
-  caption(hub.x, hub.y - 10, 'Router / LLM');
-  caption(hub.x, 45, 'Function');
 
-  const canvas = n('div', 'graph-canvas');
-  canvas.appendChild(svg);
+  const search = n('form', 'graph-toolbar');
+  const input = n('input', 'graph-search');
+  input.type = 'search';
+  input.placeholder = 'ID hoặc tên Skill';
+  input.setAttribute('aria-label', 'Tìm Skill theo ID hoặc tên');
+  input.setAttribute('list', 'graph-skill-names');
+  const suggestions = n('datalist');
+  suggestions.id = 'graph-skill-names';
+  const searchable = [...nodes.values()].filter(node => node.kind === 'skill');
+  for (const node of searchable) {
+    const option = n('option');
+    option.value = node.id;
+    option.label = node.label;
+    suggestions.appendChild(option);
+  }
+  const find = n('button', 'light-btn', 'Tìm');
+  find.type = 'submit';
+  const fit = n('button', 'light-btn', 'Vừa khung');
+  fit.type = 'button';
+  search.append(input, suggestions, find, fit, expand);
+  const searchStatus = n('p', 'graph-search-status');
+  searchStatus.setAttribute('role', 'status');
+
+  function showDetail(node) {
+    const close = n('button', 'light-btn graph-detail-close', '×');
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Đóng chi tiết nút');
+    close.addEventListener('click', () => {
+      detail.hidden = true;
+      input.focus();
+    });
+    const domainNames = (node.domains || []).map(id => domains.get(id).label).join(', ');
+    const metadata = n('dl');
+    const yesNo = value => value === undefined ? 'Không có dữ liệu' : value ? 'Có' : 'Không';
+    for (const [label, value] of [
+      ['ID', node.id || '—'],
+      ['Domain', domainNames || '—'],
+      ['Loại', node === hub ? 'Router / LLM' : node.type || (node.kind === 'skill' ? 'Skill' : 'Function')],
+      ['Nghiệm thu mô phỏng', yesNo(node.verified)],
+      ['Gọi được từ chat', yesNo(node.chat_callable)],
+    ]) metadata.append(n('dt', '', label), n('dd', '', value));
+    detail.replaceChildren(close, n('h3', '', node.label), metadata);
+    if (node.extra) detail.appendChild(n('p', '', 'Ngoài đồ thị catalog'));
+    function addNeighbors(label, neighbors) {
+      if (!neighbors.length) return;
+      const list = n('ul');
+      for (const neighbor of neighbors) {
+        const item = n('li');
+        const button = n('button', 'graph-neighbor', `${neighbor.id} · ${neighbor.kind === 'skill' ? 'Skill' : 'Function'}`);
+        button.type = 'button';
+        button.addEventListener('click', () => centerOn(neighbor));
+        item.appendChild(button);
+        list.appendChild(item);
+      }
+      detail.append(n('h4', '', label), list);
+    }
+    addNeighbors('Liên kết catalog', [...(node.neighbors || [])]);
+    addNeighbors('Kề trong dấu vết lượt hỏi', [...neighborsOnScreen.get(node)]
+      .filter(neighbor => neighbor !== hub && !node.neighbors?.has(neighbor)));
+    detail.hidden = false;
+  }
+
+  function searchText(value) {
+    return value.trim().toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replaceAll('đ', 'd');
+  }
+  search.addEventListener('submit', event => {
+    event.preventDefault();
+    const query = searchText(input.value);
+    if (!query) return;
+    const target = searchable.find(node => searchText(node.id) === query)
+      || searchable.find(node => searchText(node.label) === query)
+      || searchable.find(node => searchText(node.id + ' ' + node.label).includes(query));
+    searchStatus.textContent = target ? '' : 'Không tìm thấy Skill.';
+    if (target) centerOn(target);
+  });
+  input.addEventListener('input', () => { searchStatus.textContent = ''; });
+
   const summary = calls.sequences.length
     ? `Lượt gần nhất có ${calls.skills} lượt gọi Skill và ${calls.functions} lượt gọi Function được ghi nhận.`
     : result ? 'Lượt gần nhất chưa ghi nhận cuộc gọi Skill hoặc Function.' : 'Gửi câu hỏi để xem những nút được gọi.';
@@ -638,21 +846,28 @@ function drawGraph(holder, graph, result) {
   for (const [symbol, label] of [
     ['verified', `Chấm đặc · ${verified} Skill đã nghiệm thu mô phỏng (chấm rỗng nếu chưa)`],
     ['callable', `Viền đôi · ${callable} Skill có cấu hình gọi từ chat live hoặc replay`],
-    ['function', 'Chấm xám · Function trong đồ thị'],
+    ['function', 'Function theo màu domain liên kết · Xám nếu thiếu domain'],
     ['extra', 'Chấm vàng · Skill hoặc Function ngoài đồ thị catalog'],
     ['edge', 'Đường mảnh · Liên kết khai báo trong catalog'],
-    ['path', 'Đường sáng · Dấu vết lượt hỏi (hồng khi lỗi hoặc chưa xác minh)'],
+    ['path', 'Đường sáng · Dấu vết lượt hỏi (đỏ khi lỗi hoặc chưa xác minh)'],
   ]) {
     const item = n('li');
     item.append(n('span', 'graph-key key-' + symbol), n('span', '', label));
     legend.appendChild(item);
   }
-  const domains = n('details', 'graph-details');
-  domains.appendChild(n('summary', '', 'Tên các domain'));
+  const domainLegend = n('details', 'graph-details');
+  domainLegend.appendChild(n('summary', '', 'Màu theo domain'));
   const names = n('ul');
-  for (const panel of panels) names.appendChild(n('li', '', `${panel.id} · ${panel.label}`));
-  domains.appendChild(names);
-  holder.replaceChildren(n('p', 'graph-summary', summary), canvas);
+  for (const [id, {label, color}] of domains) {
+    const item = n('li');
+    const key = n('span', 'graph-key graph-domain-key');
+    key.style.backgroundColor = color;
+    item.append(key, n('span', '', `${id} · ${label}`));
+    names.appendChild(item);
+  }
+  domainLegend.appendChild(names);
+  const info = n('div', 'graph-info');
+  holder.replaceChildren(n('p', 'graph-summary', summary), search, searchStatus, viewport, info);
   if (calls.sequences.length) {
     const trace = n('details', 'graph-details');
     trace.appendChild(n('summary', '', 'Chi tiết dấu vết'));
@@ -664,11 +879,191 @@ function drawGraph(holder, graph, result) {
       }
       trace.appendChild(list);
     }
-    holder.appendChild(trace);
-    if (!calls.linked || !calls.ordered) holder.appendChild(n('p', 'inspector-note',
+    info.appendChild(trace);
+    if (!calls.linked || !calls.ordered) info.appendChild(n('p', 'inspector-note',
       'Bản ghi chỉ xác định một phần thứ tự. Các nhóm được tô riêng khi thiếu thông tin liên kết.'));
   }
-  holder.append(legend, domains);
+  info.append(legend, domainLegend);
+
+  const camera = {x: 0, y: 0, zoom: 1, width: 0, height: 0, scale: 1};
+  const {halfSize} = layout;
+  let followed = null;
+  let hovered = null;
+  let drag = null;
+  function paintTooltip() {
+    if (!hovered) return;
+    const x = camera.width / 2 + (hovered.x - camera.x) * camera.scale;
+    const y = camera.height / 2 + (hovered.y - camera.y) * camera.scale;
+    tooltip.style.left = `${graphClamp(x + 8, 4, Math.max(4, camera.width - tooltip.offsetWidth - 4))}px`;
+    tooltip.style.top = `${graphClamp(y + 10, 4, Math.max(4, camera.height - tooltip.offsetHeight - 4))}px`;
+  }
+  function setHover(node) {
+    hovered = node;
+    const adjacent = neighborsOnScreen.get(node);
+    for (const [point, layer] of nodeLayers) {
+      layer.classList.toggle('g-dim', !!node && point !== node && !adjacent.has(point));
+      layer.classList.toggle('g-focus', point === node || !!adjacent?.has(point));
+    }
+    for (const {from, to, layer} of links) layer.classList.toggle('g-dim', !!node && from !== node && to !== node);
+    tooltip.hidden = !node;
+    if (node) {
+      tooltip.textContent = node.label;
+      paintTooltip();
+    }
+  }
+  function scaleFor(zoom) {
+    return Math.min(camera.width, camera.height) * zoom / (2 * halfSize);
+  }
+  function paintCamera() {
+    if (followed) {
+      camera.x = followed.x;
+      camera.y = followed.y;
+    }
+    if (!camera.width || !camera.height) return;
+    camera.scale = scaleFor(camera.zoom);
+    const w = camera.width / camera.scale;
+    const h = camera.height / camera.scale;
+    svg.setAttribute('viewBox', `${camera.x - w / 2} ${camera.y - h / 2} ${w} ${h}`);
+    paintTooltip();
+  }
+  function centerOn(node) {
+    followed = node;
+    camera.zoom = Math.max(camera.zoom, 2.3);
+    paintCamera();
+    showDetail(node);
+  }
+  fit.addEventListener('click', () => {
+    followed = null;
+    camera.x = 0;
+    camera.y = 0;
+    camera.zoom = 1;
+    paintCamera();
+  });
+  function resize() {
+    ({width: camera.width, height: camera.height} = svg.getBoundingClientRect());
+    paintCamera();
+  }
+  function paintGraph() {
+    for (const [node, layer] of nodeLayers) layer.setAttribute('transform', `translate(${node.x} ${node.y})`);
+    for (const {from, to, element} of links) {
+      element.setAttribute('x1', from.x);
+      element.setAttribute('y1', from.y);
+      element.setAttribute('x2', to.x);
+      element.setAttribute('y2', to.y);
+    }
+    if (followed) paintCamera();
+    else paintTooltip();
+  }
+
+  for (const [hit, node] of hitTargets) {
+    hit.addEventListener('pointerenter', event => {
+      if (!drag && event.pointerType !== 'touch') setHover(node);
+    });
+    hit.addEventListener('pointerleave', () => {
+      if (hovered === node) setHover(null);
+    });
+  }
+  function pointerOffset(event) {
+    const {left, top} = svg.getBoundingClientRect();
+    return {x: event.clientX - left - camera.width / 2, y: event.clientY - top - camera.height / 2};
+  }
+  svg.addEventListener('wheel', event => {
+    if (drag || !camera.width || !camera.height) return;
+    event.preventDefault();
+    followed = null;
+    const offset = pointerOffset(event);
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? camera.height : 1);
+    camera.zoom = graphClamp(camera.zoom * Math.exp(-delta * .002), .55, 8);
+    const newScale = scaleFor(camera.zoom);
+    camera.x += offset.x * (1 / camera.scale - 1 / newScale);
+    camera.y += offset.y * (1 / camera.scale - 1 / newScale);
+    paintCamera();
+  }, {passive: false});
+  svg.addEventListener('pointerdown', event => {
+    if (drag || event.button !== 0) return;
+    const offset = pointerOffset(event);
+    const node = hitTargets.get(event.target);
+    drag = {node, id: event.pointerId, offset, x: camera.x, y: camera.y, moved: false,
+      grabX: node ? node.x - camera.x - offset.x / camera.scale : 0,
+      grabY: node ? node.y - camera.y - offset.y / camera.scale : 0};
+    svg.setPointerCapture(event.pointerId);
+  });
+  svg.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    const offset = pointerOffset(event);
+    const dx = offset.x - drag.offset.x;
+    const dy = offset.y - drag.offset.y;
+    if (!drag.moved && Math.hypot(dx, dy) < 4) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      followed = null;
+      setHover(null);
+      svg.classList.add('g-dragging');
+    }
+    if (!drag.node) {
+      camera.x = drag.x - dx / camera.scale;
+      camera.y = drag.y - dy / camera.scale;
+      paintCamera();
+    } else if (drag.node !== hub) {
+      const node = drag.node;
+      node.pinned = true;
+      const limit = halfSize - node.radius - 4;
+      node.x = graphClamp(camera.x + offset.x / camera.scale + drag.grabX, -limit, limit);
+      node.y = graphClamp(camera.y + offset.y / camera.scale + drag.grabY, -limit, limit);
+      if (!reducedMotion.matches) {
+        simulation.reheat();
+        animate();
+      }
+      paintGraph();
+    }
+  });
+  function endDrag(event) {
+    if (!drag || event.pointerId !== drag.id) return;
+    const {node, moved} = drag;
+    drag = null;
+    svg.classList.remove('g-dragging');
+    if (node?.pinned && node !== hub) {
+      node.pinned = false;
+      simulation.reheat();
+      animate();
+    }
+    if (!moved && node && event.type === 'pointerup') showDetail(node);
+  }
+  for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) svg.addEventListener(event, endDrag);
+
+  const simulation = graphSimulation(layout);
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let frame = null;
+  function animate() {
+    if (reducedMotion.matches) {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      while (simulation.step()) { /* Settle before painting. */ }
+      paintGraph();
+    } else if (frame === null) {
+      frame = requestAnimationFrame(tick);
+    }
+  }
+  function tick() {
+    frame = null;
+    if (reducedMotion.matches) {
+      animate();
+      return;
+    }
+    let active = true;
+    for (let i = 0; i < 4 && active; i++) active = simulation.step();
+    paintGraph();
+    if (active) animate();
+  }
+  const observer = new ResizeObserver(resize);
+  observer.observe(svg);
+  resize();
+  if (!reducedMotion.matches) paintGraph();
+  animate();
+  return () => {
+    observer.disconnect();
+    if (frame !== null) cancelAnimationFrame(frame);
+  };
 }
 function updateInput(){let ta=$('userInput');$('charCount').textContent=ta.value.length+'/2000';ta.style.height='auto';ta.style.height=Math.min(135,Math.max(34,ta.scrollHeight))+'px';$('sendBtn').disabled=state.busy||!ta.value.trim();}
 $('sendBtn').addEventListener('click',()=>send());$('userInput').addEventListener('input',updateInput);$('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('clearBtn').addEventListener('click',clearChat);
