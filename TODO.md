@@ -18,6 +18,7 @@ Lần cập nhật này **chỉ lập kế hoạch**, không đánh dấu triể
 - Qwen3:4b đã chạy Replay/ReAct `WEB-CLIENT-DNS-1`: intake và lựa chọn DNS được chấp nhận, 10 Function calls, 3 evidence IDs. Kết luận do Core dựng. **LLM tự diễn đạt câu trả lời live còn FINALIZE-02**, không coi nâng timeout là đã sửa xong.
 - Qwen4B tối đa 240s/RPC; live turn 240s còn chịu hạn phiên và TTL thật. Không tăng TTL hay bỏ kiểm tra scope để làm kết quả đẹp.
 - Baseline local: 855 tests, 850 pass, 5 Windows-only skips; [CI baseline đã đạt](https://github.com/Greediex/Gateway_LM/actions/runs/44217840366). Đây là kiểm chứng baseline, không phải nghiệm thu kế hoạch mới.
+- Tiến độ CHAT-CONCISE — Chat laptop ở fast mode ưu tiên phép đo theo chủ đề. Câu WAN nêu phạm vi quyền đọc và các giới hạn nằm trong chi tiết phép đo.
 
 ## “Đủ 120” được tính thế nào
 

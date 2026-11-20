@@ -52,8 +52,10 @@ class GroundedChatTests(unittest.TestCase):
 
     def test_diagnostic_is_not_whole_network_health(self):
         r = self.chat.chat('Wi-Fi laptop có vấn đề gì?')
-        self.assertIn('Chưa', r['answer'])
-        self.assertIn('ethernet0', r['answer'])
+        self.assertNotIn('ethernet0', r['answer'])
+        self.assertTrue(any('ethernet0' in note and 'chưa chứng minh Internet qua Wi-Fi' in note
+                            for note in r['caveats']))
+        self.assertTrue(any('Chưa đủ bằng chứng' in note for note in r['caveats']))
         self.assertEqual(r['diagnostic_status'], 'INCONCLUSIVE')
         self.assertIsNone(r['diagnosis'])
 

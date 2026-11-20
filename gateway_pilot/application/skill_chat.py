@@ -36,7 +36,7 @@ _MODE = {
     'live': {'mode':'linux_live','fixture':'LLM + Skill catalog · laptop Linux','fixture_id':'LINUX-SKILL-CHAT',
              'workflow':'LAPTOP-SKILL-CHAT','target':{'scope':'client','selector':'Laptop Linux này'},
              'scope':'Only this local Linux laptop; never router/client inventory',
-             'prefix':'Trong phạm vi laptop này:','where':'trên laptop',
+             'origin':'Từ laptop','where':'trên laptop',
              'custom':'Phiên này chỉ đo chính laptop; chưa có backend cho router/AP, thiết bị khác hoặc target/IP/MAC tùy ý.',
              'unconfirmed':'Chưa xác minh đầy đủ phạm vi yêu cầu; các phép đo hiện tại chỉ đánh giá kết nối từ laptop này.',
              'empty':'Hãy nêu vấn đề mạng trên laptop này; chưa đủ dữ liệu để trả lời.',
@@ -44,12 +44,28 @@ _MODE = {
     'replay': {'mode':'synthetic_replay','fixture':'LLM + Skill catalog · gateway mô phỏng','fixture_id':'REPLAY-SKILL-CHAT',
                'workflow':'REPLAY-SKILL-CHAT','target':{'scope':'gateway','selector':'Gateway mô phỏng (synthetic)'},
                'scope':'Only the synthetic replay gateway; fixture data, never a real device',
-               'prefix':'Trong phạm vi gateway mô phỏng (dữ liệu synthetic, không phải thiết bị thật):','where':'ở chế độ replay',
+               'origin':'Từ dữ liệu gateway mô phỏng','where':'ở chế độ replay',
                'custom':'Phiên replay chỉ có gateway mô phỏng; chưa có backend cho thiết bị khác hoặc target/IP/MAC tùy ý.',
                'unconfirmed':'Chưa xác minh đầy đủ phạm vi yêu cầu; dữ liệu chỉ là fixture mô phỏng của gateway.',
                'empty':'Hãy nêu vấn đề Wi-Fi/gateway cần kiểm tra trong dữ liệu mô phỏng.',
                'notice':'READ trên fixture mô phỏng; không phải số đo thiết bị thật, không phải causal RCA.'},
 }
+
+_LAPTOP_TOPICS = (
+    ('Đường Internet từ laptop', ('wan', 'internet', 'nha mang', 'ra ngoai', 'ip cong cong'),
+     ('laptop.internet_probe',)),
+    ('Wi-Fi', ('wifi', 'wi fi', 'wireless', 'song', 'tin hieu', 'signal', 'ssid', 'bssid',
+      'radio', 'ket noi khong day', 'kenh', 'channel', 'tan so', 'frequency'), ('laptop.wifi',)),
+    ('DNS', ('dns', 'phan giai', 'ten mien', 'domain name'), ('laptop.dns',)),
+    ('Gateway', ('gateway', 'router', 'modem'), ('laptop.gateway_probe', 'laptop.route')),
+    ('Tuyến IPv4', ('cong mac dinh', 'default route', 'tuyen', 'dinh tuyen', 'route',
+      'interface', 'giao dien'), ('laptop.route',)),
+    ('IPv4 laptop', ('ipv4', 'ip', 'dia chi'), ('client.ipv4',)),
+    ('Định danh laptop', ('dinh danh', 'client id', 'laptop nao', 'identity'), ('client.identity',)),
+    ('AP của laptop', ('ap nao', 'diem phat nao', 'access point'), ('expansion.client_association',)),
+)
+_WAN_SCOPE = 'WAN của router cần quyền đọc router, hiện chưa có trong chế độ laptop.'
+_DIAGNOSTIC_LIMIT = 'Chưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
 
 
 @lru_cache(maxsize=1)
@@ -73,7 +89,7 @@ def findings(view: dict) -> dict:
                     else 'Laptop chưa có đường IPv4 tới IP kiểm tra.')
         elif port in {'laptop.gateway_probe', 'laptop.internet_probe'}:
             label = ('Gateway ' if port.endswith('gateway_probe') else 'IP Internet kiểm tra ') + v['destination']
-            latency = f"{v['latency_ms']:g} ms" if v['latency_ms'] >= 0 else 'chưa có RTT'
+            latency = f"độ trễ {v['latency_ms']:g} ms" if v['latency_ms'] >= 0 else 'chưa có RTT'
             text = f"{label}: nhận {v['received']}/{v['sent']} gói ICMP, mất {v['loss_pct']:g}%, {latency}."
         elif port == 'laptop.dns':
             text = f"DNS {v['query']}: {'phân giải được' if v['resolved'] else 'chưa phân giải được'}; interface {v['interface']}."
@@ -130,6 +146,13 @@ def _phrase(text, phrase):
     return re.search(r'(?<!\w)'+re.escape(phrase)+r'(?!\w)',text) is not None
 
 
+def _laptop_topics(text: str) -> dict[str, str]:
+    # A compound public-IP topic must not imply an IPv4 address lookup on Wi-Fi.
+    address_text = re.sub(r'\b(?:dia chi )?ip (?:cong cong|internet|wan)\b', '', text)
+    return {port: title for title, terms, ports in _LAPTOP_TOPICS for port in ports
+            if any(_phrase(address_text if port == 'client.ipv4' else text, term) for term in terms)}
+
+
 class SkillChat:
     def __init__(self, launcher=LAUNCHER, *, model_factory=local_model, max_rounds=4,
                  max_elapsed_s=120, clock=time.monotonic, fast=False):
@@ -166,12 +189,12 @@ class SkillChat:
         return goals
 
     @classmethod
-    def _unconfirmed_parts(cls, entry, request):
+    def _unconfirmed_parts(cls, entry, request, *, scoped=False):
         # A recognized clause cannot prove a different, unrecognized clause answered.
         clauses=re.split(r'\b(?:va|voi|and|also|cung nhu)\b|[,;]',normalize(request))
         if len(clauses)==1:return []
         return [part.strip() for part in clauses if part.strip()
-                and not cls._requested(entry,part)
+                and not (_laptop_topics(part) if scoped else cls._requested(entry,part))
                 and not any(_phrase(part,phrase)
                             for phrases in entry['runtime'].registry.required_skill_phrases.values()
                             for phrase in phrases)]
@@ -210,6 +233,13 @@ class SkillChat:
 
     def _turn(self, request, sid, entry, started):
         runtime,session=entry['runtime'],entry['session']
+        normalized=normalize(request)
+        live=entry['mode']=='live'
+        wan=live and _phrase(normalized,'wan')
+        topic_text=re.sub(r'\bwan (?:cua )?(?:router|modem)\b','wan',normalized) if wan else normalized
+        topics=_laptop_topics(topic_text) if live else {}
+        scoped=bool(topics) and (self.fast or wan)
+        diagnostic=diagnostic_request(request) or wan
         deadline=started+self.max_elapsed_s
         calls_before=session.runner.calls;plans_before=len(session.runner.plans)
         timings={k:0.0 for k in ('setup','catalog','inference','probe','execution','rca')}
@@ -220,15 +250,43 @@ class SkillChat:
             finally:timings[stage]+=(self.clock()-start)*1000
         def view(refresh=True):return timed('probe',self._view,entry,refresh=refresh)
         def run_skill(skill):
-            return timed('execution',self.launcher.run,sid,skill,
-                         deadline=runtime._clock()+max(0,deadline-self.clock()))
+            limit=runtime._clock()+max(0,deadline-self.clock())
+            if not scoped:
+                return timed('execution',self.launcher.run,sid,skill,deadline=limit)
+            return timed('execution',run_scoped_skill,skill,limit)
+
+        def run_scoped_skill(skill: str, limit: float) -> dict:
+            # Approved completion/optional ports narrow the goal set. ReadSession
+            # compiles mandatory dependencies and executes through the READY kernel.
+            ports=[p for p in scoped_outputs().get(skill, ()) if p in goals]
+            with entry['lock'], self.launcher._measure_lock:
+                runner=session.runner
+                before=view(refresh=False)['facts']
+                calls=runner.calls
+                original_deadline=runner.deadline_s
+                runner.deadline_s=min(original_deadline,limit-runner.started)
+                try:
+                    if ports:
+                        session.execute(ports,request='READ scoped laptop measurements')
+                except PlanError as exc:
+                    if session.closed:raise SkillSessionError('session_expired') from exc
+                finally:
+                    runner.deadline_s=original_deadline
+                snapshot=view()
+                facts=snapshot['facts']
+                missing=[p for p in ports if p not in facts]
+                return {'skill_id':skill, 'snapshot':snapshot, 'missing_ports':missing,
+                        'calls_this_run':runner.calls-calls,
+                        'reused_ports':[p for p in ports if p in facts and p in before
+                                        and facts[p]['evidence_id']==before[p]['evidence_id']],
+                        'status':'MEASURED' if ports and not missing else 'PARTIAL'}
         task_trace=[]
         def assess(workflows, *, adaptive=False):
             allowed=set(goals) if goals else set(p for skill in attempted
                     for p in {**entry['actions'][skill]['required_ports'],**entry['actions'][skill]['optional_ports']})
             result=timed('rca',TaskRuntime.run_session,session,request=request,
                          workflows=workflows,allowed_ports=sorted(allowed),
-                         diagnostic=adaptive and diagnostic_request(request),max_steps=2,
+                         diagnostic=adaptive and diagnostic and not scoped,max_steps=2,
                          deadline=runtime._clock()+max(0,deadline-self.clock()))
             task_trace.append({k:result[k] for k in ('mode','status','reason','steps','calls_added')})
             return result['assessments']
@@ -238,9 +296,8 @@ class SkillChat:
         catalog=timed('catalog',self.launcher.catalog,entry['mode'],entry=entry)
         rows={r['skill_id']:r for r in catalog['rows']}
         docs=[[r['skill_id'],r['name'],r['availability'],r['runtime_scope']] for r in catalog['rows']]
-        goals=self._requested(entry,request)
-        unconfirmed=self._unconfirmed_parts(entry,request)
-        normalized=normalize(request)
+        goals=topics.copy() if scoped else self._requested(entry,request)
+        unconfirmed=self._unconfirmed_parts(entry,topic_text,scoped=scoped)
         unavailable=[skill for skill,phrases in runtime.registry.required_skill_phrases.items()
                      if rows[skill]['availability']=='UNAVAILABLE' and any(_phrase(normalized,p) for p in phrases)]
         # The model only sees what can run now; phrase rules (not the model)
@@ -273,10 +330,12 @@ class SkillChat:
             supported={r.function_id for r in entry['capabilities'].functions if r.status=='AVAILABLE'}
             # Only expired registered ports with still-supported producers can be reread.
             owners=[]
+            outputs=scoped_outputs() if scoped else {
+                skill:list(a['required_ports'])+list(a['optional_ports']) for skill,a in entry['actions'].items()}
             for port in ports:
-                options=[(len(a['required_ports'])+len(a['optional_ports']),key) for key,a in entry['actions'].items()
-                         if port in {**a['required_ports'],**a['optional_ports']}
-                         and any(f.id in supported and port in f.outputs for f in runtime.registry.functions.values())]
+                if not any(f.id in supported and port in f.outputs for f in runtime.registry.functions.values()):
+                    continue
+                options=[(len(ports),skill) for skill,ports in outputs.items() if port in ports]
                 if options:owners.append(min(options)[1])
             owners=list(dict.fromkeys(owners))
             if not owners:return False
@@ -289,26 +348,39 @@ class SkillChat:
                                       'calls':result['calls_this_run'],'missing_ports':result['missing_ports']})
             return True
         blocked=TaskDecomposer(runtime.registry).is_write_intent(request)
+        scope_text=topic_text if wan and set(topics)=={'laptop.internet_probe'} else normalized
+        local_gateway=scoped and set(topics)=={'laptop.gateway_probe','laptop.route'} and not unavailable
+        nonlocal_phrases=runtime.registry.nonlocal_scope_phrases
+        if live:
+            nonlocal_phrases=(*nonlocal_phrases,'modem','cua modem','tren modem','on modem')
         custom_target=bool(re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}',request)) or any(
-            _phrase(normalized,p) for p in runtime.registry.nonlocal_scope_phrases)
+            _phrase(scope_text,p) for p in nonlocal_phrases
+            if not local_gateway or p not in {'router','modem'})
         def runnable_outputs():
             supported={f.function_id for f in entry['capabilities'].functions if f.status=='AVAILABLE'}
             producible={port for f in runtime.registry.functions.values() if f.id in supported for port in f.outputs}
             return {skill:[p for p in {**a['required_ports'],**a['optional_ports']} if p in producible]
                     for skill,a in entry['actions'].items() if rows[skill]['availability'] in {'READY','DEGRADED'}}
+
+        def scoped_outputs() -> dict[str, list[str]]:
+            outputs=runnable_outputs()
+            # Registry READ skills may expose an approved port without a launcher
+            # action of their own (the internal Internet probe is one).
+            available={cap.function_id for cap in entry['capabilities'].functions if cap.status=='AVAILABLE'}
+            for skill, meta in runtime.registry.skills.items():
+                if skill in outputs or not meta['completion_ports']:continue
+                ports={p for f in runtime.registry.functions.values() if f.id in available and skill in f.skills
+                       for p in f.outputs}
+                eligible=sorted(ports.intersection(meta['completion_ports'],goals))
+                if eligible:outputs[skill]=eligible
+            return outputs
+
         def direct_route():
             """Deterministic plan from phrase intents or graph retrieval; None if ambiguous."""
             if unconfirmed or unavailable:return None
-            outputs=runnable_outputs()
+            outputs=scoped_outputs() if scoped else runnable_outputs()
             if not goals:
-                # BM25 + graph diffusion ranks the catalog (~ms). Only a top hit
-                # that is an approved runnable action may route; score never grants.
-                hits=_retriever().search(request,limit=3,include_proposed=True,graph_weight=.30)
-                top=hits[0].skill_id if hits else None
-                if top in outputs and outputs[top]:
-                    goals.update({p:p for p in entry['actions'][top]['required_ports'] if p in outputs[top]})
-                    route_meta['method']='graph'
-                elif diagnostic_request(request):
+                if diagnostic:
                     # Vague symptom ("chậm", "do đâu"): measure every question-intent
                     # port a runnable action can produce, before any model call.
                     producible={p for ports in outputs.values() for p in ports}
@@ -317,13 +389,19 @@ class SkillChat:
                     if not baseline:return None
                     goals.update({p:p for p in sorted(baseline)})
                     route_meta['method']='symptom_baseline'
-                else:return None
+                else:
+                    # A catalog hit can rank an approved action, never grant execution.
+                    hits=_retriever().search(request,limit=3,include_proposed=True,graph_weight=.30)
+                    top=hits[0].skill_id if hits else None
+                    if top not in outputs or not outputs[top]:return None
+                    goals.update({p:p for p in entry['actions'][top]['required_ports'] if p in outputs[top]})
+                    route_meta['method']='graph'
             need=set(goals)-set(view(refresh=False)['facts'])
             plan=[]
             while need:
                 best=max(((len(need&set(ports)),-len(ports),skill) for skill,ports in outputs.items()
                           if skill not in plan),default=(0,0,None))
-                if best[0]==0:return None
+                if best[0]==0:return plan if scoped else None
                 plan.append(best[2]);need-=set(outputs[best[2]])
             return plan
         route_meta={'method':'phrase','plan':None}
@@ -331,17 +409,20 @@ class SkillChat:
         if blocked:reason='write_intent_requires_approval'
         elif custom_target:reason='custom_target_not_supported'
         elif not check_deadline():reason='turn_deadline_exhausted'
-        elif self.fast and (direct_plan:=direct_route()) is not None:
+        elif (self.fast or wan) and (direct_plan:=direct_route()) is not None:
             route_meta['plan']=list(direct_plan)
             for skill in direct_plan:
                 if not check_deadline():reason='turn_deadline_exhausted';break
                 attempted.append(skill);runs.append(run_skill(skill))
             else:
-                if attempted:
+                if scoped:
+                    workflows=list(runtime.registry.workflows)
+                    if workflows:assessments=assess(workflows)
+                elif attempted:
                     workflows=list(dict.fromkeys(w for skill in attempted for w in runtime.registry.skill_workflows.get(skill,[])))
                     if workflows:assessments=assess(workflows,adaptive=True)
                 selected=[p for p in goals if p in view(refresh=False)['facts']]
-                reason='direct_route' if selected else 'needs_clarification'
+                reason='direct_route' if selected else 'read_execution_unavailable' if scoped else 'needs_clarification'
         elif inference_budget()<=0:reason='finalization_budget_reserved'
         else:
             try:
@@ -353,7 +434,7 @@ class SkillChat:
                 if getattr(model,'local_only',None) is not True or not callable(getattr(model,'choose_skills',None)):
                     raise ValueError('local_skill_model_required')
                 ready=True
-                if not self.fast and (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
+                if not scoped and not self.fast and (not goals or unconfirmed) and callable(getattr(model,'propose_goals',None)):
                     view()
                     if check_deadline() and inference_budget()>0:
                         model_calls+=1
@@ -476,7 +557,7 @@ class SkillChat:
         draft_proofs={}
         answer_calls=0
         synthesis={'used_llm':False,'reason':'renderer','calls':0}
-        if (reason=='model_answer' and not self.fast and check_deadline()
+        if (reason=='model_answer' and not self.fast and not diagnostic and check_deadline()
                 and os.environ.get('GATEWAY_LM_ANSWER_SYNTHESIS','1').lower() not in {'0','off','false','no'}
                 and callable(getattr(model,'complete_answer',None))):
             before_answer=view()
@@ -519,7 +600,11 @@ class SkillChat:
             cov=coverage(final['facts'])
             if not cov['complete'] and reason in {'model_answer','direct_route'}:reason='incomplete_coverage' if goals else 'intent_scope_unconfirmed'
             chosen={p:final['facts'][p] for p in selected}
-            answer=compose_answer(request,selected,final['facts'],current)
+            main_ports=selected
+            if diagnostic and live and not topics:
+                main_ports=[p for p in ('laptop.wifi','laptop.gateway_probe','laptop.internet_probe','laptop.dns','laptop.route')
+                            if p in chosen and (p!='laptop.route' or 'laptop.gateway_probe' not in chosen)]
+            answer=compose_answer(request,main_ports,final['facts'],current,compact=diagnostic or scoped)
             if draft:
                 final_proofs={p:final['facts'][p]['evidence_id'] for p in selected}
                 if (draft_proofs==final_proofs and check_deadline()
@@ -527,19 +612,24 @@ class SkillChat:
                     answer=draft.answer
                 else:
                     synthesis.update(used_llm=False,reason='evidence_changed_or_deadline')
-            if unavailable:answer+='\n'+'\n'.join(f"{rows[s]['name']}: chưa chạy được {prof['where']} ({rows[s]['reason']})." for s in unavailable)
+            limitations=[f"{rows[s]['name']}: chưa chạy được {prof['where']} ({rows[s]['reason']})." for s in unavailable]
             if cov['missing_ports'] and not blocked and not custom_target:
-                answer+='\nChưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.'
+                limitations.append('Chưa xác minh: '+', '.join(dict.fromkeys(goals[p] for p in cov['missing_ports']))+'.')
             if unconfirmed and not blocked and not custom_target:
-                answer+='\n'+prof['unconfirmed']
+                limitations.append(prof['unconfirmed'])
+            caveats=[]
+            claim_details=[]
+            measurement_details=[]
             if blocked:
                 status='BLOCKED';answer='Ứng dụng chỉ đọc; không tự thay đổi cấu hình hoặc khởi động lại thiết bị.'
             elif custom_target:
                 status='NEEDS_INPUT';answer=prof['custom']
             elif not chosen:
                 status='UNAVAILABLE' if unavailable else 'NEEDS_INPUT'
+                answer='\n'.join(limitations)
                 if reason=='turn_deadline_exhausted':answer+='\nĐã hết thời gian xử lý; số đo trước đó không còn hiệu lực để kết luận hiện tại.'
                 elif reason in {'model_timeout','finalization_budget_reserved'}:answer+='\nLLM chưa hoàn tất trong thời gian cho phép; chưa có số đo còn hiệu lực để kết luận.'
+                elif reason=='read_execution_unavailable':answer+='\nChưa có số đo từ laptop cho chủ đề này.'
                 elif not ready:answer+='\nKhông kết nối được LLM local; hãy kiểm tra dịch vụ Ollama.'
                 elif runs:answer+='\nChưa có evidence còn hiệu lực sau lúc suy luận; hãy đo lại.'
                 elif not answer.strip():answer=prof['empty']
@@ -547,18 +637,8 @@ class SkillChat:
                 status='MEASURED' if cov['complete'] and reason in {'model_answer','direct_route'} else 'PARTIAL'
                 wifi=final['facts'].get('laptop.wifi',{}).get('value',{})
                 route=final['facts'].get('laptop.route',{}).get('value',{})
-                diagnostic=diagnostic_request(request)
                 if diagnostic and 'laptop.wifi' in chosen and wifi and route.get('has_route') and route['interface']!=wifi['interface']:
-                    answer+=f"\nĐường đo mạng qua {route['interface']}, khác Wi-Fi {wifi['interface']}; chưa chứng minh Internet qua Wi-Fi."
-                    chosen['laptop.route']=final['facts']['laptop.route']
-                if diagnostic and any(p in chosen for p in ('laptop.internet_probe','laptop.dns')):
-                    answer+='\nICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.'
-                if diagnostic:
-                    assessment=assessment_summary(chosen,assessments)
-                    if assessment:answer=assessment+'\n'+answer
-                    answer=prof['prefix']+'\n'+answer
-                    answer+='\nChưa đủ bằng chứng để xác định nguyên nhân hoặc xác nhận toàn bộ kết nối hoạt động bình thường.'
-                    answer+='\nBước tiếp theo: xác định thiết bị/ứng dụng bị ảnh hưởng và kiểm tra đúng lúc gặp lỗi; chưa có cơ sở chọn thay đổi cấu hình cụ thể.'
+                    caveats.append(f"Đường đo mạng qua {route['interface']}, khác Wi-Fi {wifi['interface']}; chưa chứng minh Internet qua Wi-Fi.")
                 if reason not in {'model_answer','direct_route'}:
                     messages={'incomplete_coverage':'Còn phần yêu cầu chưa đủ bằng chứng',
                               'intent_scope_unconfirmed':'Chưa xác định đủ phạm vi câu hỏi',
@@ -573,7 +653,40 @@ class SkillChat:
                               'evidence_expired_during_answer':'Evidence hết hạn; cần đo lại',
                               'evidence_refresh_unavailable':'Chưa thể làm mới evidence hết hạn',
                               'read_execution_unavailable':'Một số phép đo READ chưa thực hiện được'}
-                    answer+='\n'+messages.get(reason,'Chưa đủ bằng chứng để kết thúc yêu cầu')+'.'
+                    limitations.append(messages.get(reason,'Chưa đủ bằng chứng để kết thúc yêu cầu')+'.')
+                if diagnostic:
+                    assessment=assessment_summary(chosen,assessments)
+                    head, *claim_details=assessment.splitlines() or ['']
+                    if not head:
+                        head='Chưa đủ bằng chứng để đánh giá tình trạng trong phạm vi đã đo.'
+                    elif head.startswith('Có dấu hiệu bất thường') and not wan:
+                        head+=' Chưa xác định được nguyên nhân.'
+                    if status=='PARTIAL':
+                        head+=' Kết quả mới bao phủ một phần yêu cầu.'
+                    lines=answer.splitlines()
+                    budget=3 if wan else 4
+                    answer='\n'.join([f"{prof['origin']}: {head}",*lines[:budget]])
+                    measurement_details=lines[budget:]
+                    if any(p in chosen for p in ('laptop.internet_probe','laptop.dns')):
+                        caveats.append('ICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.')
+                    caveats.extend([_DIAGNOSTIC_LIMIT,
+                        'Bước tiếp theo: xác định thiết bị/ứng dụng bị ảnh hưởng và kiểm tra đúng lúc gặp lỗi; chưa có cơ sở chọn thay đổi cấu hình cụ thể.',
+                        *limitations])
+                elif limitations:
+                    answer='\n'.join([answer,*limitations])
+            if wan and not blocked:
+                answer=_WAN_SCOPE+'\n'+answer.strip()
+            lines=answer.strip().splitlines()
+            if len(lines)>5:
+                answer='\n'.join(lines[:5])
+                measurement_details.extend(lines[5:])
+            if scoped:
+                # Mixed-workflow verdicts can incorporate facts cached by another
+                # turn. Keep only fully in-scope verdicts in the trace.
+                claims=runtime.registry.claim_book.claims
+                assessments=[a for a in assessments if all(
+                    req.port in goals for row in a['claim_results']
+                    for req in (*claims[row['claim_id']].requires,*claims[row['claim_id']].excludes))]
             # Every exported RCA proof must still appear in the final fresh snapshot.
             valid_ids={f['evidence_id'] for f in final['facts'].values()}
             for a in assessments:
@@ -595,7 +708,8 @@ class SkillChat:
                                      'value':fact['value'] if fact else None,'reason':node.reason})
             evidence=[{'id':f['evidence_id'],'port':p,'status':'OK',**f} for p,f in final['facts'].items()]
             timings['total']=(self.clock()-started)*1000
-            return {'answer':answer.strip(),'request':request,'mode':prof['mode'],'fixture':prof['fixture'],
+            return {'answer':answer.strip(),'caveats':caveats,'claim_details':claim_details,
+                    'measurement_details':measurement_details,'request':request,'mode':prof['mode'],'fixture':prof['fixture'],
                     'fixture_id':prof['fixture_id'],'session_id':sid,'case_status':status,'action':'REPORT',
                     'workflow':prof['workflow'],'workflow_id':None,'method':'core','policy':'dynamic','diagnosis':None,
                     'target':dict(prof['target']),'synthetic_only':entry['mode']=='replay','calls':session.runner.calls-calls_before,
@@ -624,9 +738,9 @@ class SkillChat:
                     'model_calls':model_calls,'timings_ms':timings,
                     'routing':{'fast':self.fast,'direct':direct_plan is not None,**route_meta},
                     'answer_synthesis':synthesis,
-                    'answer_kind':'diagnostic' if diagnostic_request(request) else 'lookup',
+                    'answer_kind':'diagnostic' if diagnostic else 'lookup',
                     'user_input_required':reason=='needs_clarification' and not bool(runs),
-                    'diagnostic_status':'INCONCLUSIVE' if diagnostic_request(request) else None,
+                    'diagnostic_status':'INCONCLUSIVE' if diagnostic else None,
                     'catalog_total':catalog['design_total'],'llm_advisor_requested':True,'llm_advisor_ready':ready,
                     'llm_advisor_used':bool(advice),'warnings':[],
                     'notice':prof['notice']}

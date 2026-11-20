@@ -26,11 +26,21 @@ sandbox.enrichMessage(bubble,{
   case_status:'MEASURED',mode:'linux_live',catalog_total:120,workflow:'LAPTOP-SKILL-CHAT',
   calls:3,repairs:0,method:'core',advice:[{},{}],model_calls:4,llm_advisor_used:true,
   answer_synthesis:{used_llm:true},notice:'Scoped measurements only.',warnings:['Actionable warning'],
+  caveats:['ICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.'],
+  claim_details:['Có mất gói tới IP Internet kiểm tra.'],
+  measurement_details:['Số đo bổ sung.'],
 });
 const details = bubble.children.find(n=>n.tag==='details');
 assert(details && !details.open,'Technical details must default to closed');
 assert.equal(details.children[0].textContent,'Chi tiết phép đo');
 assert(!bubble.children.some(n=>n.className==='answer-meta'));
+assert(!bubble.children.some(n=>n.className==='answer-notes'));
+const notes = details.children.find(n=>n.className==='answer-notes');
+assert.deepEqual(notes.children.map(n=>n.textContent),[
+  'Số đo bổ sung.',
+  'Có mất gói tới IP Internet kiểm tra.',
+  'ICMP/DNS phản hồi chưa chứng minh truy cập web hoặc nguyên nhân gốc.',
+]);
 const meta = details.children.find(n=>n.className==='answer-meta');
 assert(meta.children.some(n=>n.textContent==='LLM: 4 lượt'));
 assert(bubble.children.some(n=>n.className==='warnings' && n.textContent==='Actionable warning'));
@@ -45,4 +55,4 @@ sandbox.enrichMessage(rejected,{calls:0,repairs:0,model_calls:2,llm_advisor_used
   llm_advisor_ready:true,case_status:'NEEDS_INPUT'});
 assert(rejected.children.find(n=>n.tag==='details').children.find(n=>n.className==='answer-meta')
   .children.some(n=>n.textContent==='LLM: 2 lượt'));
-console.log('Chat presentation: PASS (closed details, truthful badges, RPC count, warnings)');
+console.log('Chat presentation: PASS (closed details, caveats, truthful badges, RPC count, warnings)');

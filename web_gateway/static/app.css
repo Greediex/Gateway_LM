@@ -35,6 +35,7 @@
 @media(max-width:720px){.skill-launcher{padding:13px}.skill-filters{grid-template-columns:1fr}.skill-run-bar{align-items:stretch;flex-direction:column;gap:0}.skill-run-bar button{margin-bottom:12px}.skill-launcher h2{font-size:15px}}
 
 .answer-details{margin-top:12px}.answer-details>summary{cursor:pointer;color:#8bdaf7;font-size:11px}.answer-details .meta-chip{display:inline-block;margin:7px 5px 0 0}.answer-details .inspector-note{margin-top:10px}
+.answer-notes{margin:10px 0;padding-inline-start:20px;color:#a7bbcc;font-size:11px;line-height:1.6}.answer-notes li+li{margin-top:4px}
 
 /* Keep the chat layout and open the Inspector on demand. */
 .shell{grid-template-columns:minmax(0,1fr)!important}

@@ -49,8 +49,6 @@ def diagnostic_request(question: str) -> bool:
 
 
 def requested_fields(question: str) -> set[str]:
-    if diagnostic_request(question):
-        return set()
     text = normalize(question)
     return {key for key, terms in ALIASES.items() if any(phrase(text, term) for term in terms)}
 
@@ -103,7 +101,8 @@ def ledger(question: str, selected: list[str], facts: dict) -> list[dict]:
     return rows
 
 
-def compose_answer(question: str, selected: list[str], facts: dict, renderers: dict) -> str:
+def compose_answer(question: str, selected: list[str], facts: dict, renderers: dict, *,
+                   compact: bool = False) -> str:
     selected=[p for p in selected if _fresh(facts.get(p,{}))]
     fields = requested_fields(question)
     if fields and selected and all(isinstance(facts[p]['value'],dict)
@@ -121,11 +120,14 @@ def compose_answer(question: str, selected: list[str], facts: dict, renderers: d
                     lines.append(f"{LABELS.get(key,key)}: {shown or 'chưa đọc được trong bằng chứng hiện tại'}.")
                 continue
             if value['associated']:
-                lines.append(f"Laptop đang kết nối với Wi-Fi {value['ssid'] or '(chưa đọc được SSID)'}.")
+                ssid = _shown('ssid', value['ssid']) or '(chưa đọc được SSID)'
+                wifi = f"Laptop đang kết nối với Wi-Fi {ssid}."
             else:
-                lines.append('Laptop chưa kết nối tới điểm phát Wi-Fi tại thời điểm đo.')
+                wifi = 'Laptop chưa kết nối tới điểm phát Wi-Fi tại thời điểm đo.'
             if value['signal_pct'] >= 0:
-                lines.append(f"Tín hiệu Wi-Fi hiện tại: {value['signal_pct']:g}% (không phải RSSI dBm/SNR).")
+                signal = f"Tín hiệu Wi-Fi hiện tại: {value['signal_pct']:g}% (không phải RSSI dBm/SNR)."
+                wifi += (' ' if compact else '\n') + signal
+            lines.append(wifi)
         elif port in renderers:
             lines.append(renderers[port]['text'])
     return '\n'.join(lines)
