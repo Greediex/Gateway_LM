@@ -67,6 +67,15 @@ class ReplaySimTests(unittest.TestCase):
     def test_production_gate_and_specific_http_response(self):
         path = ROOT / 'config/skill_launcher/approvals.json'
         approval = path.read_bytes()
+        real_read = dep.read_json
+
+        def unapproved(p):  # an operator config without a replay_sim pin, independent of the repo's file
+            doc = real_read(p)
+            return {k: v for k, v in doc.items() if k != 'replay_sim'} if Path(p).name == 'approvals.json' else doc
+        with patch.object(dep, 'read_json', unapproved):
+            self._assert_unapproved(path, approval)
+
+    def _assert_unapproved(self, path, approval):
         with self.assertRaisesRegex(PlanError, 'skill_deployment_not_approved'):
             dep.composition('replay_sim')
         payload = {'message': 'Kiểm tra WAN', 'source_mode': 'replay_sim'}

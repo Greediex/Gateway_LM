@@ -15,5 +15,14 @@
     "backend_revision": "0.2.0",
     "source": "synthetic_replay/skill_expansion_v2",
     "cat01_profile_digest": "9b3d15ed7dc9d3e1e55f439397e9793982d6d1a276d3309016cb661ddce94862"
+  },
+  "replay_sim": {
+    "registry_digest": "a4170675586c459598b6830ddd2250ae4be5364fba9b5990c891b7a868c62781",
+    "actions_digest": "1905bd3ac4b18d7c212ffa7825dc3e4c428528b25c5b768ed029fa21ab69dda6",
+    "diagnostics_digest": "74ccfb7e5bdc806d590c26fe54b030c9d1e5f3a701b5c3115cd2761814986d1b",
+    "fixtures_digest": "0aaf9fef508cdb7f158ee7c8b870acc82790fde0f3c639b050fd581402187c4a",
+    "backend_id": "expansion.simulation_replay",
+    "backend_revision": "0.2.0",
+    "source": "synthetic_replay/replay_sim_v1"
   }
 }
