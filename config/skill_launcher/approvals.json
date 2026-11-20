@@ -23,6 +23,9 @@
     "fixtures_digest": "0aaf9fef508cdb7f158ee7c8b870acc82790fde0f3c639b050fd581402187c4a",
     "backend_id": "expansion.simulation_replay",
     "backend_revision": "0.2.0",
-    "source": "synthetic_replay/replay_sim_v1"
+    "source": "synthetic_replay/replay_sim_v1",
+    "igate_digest": "9883919316a93befe57fad38aae54472594faf112abf6071cd48242bfbb5557b",
+    "incident_checks_digest": "0090eb755d076673e563813e8a682e3d2e0a776b535a0907cee1abe1ce05b8ad",
+    "incident_scenarios_digest": "52e01c6f94ac66fed6204e5de3ce34e5251ef5230c130dfed4ccd3a3a1702ed5"
   }
 }
