@@ -2,4 +2,4 @@
 data/** -text
 benchmarks/** -text
 # iGate handover files retain upstream bytes for provenance checks.
-third_party/igate_handover_20261120/** -text whitespace=cr-at-eol
+vendor/igate_handover_20261120/** -text whitespace=cr-at-eol

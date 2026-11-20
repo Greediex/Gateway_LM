@@ -8,7 +8,7 @@ from ..adapters.bindings import require
 from ..command_catalog.loader import read_json
 from ..core import ROOT
 
-VENDOR = ROOT / 'third_party/igate_handover_20261120'
+VENDOR = ROOT / 'vendor/igate_handover_20261120'
 CATALOG = ROOT / 'config/skill_launcher/replay_sim.igate.json'
 SCENARIOS = ROOT / 'data/igate_sim_v1'
 DOMAIN = 'igate'
