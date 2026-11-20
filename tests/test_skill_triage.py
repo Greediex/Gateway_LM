@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 
 from gateway_pilot.adapters.results import ToolResult
 from gateway_pilot.application import skill_chat
+from gateway_pilot.application.claim_guidance import GUIDANCE, load_claim_guidance
 from gateway_pilot.application.skill_launcher import SkillLauncher
 from gateway_pilot.application.skill_triage import TAXONOMY, load_taxonomy
 from gateway_pilot.command_catalog.loader import read_json
@@ -176,13 +177,25 @@ class SkillTriageTests(unittest.TestCase):
         self.assertEqual([r['index'] for r in result['timeline']], list(range(1, result['calls'] + 1)))
         self.assertEqual(result['answer'].splitlines()[0], replay_sim.NOTICE)
         self.assertIn('Kết nối IP tới upstream thông', result['answer'].splitlines()[1])
-        self.assertTrue(result['answer'].splitlines()[-1].startswith('Bình thường: '))
+        findings, _, steps = result['answer'].partition('\nCần làm gì:')
+        self.assertTrue(findings.splitlines()[-1].startswith('Bình thường: '))
+        self.assertGreater(len(steps.splitlines()), 1)
+        self.assertLessEqual(len(steps.splitlines()), 4)
         self.assertTrue(all(r['claims'] and r['evidence_ids'] for r in result['triage_results']))
         self.assertEqual(set(result['evidence_ids']),
                          {eid for row in result['triage_results'] for eid in row['evidence_ids']})
         self.assertTrue(set(result['evidence_ids']) <= {r['id'] for r in result['evidence']})
         self.assertEqual(result['incident_guidance'], self.profile.incident_replay.guidance['INC-DNS-FAIL'])
         self.assertEqual(result['incident_guidance']['label'], ADVISORY)
+        next_steps = result['next_steps']
+        incident = result['incident_guidance']
+        self.assertEqual((next_steps['kind'], next_steps['label']), ('fault', ADVISORY))
+        self.assertEqual(next_steps['sources'], incident['sources'])
+        texts = [step['text'] for step in next_steps['steps']]
+        self.assertEqual(texts[:len(incident['steps'])], incident['steps'])
+        self.assertEqual(len(texts), len(set(texts)))
+        self.assertLessEqual(len(texts), 6)
+        self.assertTrue(any(step['from'] == 'F02 · no_healthy_resolver_v1' for step in next_steps['steps']))
         self.model.choose_skills.assert_not_called()
 
     def test_healthy_and_mixed_verdicts_respect_shared_call_budget(self):
@@ -204,7 +217,7 @@ class SkillTriageTests(unittest.TestCase):
                 for row in result['triage_results']:
                     if row['verdict'] == 'UNKNOWN':
                         self.assertEqual(row['evidence_ids'], [])
-                        unknown_line = result['answer'].splitlines()[-1]
+                        unknown_line = result['answer'].partition('\nCần làm gì:')[0].splitlines()[-1]
                         self.assertTrue(unknown_line.startswith('Chưa đủ bằng chứng: '))
                         self.assertIn(row['name'], unknown_line)
 
@@ -224,6 +237,8 @@ class SkillTriageTests(unittest.TestCase):
         fault = result['triage_results'][0]
         self.assertEqual((fault['verdict'], fault['claims'], fault['evidence_ids']), ('UNKNOWN', [], []))
         self.assertNotIn('incident_guidance', result)
+        self.assertEqual(result['next_steps']['kind'], 'unknown')
+        self.assertTrue(any(source.startswith('GP01 · ') for source in result['next_steps']['sources']))
         self.assertNotIn('Phát hiện:', result['answer'])
         self.assertTrue(all(event['evidence_id'] is None for event in result['timeline'][:2]))
 
@@ -292,6 +307,9 @@ class SkillTriageTests(unittest.TestCase):
             for invalid in [[], ['A02'] * 7, ['A02', 'A02'], ['A02', 'SK13'], ['UNKNOWN'], ['A02', {}], 'A02']:
                 with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                     self.chat.run_selected(sid, invalid)
+            for invalid in [sorted(self.approved)[:7], ['GP01', 'GP01'], ['SK13'], ['UNKNOWN'], ['A02', {}], 'A02']:
+                with self.subTest(offered_ids=invalid), self.assertRaises(ValueError):
+                    self.chat.run_selected(sid, ['A02'], offered_ids=invalid)
             with self.assertRaisesRegex(ValueError, 'scenario_requires_new_session'):
                 self.chat.run_selected(sid, ['A02'], scenario='fault')
             with self.assertRaisesRegex(ValueError, 'triage_requires_replay_sim_session'):
@@ -320,6 +338,8 @@ class SkillTriageTests(unittest.TestCase):
                 (selected, {'skill_ids': ['O07']}, HTTPStatus.BAD_REQUEST),
                 (selected, {'session_id': sid, 'skill_ids': []}, HTTPStatus.BAD_REQUEST),
                 (selected, {'session_id': sid, 'skill_ids': ['SK13']}, HTTPStatus.BAD_REQUEST),
+                (selected, {'session_id': sid, 'skill_ids': ['O07'], 'offered_ids': None}, HTTPStatus.BAD_REQUEST),
+                (selected, {'session_id': sid, 'skill_ids': ['O07'], 'offered_ids': ['SK13']}, HTTPStatus.BAD_REQUEST),
                 (selected, {'session_id': sid, 'skill_ids': ['O07'], 'target': 'router'}, HTTPStatus.BAD_REQUEST),
                 (selected, {'session_id': 'f' * 32, 'skill_ids': ['O07']}, HTTPStatus.GONE),
             ]:
@@ -331,6 +351,144 @@ class SkillTriageTests(unittest.TestCase):
         status, result = request(selected, {'session_id': sid, 'skill_ids': ['O07', 'A02']})
         self.assertEqual(status, HTTPStatus.OK, result)
         self.assertEqual((result['scenario'], result['verdict']), ('INC-WAN-DOWN', 'FAULT'))
+
+    def test_claim_guidance_covers_current_diagnostics_and_preserves_existing_text(self):
+        profile = self.profile
+        diagnostics = [d for catalog in (profile, profile.igate, profile.incidents)
+                       for d in catalog.diagnostics['skills'].values()]
+        diagnostics += [d for _, d in profile.incident_replay.joint_checks.values()]
+        claims = {c['claim_id']: c['severity'] for d in diagnostics for c in d['claims']}
+        existing = profile.incidents.diagnostics['claim_text'] | profile.incident_replay.claim_text
+        metadata = load_claim_guidance(profile)
+        self.assertEqual(set(metadata['text']), set(claims))
+        self.assertTrue(all(text.strip() for text in metadata['text'].values()))
+        self.assertTrue(all(metadata['text'][cid] == text for cid, text in existing.items()))
+        self.assertEqual(set(metadata['fix']), {cid for cid, severity in claims.items()
+                                                if severity == 'FAULT' and cid not in existing})
+
+    def test_claim_guidance_rejects_invalid_metadata(self):
+        seed = json.loads(GUIDANCE.read_text(encoding='utf-8'))
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / 'guidance.json'
+            fault_id = 'inventory_empty_v1'
+            for defect, reason in [
+                ('unknown', 'unknown_id'), ('overlap', 'overlapping_id'), ('missing_id', 'missing_id'),
+                ('missing_text', 'text'), ('empty_text', 'text'), ('healthy_fix', 'fix'),
+                ('observation_fix', 'fix'), ('missing_fix', 'fix'), ('bad_fix', 'fix'),
+            ]:
+                with self.subTest(defect=defect):
+                    doc = copy.deepcopy(seed)
+                    claims = doc['claims']
+                    if defect == 'unknown':
+                        claims['unknown_id'] = claims[fault_id]
+                    elif defect == 'overlap':
+                        claims['gp01_dns_all_resolvers_down_v1'] = claims[fault_id]
+                    elif defect == 'missing_id':
+                        del claims[fault_id]
+                    elif defect == 'missing_text':
+                        del claims[fault_id]['text_vi']
+                    elif defect == 'empty_text':
+                        claims[fault_id]['text_vi'] = '  '
+                    elif defect in {'healthy_fix', 'observation_fix'}:
+                        cid = 'inventory_present_v1' if defect == 'healthy_fix' else 'igate_inventory_complete_v1'
+                        claims[cid]['fix_vi'] = claims[fault_id]['fix_vi']
+                    elif defect == 'missing_fix':
+                        del claims[fault_id]['fix_vi']
+                    else:
+                        claims[fault_id]['fix_vi'] = ['Một bước.']
+                    path.write_text(json.dumps(doc, ensure_ascii=False), encoding='utf-8')
+                    with self.assertRaisesRegex(PlanError, f'claim_guidance_{reason}$'):
+                        load_claim_guidance(self.profile, path)
+            duplicate = json.dumps(seed, ensure_ascii=False).replace(f'"{fault_id}":', f'"{fault_id}": {{}}, "{fault_id}":')
+            path.write_text(duplicate, encoding='utf-8')
+            with self.assertRaisesRegex(PlanError, 'duplicate_json_key$'):
+                load_claim_guidance(self.profile, path)
+
+    def test_healthy_offered_cards_are_returned_but_not_executed(self):
+        sid = self.session()
+        with patch.object(self.launcher, 'run', wraps=self.launcher.run) as run:
+            status, result = request('/api/skills/run_selected', {
+                'session_id': sid, 'skill_ids': ['A02'], 'offered_ids': ['F02', 'A02', 'GP01'],
+            })
+            self.assertEqual(status, HTTPStatus.OK, result)
+            self.assertEqual([c.args for c in run.call_args_list], [(sid, 'A02')])
+        self.assertEqual(result['next_steps']['kind'], 'healthy')
+        self.assertEqual([card['skill_id'] for card in result['unrun_cards']], ['F02', 'GP01'])
+        self.assertNotIn('unrun_cards', self.chat.run_selected(sid, ['A02']))
+
+    def test_generic_scenarios_keep_working_with_warning_and_next_steps(self):
+        for scenario, verdict in [('fault', 'FAULT'), ('missing', 'UNKNOWN')]:
+            with self.subTest(scenario=scenario):
+                triage = self.chat.triage('Kiểm kê thiết bị trong mạng', scenario=scenario)
+                result = self.chat.run_selected(triage['session_id'], ['A02'])
+                self.assertEqual(result['warning'], triage['warning'])
+                self.assertIn('từng phép kiểm tra', result['warning'])
+                self.assertEqual((result['verdict'], result['next_steps']['kind']), (verdict, verdict.lower()))
+                self.assertNotIn('Điều kiện mô phỏng:', result['answer'])
+                if scenario == 'fault':
+                    self.assertIn('Router không thấy thiết bị nào trong danh sách kết nối.', result['answer'])
+                    self.assertTrue(all(s['from'] == 'A02 · inventory_empty_v1'
+                                        for s in result['next_steps']['steps']))
+                    self.assertNotIn('incident_guidance', result)
+                else:
+                    self.assertTrue(result['next_steps']['sources'])
+                    self.assertTrue(all(source.startswith('A02 · ') for source in result['next_steps']['sources']))
+
+    def test_direct_replay_uses_the_same_guidance_for_single_results(self):
+        for scenario, expected in [('normal', 'healthy'), ('fault', 'fault'), ('missing', 'unknown')]:
+            with self.subTest(scenario=scenario):
+                sid = self.session(scenario)
+                direct = self.chat.chat('A02', mode='replay_sim', session_id=sid, allow_model=False)
+                self.assertEqual(direct['routing']['plan'], ['A02'])
+                triage = self.chat.run_selected(sid, ['A02'])
+                self.assertEqual(direct['next_steps'], triage['next_steps'])
+                self.assertEqual(direct['next_steps']['kind'], expected)
+                self.assertIn('Cần làm gì:', direct['answer'])
+                self.assertNotIn('Điều kiện mô phỏng:', direct['answer'])
+                for claim in triage['triage_results'][0]['claims']:
+                    self.assertIn(claim, direct['answer'])
+
+    def test_direct_replay_and_igate_drop_expired_claims_and_advice(self):
+        run = self.launcher.run
+
+        def expire_after_run(*args, **kwargs):
+            result = run(*args, **kwargs)
+            self.assertEqual(result['verdict'], 'FAULT')
+            self.now += max(row['expires_in_s'] for row in result['evidence']) + 1
+            return result
+
+        for query, skill in [('A02', 'A02'), ('Có Internet không?', 'IG03')]:
+            with self.subTest(skill=skill):
+                sid = self.session('fault')
+                with patch.object(self.launcher, 'run', side_effect=expire_after_run):
+                    result = self.chat.chat(query, mode='replay_sim', session_id=sid, allow_model=False)
+                self.assertEqual(result['routing']['plan'], [skill])
+                self.assertEqual((result['verdict'], result['assessment']['verdict'], result['next_steps']['kind']),
+                                 ('UNKNOWN', 'UNKNOWN', 'unknown'))
+                self.assertEqual((result['evidence'], result['evidence_ids']), ([], []))
+                self.assertTrue(all(event['evidence_id'] is None for event in result['timeline']))
+                self.assertTrue(result['next_steps']['sources'])
+
+    def test_expired_required_source_suppresses_advice_even_with_fresh_claim_proof(self):
+        sid = self.session('fault')
+        run = self.launcher.run
+
+        def expire_only_link(*args, **kwargs):
+            result = run(*args, **kwargs)
+            self.assertEqual(result['verdict'], 'FAULT')
+            link = next(row for row in result['evidence'] if row['sample'] == 'link')
+            self.assertNotIn(link['id'], result['evidence_ids'])
+            link['expires_in_s'] = 1
+            self.now += 2
+            return result
+
+        with patch.object(self.launcher, 'run', side_effect=expire_only_link):
+            result = self.chat.run_selected(sid, ['SK04'])
+        self.assertEqual((result['verdict'], result['case_status'], result['next_steps']['kind']),
+                         ('UNKNOWN', 'PARTIAL', 'unknown'))
+        self.assertTrue(result['evidence'])
+        self.assertEqual(result['evidence_ids'], [])
+        self.assertEqual(result['next_steps']['sources'], ['SK04 · link'])
 
     def test_server_reports_unapproved_replay(self):
         with patch.object(self.launcher, 'create_session',

@@ -9,8 +9,10 @@ from ..skill_expansion.igate_data import function_id
 from ..skill_expansion.igate_snapshot import APPLICATIONS, device_name
 from ..skill_expansion.replay_sim import MODE, NOTICE
 from . import igate_proposal
+from .claim_guidance import next_steps_text, single_result_guidance
 from .igate_knowledge import knowledge
 from .igate_proposal import APP, Proposal, fold, parse_proposal, resolve_device
+from .replay_sim_run import current_replay_result
 
 
 @dataclass(frozen=True)
@@ -219,6 +221,7 @@ def answer(route_result: ReadQuestion | Proposal | str | dict, launcher, sid: st
     if read_id is not None:
         remaining = max(0., started + max_elapsed_s - clock())
         measured = launcher.run(sid, read_id, deadline=replay.clock() + remaining)
+        measured = current_replay_result(replay, measured, replay.clock())
     elapsed_ms = (clock() - execution_started) * 1000
     evidence = measured.get('evidence', [])
     values = next((row['value'] for row in evidence if row['port'] == function_id(read_id)), {}) if read_id else {}
@@ -256,6 +259,10 @@ def answer(route_result: ReadQuestion | Proposal | str | dict, launcher, sid: st
     assessment = measured.get('assessment', {})
     proofs = list(dict.fromkeys(eid for c in assessment.get('claims', {}).values()
                                 if c['value'] == 'TRUE' for eid in c['evidence']))
+    if isinstance(route_result, ReadQuestion):
+        claim_lines, next_steps = single_result_guidance(replay, measured)
+        message = '\n'.join([message, *claim_lines, next_steps_text(next_steps)])
+        details['next_steps'] = next_steps
     return {
         'answer': f'{NOTICE}\n{message}', 'answer_kind': kind, 'mode': MODE, 'synthetic_only': True,
         'scenario': replay.scenario, 'fixture': f'Replay mô phỏng · {replay.scenario}', 'fixture_id': replay.scenario,

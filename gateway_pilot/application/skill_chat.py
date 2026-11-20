@@ -17,6 +17,8 @@ from ..graph_v3.task_decomposer import TaskDecomposer
 from ..observability.snapshot import VerifiedSnapshot
 from ..skill_expansion.replay_sim import MODE as REPLAY_SIM, NOTICE as SIM_NOTICE
 from ..workflow import normalize
+from .claim_guidance import next_steps_text, single_result_guidance
+from .replay_sim_run import current_replay_result
 from .skill_launcher import LAUNCHER, SkillSessionError
 from .grounded_answer import compose_answer, diagnostic_request, produce_grounded_answer, assessment_summary
 
@@ -361,7 +363,8 @@ class SkillChat:
                     pass
             raise
 
-    def run_selected(self, session_id: str, skill_ids: list[str], *, scenario: str | None = None) -> dict:
+    def run_selected(self, session_id: str, skill_ids: list[str], *, scenario: str | None = None,
+                     offered_ids: list[str] | None = None) -> dict:
         from .skill_triage import MAX_CARDS, aggregate, replay_rows
 
         started = self.clock()
@@ -370,11 +373,17 @@ class SkillChat:
         if (type(skill_ids) is not list or not 1 <= len(skill_ids) <= MAX_CARDS
                 or any(type(sid) is not str for sid in skill_ids) or len(set(skill_ids)) != len(skill_ids)):
             raise ValueError('triage_skill_ids_must_be_1_to_6_unique')
+        if offered_ids is not None and (
+                type(offered_ids) is not list or len(offered_ids) > MAX_CARDS
+                or any(type(sid) is not str for sid in offered_ids) or len(set(offered_ids)) != len(offered_ids)):
+            raise ValueError('triage_offered_ids_must_be_up_to_6_unique')
         entry = self._triage_session(session_id, scenario)
         catalog = self.launcher.catalog(REPLAY_SIM, entry=entry)
         rows = replay_rows(catalog)
         if not set(skill_ids) <= rows.keys():
             raise ValueError('triage_skill_not_approved')
+        if offered_ids is not None and not set(offered_ids) <= rows.keys():
+            raise ValueError('triage_offered_skill_not_approved')
         lock = self._chat_lock(entry)
         try:
             with entry['lock']:
@@ -394,7 +403,7 @@ class SkillChat:
                                 raise
                     runs.append((skill_id, result))
                 return aggregate(session_id, replay, rows, runs, catalog['design_total'],
-                                 elapsed_s=self.clock() - started)
+                                 elapsed_s=self.clock() - started, offered_ids=offered_ids)
         finally:
             lock.release()
 
@@ -461,6 +470,7 @@ class SkillChat:
         incidents = replay.profile.incidents.diagnostics
         text = normalize(request)
         advice, calls, method, result = [], 0, 'none', None
+        claim_lines, next_steps = [], None
         requested_scopes = _replay_scopes(text)
         refusal = _replay_refusal(request, text, rows, routing, symptom)
         if refusal:
@@ -516,11 +526,13 @@ class SkillChat:
                     reason, status, message = 'turn_deadline_exhausted', 'UNAVAILABLE', 'Đã hết thời gian xử lý.'
                 elif selected is not None:
                     result = self.launcher.run(sid, selected, deadline=replay.clock() + remaining)
+                    result = current_replay_result(replay, result, replay.clock())
                     reason = 'simulation_data_missing' if result['missing_ports'] else 'simulation_assessed'
                     status = result['status']
-                    verdict = {'HEALTHY': 'Bình thường trong phạm vi đã kiểm tra.',
-                               'FAULT': 'Có dấu hiệu bất thường trong phép kiểm tra.',
-                               'UNKNOWN': 'Chưa đủ bằng chứng để kết luận.'}[result['verdict']]
+                    claim_lines, next_steps = single_result_guidance(replay, result)
+                    verdict = {'healthy': 'Bình thường trong phạm vi đã kiểm tra.',
+                               'fault': 'Có dấu hiệu bất thường trong phép kiểm tra.',
+                               'unknown': 'Chưa đủ bằng chứng để kết luận.'}[next_steps['kind']]
                     message = f"{rows[selected]['name']} · {verdict}"
                 else:
                     reason, status = 'needs_clarification', 'NEEDS_INPUT'
@@ -529,15 +541,13 @@ class SkillChat:
         result = result or {}
         evidence = result.get('evidence', [])
         measurements = [row for row in evidence if row['port'] != 'client.identity']
-        summary = ' '.join(dict.fromkeys(line for row in measurements
-                                         if (line := _simulation_finding(row))))
-        if result.get('verdict') in {'HEALTHY', 'FAULT'}:  # only what a TRUE, evidenced Claim states
-            claim_text = {**incidents['claim_text'], **replay.profile.incident_replay.claim_text}
-            summary = ' '.join(filter(None, (summary, *(
-                claim_text.get(cid, '') for cid, claim in result['assessment']['claims'].items()
-                if claim['value'] == 'TRUE' and claim['evidence']))))
+        summary = ' '.join(dict.fromkeys([
+            *(line for row in measurements if (line := _simulation_finding(row))), *claim_lines,
+        ]))
         scope = rows[result['skill_id']]['runtime_scope'] if result else None
-        return {'answer': '\n'.join(filter(None, (SIM_NOTICE, message, summary))), 'request': request,
+        advice_text = next_steps_text(next_steps, compact=True) if next_steps else ''
+        answer = '\n'.join(filter(None, (SIM_NOTICE, message, summary, advice_text)))
+        return {'answer': answer, 'request': request,
                 'mode': REPLAY_SIM, 'synthetic_only': True, 'scenario': replay.scenario,
                 'fixture': f'Replay mô phỏng · {replay.scenario}', 'fixture_id': replay.scenario,
                 'session_id': sid, 'catalog_total': catalog['design_total'], 'workflow': 'REPLAY-SIM-SKILL-CHAT',
@@ -558,7 +568,9 @@ class SkillChat:
                 'notice': SIM_NOTICE, 'model_calls': calls, 'advice': advice, 'llm_advisor_used': bool(advice),
                 'routing': {'method': method, 'plan': [result['skill_id']] if result else []},
                 'answer_kind': 'evidence' if measurements else None,
-                **({'incident_guidance': result['incident_guidance']} if 'incident_guidance' in result else {}),
+                **({'next_steps': next_steps} if next_steps else {}),
+                **({'incident_guidance': result['incident_guidance']}
+                   if next_steps and next_steps['kind'] == 'fault' and 'incident_guidance' in result else {}),
                 'timings_ms': {'total': round((self.clock() - started) * 1000, 3)},
                 'user_input_required': status == 'NEEDS_INPUT'}
 

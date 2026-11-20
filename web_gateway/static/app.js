@@ -1,5 +1,6 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
+const genericReplayOptions = [...$('scenarioSelect').querySelectorAll('option[value=fault], option[value=missing]')];
 const state = { connected: false, busy: false, method: 'bm25', fixtures: [], tab: 'timeline', result: null, planIndex: null,
                 sessionId: null, turns: 0, chatGeneration: 0, triageOptions: null, livePlatform: 'Windows', linuxLiveAvailable: false, networkRequest: 0 };
 const normalize = (s) => String(s ?? '');
@@ -48,7 +49,9 @@ function releaseChatSession() {
 }
 function triageFlow() { return $('sourceSelect').value === 'replay_sim' && $('replayTriage').checked; }
 function updateChatFlow() {
-  $('userInput').placeholder = triageFlow()
+  const rolePlay = triageFlow();
+  if (setReplayScenarioOptions($('scenarioSelect'), genericReplayOptions, rolePlay)) clearChat();
+  $('userInput').placeholder = rolePlay
     ? 'Ví dụ: Tối đông người là mạng chậm (Enter để gửi)'
     : 'Hỏi Gateway LM... (Enter để gửi, Shift+Enter xuống dòng)';
 }
@@ -267,14 +270,35 @@ function renderIncidentOptions(group, incidents) {
     group.appendChild(option);
   }
 }
-function renderIncidentGuidance(bubble, guidance) {
+function setReplayScenarioOptions(select, genericOptions, rolePlay) {
+  const previous = select.value;
+  const group = select.querySelector('optgroup');
+  for (const option of genericOptions) {
+    if (rolePlay) option.remove();
+    else select.insertBefore(option, group);
+  }
+  const reset = rolePlay && genericOptions.some(option => option.value === previous);
+  select.value = reset ? 'normal' : previous;
+  return reset;
+}
+function renderIncidentGuidance(bubble, guidance, unrunCards = [], onRun) {
   const card = n('section', 'runbook-card');
-  card.appendChild(n('b', '', 'Cách xử lý'));
+  const title = guidance.kind ? 'Cần làm gì' : 'Cách xử lý';
+  card.setAttribute('aria-label', title);
+  card.appendChild(n('b', '', title));
   card.appendChild(n('div', '', guidance.label));
   const steps = n('ul', 'answer-notes');
-  for (const step of guidance.steps) steps.appendChild(n('li', '', step));
+  for (const step of guidance.steps) {
+    const item = n('li', '', typeof step === 'string' ? step : step.text);
+    if (step.from) item.appendChild(n('small', 'step-origin', ` (${step.from})`));
+    steps.appendChild(item);
+  }
   card.appendChild(steps);
-  guidance.sources.forEach((url, index) => {
+  const sources = guidance.sources || [];
+  if (guidance.kind === 'unknown' && sources.length) {
+    card.appendChild(n('div', '', 'Nguồn còn thiếu: ' + sources.join(', ')));
+  }
+  (guidance.kind === 'unknown' ? [] : sources).forEach((url, index) => {
     if (!url.startsWith('https://')) return;
     if (index > 0) card.appendChild(n('span', '', ' · '));
     const link = n('a', '', `Nguồn ${index + 1}`);
@@ -283,7 +307,24 @@ function renderIncidentGuidance(bubble, guidance) {
     link.rel = 'noopener noreferrer';
     card.appendChild(link);
   });
+  let options = null;
+  if (guidance.kind === 'healthy' && onRun && unrunCards.length) {
+    options = n('fieldset', 'triage-options');
+    options.appendChild(n('legend', '', 'Phép kiểm tra chưa chạy'));
+    const offeredIds = unrunCards.map(item => item.skill_id);
+    for (const item of unrunCards) {
+      const button = n('button', 'triage-run', item.name);
+      button.type = 'button';
+      button.setAttribute('aria-label', `Chạy chẩn đoán: ${item.name}`);
+      button.addEventListener('click', () => {
+        if (!options.disabled) onRun([item.skill_id], offeredIds);
+      });
+      options.appendChild(button);
+    }
+    card.appendChild(options);
+  }
   bubble.appendChild(card);
+  return options;
 }
 function renderTriageCards(bubble, cards, onRun) {
   const form = n('form', 'triage-form');
@@ -319,7 +360,7 @@ function renderTriageCards(bubble, cards, onRun) {
   form.addEventListener('submit', event => {
     event.preventDefault();
     const ids = selected();
-    if (!options.disabled && ids.length) onRun(ids);
+    if (!options.disabled && ids.length) onRun(ids, cards.map(card => card.skill_id));
   });
   update();
   options.appendChild(button);
@@ -334,16 +375,20 @@ function renderTriageResults(bubble, results) {
     const item = n('li');
     item.appendChild(n('span', '', `${row.skill_id} · ${row.name}`));
     item.appendChild(n('span', `triage-verdict ${row.verdict.toLowerCase()}`, verdict));
+    if (row.claims?.length) item.appendChild(n('span', 'triage-claims', row.claims.join(' ')));
     list.appendChild(item);
   }
   bubble.appendChild(list);
 }
-function enrichMessage(bubble,result){const details=n('details','answer-details');details.appendChild(n('summary','','Chi tiết phép đo'));let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',String(result.method||'core').toUpperCase()],['LLM',(result.model_calls>0||result.llm_advisor_used)?`${result.model_calls ?? ((result.advice||[]).length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection))} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}details.appendChild(meta);bubble.appendChild(details);
+function enrichMessage(bubble,result,onFollowUp){const details=n('details','answer-details');details.appendChild(n('summary','','Chi tiết phép đo'));let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',String(result.method||'core').toUpperCase()],['LLM',(result.model_calls>0||result.llm_advisor_used)?`${result.model_calls ?? ((result.advice||[]).length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection))} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}details.appendChild(meta);bubble.appendChild(details);
+let followUp = null;
 if (result.mode === 'replay_sim') {
   const badge = {instant:'Tức thì',evidence:'Có bằng chứng',proposal:'Đề xuất lệnh',knowledge:'Kiến thức'}[result.answer_kind];
   if (badge) bubble.children[0].appendChild(n('span','answer-status answer-kind',badge));
   if (result.triage_results?.length) renderTriageResults(bubble, result.triage_results);
-  if (result.verdict === 'FAULT' && result.evidence_ids?.length && result.incident_guidance) {
+  if (result.next_steps && (result.next_steps.kind !== 'fault' || result.evidence_ids?.length)) {
+    followUp = renderIncidentGuidance(bubble, result.next_steps, result.unrun_cards, onFollowUp);
+  } else if (result.verdict === 'FAULT' && result.evidence_ids?.length && result.incident_guidance) {
     renderIncidentGuidance(bubble, result.incident_guidance);
   }
   if (Number.isFinite(result.timings_ms?.total)) {
@@ -365,8 +410,8 @@ if (notes.length) {
   details.appendChild(list);
 }
 if(result.runbooks?.length){let d=n('details','runbook-wrapper');d.appendChild(n('summary','','Runbook được truy xuất ('+result.runbooks.length+')'));for(let book of result.runbooks){let card=n('div','runbook-card');card.appendChild(n('b','',book.title+' · '+book.id));card.appendChild(n('div','',book.text));d.appendChild(card);}bubble.appendChild(d);}
-let allWarnings=[...(result.warnings||[])];if(result.action==='ASK_USER'&&result.diagnosis==='target_ambiguous'){allWarnings.push('Bạn có thể trả lời câu hỏi bổ sung ngay ở ô chat; phiên làm việc giữ nguyên Case đang chờ.');}if(allWarnings.length){bubble.appendChild(n('div','warnings',allWarnings.join('\n')));}
-details.appendChild(n('span','meta-chip','Trạng thái đo: '+(result.case_status||'Chưa rõ')));if(result.answer_synthesis){details.appendChild(n('span','meta-chip','Diễn đạt: '+(result.answer_synthesis.used_llm?'LLM đã kiểm chứng':result.answer_synthesis.reason)));}const p=n('div','inspector-note',result.notice||'');p.style.marginTop='12px';details.appendChild(p);}
+let allWarnings=[...(result.warnings||[])];if(result.warning)allWarnings.push(result.warning);if(result.action==='ASK_USER'&&result.diagnosis==='target_ambiguous'){allWarnings.push('Bạn có thể trả lời câu hỏi bổ sung ngay ở ô chat; phiên làm việc giữ nguyên Case đang chờ.');}if(allWarnings.length){bubble.appendChild(n('div','warnings',allWarnings.join('\n')));}
+details.appendChild(n('span','meta-chip','Trạng thái đo: '+(result.case_status||'Chưa rõ')));if(result.answer_synthesis){details.appendChild(n('span','meta-chip','Diễn đạt: '+(result.answer_synthesis.used_llm?'LLM đã kiểm chứng':result.answer_synthesis.reason)));}const p=n('div','inspector-note',result.notice||'');p.style.marginTop='12px';details.appendChild(p);return followUp;}
 async function send(override) {
   if(state.busy)return;
   const input=override??$('userInput').value.trim();
@@ -386,12 +431,12 @@ async function send(override) {
       with_llm:true,model:$('modelName').value.trim()||'qwen3:4b'};
   return submitChat('/api/chat', payload, sourceMode);
 }
-async function runTriage(skillIds) {
+async function runTriage(skillIds, offeredIds) {
   if (state.busy || !state.triageOptions || !state.sessionId || !triageFlow()) return;
   const options = state.triageOptions;
   options.disabled = true;
   const ok = await submitChat('/api/skills/run_selected', {
-    session_id:state.sessionId, skill_ids:skillIds, scenario:$('scenarioSelect').value
+    session_id:state.sessionId, skill_ids:skillIds, offered_ids:offeredIds, scenario:$('scenarioSelect').value
   }, 'replay_sim');
   if (options !== state.triageOptions) return;
   if (ok || !state.sessionId) retireTriage();
@@ -422,13 +467,17 @@ async function submitChat(endpoint, payload, sourceMode) {
       const text = data.answer || (data.cards.length
         ? data.notice : `${data.notice}\nChưa tìm thấy phép kiểm tra phù hợp. Hãy mô tả thêm tình trạng mạng.`);
       const bubble = message('assistant',text,'REPLAY MÔ PHỎNG',data.case_status);
+      if (data.warning) bubble.appendChild(n('div', 'warnings', data.warning));
       if (data.cards.length && triageFlow()) state.triageOptions = renderTriageCards(bubble,data.cards,runTriage);
       return true;
     }
     state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
     const chatStatus=['MEASURED','PARTIAL'].includes(data.case_status)&&data.diagnostic_status==='INCONCLUSIVE'?'INCONCLUSIVE':data.case_status;
-    const bubble=message('assistant',data.answer||'Không có câu trả lời',data.catalog_total?'GATEWAY LM':'GATEWAY LM · '+data.fixture,chatStatus);
-    enrichMessage(bubble,data);renderInspector();updateStats(data);
+    const text = data.next_steps ? data.answer?.split('\nCần làm gì:')[0] : data.answer;
+    const bubble=message('assistant',text||'Không có câu trả lời',data.catalog_total?'GATEWAY LM':'GATEWAY LM · '+data.fixture,chatStatus);
+    const followUp = enrichMessage(bubble,data,triageFlow() ? runTriage : undefined);
+    if (followUp) state.triageOptions = followUp;
+    renderInspector();updateStats(data);
     return true;
   } catch(err) {
     if(generation===state.chatGeneration){

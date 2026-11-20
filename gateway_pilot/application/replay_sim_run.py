@@ -11,6 +11,43 @@ from ..skill_expansion.replay_sim import MODE, NOTICE, STATES, ReplaySession
 from ..skill_expansion.runtime_bridge import SkillNotReady
 
 
+def _fresh_evidence(replay: ReplaySession, run: dict, now: float) -> dict[str, dict]:
+    age = now - run.get('evidence_checked_at_monotonic', float('inf'))
+    return {row['id']: {**row, 'expires_in_s': row['expires_in_s'] - age}
+            for row in run.get('evidence', []) if row['status'] == 'OK' and 0 <= age < row['expires_in_s']
+            and now < replay.expires_at and not replay.closed}
+
+
+def _current_timeline(events: list[dict], evidence: dict[str, dict]) -> list[dict]:
+    return [{**event, 'status': 'NO_LONGER_VALID', 'evidence_id': None, 'value': None}
+            if event['evidence_id'] is not None and event['evidence_id'] not in evidence else event
+            for event in events]
+
+
+def current_replay_result(replay: ReplaySession, run: dict, now: float) -> dict:
+    """Recheck the replay snapshot before presenting a verdict or advice."""
+    fresh = _fresh_evidence(replay, run, now)
+    expired = [row for row in run.get('evidence', []) if row['id'] not in fresh]
+    if not expired:
+        return {**run, 'evidence': list(fresh.values())}
+    assessment = {**run['assessment'], 'verdict': 'UNKNOWN', 'reason': 'evidence_expired',
+                  'claims': {cid: {**claim, 'value': 'UNKNOWN', 'evidence': []}
+                             for cid, claim in run['assessment']['claims'].items()}}
+    assessment.pop('history', None)
+    # The diagnostic requires every source, including the verifying client identity.
+    if any(row['port'] == 'client.identity' for row in expired):
+        fresh.clear()
+    missing = [row for row in expired if row['port'] != 'client.identity'] or expired
+    errors = {row['sample']: 'EXPIRED' for row in missing}
+    return {**run, 'assessment': assessment, 'verdict': 'UNKNOWN', 'evidence_ids': [],
+            'evidence': list(fresh.values()),
+            'status': 'PARTIAL' if any(row['port'] != 'client.identity' for row in fresh.values()) else 'UNAVAILABLE',
+            'missing_ports': sorted(set(run['missing_ports']) | {row['port'] for row in missing}),
+            'missing_sources': list(dict.fromkeys([*run['missing_sources'], *errors])),
+            'source_errors': {**run['source_errors'], **errors},
+            'timeline': _current_timeline(run['timeline'], fresh)}
+
+
 def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, deadline: float | None) -> dict:
     profile = replay.profile
     catalog = (profile.igate if skill_id in profile.igate.actions

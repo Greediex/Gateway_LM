@@ -106,6 +106,18 @@ class IncidentReplayTests(unittest.TestCase):
                                                   [(step['from'], step['to']) for step in node['history']])
                             self.assertEqual(result.pop('incident_guidance'), {
                                 'label': incident_replay.ADVISORY, 'steps': item['fix_vi'], 'sources': item['sources']})
+                            next_steps = result.pop('next_steps')
+                            self.assertEqual((next_steps['kind'], next_steps['label']),
+                                             ('fault', incident_replay.ADVISORY))
+                            self.assertEqual(next_steps['sources'], item['sources'])
+                            self.assertEqual([step['text'] for step in next_steps['steps'][:len(item['fix_vi'])]],
+                                             item['fix_vi'])
+                            findings, separator, advice = result['answer'].partition('\nCần làm gì:')
+                            self.assertTrue(separator)
+                            self.assertIn(incident_replay.ADVISORY, advice)
+                            self.assertIn(item['fix_vi'][0], advice)
+                            self.assertNotIn(expected['root_cause'], json.dumps([next_steps, advice], ensure_ascii=False))
+                            result['answer'] = findings
                             without_guidance = json.dumps(result, ensure_ascii=False)
                             for advisory in [*item['fix_vi'], *item['sources'], expected['root_cause']]:
                                 self.assertNotIn(advisory, without_guidance)

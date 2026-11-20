@@ -1,0 +1,1243 @@
+{
+  "format": "gateway-lm.claim-guidance/v1",
+  "note_vi": "Nội dung hiển thị và khuyến nghị cho Replay mô phỏng, không phải bằng chứng hoặc thao tác đã thực hiện.",
+  "claims": {
+    "a03_consistent_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 thiết bị trong danh sách kết nối, có mẫu đối chiếu định danh, kết quả đối chiếu địa chỉ IP và MAC nhất quán và phép đối chiếu tên thiết bị không ghi nhận xung đột."
+    },
+    "a03_hostname_conflict_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 thiết bị trong danh sách kết nối, có mẫu đối chiếu định danh và phép đối chiếu tên thiết bị ghi nhận xung đột.",
+      "fix_vi": [
+        "Đối chiếu tên các thiết bị trùng với thông tin trên từng máy.",
+        "Đặt tên khác nhau trên các thiết bị nếu việc trùng tên gây nhầm lẫn."
+      ]
+    },
+    "a03_ip_conflict_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 thiết bị trong danh sách kết nối, có mẫu đối chiếu định danh và kết quả đối chiếu địa chỉ IP và MAC không nhất quán.",
+      "fix_vi": [
+        "So địa chỉ IP và MAC của thiết bị với danh sách cấp IP trên router.",
+        "Nếu hai thiết bị đặt cùng IP tĩnh, nhờ người quản trị sửa địa chỉ bị trùng."
+      ]
+    },
+    "a05_vendor_available_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 thiết bị trong danh sách kết nối, có mẫu tra cứu hãng và phép tra tiền tố địa chỉ MAC nhận diện được hãng."
+    },
+    "a05_vendor_unknown_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 thiết bị trong danh sách kết nối, có mẫu tra cứu hãng và phép tra tiền tố địa chỉ MAC không nhận diện được hãng.",
+      "fix_vi": [
+        "Đối chiếu tên thiết bị trong danh sách với nhãn hoặc cài đặt của thiết bị.",
+        "Kiểm tra xem thiết bị có dùng địa chỉ Wi-Fi riêng tư hay không."
+      ]
+    },
+    "a07_count_decreased_v1": {
+      "text_vi": "Danh sách kết nối hiện tại có số thiết bị từ 0 trở lên, thấp hơn số thiết bị trong lần kiểm kê trước.",
+      "fix_vi": [
+        "So hai danh sách thiết bị theo thời điểm để tìm thiết bị mới vào hoặc vừa rời mạng.",
+        "Hỏi người dùng trong nhà xem họ có kết nối hoặc tắt thiết bị lúc đó không."
+      ]
+    },
+    "a07_count_increased_v1": {
+      "text_vi": "Danh sách kết nối hiện tại có số thiết bị từ 0 trở lên, cao hơn số thiết bị trong lần kiểm kê trước.",
+      "fix_vi": [
+        "So hai danh sách thiết bị theo thời điểm để tìm thiết bị mới vào hoặc vừa rời mạng.",
+        "Hỏi người dùng trong nhà xem họ có kết nối hoặc tắt thiết bị lúc đó không."
+      ]
+    },
+    "a07_count_stable_v1": {
+      "text_vi": "Danh sách kết nối hiện tại có số thiết bị từ 0 trở lên, bằng số thiết bị trong lần kiểm kê trước."
+    },
+    "airtime_congested_v1": {
+      "text_vi": "Mức sử dụng kênh Wi-Fi ở mức lớn hơn 70% và không quá 100%.",
+      "fix_vi": [
+        "Tạm dừng tải xuống hoặc phát video trên các thiết bị khác rồi đo lại.",
+        "Thử băng tần khác được router hỗ trợ hoặc kết nối bằng dây mạng."
+      ]
+    },
+    "airtime_normal_v1": {
+      "text_vi": "Mức sử dụng kênh Wi-Fi ở mức từ 0% đến 70%."
+    },
+    "backhaul_down_v1": {
+      "text_vi": "Liên kết giữa các nút mesh không hoạt động.",
+      "fix_vi": [
+        "Xem trạng thái kết nối giữa nút mesh và nút chính trên ứng dụng quản lý.",
+        "Đưa nút mesh gần nút chính hơn hoặc kiểm tra dây mạng nếu dùng đường kết nối có dây."
+      ]
+    },
+    "backhaul_ok_v1": {
+      "text_vi": "Liên kết giữa các nút mesh đang hoạt động và chất lượng liên kết mesh ở mức từ 50% đến 100%."
+    },
+    "backhaul_weak_v1": {
+      "text_vi": "Liên kết giữa các nút mesh đang hoạt động và chất lượng liên kết mesh ở mức từ 0% đến dưới 50%.",
+      "fix_vi": [
+        "Xem trạng thái kết nối giữa nút mesh và nút chính trên ứng dụng quản lý.",
+        "Đưa nút mesh gần nút chính hơn hoặc kiểm tra dây mạng nếu dùng đường kết nối có dây."
+      ]
+    },
+    "bandwidth_ok_v1": {
+      "text_vi": "Tốc độ nhận đo được ở mức từ 0 Mbps đến 800 Mbps và tốc độ gửi đo được ở mức từ 0 Mbps đến 800 Mbps."
+    },
+    "bridge_with_members_down_v1": {
+      "text_vi": "Cầu nối mạng không hoạt động và ghi nhận ít nhất 1 cổng thành viên của cầu nối.",
+      "fix_vi": [
+        "Kiểm tra dây mạng và đèn ở các cổng thuộc cầu nối.",
+        "Nhờ người quản trị so cấu hình cầu nối với bản cấu hình đã hoạt động."
+      ]
+    },
+    "bridge_with_members_up_v1": {
+      "text_vi": "Cầu nối mạng đang hoạt động và ghi nhận ít nhất 1 cổng thành viên của cầu nối."
+    },
+    "c06_high_sampled_loss_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức ít nhất 10%.",
+      "fix_vi": [
+        "Kiểm tra xem có dây nối lặp lại giữa các switch hay không.",
+        "Ghi thời điểm mất gói và đối chiếu với nhật ký thay đổi cấu trúc mạng."
+      ]
+    },
+    "c06_high_stp_change_count_v1": {
+      "text_vi": "Ghi nhận ít nhất 3 lần đổi cấu trúc mạng mà STP ghi nhận.",
+      "fix_vi": [
+        "Kiểm tra xem có dây nối lặp lại giữa các switch hay không.",
+        "Ghi thời điểm mất gói và đối chiếu với nhật ký thay đổi cấu trúc mạng."
+      ]
+    },
+    "c06_low_sampled_loss_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức không quá 1%."
+    },
+    "c06_no_stp_changes_reported_v1": {
+      "text_vi": "Ghi nhận không quá 0 lần đổi cấu trúc mạng mà STP ghi nhận."
+    },
+    "cache_active_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 lượt DNS tìm thấy trong bộ nhớ đệm và ghi nhận ít nhất 0 lượt DNS không tìm thấy trong bộ nhớ đệm."
+    },
+    "cache_ineffective_v1": {
+      "text_vi": "Ghi nhận 0 lượt DNS tìm thấy trong bộ nhớ đệm và ghi nhận lớn hơn 100 lượt DNS không tìm thấy trong bộ nhớ đệm.",
+      "fix_vi": [
+        "Mở lại một tên miền đã dùng và xem bộ đếm cache DNS có thay đổi không.",
+        "Nếu tên miền vẫn mở chậm, nhờ hỗ trợ đối chiếu thời gian phân giải DNS."
+      ]
+    },
+    "cgnat_suspected_v1": {
+      "text_vi": "NAT đang bật và mẫu đo có dấu hiệu CGNAT.",
+      "fix_vi": [
+        "So địa chỉ WAN router báo với địa chỉ công cộng khi truy cập Internet.",
+        "Nếu cần nhận kết nối từ ngoài, hỏi nhà mạng về CGNAT và lựa chọn IP công cộng."
+      ]
+    },
+    "channel_clear_v1": {
+      "text_vi": "Ghi nhận từ 0 đến 5 điểm phát Wi-Fi lân cận (BSS) ghi nhận."
+    },
+    "client_associated_v1": {
+      "text_vi": "Thiết bị được kiểm tra đang gắn với điểm phát Wi-Fi."
+    },
+    "client_associations_reported_without_gaps_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 liên kết thiết bị với điểm phát đã xác định và ghi nhận 0 thiết bị chưa xác định được điểm phát."
+    },
+    "client_associations_unresolved_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 liên kết thiết bị với điểm phát đã xác định và ghi nhận ít nhất 1 thiết bị chưa xác định được điểm phát.",
+      "fix_vi": [
+        "Xem trên thiết bị nó đang kết nối đúng tên Wi-Fi hay chưa.",
+        "Kiểm tra trên từng điểm phát để xác minh thiết bị đang gắn vào đâu."
+      ]
+    },
+    "client_not_associated_v1": {
+      "text_vi": "Thiết bị được kiểm tra không gắn với điểm phát Wi-Fi.",
+      "fix_vi": [
+        "Kiểm tra thiết bị đã chọn đúng tên Wi-Fi và thử kết nối lại.",
+        "Thử gần điểm phát để kiểm tra xem thiết bị có kết nối được không."
+      ]
+    },
+    "config_compliance_checks_failed_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 mục kiểm tra tuân thủ đạt và ghi nhận ít nhất 1 mục kiểm tra tuân thủ không đạt.",
+      "fix_vi": [
+        "Xem cụ thể mục cấu hình nào không đạt và đối chiếu với yêu cầu đang dùng.",
+        "Nhờ người quản trị xác nhận từng mục trước khi thay đổi cấu hình."
+      ]
+    },
+    "config_compliance_checks_passed_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 mục kiểm tra tuân thủ đạt và ghi nhận 0 mục kiểm tra tuân thủ không đạt."
+    },
+    "config_drift_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 điểm lệch so với cấu hình mốc.",
+      "fix_vi": [
+        "So các mục cấu hình thay đổi với bản mốc đã được duyệt.",
+        "Xác nhận với người quản trị mục nào được đổi có chủ đích trước khi chỉnh lại."
+      ]
+    },
+    "config_snapshot_reported_unavailable_v1": {
+      "text_vi": "Bản chụp cấu hình không có sẵn và mã phiên bản cấu hình để trống.",
+      "fix_vi": [
+        "Kiểm tra trang quản trị có chức năng xuất cấu hình và quyền xem phù hợp hay không.",
+        "Nhờ người quản trị lưu bản sao cấu hình hiện tại trước khi lên kế hoạch thay đổi."
+      ]
+    },
+    "config_snapshot_reported_with_revision_v1": {
+      "text_vi": "Bản chụp cấu hình có sẵn."
+    },
+    "crashes_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 lần khởi động và ghi nhận ít nhất 1 lần hệ thống bị lỗi dừng.",
+      "fix_vi": [
+        "Kiểm tra nguồn điện và ghi lại giờ router tự khởi động hoặc treo.",
+        "Gửi nhật ký khởi động và thời điểm lỗi cho bộ phận hỗ trợ."
+      ]
+    },
+    "d04_ip_mac_consistent_v1": {
+      "text_vi": "Kết quả đối chiếu địa chỉ IP và MAC nhất quán."
+    },
+    "d04_ip_mac_inconsistent_v1": {
+      "text_vi": "Kết quả đối chiếu địa chỉ IP và MAC không nhất quán.",
+      "fix_vi": [
+        "So địa chỉ IP và MAC của thiết bị với danh sách cấp IP trên router.",
+        "Nếu hai thiết bị đặt cùng IP tĩnh, nhờ người quản trị sửa địa chỉ bị trùng."
+      ]
+    },
+    "device_temperature_below_threshold_v1": {
+      "text_vi": "Nhiệt độ thiết bị ở mức từ 0 °C đến dưới 85 °C."
+    },
+    "device_temperature_high_v1": {
+      "text_vi": "Nhiệt độ thiết bị ở mức từ 85 °C đến 125 °C.",
+      "fix_vi": [
+        "Đặt router ở nơi thoáng và bỏ vật che khe tản nhiệt.",
+        "Đo lại sau khi thiết bị nguội và báo hỗ trợ nếu nhiệt độ vẫn cao."
+      ]
+    },
+    "dhcp_dns_option_missing_v1": {
+      "text_vi": "Tùy chọn máy chủ DNS trong DHCP không có mặt.",
+      "fix_vi": [
+        "Trên thiết bị đang lỗi, xem có nhận máy chủ DNS tự động hay không.",
+        "Kết nối lại thiết bị rồi nhờ hỗ trợ kiểm tra tùy chọn DNS của DHCP nếu vẫn thiếu."
+      ]
+    },
+    "dhcp_dns_option_present_v1": {
+      "text_vi": "Tùy chọn máy chủ DNS trong DHCP có mặt."
+    },
+    "dhcpv6_server_disabled_v1": {
+      "text_vi": "Máy chủ DHCPv6 đang tắt.",
+      "fix_vi": [
+        "Xác nhận mạng của bạn dùng DHCPv6 hay dùng cơ chế cấp địa chỉ IPv6 khác.",
+        "Nếu cần DHCPv6, nhờ hỗ trợ kiểm tra cấu hình và thử lại trên một thiết bị."
+      ]
+    },
+    "dhcpv6_server_ok_v1": {
+      "text_vi": "Máy chủ DHCPv6 đang bật và ghi nhận ít nhất 0 bản ghi cấp địa chỉ DHCPv6."
+    },
+    "dnssec_validating_v1": {
+      "text_vi": "DNSSEC đang bật và ghi nhận 0 lần xác thực DNSSEC thất bại."
+    },
+    "dnssec_validation_failing_v1": {
+      "text_vi": "DNSSEC đang bật và ghi nhận ít nhất 1 lần xác thực DNSSEC thất bại.",
+      "fix_vi": [
+        "Kiểm tra ngày giờ của router trước khi thử truy cập lại tên miền bị lỗi.",
+        "Gửi tên miền và thời điểm lỗi cho bộ phận quản trị DNS nếu lỗi lặp lại."
+      ]
+    },
+    "doh_enabled_v1": {
+      "text_vi": "DNS qua HTTPS (DoH) đang bật."
+    },
+    "dot_enabled_v1": {
+      "text_vi": "DNS qua TLS (DoT) đang bật."
+    },
+    "download_saturated_v1": {
+      "text_vi": "Tốc độ nhận đo được ở mức lớn hơn 800 Mbps và tốc độ gửi đo được ở mức ít nhất 0 Mbps.",
+      "fix_vi": [
+        "Tạm dừng tải xuống hoặc phát video trên các thiết bị khác rồi đo lại.",
+        "Lên lịch tải tệp lớn vào giờ ít người dùng nếu phép đo cho thấy cải thiện."
+      ]
+    },
+    "driver_errors_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 lỗi trình điều khiển.",
+      "fix_vi": [
+        "Ghi lại tên giao diện và thời điểm lỗi trình điều khiển trong nhật ký.",
+        "Gửi dòng lỗi và phiên bản phần mềm của router cho bộ phận hỗ trợ."
+      ]
+    },
+    "driver_sample_without_errors_v1": {
+      "text_vi": "Ghi nhận 0 lỗi trình điều khiển."
+    },
+    "encrypted_dns_disabled_v1": {
+      "text_vi": "DNS qua TLS (DoT) đang tắt và DNS qua HTTPS (DoH) đang tắt.",
+      "fix_vi": [
+        "Xem router và nhà mạng có hỗ trợ DNS mã hóa hay không.",
+        "Nếu mạng cần DNS mã hóa, nhờ quản trị viên kiểm tra cấu hình DoT hoặc DoH phù hợp."
+      ]
+    },
+    "ethernet_active_ports_present_v1": {
+      "text_vi": "Ghi nhận 4 cổng Ethernet và ghi nhận từ 1 đến 4 cổng Ethernet có liên kết."
+    },
+    "ethernet_link_no_rate_v1": {
+      "text_vi": "Tốc độ liên kết Ethernet ghi nhận là 0 Mbps, ghi nhận ít nhất 0 lỗi nhận trên Ethernet và ghi nhận ít nhất 0 lỗi gửi trên Ethernet.",
+      "fix_vi": [
+        "Kiểm tra đèn báo liên kết ở hai đầu dây mạng.",
+        "Thử một dây mạng và cổng Ethernet khác đã biết hoạt động."
+      ]
+    },
+    "ethernet_link_up_zero_errors_v1": {
+      "text_vi": "Tốc độ liên kết Ethernet ghi nhận ở mức lớn hơn 0 Mbps, ghi nhận 0 lỗi nhận trên Ethernet và ghi nhận 0 lỗi gửi trên Ethernet."
+    },
+    "ethernet_no_active_ports_v1": {
+      "text_vi": "Ghi nhận 4 cổng Ethernet và ghi nhận 0 cổng Ethernet có liên kết.",
+      "fix_vi": [
+        "Kiểm tra đèn báo liên kết ở hai đầu dây mạng.",
+        "Thử một dây mạng và cổng Ethernet khác đã biết hoạt động."
+      ]
+    },
+    "firewall_audit_no_invalid_rules_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 quy tắc tường lửa và ghi nhận 0 quy tắc tường lửa không hợp lệ."
+    },
+    "firewall_invalid_rules_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 quy tắc tường lửa và ghi nhận ít nhất 1 quy tắc tường lửa không hợp lệ.",
+      "fix_vi": [
+        "Mở trang tường lửa và ghi tên các quy tắc bị báo không hợp lệ.",
+        "Nhờ người quản trị đối chiếu với cấu hình đang được phép sử dụng."
+      ]
+    },
+    "firmware_storage_below_precheck_threshold_v1": {
+      "text_vi": "Dung lượng lưu trữ còn trống ở mức từ 0 MB đến dưới 64 MB.",
+      "fix_vi": [
+        "Xem dung lượng trống trong trang trạng thái trước khi cập nhật.",
+        "Nhờ hỗ trợ đối chiếu yêu cầu dung lượng của bản cập nhật dành cho đúng mẫu router."
+      ]
+    },
+    "firmware_storage_meets_precheck_threshold_v1": {
+      "text_vi": "Dung lượng lưu trữ còn trống ở mức ít nhất 64 MB."
+    },
+    "g08_sampled_queue_delay_high_v1": {
+      "text_vi": "Độ trễ hàng đợi đo được ở mức lớn hơn 50 ms.",
+      "fix_vi": [
+        "Thử gọi video hoặc đo độ trễ khi không có tải và khi đang tải tệp.",
+        "Nếu độ trễ tăng rõ dưới tải, nhờ hỗ trợ xem lại cấu hình SQM và tốc độ đường truyền."
+      ]
+    },
+    "g08_sampled_queue_delay_within_threshold_v1": {
+      "text_vi": "Độ trễ hàng đợi đo được ở mức không quá 50 ms."
+    },
+    "guest_isolation_enabled_v1": {
+      "text_vi": "Chế độ cách ly mạng khách đang bật."
+    },
+    "hostname_conflict_v1": {
+      "text_vi": "Phép đối chiếu tên thiết bị ghi nhận xung đột.",
+      "fix_vi": [
+        "Đối chiếu tên các thiết bị trùng với thông tin trên từng máy.",
+        "Đặt tên khác nhau trên các thiết bị nếu việc trùng tên gây nhầm lẫn."
+      ]
+    },
+    "i07_hostname_conflict_reported_v1": {
+      "text_vi": "Phép đối chiếu tên thiết bị ghi nhận xung đột.",
+      "fix_vi": [
+        "Đối chiếu tên các thiết bị trùng với thông tin trên từng máy.",
+        "Đặt tên khác nhau trên các thiết bị nếu việc trùng tên gây nhầm lẫn."
+      ]
+    },
+    "i07_no_hostname_conflict_reported_v1": {
+      "text_vi": "Phép đối chiếu tên thiết bị không ghi nhận xung đột."
+    },
+    "identity_consistent_v1": {
+      "text_vi": "Kết quả đối chiếu địa chỉ IP và MAC nhất quán và phép đối chiếu tên thiết bị không ghi nhận xung đột."
+    },
+    "igate_application_sessions_recorded_v1": {
+      "text_vi": "Danh sách phiên ứng dụng iGate đầy đủ theo chỉ báo."
+    },
+    "igate_device_metrics_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 thiết bị được lấy mẫu trên iGate."
+    },
+    "igate_internet_reachable_v1": {
+      "text_vi": "Chỉ báo kết nối Internet của iGate báo có kết nối."
+    },
+    "igate_internet_unreachable_v1": {
+      "text_vi": "Chỉ báo kết nối Internet của iGate báo không có kết nối.",
+      "fix_vi": [
+        "Kiểm tra đèn WAN, modem và trạng thái kết nối Internet trên iGate.",
+        "Thử truy cập mạng từ thiết bị thứ hai và báo nhà mạng nếu nhiều thiết bị cùng lỗi."
+      ]
+    },
+    "igate_inventory_complete_v1": {
+      "text_vi": "Danh sách thiết bị trong dữ liệu iGate đầy đủ."
+    },
+    "igate_inventory_truncated_v1": {
+      "text_vi": "Danh sách thiết bị iGate đã bị cắt bớt."
+    },
+    "igate_qos_feed_unavailable_v1": {
+      "text_vi": "Nguồn dữ liệu phân loại ứng dụng QoS của iGate không khả dụng.",
+      "fix_vi": [
+        "Xem trang trạng thái iGate có dữ liệu phân loại lưu lượng không.",
+        "Nếu vẫn thiếu, nhờ hỗ trợ kiểm tra mẫu router và phiên bản phần mềm có cung cấp dữ liệu QoS hay không."
+      ]
+    },
+    "igate_router_metrics_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 chỉ số hệ thống thu được từ iGate."
+    },
+    "igate_schedule_counts_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 thiết bị có thông tin về số lịch."
+    },
+    "igate_schedules_present_v1": {
+      "text_vi": "Tổng số lịch mà iGate báo cáo ở mức lớn hơn 0."
+    },
+    "igate_weak_signal_present_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 thiết bị được iGate đánh dấu tín hiệu yếu.",
+      "fix_vi": [
+        "Thử đo lại trên thiết bị bị ảnh hưởng khi đứng gần điểm phát.",
+        "Nếu tín hiệu vẫn yếu, thử vị trí đặt điểm phát thoáng hơn hoặc điểm phát gần hơn."
+      ]
+    },
+    "inventory_empty_v1": {
+      "text_vi": "Router không thấy thiết bị nào trong danh sách kết nối.",
+      "fix_vi": [
+        "Kiểm tra Wi-Fi hoặc dây mạng trên một thiết bị đang dùng.",
+        "Kết nối lại thiết bị rồi làm mới danh sách thiết bị trên router."
+      ]
+    },
+    "inventory_present_v1": {
+      "text_vi": "Router thấy ít nhất một thiết bị trong danh sách kết nối."
+    },
+    "ip_mac_conflict_v1": {
+      "text_vi": "Kết quả đối chiếu địa chỉ IP và MAC không nhất quán.",
+      "fix_vi": [
+        "So địa chỉ IP và MAC của thiết bị với danh sách cấp IP trên router.",
+        "Nếu hai thiết bị đặt cùng IP tĩnh, nhờ người quản trị sửa địa chỉ bị trùng."
+      ]
+    },
+    "ipv6_prefix_missing_v1": {
+      "text_vi": "Phép kiểm tra ghi nhận thông báo IPv6 từ router (RA) và ghi nhận 0 tiền tố IPv6 ghi nhận.",
+      "fix_vi": [
+        "Kiểm tra router có được cấp tiền tố IPv6 ở phía WAN không.",
+        "Thử kết nối lại một thiết bị và xem thiết bị có nhận địa chỉ IPv6 hay không."
+      ]
+    },
+    "ipv6_ra_missing_v1": {
+      "text_vi": "Phép kiểm tra không ghi nhận thông báo IPv6 từ router (RA).",
+      "fix_vi": [
+        "Kiểm tra router có được cấp tiền tố IPv6 ở phía WAN không.",
+        "Thử kết nối lại một thiết bị và xem thiết bị có nhận địa chỉ IPv6 hay không."
+      ]
+    },
+    "ipv6_ra_ok_v1": {
+      "text_vi": "Phép kiểm tra ghi nhận thông báo IPv6 từ router (RA) và ghi nhận ít nhất 1 tiền tố IPv6 ghi nhận."
+    },
+    "j05_sampled_peer_reachable_v1": {
+      "text_vi": "Ghi nhận dưới 1 đầu VPN không phản hồi thành công trong phép thử."
+    },
+    "j05_sampled_peer_unreachable_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 đầu VPN không phản hồi thành công trong phép thử.",
+      "fix_vi": [
+        "Kiểm tra đường Internet ở đầu VPN bị báo không tới được.",
+        "Nhờ người quản trị hai đầu so trạng thái kết nối và nhật ký tại cùng thời điểm."
+      ]
+    },
+    "jitter_high_v1": {
+      "text_vi": "Độ dao động độ trễ ở mức lớn hơn 30 ms.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "jitter_ok_v1": {
+      "text_vi": "Độ dao động độ trễ ở mức từ 0 ms đến 30 ms."
+    },
+    "k01_reported_sample_count_low_v1": {
+      "text_vi": "Ở mẫu mới nhất, ghi nhận dưới 2 mẫu trong lịch sử được báo cáo.",
+      "fix_vi": [
+        "Chờ thu thêm mẫu rồi chạy lại phép kiểm tra cần lịch sử.",
+        "Ghi mốc thời gian và giữ đúng thiết bị cần theo dõi khi lấy lại mẫu."
+      ]
+    },
+    "k01_reported_sample_count_sufficient_v1": {
+      "text_vi": "Ở mẫu mới nhất, ghi nhận ít nhất 2 mẫu trong lịch sử được báo cáo."
+    },
+    "k02_loss_crossed_baseline_band_v1": {
+      "text_vi": "Ở mẫu mới nhất, tỷ lệ mất gói trong mẫu đo ở mức lớn hơn 2%.",
+      "fix_vi": [
+        "Lặp lại phép đo mất gói trong lúc gặp triệu chứng.",
+        "So kết quả khi dùng Wi-Fi với khi cắm dây và gửi các mốc đo cho hỗ trợ."
+      ]
+    },
+    "k02_loss_within_baseline_band_v1": {
+      "text_vi": "Ở mẫu mới nhất, tỷ lệ mất gói trong mẫu đo ở mức không quá 2%."
+    },
+    "k03_loss_breach_at_all_three_samples_v1": {
+      "text_vi": "Ở mẫu mới nhất, tỷ lệ mất gói trong mẫu đo ở mức ít nhất 5%.",
+      "fix_vi": [
+        "Lặp lại phép đo mất gói trong lúc gặp triệu chứng.",
+        "So kết quả khi dùng Wi-Fi với khi cắm dây và gửi các mốc đo cho hỗ trợ."
+      ]
+    },
+    "k03_loss_breach_ended_v1": {
+      "text_vi": "Ở mẫu mới nhất, tỷ lệ mất gói trong mẫu đo ở mức dưới 5%."
+    },
+    "k05_no_open_incidents_in_timeline_v1": {
+      "text_vi": "Ở mẫu mới nhất, ghi nhận 0 sự cố đang mở ghi nhận."
+    },
+    "k05_open_incidents_appeared_in_timeline_v1": {
+      "text_vi": "Ở mẫu mới nhất, ghi nhận ít nhất 1 sự cố đang mở ghi nhận.",
+      "fix_vi": [
+        "Mở danh sách sự cố và chọn mục trùng với thời điểm hoặc triệu chứng đang gặp.",
+        "Ghi mã sự cố và gửi bằng chứng liên quan cho bộ phận hỗ trợ."
+      ]
+    },
+    "k06_both_upstream_samples_reachable_v1": {
+      "text_vi": "Ở mẫu mới nhất, phép thử kết nối tới đích thượng nguồn thành công."
+    },
+    "k06_both_upstream_samples_unreachable_v1": {
+      "text_vi": "Ở mẫu mới nhất, phép thử kết nối tới đích thượng nguồn không thành công.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "k07_upstream_probe_recovered_v1": {
+      "text_vi": "Ở mẫu mới nhất, phép thử kết nối tới đích thượng nguồn thành công."
+    },
+    "k07_upstream_probe_still_unreachable_v1": {
+      "text_vi": "Ở mẫu mới nhất, phép thử kết nối tới đích thượng nguồn không thành công.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "l06_sampled_services_failures_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 dịch vụ ở trạng thái lỗi.",
+      "fix_vi": [
+        "Xem tên các dịch vụ báo lỗi trong trang trạng thái hoặc nhật ký.",
+        "Ghi thời điểm và báo hỗ trợ nếu dịch vụ cần dùng tiếp tục báo lỗi."
+      ]
+    },
+    "l06_sampled_services_no_failures_v1": {
+      "text_vi": "Ghi nhận dưới 1 dịch vụ ở trạng thái lỗi."
+    },
+    "l07_sampled_gateway_pair_mixed_v1": {
+      "text_vi": "Ghi nhận dưới 2 gateway thử kết nối được.",
+      "fix_vi": [
+        "Kiểm tra nguồn điện và đèn mạng trên từng gateway cần dùng.",
+        "Thử từ một thiết bị cắm dây rồi báo hỗ trợ gateway nào không truy cập được."
+      ]
+    },
+    "l07_sampled_gateway_pair_reachable_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 gateway thử kết nối được."
+    },
+    "latency_high_v1": {
+      "text_vi": "Độ trễ đo được ở mức lớn hơn 100 ms và tỷ lệ mất gói trong mẫu đo ở mức ít nhất 0%.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "latency_loss_ok_v1": {
+      "text_vi": "Độ trễ đo được ở mức từ 0 ms đến 100 ms và tỷ lệ mất gói trong mẫu đo ở mức từ 0% đến 2%."
+    },
+    "lease_events_ok_v1": {
+      "text_vi": "Ghi nhận từ 0 đến 20 bản ghi cấp địa chỉ DHCP đã hết hạn và ghi nhận ít nhất 0 bản ghi cấp địa chỉ DHCP còn hiệu lực."
+    },
+    "lease_expiry_high_v1": {
+      "text_vi": "Ghi nhận lớn hơn 20 bản ghi cấp địa chỉ DHCP đã hết hạn và ghi nhận ít nhất 0 bản ghi cấp địa chỉ DHCP còn hiệu lực.",
+      "fix_vi": [
+        "So thời điểm lease hết hạn với lúc thiết bị mất mạng.",
+        "Thử ngắt rồi kết nối lại Wi-Fi trên thiết bị bị ảnh hưởng và kiểm tra IP được cấp."
+      ]
+    },
+    "m03_history_sample_gap_reported_v1": {
+      "text_vi": "Ghi nhận dưới 2 mẫu trong lịch sử được báo cáo.",
+      "fix_vi": [
+        "Chờ thu thêm mẫu rồi chạy lại phép kiểm tra cần lịch sử.",
+        "Ghi mốc thời gian và giữ đúng thiết bị cần theo dõi khi lấy lại mẫu."
+      ]
+    },
+    "m03_history_sample_minimum_met_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 mẫu trong lịch sử được báo cáo."
+    },
+    "m05_upstream_reachability_observed_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn thành công."
+    },
+    "m05_upstream_unreachability_observed_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn không thành công.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "m06_path_loss_above_threshold_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức lớn hơn 2%.",
+      "fix_vi": [
+        "Lặp lại phép đo mất gói trong lúc gặp triệu chứng.",
+        "So kết quả khi dùng Wi-Fi với khi cắm dây và gửi các mốc đo cho hỗ trợ."
+      ]
+    },
+    "m06_path_loss_within_threshold_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức không quá 2%."
+    },
+    "m06_upstream_loss_above_threshold_v1": {
+      "text_vi": "Tỷ lệ mất gói tới đích thượng nguồn ở mức lớn hơn 5%.",
+      "fix_vi": [
+        "Lặp lại phép đo mất gói trong lúc gặp triệu chứng.",
+        "So kết quả khi dùng Wi-Fi với khi cắm dây và gửi các mốc đo cho hỗ trợ."
+      ]
+    },
+    "m06_upstream_loss_within_threshold_v1": {
+      "text_vi": "Tỷ lệ mất gói tới đích thượng nguồn ở mức không quá 5%."
+    },
+    "m08_no_open_incidents_reported_v1": {
+      "text_vi": "Ghi nhận 0 sự cố đang mở ghi nhận."
+    },
+    "m08_open_incidents_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 sự cố đang mở ghi nhận.",
+      "fix_vi": [
+        "Mở danh sách sự cố và chọn mục trùng với thời điểm hoặc triệu chứng đang gặp.",
+        "Ghi mã sự cố và gửi bằng chứng liên quan cho bộ phận hỗ trợ."
+      ]
+    },
+    "mtu_mismatch_reported_v1": {
+      "text_vi": "Giá trị MTU ghi nhận ở mức từ 68 byte đến 9216 byte và phép kiểm tra MTU báo không khớp.",
+      "fix_vi": [
+        "Đối chiếu MTU ở hai đầu liên kết đang gặp lỗi.",
+        "Nếu một số trang hoặc ứng dụng không tải, ghi lại ví dụ và nhờ hỗ trợ xác minh MTU phù hợp."
+      ]
+    },
+    "mtu_no_mismatch_reported_v1": {
+      "text_vi": "Giá trị MTU ghi nhận ở mức từ 68 byte đến 9216 byte và phép kiểm tra MTU không báo sai khác."
+    },
+    "n02_baseline_invalid_rules_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 quy tắc tường lửa không hợp lệ.",
+      "fix_vi": [
+        "Mở trang tường lửa và ghi tên các quy tắc bị báo không hợp lệ.",
+        "Nhờ người quản trị đối chiếu với cấu hình đang được phép sử dụng."
+      ]
+    },
+    "n02_baseline_no_invalid_rules_reported_v1": {
+      "text_vi": "Ghi nhận 0 quy tắc tường lửa không hợp lệ."
+    },
+    "n06_baseline_drift_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 điểm lệch so với cấu hình mốc.",
+      "fix_vi": [
+        "So các mục cấu hình thay đổi với bản mốc đã được duyệt.",
+        "Xác nhận với người quản trị mục nào được đổi có chủ đích trước khi chỉnh lại."
+      ]
+    },
+    "n06_no_baseline_drift_reported_v1": {
+      "text_vi": "Ghi nhận 0 điểm lệch so với cấu hình mốc."
+    },
+    "n06_snapshot_reported_available_v1": {
+      "text_vi": "Bản chụp cấu hình có sẵn."
+    },
+    "n06_snapshot_reported_unavailable_v1": {
+      "text_vi": "Bản chụp cấu hình không có sẵn.",
+      "fix_vi": [
+        "Kiểm tra trang quản trị có chức năng xuất cấu hình và quyền xem phù hợp hay không.",
+        "Nhờ người quản trị lưu bản sao cấu hình hiện tại trước khi lên kế hoạch thay đổi."
+      ]
+    },
+    "n08_no_open_incidents_reported_v1": {
+      "text_vi": "Ghi nhận 0 sự cố đang mở ghi nhận."
+    },
+    "n08_open_incidents_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 sự cố đang mở ghi nhận.",
+      "fix_vi": [
+        "Mở danh sách sự cố và chọn mục trùng với thời điểm hoặc triệu chứng đang gặp.",
+        "Ghi mã sự cố và gửi bằng chứng liên quan cho bộ phận hỗ trợ."
+      ]
+    },
+    "nat_disabled_v1": {
+      "text_vi": "NAT đang tắt.",
+      "fix_vi": [
+        "Xem router đang ở chế độ router hay điểm phát trước khi đổi cấu hình NAT.",
+        "Nếu cần nhận kết nối từ Internet, hỏi nhà mạng hoặc bộ phận hỗ trợ về địa chỉ WAN."
+      ]
+    },
+    "nat_normal_v1": {
+      "text_vi": "NAT đang bật và mẫu đo không có dấu hiệu CGNAT."
+    },
+    "neighbor_failed_high_v1": {
+      "text_vi": "Ghi nhận lớn hơn 3 mục ARP hoặc hàng xóm ở trạng thái lỗi và ghi nhận ít nhất 0 mục trong bảng ARP hoặc hàng xóm.",
+      "fix_vi": [
+        "Xem các mục báo lỗi có thuộc thiết bị đang bật và vẫn nối mạng không.",
+        "Thử kết nối lại một thiết bị bị ảnh hưởng rồi đối chiếu lại mục tương ứng."
+      ]
+    },
+    "neighbor_table_ok_v1": {
+      "text_vi": "Ghi nhận từ 0 đến 3 mục ARP hoặc hàng xóm ở trạng thái lỗi và ghi nhận ít nhất 0 mục trong bảng ARP hoặc hàng xóm."
+    },
+    "no_config_drift_reported_v1": {
+      "text_vi": "Ghi nhận 0 điểm lệch so với cấu hình mốc."
+    },
+    "no_default_route_v1": {
+      "text_vi": "Bảng định tuyến WAN không có tuyến mặc định và ghi nhận 0 tuyến WAN mặc định.",
+      "fix_vi": [
+        "Kiểm tra phần trạng thái WAN xem router đã nhận IP và gateway chưa.",
+        "Nếu WAN đã có IP mà vẫn thiếu tuyến mặc định, gửi ảnh trạng thái WAN cho bộ phận hỗ trợ."
+      ]
+    },
+    "no_exposed_services_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 dịch vụ đang lắng nghe kết nối và ghi nhận 0 dịch vụ mở ra ngoài mạng nội bộ."
+    },
+    "no_healthy_resolver_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 máy chủ DNS ghi nhận và ghi nhận 0 máy chủ DNS đạt phép kiểm tra.",
+      "fix_vi": [
+        "Xem mục WAN trên router có địa chỉ máy chủ DNS hay chưa.",
+        "Thử mở hai tên miền trên thiết bị khác rồi gửi kết quả và trạng thái DNS cho hỗ trợ."
+      ]
+    },
+    "no_healthy_uplink_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 đường WAN ghi nhận và ghi nhận 0 đường WAN đạt phép kiểm tra.",
+      "fix_vi": [
+        "Kiểm tra đèn modem và trạng thái của từng đường WAN.",
+        "Thử từng đường riêng và báo bộ phận hỗ trợ đường nào vẫn mất kết nối."
+      ]
+    },
+    "no_known_gateway_reachable_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 gateway đã biết và ghi nhận 0 gateway thử kết nối được.",
+      "fix_vi": [
+        "Kiểm tra nguồn điện và đèn mạng trên từng gateway cần dùng.",
+        "Thử từ một thiết bị cắm dây rồi báo hỗ trợ gateway nào không truy cập được."
+      ]
+    },
+    "no_resolvers_v1": {
+      "text_vi": "Ghi nhận 0 máy chủ DNS ghi nhận và ghi nhận ít nhất 0 máy chủ DNS đạt phép kiểm tra.",
+      "fix_vi": [
+        "Xem mục WAN trên router có địa chỉ máy chủ DNS hay chưa.",
+        "Thử mở hai tên miền trên thiết bị khác rồi gửi kết quả và trạng thái DNS cho hỗ trợ."
+      ]
+    },
+    "no_traffic_v1": {
+      "text_vi": "Bộ đếm byte nhận của giao diện là 0 và bộ đếm byte gửi của giao diện là 0.",
+      "fix_vi": [
+        "Tạo lưu lượng bình thường qua giao diện đang kiểm tra bằng cách mở một trang trên thiết bị nối vào đó.",
+        "So bộ đếm nhận và gửi trước và sau khi thử."
+      ]
+    },
+    "ntp_offset_high_v1": {
+      "text_vi": "Đồng hồ router đã đồng bộ qua NTP và độ lệch giờ ghi nhận ở mức lớn hơn 500 ms.",
+      "fix_vi": [
+        "Kiểm tra ngày giờ router và kết nối Internet.",
+        "Nhờ bộ phận hỗ trợ xác minh máy chủ đồng bộ giờ nếu đồng hồ vẫn lệch."
+      ]
+    },
+    "ntp_offset_low_v1": {
+      "text_vi": "Đồng hồ router đã đồng bộ qua NTP và độ lệch giờ ghi nhận ở mức dưới -500 ms.",
+      "fix_vi": [
+        "Kiểm tra ngày giờ router và kết nối Internet.",
+        "Nhờ bộ phận hỗ trợ xác minh máy chủ đồng bộ giờ nếu đồng hồ vẫn lệch."
+      ]
+    },
+    "ntp_synchronized_v1": {
+      "text_vi": "Đồng hồ router đã đồng bộ qua NTP và độ lệch giờ ghi nhận ở mức từ -500 ms đến 500 ms."
+    },
+    "ntp_unsynchronized_v1": {
+      "text_vi": "Đồng hồ router chưa đồng bộ qua NTP.",
+      "fix_vi": [
+        "Kiểm tra ngày giờ router và kết nối Internet.",
+        "Nhờ bộ phận hỗ trợ xác minh máy chủ đồng bộ giờ nếu đồng hồ vẫn lệch."
+      ]
+    },
+    "o01_upstream_reachable_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn thành công."
+    },
+    "o01_upstream_unreachable_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn không thành công.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "o02_airtime_above_limit_v1": {
+      "text_vi": "Mức sử dụng kênh Wi-Fi ở mức lớn hơn 70%.",
+      "fix_vi": [
+        "Tạm dừng tải xuống hoặc phát video trên các thiết bị khác rồi đo lại.",
+        "Thử băng tần khác được router hỗ trợ hoặc kết nối bằng dây mạng."
+      ]
+    },
+    "o02_airtime_at_or_below_limit_v1": {
+      "text_vi": "Mức sử dụng kênh Wi-Fi ở mức không quá 70%."
+    },
+    "o02_rssi_at_or_above_floor_v1": {
+      "text_vi": "Mức tín hiệu Wi-Fi (RSSI) ở mức ít nhất -75 dBm."
+    },
+    "o02_rssi_below_floor_v1": {
+      "text_vi": "Mức tín hiệu Wi-Fi (RSSI) ở mức dưới -75 dBm.",
+      "fix_vi": [
+        "Thử đo lại trên thiết bị bị ảnh hưởng khi đứng gần điểm phát.",
+        "Nếu tín hiệu vẫn yếu, thử vị trí đặt điểm phát thoáng hơn hoặc điểm phát gần hơn."
+      ]
+    },
+    "o02_snr_at_or_above_floor_v1": {
+      "text_vi": "Tỷ số tín hiệu trên nhiễu (SNR) ở mức ít nhất 20 dB."
+    },
+    "o02_snr_below_floor_v1": {
+      "text_vi": "Tỷ số tín hiệu trên nhiễu (SNR) ở mức dưới 20 dB.",
+      "fix_vi": [
+        "Thử đo lại gần điểm phát và so kết quả ở một băng tần khác.",
+        "Đưa router ra xa nguồn gây nhiễu như lò vi sóng nếu hiện tượng trùng thời điểm sử dụng."
+      ]
+    },
+    "o03_wan_disconnect_count_above_limit_v1": {
+      "text_vi": "Ghi nhận lớn hơn 3 lần ngắt kết nối WAN.",
+      "fix_vi": [
+        "Ghi giờ mạng rớt và kiểm tra đèn WAN hoặc đèn quang lúc đó.",
+        "Gửi số lần ngắt và các mốc thời gian cho nhà mạng nếu lỗi lặp lại."
+      ]
+    },
+    "o03_wan_disconnect_count_at_or_below_limit_v1": {
+      "text_vi": "Ghi nhận không quá 3 lần ngắt kết nối WAN."
+    },
+    "o06_jitter_above_limit_v1": {
+      "text_vi": "Độ dao động độ trễ ở mức lớn hơn 30 ms.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "o06_jitter_at_or_below_limit_v1": {
+      "text_vi": "Độ dao động độ trễ ở mức không quá 30 ms."
+    },
+    "o06_latency_above_limit_v1": {
+      "text_vi": "Độ trễ đo được ở mức lớn hơn 100 ms.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "o06_latency_at_or_below_limit_v1": {
+      "text_vi": "Độ trễ đo được ở mức không quá 100 ms."
+    },
+    "o06_loss_above_limit_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức lớn hơn 2%.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "o06_loss_at_or_below_limit_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức không quá 2%."
+    },
+    "o07_default_route_present_v1": {
+      "text_vi": "Bảng định tuyến WAN có tuyến mặc định."
+    },
+    "o07_upstream_reachable_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn thành công."
+    },
+    "oui_known_v1": {
+      "text_vi": "Phép tra tiền tố địa chỉ MAC nhận diện được hãng."
+    },
+    "oui_unknown_v1": {
+      "text_vi": "Phép tra tiền tố địa chỉ MAC không nhận diện được hãng.",
+      "fix_vi": [
+        "Đối chiếu tên thiết bị trong danh sách với nhãn hoặc cài đặt của thiết bị.",
+        "Kiểm tra xem thiết bị có dùng địa chỉ Wi-Fi riêng tư hay không."
+      ]
+    },
+    "packet_loss_high_v1": {
+      "text_vi": "Tỷ lệ mất gói trong mẫu đo ở mức lớn hơn 2% và không quá 100%.",
+      "fix_vi": [
+        "Tạm dừng tải tệp hoặc sao lưu rồi đo lại trong lúc xảy ra triệu chứng.",
+        "Thử thiết bị cắm dây để so độ ổn định với Wi-Fi."
+      ]
+    },
+    "pbr_observed_rules_resolved_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 quy tắc định tuyến theo chính sách và ghi nhận 0 quy tắc định tuyến chưa xác định được đường đi."
+    },
+    "pbr_one_rule_unresolved_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 quy tắc định tuyến theo chính sách và ghi nhận 1 quy tắc định tuyến chưa xác định được đường đi.",
+      "fix_vi": [
+        "Xác nhận đích cần tới và thử kết nối khi VPN đang bật.",
+        "Gửi tuyến hoặc đích bị ảnh hưởng để quản trị viên so lại định tuyến."
+      ]
+    },
+    "pool_low_v1": {
+      "text_vi": "Ghi nhận từ 1 đến 5 địa chỉ DHCP còn trống và ghi nhận ít nhất 0 địa chỉ DHCP đã dùng.",
+      "fix_vi": [
+        "Kiểm tra số địa chỉ còn trống trong mục DHCP trên router.",
+        "Nếu thường xuyên thiếu địa chỉ, nhờ hỗ trợ rà soát dải cấp IP và các địa chỉ đã dành riêng."
+      ]
+    },
+    "pool_ok_v1": {
+      "text_vi": "Ghi nhận lớn hơn 5 địa chỉ DHCP còn trống và ghi nhận ít nhất 0 địa chỉ DHCP đã dùng."
+    },
+    "queue_delay_ok_v1": {
+      "text_vi": "Độ trễ hàng đợi đo được ở mức từ 0 ms đến 50 ms."
+    },
+    "radio_down_v1": {
+      "text_vi": "Bộ phát Wi-Fi được kiểm tra không hoạt động.",
+      "fix_vi": [
+        "Xem trên trang quản trị băng tần Wi-Fi đang bật hay tắt.",
+        "Kiểm tra lịch tắt Wi-Fi hoặc nút Wi-Fi trên router nếu có."
+      ]
+    },
+    "radio_up_v1": {
+      "text_vi": "Bộ phát Wi-Fi được kiểm tra đang hoạt động."
+    },
+    "remote_access_service_disabled_v1": {
+      "text_vi": "Dịch vụ truy cập từ xa đang tắt và ghi nhận 0 kết nối truy cập từ xa.",
+      "fix_vi": [
+        "Xác nhận dịch vụ quản trị từ xa có cần bật theo chính sách của mạng không.",
+        "Nếu cần, nhờ hỗ trợ xác minh phương thức truy cập được phép, ví dụ VPN."
+      ]
+    },
+    "remote_access_service_has_connections_v1": {
+      "text_vi": "Dịch vụ truy cập từ xa đang bật và ghi nhận ít nhất 1 kết nối truy cập từ xa."
+    },
+    "remote_admin_disabled_v1": {
+      "text_vi": "Quản trị từ xa đang tắt."
+    },
+    "remote_admin_without_configured_mfa_v1": {
+      "text_vi": "Quản trị từ xa đang bật và xác thực nhiều lớp chưa được cấu hình.",
+      "fix_vi": [
+        "Xác nhận có cần quản trị router từ Internet hay không.",
+        "Nhờ người quản trị kiểm tra cách tắt truy cập từ xa khi không dùng hoặc bật xác thực nhiều lớp nếu hỗ trợ."
+      ]
+    },
+    "replay_temperature_and_boot_normal_v1": {
+      "text_vi": "Nhiệt độ thiết bị ở mức dưới 85 °C và ghi nhận 0 lần hệ thống bị lỗi dừng."
+    },
+    "required_guest_isolation_disabled_v1": {
+      "text_vi": "Chế độ cách ly mạng khách đang tắt.",
+      "fix_vi": [
+        "Kiểm tra thiết bị khách đang dùng đúng tên mạng khách.",
+        "Nếu cần tách mạng khách, nhờ người quản trị kiểm tra chế độ cách ly và thử lại với hai thiết bị thử."
+      ]
+    },
+    "resolvers_ok_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 máy chủ DNS ghi nhận và ghi nhận ít nhất 1 máy chủ DNS đạt phép kiểm tra."
+    },
+    "roaming_excessive_v1": {
+      "text_vi": "Ghi nhận lớn hơn 10 lần thiết bị chuyển điểm phát.",
+      "fix_vi": [
+        "Đo lại khi thiết bị để yên rồi so với lúc di chuyển giữa các phòng.",
+        "Nếu chuyển điểm phát nhiều ngay cả khi đứng yên, nhờ hỗ trợ kiểm tra vị trí và vùng phủ của các điểm phát."
+      ]
+    },
+    "roaming_normal_v1": {
+      "text_vi": "Ghi nhận từ 0 đến 10 lần thiết bị chuyển điểm phát."
+    },
+    "rollback_readback_reported_match_v1": {
+      "text_vi": "Cấu hình đọc lại khớp với cấu hình dự kiến."
+    },
+    "rollback_readback_reported_mismatch_v1": {
+      "text_vi": "Cấu hình đọc lại không khớp với cấu hình dự kiến.",
+      "fix_vi": [
+        "Xem mục nào đọc lại chưa khớp với cấu hình dự kiến.",
+        "Gửi các chênh lệch cho người quản trị để đối chiếu trước khi thử thêm thao tác."
+      ]
+    },
+    "segmentation_audit_no_violations_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 phân đoạn mạng và ghi nhận 0 điểm vi phạm chính sách phân đoạn mạng."
+    },
+    "service_failures_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 dịch vụ đang chạy và ghi nhận ít nhất 1 dịch vụ ở trạng thái lỗi.",
+      "fix_vi": [
+        "Xem tên các dịch vụ báo lỗi trong trang trạng thái hoặc nhật ký.",
+        "Ghi thời điểm và báo hỗ trợ nếu dịch vụ cần dùng tiếp tục báo lỗi."
+      ]
+    },
+    "services_exposed_under_zero_exposure_policy_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 dịch vụ đang lắng nghe kết nối và ghi nhận ít nhất 1 dịch vụ mở ra ngoài mạng nội bộ.",
+      "fix_vi": [
+        "Kiểm tra danh sách dịch vụ và các mục chuyển tiếp cổng trên router.",
+        "Nhờ quản trị viên xác minh mục nào cần truy cập từ Internet và tắt các mục thừa."
+      ]
+    },
+    "services_running_without_reported_failures_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 dịch vụ đang chạy và ghi nhận 0 dịch vụ ở trạng thái lỗi."
+    },
+    "signal_quality_ok_v1": {
+      "text_vi": "Mức tín hiệu Wi-Fi (RSSI) ở mức ít nhất -75 dBm và tỷ số tín hiệu trên nhiễu (SNR) ở mức ít nhất 20 dB."
+    },
+    "single_boot_without_recorded_crashes_v1": {
+      "text_vi": "Ghi nhận 1 lần khởi động và ghi nhận 0 lần hệ thống bị lỗi dừng."
+    },
+    "single_default_route_v1": {
+      "text_vi": "Bảng định tuyến WAN có tuyến mặc định và ghi nhận 1 tuyến WAN mặc định."
+    },
+    "sk02_rssi_at_or_above_floor_v1": {
+      "text_vi": "Mức tín hiệu Wi-Fi (RSSI) ở mức ít nhất -75 dBm."
+    },
+    "sk02_rssi_below_floor_v1": {
+      "text_vi": "Mức tín hiệu Wi-Fi (RSSI) ở mức dưới -75 dBm.",
+      "fix_vi": [
+        "Thử đo lại trên thiết bị bị ảnh hưởng khi đứng gần điểm phát.",
+        "Nếu tín hiệu vẫn yếu, thử vị trí đặt điểm phát thoáng hơn hoặc điểm phát gần hơn."
+      ]
+    },
+    "sk02_snr_at_or_above_floor_v1": {
+      "text_vi": "Tỷ số tín hiệu trên nhiễu (SNR) ở mức ít nhất 20 dB."
+    },
+    "sk02_snr_below_floor_v1": {
+      "text_vi": "Tỷ số tín hiệu trên nhiễu (SNR) ở mức dưới 20 dB.",
+      "fix_vi": [
+        "Thử đo lại gần điểm phát và so kết quả ở một băng tần khác.",
+        "Đưa router ra xa nguồn gây nhiễu như lò vi sóng nếu hiện tượng trùng thời điểm sử dụng."
+      ]
+    },
+    "sk04_upstream_loss_above_limit_v1": {
+      "text_vi": "Tỷ lệ mất gói tới đích thượng nguồn ở mức lớn hơn 5%.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "sk04_upstream_loss_at_or_below_limit_v1": {
+      "text_vi": "Tỷ lệ mất gói tới đích thượng nguồn ở mức không quá 5%."
+    },
+    "sk08_storage_at_or_above_limit_v1": {
+      "text_vi": "Dung lượng lưu trữ đã dùng ở mức ít nhất 90%.",
+      "fix_vi": [
+        "Xem phần lưu trữ để biết mục nào đang chiếm nhiều chỗ.",
+        "Lưu bản sao cấu hình trước khi nhờ hỗ trợ dọn dung lượng hoặc kiểm tra bộ nhớ."
+      ]
+    },
+    "sk08_storage_below_limit_v1": {
+      "text_vi": "Dung lượng lưu trữ đã dùng ở mức dưới 90%."
+    },
+    "sk08_temperature_at_or_above_limit_v1": {
+      "text_vi": "Nhiệt độ thiết bị ở mức ít nhất 85 °C.",
+      "fix_vi": [
+        "Đặt router ở nơi thoáng và bỏ vật che khe tản nhiệt.",
+        "Đo lại sau khi thiết bị nguội và báo hỗ trợ nếu nhiệt độ vẫn cao."
+      ]
+    },
+    "sk08_temperature_below_limit_v1": {
+      "text_vi": "Nhiệt độ thiết bị ở mức dưới 85 °C."
+    },
+    "sole_known_gateway_reachable_v1": {
+      "text_vi": "Ghi nhận 1 gateway đã biết và ghi nhận 1 gateway thử kết nối được."
+    },
+    "split_dns_conflicts_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 xung đột DNS nội bộ và bên ngoài và ghi nhận ít nhất 0 vùng DNS ghi nhận.",
+      "fix_vi": [
+        "Thử cùng tên miền từ mạng nội bộ và từ một mạng khác.",
+        "Nhờ người quản trị kiểm tra tên miền bị xung đột và bản ghi DNS tương ứng."
+      ]
+    },
+    "split_dns_ok_v1": {
+      "text_vi": "Ghi nhận 0 xung đột DNS nội bộ và bên ngoài và ghi nhận ít nhất 0 vùng DNS ghi nhận."
+    },
+    "sqm_configured_v1": {
+      "text_vi": "Quản lý hàng đợi thông minh (SQM) đang bật và tốc độ đã cấu hình cho SQM ở mức lớn hơn 0 Mbps."
+    },
+    "sqm_disabled_v1": {
+      "text_vi": "Quản lý hàng đợi thông minh (SQM) đang tắt.",
+      "fix_vi": [
+        "Thử gọi video hoặc đo độ trễ khi không có tải và khi đang tải tệp.",
+        "Nếu độ trễ tăng rõ dưới tải, nhờ hỗ trợ xem lại cấu hình SQM và tốc độ đường truyền."
+      ]
+    },
+    "sqm_rate_zero_v1": {
+      "text_vi": "Quản lý hàng đợi thông minh (SQM) đang bật và tốc độ đã cấu hình cho SQM là 0 Mbps.",
+      "fix_vi": [
+        "Thử gọi video hoặc đo độ trễ khi không có tải và khi đang tải tệp.",
+        "Nếu độ trễ tăng rõ dưới tải, nhờ hỗ trợ xem lại cấu hình SQM và tốc độ đường truyền."
+      ]
+    },
+    "ssid_missing_v1": {
+      "text_vi": "Tên mạng Wi-Fi (SSID) trong cấu hình không có mặt.",
+      "fix_vi": [
+        "Đối chiếu tên Wi-Fi trong trang quản trị với tên cần dùng.",
+        "Thử tìm mạng bằng thiết bị khác ở gần router."
+      ]
+    },
+    "ssid_present_v1": {
+      "text_vi": "Tên mạng Wi-Fi (SSID) trong cấu hình có mặt."
+    },
+    "storage_usage_and_wear_below_thresholds_v1": {
+      "text_vi": "Dung lượng lưu trữ đã dùng ở mức từ 0% đến dưới 90% và mức hao mòn bộ nhớ lưu trữ ở mức từ 0% đến dưới 80%."
+    },
+    "storage_usage_high_v1": {
+      "text_vi": "Dung lượng lưu trữ đã dùng ở mức từ 90% đến 100% và mức hao mòn bộ nhớ lưu trữ ở mức từ 0% đến 100%.",
+      "fix_vi": [
+        "Xem phần lưu trữ để biết mục nào đang chiếm nhiều chỗ.",
+        "Lưu bản sao cấu hình trước khi nhờ hỗ trợ dọn dung lượng hoặc kiểm tra bộ nhớ."
+      ]
+    },
+    "storage_wear_high_v1": {
+      "text_vi": "Dung lượng lưu trữ đã dùng ở mức từ 0% đến 100% và mức hao mòn bộ nhớ lưu trữ ở mức từ 80% đến 100%.",
+      "fix_vi": [
+        "Lưu một bản sao cấu hình router.",
+        "Gửi chỉ số hao mòn và mẫu router cho hỗ trợ để đánh giá bộ nhớ."
+      ]
+    },
+    "stp_enabled_zero_reported_changes_v1": {
+      "text_vi": "Cơ chế chống vòng lặp STP đang bật và ghi nhận 0 lần đổi cấu trúc mạng mà STP ghi nhận."
+    },
+    "stp_required_but_disabled_v1": {
+      "text_vi": "Cơ chế chống vòng lặp STP đang tắt và ghi nhận ít nhất 0 lần đổi cấu trúc mạng mà STP ghi nhận.",
+      "fix_vi": [
+        "Kiểm tra sơ đồ dây nối giữa router và các switch.",
+        "Nếu có nhiều đường nối giữa các switch, nhờ người quản trị xác minh cấu hình STP."
+      ]
+    },
+    "subnet_and_vlan_inventories_populated_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 mạng con trong danh sách và ghi nhận ít nhất 1 VLAN ghi nhận."
+    },
+    "subnet_inventory_empty_with_vlans_v1": {
+      "text_vi": "Ghi nhận 0 mạng con trong danh sách và ghi nhận ít nhất 1 VLAN ghi nhận.",
+      "fix_vi": [
+        "Đối chiếu danh sách VLAN với dải IP đang dùng trên từng mạng.",
+        "Nhờ người quản trị kiểm tra thông tin mạng con bị thiếu trong bản đồ."
+      ]
+    },
+    "switch_fdb_at_capacity_v1": {
+      "text_vi": "Ghi nhận 1024 mục địa chỉ MAC trong bảng chuyển tiếp của switch.",
+      "fix_vi": [
+        "Xem lại bảng MAC trên switch và số thiết bị thực tế đang nối.",
+        "Nếu nhiều mục xuất hiện bất thường, nhờ hỗ trợ kiểm tra dây nối giữa các switch."
+      ]
+    },
+    "switch_fdb_populated_below_capacity_v1": {
+      "text_vi": "Ghi nhận từ 1 đến dưới 1024 mục địa chỉ MAC trong bảng chuyển tiếp của switch."
+    },
+    "system_errors_recorded_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 lỗi trong nhật ký hệ thống và ghi nhận ít nhất 0 cảnh báo trong nhật ký hệ thống.",
+      "fix_vi": [
+        "Ghi lại thời điểm và vài dòng lỗi liên quan trong nhật ký hệ thống.",
+        "Gửi trích đoạn lỗi cho bộ phận hỗ trợ sau khi bỏ thông tin cá nhân."
+      ]
+    },
+    "system_sample_without_errors_or_warnings_v1": {
+      "text_vi": "Ghi nhận 0 lỗi trong nhật ký hệ thống và ghi nhận 0 cảnh báo trong nhật ký hệ thống."
+    },
+    "topology_edges_missing_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 nút trên sơ đồ mạng và ghi nhận 0 liên kết trên sơ đồ mạng.",
+      "fix_vi": [
+        "Kiểm tra dây giữa router, switch và điểm phát.",
+        "So sơ đồ dây thực tế với sơ đồ hiển thị rồi nhờ hỗ trợ rà các liên kết thiếu."
+      ]
+    },
+    "topology_edges_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 nút trên sơ đồ mạng và ghi nhận ít nhất 1 liên kết trên sơ đồ mạng."
+    },
+    "traffic_flowing_v1": {
+      "text_vi": "Bộ đếm byte nhận của giao diện ở mức lớn hơn 0 và bộ đếm byte gửi của giao diện ở mức lớn hơn 0."
+    },
+    "uplink_healthy_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 đường WAN ghi nhận và ghi nhận ít nhất 1 đường WAN đạt phép kiểm tra."
+    },
+    "upload_saturated_v1": {
+      "text_vi": "Tốc độ gửi đo được ở mức lớn hơn 800 Mbps và tốc độ nhận đo được ở mức ít nhất 0 Mbps.",
+      "fix_vi": [
+        "Tạm dừng sao lưu đám mây hoặc gửi tệp lớn rồi đo lại.",
+        "Lên lịch sao lưu vào giờ ít người dùng nếu phép đo cho thấy cải thiện."
+      ]
+    },
+    "upstream_loss_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn thành công và tỷ lệ mất gói tới đích thượng nguồn ở mức lớn hơn 5% và không quá 100%.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "upstream_ok_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn thành công và tỷ lệ mất gói tới đích thượng nguồn ở mức từ 0% đến 5%."
+    },
+    "upstream_unreachable_v1": {
+      "text_vi": "Phép thử kết nối tới đích thượng nguồn không thành công.",
+      "fix_vi": [
+        "Thử một thiết bị khác hoặc một thiết bị cắm dây để so kết quả.",
+        "Nếu nhiều thiết bị cùng gặp lỗi, ghi giờ và gửi kết quả kiểm tra đường truyền cho nhà mạng."
+      ]
+    },
+    "vlan_invalid_membership_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 VLAN ghi nhận và ghi nhận ít nhất 1 mục gán cổng vào VLAN không hợp lệ.",
+      "fix_vi": [
+        "Đối chiếu cổng và VLAN của thiết bị với sơ đồ mạng đang dùng.",
+        "Nhờ người quản trị xác minh cổng gắn thẻ và cổng không gắn thẻ ở cả hai đầu."
+      ]
+    },
+    "vlan_no_invalid_memberships_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 VLAN ghi nhận và ghi nhận 0 mục gán cổng vào VLAN không hợp lệ."
+    },
+    "vlan_policy_violations_reported_v1": {
+      "text_vi": "Ghi nhận ít nhất 2 phân đoạn mạng và ghi nhận ít nhất 1 điểm vi phạm chính sách phân đoạn mạng.",
+      "fix_vi": [
+        "Đối chiếu thiết bị bị báo vi phạm với sơ đồ VLAN và chính sách truy cập.",
+        "Gửi tên phân đoạn và kết quả kiểm tra cho người quản trị để rà lại quyền."
+      ]
+    },
+    "vpn_expected_routes_present_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 tuyến dự kiến qua VPN và ghi nhận 0 tuyến dự kiến còn thiếu qua VPN."
+    },
+    "vpn_ipv6_enabled_with_route_v1": {
+      "text_vi": "IPv6 qua VPN đang bật và tuyến IPv6 qua VPN có mặt."
+    },
+    "vpn_ipv6_enabled_without_route_v1": {
+      "text_vi": "IPv6 qua VPN đang bật và tuyến IPv6 qua VPN không có mặt.",
+      "fix_vi": [
+        "Xác nhận đích cần tới và thử kết nối khi VPN đang bật.",
+        "Gửi tuyến hoặc đích bị ảnh hưởng để quản trị viên so lại định tuyến."
+      ]
+    },
+    "vpn_observed_peers_reachable_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 đầu VPN kết nối được trong phép thử và ghi nhận 0 đầu VPN không phản hồi thành công trong phép thử."
+    },
+    "vpn_one_expected_route_missing_v1": {
+      "text_vi": "Ghi nhận ít nhất 1 tuyến dự kiến qua VPN và ghi nhận 1 tuyến dự kiến còn thiếu qua VPN.",
+      "fix_vi": [
+        "Xác nhận đích cần tới và thử kết nối khi VPN đang bật.",
+        "Gửi tuyến hoặc đích bị ảnh hưởng để quản trị viên so lại định tuyến."
+      ]
+    },
+    "vpn_peer_unreachable_in_sample_v1": {
+      "text_vi": "Ghi nhận ít nhất 0 đầu VPN kết nối được trong phép thử và ghi nhận ít nhất 1 đầu VPN không phản hồi thành công trong phép thử.",
+      "fix_vi": [
+        "Kiểm tra đường Internet ở đầu VPN bị báo không tới được.",
+        "Nhờ người quản trị hai đầu so trạng thái kết nối và nhật ký tại cùng thời điểm."
+      ]
+    },
+    "vpn_tunnel_down_v1": {
+      "text_vi": "Đường hầm VPN không hoạt động và ghi nhận ít nhất 1 đầu bên kia được ghi nhận cho VPN.",
+      "fix_vi": [
+        "Kiểm tra Internet ở hai đầu VPN rồi thử kết nối lại từ ứng dụng.",
+        "Nếu vẫn lỗi, báo thời điểm và thông báo lỗi cho người quản trị VPN."
+      ]
+    },
+    "vpn_tunnel_up_with_peers_v1": {
+      "text_vi": "Đường hầm VPN đang hoạt động và ghi nhận ít nhất 1 đầu bên kia được ghi nhận cho VPN."
+    },
+    "wan_flapping_v1": {
+      "text_vi": "Ghi nhận lớn hơn 3 lần ngắt kết nối WAN và thời lượng theo dõi WAN ở mức lớn hơn 0 giây.",
+      "fix_vi": [
+        "Ghi giờ mạng rớt và kiểm tra đèn WAN hoặc đèn quang lúc đó.",
+        "Gửi số lần ngắt và các mốc thời gian cho nhà mạng nếu lỗi lặp lại."
+      ]
+    },
+    "wan_link_down_v1": {
+      "text_vi": "Liên kết WAN vật lý không hoạt động và thời gian hoạt động được ghi cho liên kết WAN ở mức ít nhất 0 giây.",
+      "fix_vi": [
+        "Kiểm tra đèn WAN trên router và thiết bị quang hoặc modem.",
+        "Cắm lại hai đầu dây WAN và thử dây khác nếu đèn liên kết vẫn tắt."
+      ]
+    },
+    "wan_link_stable_v1": {
+      "text_vi": "Liên kết WAN vật lý đang hoạt động và thời gian hoạt động được ghi cho liên kết WAN ở mức ít nhất 60 giây."
+    },
+    "wan_session_down_v1": {
+      "text_vi": "Kiểu kết nối WAN là PPPoE, DHCP hoặc IP tĩnh và phiên WAN chưa kết nối.",
+      "fix_vi": [
+        "Kiểm tra đèn modem và trạng thái kết nối WAN trong trang quản trị.",
+        "Ghi mã lỗi kết nối nếu có và liên hệ nhà mạng nếu WAN vẫn chưa kết nối."
+      ]
+    },
+    "wan_session_up_v1": {
+      "text_vi": "Kiểu kết nối WAN là PPPoE, DHCP hoặc IP tĩnh và phiên WAN đã kết nối."
+    },
+    "wan_stable_window_v1": {
+      "text_vi": "Ghi nhận từ 0 đến 3 lần ngắt kết nối WAN và thời lượng theo dõi WAN ở mức ít nhất 3600 giây."
+    },
+    "wifi_approved_mode_encrypted_v1": {
+      "text_vi": "Chế độ xác thực là WPA2 hoặc WPA3 và mã hóa Wi-Fi đang bật."
+    },
+    "wifi_open_without_encryption_v1": {
+      "text_vi": "Chế độ xác thực là mạng mở và mã hóa Wi-Fi đang tắt.",
+      "fix_vi": [
+        "Mở phần bảo mật của đúng tên Wi-Fi đang dùng.",
+        "Nếu đây là mạng gia đình, nhờ người quản trị chọn WPA2 hoặc WPA3 phù hợp với thiết bị."
+      ]
+    }
+  },
+  "next_steps_vi": {
+    "healthy": [
+      "Nếu còn phép kiểm tra được gợi ý, hãy chạy mục sát nhất với triệu chứng.",
+      "Thử cùng ứng dụng trên một thiết bị khác để xem lỗi xảy ra ở một máy hay nhiều máy.",
+      "Nếu chỉ một thiết bị bị ảnh hưởng, lưu công việc rồi khởi động lại thiết bị đó.",
+      "Nếu lỗi lặp lại trên nhiều thiết bị, gửi thời điểm và kết quả đo thực tế cho nhà mạng."
+    ],
+    "unknown": [
+      "Kiểm tra thiết bị cần đo vẫn đang kết nối và xem nguồn nào thiếu nếu có danh sách.",
+      "Chạy lại phép kiểm tra khi có dữ liệu hoặc thử phép kiểm tra liên quan có nguồn khác.",
+      "Nếu vẫn thiếu dữ liệu, ghi lại thời điểm và triệu chứng cụ thể để bộ phận hỗ trợ thu thêm số đo."
+    ]
+  }
+}

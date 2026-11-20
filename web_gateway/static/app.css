@@ -235,3 +235,5 @@
 .triage-verdict.fault { color: var(--red); }
 .triage-verdict.healthy { color: var(--aqua); }
 .triage-verdict.unknown { color: var(--amber); }
+.triage-claims { flex-basis: 100%; color: var(--muted); }
+.runbook-card .step-origin { color: var(--muted); overflow-wrap: anywhere; }

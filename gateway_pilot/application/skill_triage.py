@@ -10,6 +10,11 @@ from ..skill_expansion.catalog import DATA_DIR
 from ..skill_expansion.incident_replay import ADVISORY, _source_url, _text, _texts
 from ..skill_expansion.replay_sim import MODE, NOTICE, ReplaySession
 from ..workflow import normalize
+from .claim_guidance import (
+    GENERIC_WARNING, build_next_steps, evidenced_claims,
+    incident_recommendation, load_claim_guidance, missing_sources, next_steps_text,
+)
+from .replay_sim_run import current_replay_result
 from .skill_chat import (
     _MODEL_SLOT, _phrase, _replay_candidates, _replay_refusal, _replay_scopes,
     _retriever, local_model, validate_choice,
@@ -74,6 +79,8 @@ def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started
     text = normalize(request)
     response = {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
                 'cards': [], 'symptom_groups': [], 'notice': NOTICE}
+    if warning := GENERIC_WARNING.get(replay.scenario):
+        response['warning'] = warning
     # Role-play speaks as the owner of the simulated home; other real-device phrases stay refused.
     role_play = {**routing, 'nonlocal_scope_phrases': [
         p for p in routing['nonlocal_scope_phrases'] if p not in OWN_HOME_PHRASES]}
@@ -161,24 +168,22 @@ def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started
 
 
 def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
-              runs: list[tuple[str, dict | None]], catalog_total: int, *, elapsed_s: float) -> dict:
-    profile = replay.profile
-    claim_text = {**profile.incidents.diagnostics['claim_text'], **profile.incident_replay.claim_text}
+              runs: list[tuple[str, dict | None]], catalog_total: int, *, elapsed_s: float,
+              offered_ids: list[str] | None = None) -> dict:
+    claim_guidance = load_claim_guidance(replay.profile)
+    messages = claim_guidance['text']
     evidence, plans, timeline, skill_runs, per_skill = {}, [], [], [], []
     source_errors, claim_details = {}, []
     faults, healthy, unknown, guidance = [], [], [], []
+    fault_ids, missing, incident_from = [], [], ''
     now = replay.clock()
     for sid, result in runs:
-        run = result or {}
-        age = now - run.get('evidence_checked_at_monotonic', float('inf'))
-        fresh = {r['id']: {**r, 'expires_in_s': r['expires_in_s'] - age}
-                 for r in run.get('evidence', []) if r['status'] == 'OK' and 0 <= age < r['expires_in_s']
-                 and now < replay.expires_at}
+        run = current_replay_result(replay, result or {}, now)
+        fresh = {row['id']: row for row in run['evidence']}
         evidence.update(fresh)
         status = run.get('status', 'UNAVAILABLE')
         errors = dict(run.get('source_errors', {}))
-        if len(fresh) < len(run.get('evidence', [])):
-            status = 'PARTIAL' if any(r['port'] != 'client.identity' for r in fresh.values()) else 'UNAVAILABLE'
+        if run.get('assessment', {}).get('reason') == 'evidence_expired':
             errors['evidence'] = 'EXPIRED'
         if result is None:
             errors['session'] = 'session_expired'
@@ -186,34 +191,35 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
             source_errors[sid] = errors
 
         assessment = run.get('assessment', {})
-        claims = [(claim_text.get(cid) or f'Điều kiện mô phỏng: {cid}', claim)
-                  for cid, claim in assessment.get('claims', {}).items()
-                  if claim['value'] == 'TRUE' and claim['evidence'] and set(claim['evidence']) <= fresh.keys()]
+        claims = evidenced_claims(run, fresh)
+        fault_ids.extend((sid, cid) for cid, claim in claims.items() if claim['severity'] == 'FAULT')
         name = rows[sid]['name']
         verdict = run.get('verdict', 'UNKNOWN')
-        verdict_claims = [message for message, claim in claims if claim['severity'] == verdict]
+        verdict_claims = [cid for cid, claim in claims.items() if claim['severity'] == verdict]
         if not verdict_claims:
             verdict = 'UNKNOWN'
         if verdict == 'FAULT':
-            faults.append(f"Phát hiện: {name} — {' '.join(dict.fromkeys(verdict_claims))}")
-            if run.get('incident_guidance'):
-                proof = [eid for _, claim in claims if claim['severity'] == 'FAULT' for eid in claim['evidence']]
-                if item := profile.incident_replay.recommendation(replay.scenario, proof, list(fresh.values())):
-                    guidance.append(item)
+            finding = ' '.join(dict.fromkeys(messages[cid] for cid in verdict_claims))
+            faults.append(f'Phát hiện: {name} — {finding}')
+            if item := incident_recommendation(replay, run, claims, fresh):
+                guidance.append(item)
+                incident_from = incident_from or f'{replay.scenario} · {sid}'
         elif verdict == 'HEALTHY':
             healthy.append(name)
         else:
             unknown.append(name)
+            missing.extend(f'{sid} · {source}' for source in missing_sources(run))
+            if result is None:
+                missing.append(f'{sid} · phiên đã hết hạn')
         per_skill.append({'skill_id': sid, 'name': name, 'verdict': verdict, 'status': status,
-                          'claims': list(dict.fromkeys(message for message, _ in claims)),
-                          'evidence_ids': list(dict.fromkeys(eid for _, claim in claims for eid in claim['evidence']))})
+                          'claims': list(dict.fromkeys(messages[cid] for cid in claims)),
+                          'evidence_ids': list(dict.fromkeys(eid for claim in claims.values()
+                                                            for eid in claim['evidence']))})
 
         skill_runs.append({'skill_id': sid, 'status': status, 'calls_this_run': run.get('calls_this_run', 0),
                            'reused_ports': run.get('reused_ports', []), 'missing_ports': run.get('missing_ports', [])})
         plans.extend(run.get('plans', []))
         for event in run.get('timeline', []):
-            if event['evidence_id'] is not None and event['evidence_id'] not in fresh:
-                event = {**event, 'status': 'NO_LONGER_VALID', 'evidence_id': None, 'value': None}
             timeline.append({**event, 'index': len(timeline) + 1})
         if limitation := assessment.get('limitation'):
             claim_details.append(limitation)
@@ -224,6 +230,12 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
         answer.append(f"Bình thường: {', '.join(healthy)}.")
     if unknown:
         answer.append(f"Chưa đủ bằng chứng: {', '.join(unknown)}.")
+    incident_guidance = {'label': ADVISORY, **{
+        key: list(dict.fromkeys(value for item in guidance for value in item[key]))
+        for key in ('steps', 'sources')}} if guidance else None
+    next_steps = build_next_steps(claim_guidance, verdict, faults=fault_ids, incident=incident_guidance,
+                                  incident_from=incident_from, missing=missing)
+    answer.append(next_steps_text(next_steps))
     statuses = {row['status'] for row in per_skill}
     status = statuses.pop() if len(statuses) == 1 else 'PARTIAL'
     measurements = [row for row in evidence.values() if row['port'] != 'client.identity']
@@ -242,15 +254,20 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
               'evidence_ids': list(dict.fromkeys(eid for row in per_skill for eid in row['evidence_ids'])),
               'status_ok_evidence_ids': list(evidence), 'calls': sum(row['calls_this_run'] for row in skill_runs),
               'calls_total': replay.calls, 'repairs': 0, 'timeline': timeline, 'plans': plans,
-              'skill_runs': skill_runs, 'triage_results': per_skill, 'source_errors': source_errors,
+              'skill_runs': skill_runs, 'triage_results': per_skill, 'next_steps': next_steps,
+              'source_errors': source_errors,
               'measurement_details': [f"{r['sample']} · {r['port']} · {r['value']}" for r in measurements],
               'claim_details': list(dict.fromkeys(claim_details)), 'notice': NOTICE, 'target': target,
               'model_calls': 0, 'advice': [], 'llm_advisor_used': False,
               'routing': {'method': 'triage', 'plan': [row['skill_id'] for row in per_skill]},
               'answer_kind': 'evidence' if measurements else None,
               'timings_ms': {'total': round(elapsed_s * 1000, 3)}, 'user_input_required': False}
-    if guidance:
-        result['incident_guidance'] = {'label': ADVISORY, **{
-            key: list(dict.fromkeys(value for item in guidance for value in item[key]))
-            for key in ('steps', 'sources')}}
+    if incident_guidance:
+        result['incident_guidance'] = incident_guidance
+    if verdict == 'HEALTHY' and offered_ids:
+        selected = {sid for sid, _ in runs}
+        result['unrun_cards'] = [{'skill_id': sid, 'name': rows[sid]['name']}
+                                 for sid in offered_ids if sid not in selected]
+    if warning := GENERIC_WARNING.get(replay.scenario):
+        result['warning'] = warning
     return result

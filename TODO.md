@@ -32,6 +32,8 @@ Tiến độ IGATE-INCIDENTS (20/11/2026, `v2`) — Replay 14/14 sự cố, 36/3
 
 Tiến độ TRIAGE-01 (20/11/2026, `v2`) — Web Replay thêm luồng đóng vai khách hàng với seed 14 nhóm, đề xuất tối đa 6 thẻ và chỉ chạy các Skill đã chọn qua Core trong phiên hiện tại. 14/14 kịch bản sự cố trả `FAULT` có bằng chứng khi chạy ba thẻ mặc định. Unittest 1.149 tổng, 1.144 pass, 0 fail, 5 skip Windows (472,534 s). `check_project`, hai kiểm tra Node và Chromium desktop/mobile PASS. Scorer đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. Cả 10 giá trị pin replay khớp approval hiện hành. Commit local, chưa có CI riêng. [CI của commit nền](https://github.com/Greediex/Gateway_LM/actions/runs/44690676549)
 
+Tiến độ ADVICE-01 (20/11/2026, `v2`) — Replay có mục “Cần làm gì” cho FAULT, HEALTHY và UNKNOWN. Có diễn giải tiếng Việt cho 271/271 Claim, gồm 244 mục mới và 27 mục có sẵn. Role-play hiển thị 15 kịch bản nhất quán và nút chạy các thẻ còn lại khi kết quả bình thường. Unittest 1.156 tổng, 1.151 pass, 0 fail, 5 skip Windows (461,923 s). `check_project`, hai kiểm tra Node và Chromium desktop/mobile PASS. Scorer đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. 10/10 pin khớp approval hiện hành. Commit local, chưa có CI riêng. [CI của commit nền `a7f97d8`](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

@@ -7,7 +7,20 @@ class Element {
   constructor(tag, cls = '', text = '') {
     Object.assign(this, {tag, className:cls, textContent:text, children:[], style:{}, open:false, listeners:{}});
   }
-  appendChild(child) { this.children.push(child); return child; }
+  appendChild(child) { this.children.push(child); child.parentElement = this; return child; }
+  insertBefore(child, before) {
+    child.remove();
+    this.children.splice(this.children.indexOf(before), 0, child);
+    child.parentElement = this;
+  }
+  remove() {
+    if (!this.parentElement) return;
+    const siblings = this.parentElement.children;
+    siblings.splice(siblings.indexOf(this), 1);
+    this.parentElement = null;
+  }
+  querySelector(tag) { return this.children.find(node=>node.tag===tag); }
+  setAttribute(name, value) { this[name] = value; }
   replaceChildren() { this.children = []; }
   addEventListener(type, callback) { this.listeners[type] = callback; }
 }
@@ -89,6 +102,21 @@ assert.deepEqual(options.children.map(node=>[node.value,node.textContent]),
 const index = fs.readFileSync(path.join(__dirname,'../web_gateway/static/index.html'),'utf8');
 for (const id of ['normal', 'fault', 'missing']) assert(index.includes(`<option value="${id}">`));
 assert(index.includes('<optgroup id="incidentOptions"'));
+const scenarioSelect = new Element('select');
+for (const value of ['normal', 'fault', 'missing']) {
+  scenarioSelect.appendChild(Object.assign(new Element('option'), {value}));
+}
+const genericScenarios = scenarioSelect.children.slice(1);
+scenarioSelect.appendChild(options);
+scenarioSelect.value = 'fault';
+assert(sandbox.setReplayScenarioOptions(scenarioSelect, genericScenarios, true));
+assert.equal(scenarioSelect.value, 'normal');
+assert.deepEqual(scenarioSelect.children.flatMap(node=>node===options
+  ? node.children.map(option=>option.value) : [node.value]), ['normal', ...incidents.map(incident=>incident.id)]);
+scenarioSelect.value = incidents[0].id;
+assert(!sandbox.setReplayScenarioOptions(scenarioSelect, genericScenarios, false));
+assert.deepEqual(scenarioSelect.children.slice(0,3).map(node=>node.value), ['normal', 'fault', 'missing']);
+assert.equal(scenarioSelect.value, incidents[0].id);
 const incident = incidents[0];
 const guidance = {
   label:'khuyến nghị — chưa thực hiện, áp dụng trên router của bạn',
@@ -111,8 +139,11 @@ const proposal = sandbox.message('assistant', 'Dữ liệu mô phỏng');
 const cards = ['symptom:INC-CAPACITY', 'incident', 'phrase', 'search'].map((source, i) => ({
   skill_id:`X0${i}`, name:`Tên Skill ${i}`, plain_vi:`Phép kiểm tra ${i}`, why_vi:`Lý do ${i}`, source
 }));
-let submitted = null;
-const triageOptions = sandbox.renderTriageCards(proposal, cards, ids => { submitted = Array.from(ids); });
+let submitted = null, offered = null;
+const triageOptions = sandbox.renderTriageCards(proposal, cards, (ids, offeredIds) => {
+  submitted = Array.from(ids);
+  offered = Array.from(offeredIds);
+});
 const form = proposal.children.find(el => el.tag === 'form');
 assert.equal(form.children[0], triageOptions);
 assert.equal(triageOptions.children[0].tag, 'legend');
@@ -135,6 +166,7 @@ const event = {preventDefault() { prevented = true; }};
 form.listeners.submit(event);
 assert(prevented);
 assert.deepEqual(submitted, ['X00', 'X02']);
+assert.deepEqual(offered, cards.map(card=>card.skill_id));
 triageOptions.disabled = true;
 submitted = null;
 form.listeners.submit(event);
@@ -157,4 +189,40 @@ sandbox.enrichMessage(summary, {mode:'replay_sim', triage_results:triageResults}
 const verdicts = summary.children.find(el => el.className === 'triage-results');
 assert.deepEqual(verdicts.children.map(el => el.children[1].textContent),
   ['Phát hiện bất thường', 'Bình thường', 'Chưa đủ bằng chứng']);
-console.log('Chat presentation: PASS (details, caveats, replay badges, incident options, guidance, triage cards and verdicts)');
+for (const kind of ['fault', 'healthy', 'unknown']) {
+  const bubble = sandbox.message('assistant', 'Dữ liệu mô phỏng');
+  const text = 'Thử kiểm tra thiết bị.';
+  const sources = kind === 'fault' ? guidance.sources : kind === 'unknown' ? ['A02 · default'] : [];
+  const after = sandbox.enrichMessage(bubble, {
+    mode:'replay_sim', verdict:kind.toUpperCase(), evidence_ids:kind === 'fault' ? ['proof'] : [],
+    triage_results:triageResults, incident_guidance:guidance, unrun_cards:cards.slice(2),
+    next_steps:{label:guidance.label, kind, steps:[{text, from:'X00 · example_v1'}], sources},
+  }, (ids, offeredIds)=>{ submitted = Array.from(ids); offered = Array.from(offeredIds); });
+  const rowsIndex = bubble.children.findIndex(el=>el.className === 'triage-results');
+  const card = bubble.children[rowsIndex + 1];
+  assert.equal(card.className, 'runbook-card');
+  assert.equal(card['aria-label'], 'Cần làm gì');
+  assert.equal(card.children[0].textContent, 'Cần làm gì');
+  assert.equal(card.children[1].textContent, guidance.label);
+  const step = card.children.find(el=>el.tag==='ul').children[0];
+  assert.equal(step.textContent, text);
+  assert(step.children[0].textContent.includes('X00 · example_v1'));
+  assert.equal(bubble.children.filter(el=>el.className==='runbook-card').length, 1);
+  if (kind === 'unknown') {
+    assert(card.children.some(el=>el.textContent === 'Nguồn còn thiếu: A02 · default'));
+    assert(!card.children.some(el=>el.tag==='a'));
+  }
+  if (kind !== 'healthy') { assert.equal(after, null); continue; }
+  assert.equal(after.children[0].tag, 'legend');
+  const followUp = after.children[1];
+  assert.equal(followUp.type, 'button');
+  assert.equal(followUp['aria-label'], 'Chạy chẩn đoán: Tên Skill 2');
+  followUp.listeners.click();
+  assert.deepEqual(submitted, ['X02']);
+  assert.deepEqual(offered, ['X02','X03']);
+  after.disabled = true;
+  submitted = null;
+  followUp.listeners.click();
+  assert.equal(submitted, null);
+}
+console.log('Chat presentation: PASS (details, caveats, replay badges, role-play scenarios, guidance and follow-up chips)');

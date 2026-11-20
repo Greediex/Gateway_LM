@@ -568,19 +568,21 @@ class Handler(BaseHTTPRequestHandler):
 
                 data = _parse(raw)
                 fields = triage_fields[endpoint]
-                optional = {"scenario", "session_id"} if endpoint.endswith("/triage") else {"scenario"}
+                optional = {"scenario", "session_id"} if endpoint.endswith("/triage") else {"scenario", "offered_ids"}
                 if type(data) is not dict or not fields <= data.keys() <= fields | optional:
                     raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
                 if "session_id" in data and (type(data["session_id"]) is not str or not data["session_id"]):
                     raise ValueError("session_id không hợp lệ")
                 if "scenario" in data and type(data["scenario"]) is not str:
                     raise ValueError("Kịch bản phải là chuỗi")
+                if "offered_ids" in data and type(data["offered_ids"]) is not list:
+                    raise ValueError("offered_ids phải là danh sách")
                 if endpoint.endswith("/triage"):
                     return self._json(CHAT.triage(data["message"], data.get("session_id"),
                                                   scenario=data.get("scenario"),
                                                   allow_model=os.environ.get("GATEWAY_LM_TRIAGE_MODEL") == "1"))
                 return self._json(CHAT.run_selected(data["session_id"], data["skill_ids"],
-                                                    scenario=data.get("scenario")))
+                                                    scenario=data.get("scenario"), offered_ids=data.get("offered_ids")))
             data = json.loads(raw)
             if endpoint.startswith("/api/skills/"):
                 from gateway_pilot.application.skill_launcher import LAUNCHER, SkillSessionError
