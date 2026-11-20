@@ -55,6 +55,10 @@ COMPOSITE_BATCHES = {
     "O": ("simulation_o_composite_v1", "replay_o_composite"),
     "S": ("simulation_s_composite_v1", "replay_s_composite"),
 }
+# INCIDENT-GAPS checks GP01..GP07 are not among the 120 Skills: they have their own scenarios and
+# diagnostics, run in replay_sim, and are reported as incident_checks_simulated, never as verified Skills.
+INCIDENT_BATCHES = {"GAP": ("simulation_gaps_composite_v1", "replay_gaps_composite")}
+INCIDENT_CONFIG = DATA_DIR.parents[1] / "config" / "skill_launcher" / "replay_sim.incidents.json"
 # Every file that decides a simulated verdict; editing one invalidates acceptance.
 ACCEPTANCE_INPUTS = tuple(
     [f"{d}/{name}" for d, _ in DIRECT_BATCHES.values()
@@ -244,8 +248,10 @@ def coverage_report(**kwargs) -> dict:
     from .igate_data import catalog
 
     rows = build_coverage(**kwargs)
+    incidents = _load(INCIDENT_CONFIG)["skills"]
     return {"summary": summarize(rows), "skills": [asdict(r) for r in rows],
-            "igate_simulated": {sid: item["skill"] for sid, item in catalog().items()}}
+            "igate_simulated": {sid: item["skill"] for sid, item in catalog().items()},
+            "incident_checks_simulated": {sid: item["name"] for sid, item in incidents.items()}}
 
 
 def _graph_actions(config: Path, mode: str) -> Mapping:

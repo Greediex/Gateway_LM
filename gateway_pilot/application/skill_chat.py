@@ -207,6 +207,26 @@ def _simulation_finding(row: dict) -> str:
         return f"Nhiệt độ {v['celsius']:g} °C."
     if port == 'expansion.wan_link':
         return 'Link WAN đang lên.' if v['link_up'] else 'Link WAN đang ngắt.'
+    if port == 'expansion.wan_mss':
+        return (f"WAN {v['proto']}, MTU {v['mtu_bytes']} byte, kẹp MSS "
+                f"{'bật' if v['mss_clamping'] else 'tắt'}.")
+    if port == 'expansion.ipv6_connectivity':
+        yes = lambda flag, a, b: a if flag else b
+        return (f"IPv6: {yes(v['global_address'], 'có', 'không có')} địa chỉ global, "
+                f"{yes(v['default_route'], 'có', 'không có')} route mặc định, "
+                f"{yes(v['reachable'], 'tới được', 'không tới được')} đích kiểm tra.")
+    if port == 'expansion.system_load':
+        return f"CPU {v['cpu_pct']:g}%, RAM {v['mem_pct']:g}%, {v['clients_count']} thiết bị online."
+    if port == 'expansion.wan_addressing':
+        kind = {'public': 'công cộng', 'private': 'riêng', 'cgnat': 'CGNAT'}[v['wan_ip_class']]
+        return (f"Địa chỉ WAN {kind}; thiết bị phía trước "
+                f"{'là router' if v['upstream_is_router'] else 'không phải router'}.")
+    if port == 'expansion.radio_events':
+        return (f"Radar DFS {v['radar_detected_count']} lần, đổi kênh {v['channel_changes']} lần "
+                f"trong {v['observation_window_s'] // 60} phút.")
+    if port == 'expansion.client_ap_signal':
+        return (f"RSSI {v['current_rssi_dbm']:g} dBm, AP khác hơn {v['rssi_gap_db']:g} dB, "
+                f"chuyển AP {v['roam_count']} lần.")
     if port in {'expansion.radio_health', 'expansion.ssid_config', 'expansion.airtime_usage'}:
         return findings({'facts': {port: row}})[port]['text']
     return ''
@@ -313,8 +333,9 @@ class SkillChat:
         replay = entry['session']
         deadline = started + self.max_elapsed_s
         catalog = self.launcher.catalog(REPLAY_SIM, entry=entry)
-        rows = {row['skill_id']: row for row in catalog['rows']}
+        rows = {row['skill_id']: row for row in catalog['rows'] + catalog['incident_rows']}
         routing = replay.profile.diagnostics['routing']
+        incidents = replay.profile.incidents.diagnostics
         text = normalize(request)
         advice, calls, method, result = [], 0, 'none', None
         requested_scopes = {
@@ -334,7 +355,10 @@ class SkillChat:
             reason, status = 'custom_target_not_supported', 'NEEDS_INPUT'
             message = 'Phiên dùng client và gateway cố định trong kịch bản mô phỏng.'
         else:
-            method, candidates = _replay_candidates(request, routing['phrases'])
+            hits = [sid for sid, phrases in incidents['routing'].items()
+                    if any(_phrase(text, p) for p in (*phrases, normalize(rows[sid]['name']), sid.lower()))]
+            method, candidates = (('phrase', hits) if len(hits) == 1
+                                  else _replay_candidates(request, routing['phrases']))
             reason, status = 'skill_not_supported', 'UNAVAILABLE'
             message = 'Chủ đề này chưa được hỗ trợ trong danh mục Replay mô phỏng.'
             if method == 'compound':
@@ -395,6 +419,10 @@ class SkillChat:
         measurements = [row for row in evidence if row['port'] != 'client.identity']
         summary = ' '.join(dict.fromkeys(line for row in measurements
                                          if (line := _simulation_finding(row))))
+        if result.get('verdict') in {'HEALTHY', 'FAULT'}:  # only what a TRUE, evidenced Claim states
+            summary = ' '.join(filter(None, (summary, *(
+                incidents['claim_text'].get(cid, '') for cid, claim in result['assessment']['claims'].items()
+                if claim['value'] == 'TRUE' and claim['evidence']))))
         scope = rows[result['skill_id']]['runtime_scope'] if result else None
         return {'answer': '\n'.join(filter(None, (SIM_NOTICE, message, summary))), 'request': request,
                 'mode': REPLAY_SIM, 'synthetic_only': True, 'scenario': replay.scenario,

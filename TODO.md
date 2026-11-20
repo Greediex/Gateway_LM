@@ -497,3 +497,4 @@ Tiến độ COV-S legacy composite (19/11/2026, `v2`). SK02 dùng A08/B04 để
 | Tests | mở rộng `tests/test_skill_profiles.py`, `tests/test_skill_launcher.py`, `tests/test_skill_chat*.py`, `tests/test_grounded*.py`, `tests/graph_v3/`, `tests/web/`; fixture suite có version và scorer độc lập |
 
 [Catalog 120 Skill](docs/skill_expansion/SKILLS_120.md) · [Mapping nguồn](docs/skill_expansion/SKILL_FUNCTION_MAPPING_120.md) · [Luồng LLM–Skill–RCA](docs/LLM_SKILL_CHAT.md) · [Launcher/session](docs/LAPTOP_SKILL_LAUNCHER.md)
+- 2026-11-20 Tiến độ INCIDENT-GAPS: 7 kiểm tra sự cố mô phỏng GP01..GP07 (DNS, MTU/MSS, IPv6, quá tải, NAT hai lớp/CGNAT, radar DFS, bám AP xa) có 6 port READ mới và chạy trong replay_sim; không thuộc 120 Skill, báo riêng `incident_checks_simulated`; chưa ghép kịch bản incidents_v1.

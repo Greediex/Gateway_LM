@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.wan_mss",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "proto": {
+        "type": "string",
+        "description": "iGate wan.proto: pppoe | dhcp | static. Adapter thật đọc cấu hình giao diện WAN."
+      },
+      "mtu_bytes": {
+        "type": "integer",
+        "description": "MTU thực của giao diện WAN (ip link show). Chưa có trong snapshot iGate."
+      },
+      "mss_clamping": {
+        "type": "boolean",
+        "description": "Có luật kẹp MSS (clamp-mss-to-pmtu / mtu_fix) trong firewall WAN. Chưa có trong snapshot iGate."
+      }
+    },
+    "required": [
+      "proto",
+      "mtu_bytes",
+      "mss_clamping"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

@@ -54,9 +54,10 @@ class SkillLauncher:
                        'reason': 'SCENARIO_AVAILABLE' if entry else 'INITIALIZE_SESSION',
                        'runtime_scope': action['scope'], 'mode': mode}
                     for _, action in sorted(actions.items())]
-            rows = catalog_rows(profile.actions)
+            rows = catalog_rows(profile.actions)  # the 101 accepted Skills; IG/GP rows are listed apart
             return {'mode': mode, 'design_total': len(rows), 'native_total': 0, 'rows': rows,
                     'igate_rows': catalog_rows(profile.igate.actions),
+                    'incident_rows': catalog_rows(profile.incidents.actions),
                     'counts': dict(Counter(r['availability'] for r in rows)),
                     'requires_session': entry is None, 'synthetic_only': True}
         _,_,_,actions=deployment(mode)

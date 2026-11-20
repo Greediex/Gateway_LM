@@ -64,10 +64,12 @@ class ReplayProfile(ReplayCatalog):
     approval: dict[str, str]
     igate: ReplayCatalog
     igate_vendor: dict[str, bytes]
+    incidents: ReplayCatalog  # GP01..GP07: not among the 120 Skills, never counted as verified
 
     def open_sample(self, sample: Sample, *, environment: str, clock: Callable[[], float],
                     max_calls: int, ttl_s: float, cost_budget: float = 100):
-        catalog = self if sample.function_id in self.registries else self.igate
+        catalog = (self if sample.function_id in self.registries
+                   else self.igate if sample.function_id in self.igate.registries else self.incidents)
         artifact, policy, owner = catalog.registries[sample.function_id]
         fixture = {} if sample.values is None else {sample.function_id: {sample.function_id: sample.values}}
         if sample.scope == 'client':
@@ -116,9 +118,9 @@ def _registry(function: dict, *, port: dict | None = None, owner: dict | None = 
     function['lifecycle'] = 'IMPLEMENTED'
     ref = function['skill_refs'][0]
     if owner is None:
-        owner = read_json(simulation.PORTS_DIR.parent / 'skills' / f"{ref['skill_id']}.json")
+        owner = read_json(simulation.skill_path(ref['skill_id'], fid))
     functions = [function]
-    ports = [port if port is not None else read_json(simulation.PORTS_DIR / f'{fid}.json')]
+    ports = [port if port is not None else read_json(simulation.port_path(fid))]
     if function['scope'] == 'client':
         identity = read_json(CLIENT_CATALOG / 'functions/skill_expansion' / f'{CLIENT_IDENTITY}.json')
         identity['skill_refs'] = [ref]
@@ -202,12 +204,63 @@ def _igate_catalog(vendor: dict) -> tuple[ReplayCatalog, str]:
     return ReplayCatalog(actions, {'skills': skills}, sources, registries), pin
 
 
+def _incident_catalog(design: dict, proposals: dict) -> tuple[ReplayCatalog, str]:
+    """GP incident checks: composite workflows over READ ports, with their own scenarios and pin."""
+    from .coverage import INCIDENT_CONFIG
+
+    cfg = read_json(INCIDENT_CONFIG)
+    doc = composite.contracts(cfg['batch'])
+    require(cfg['format'] == 'gateway-lm.replay-sim-incident-checks/v1'
+            and set(cfg['skills']) == set(doc['workflows']) and not design.keys() & cfg['skills'].keys(),
+            'skill_sim_incident_membership')
+    skills, samples, fids = {}, {sid: {} for sid in cfg['skills']}, set()
+    for sid, workflow in doc['workflows'].items():
+        skills[sid] = {'kind': 'composite', 'scope': workflow['target_scope'], 'workflows': {sid: workflow},
+                       'claims': [c for c in doc['claims'] if c['workflow'] == workflow['workflow_id']]}
+    for row in composite.load_scenarios(cfg['batch']):
+        sid, workflow = row['skill_id'], doc['workflows'][row['skill_id']]
+        sources = {}
+        for alias, spec in workflow['sources'].items():
+            fid = spec['function_id']
+            require(fid in proposals and spec['scope'] == proposals[fid]['scope'] and spec['target'] == TARGET,
+                    'skill_sim_source_scope_or_target')
+            composite.timestamp(row['sources'][alias]['simulated_at'])
+            sources[alias] = Sample(fid, spec['scope'], spec['target'], row['sources'][alias]['simulated_at'],
+                                    row['sources'][alias]['values'])
+            fids.add(fid)
+        state = row['id'].rsplit('-', 1)[-1]
+        require(state in STATES and state not in samples[sid], 'skill_sim_duplicate_scenario')
+        samples[sid][state] = sources
+    require(all(set(v) == set(STATES) for v in samples.values()), 'skill_sim_scenario_membership')
+    registries = {fid: _registry(proposals[fid]) for fid in sorted(fids)}
+    for states in samples.values():
+        for sources in states.values():
+            for sample in sources.values():
+                schema = next(p['schema'] for p in registries[sample.function_id][0]['ports']
+                              if p['port_id'] == sample.function_id)
+                require(sample.values is None or Draft202012Validator(schema).is_valid(sample.values),
+                        'skill_sim_fixture_schema')
+    actions = {sid: {'skill_id': sid, 'name': cfg['skills'][sid]['name'], 'domain': 'GP', 'kind': 'incident',
+                     'scope': skills[sid]['scope'],
+                     'required_ports': {s.function_id: proposals[s.function_id]['outputs'][s.function_id]
+                                        for s in samples[sid]['normal'].values()}, 'optional_ports': {}}
+               for sid in skills}
+    diagnostics = {'skills': skills,
+                   'routing': {sid: item['phrases'] for sid, item in cfg['skills'].items()},
+                   'claim_text': {c: t for item in cfg['skills'].values() for c, t in item['claim_text'].items()}}
+    pin = digest({'config': cfg, 'actions': actions, 'diagnostics': diagnostics,
+                  'samples': {sid: {state: [[a, asdict(s)] for a, s in sources.items()]
+                                    for state, sources in states.items()} for sid, states in samples.items()},
+                  'registries': {fid: a['content_digest'] for fid, (a, _, _) in registries.items()}})
+    return ReplayCatalog(actions, diagnostics, samples, registries), pin
+
+
 def prepare_profile() -> ReplayProfile:
     """Build deterministic approval inputs from accepted contracts and scenarios."""
     acceptance, accepted = acceptance_snapshot()
     design = SkillCatalog.load().skills
     require(bool(accepted) and accepted <= design.keys() and 'SK13' not in accepted, 'skill_sim_membership')
-    proposals = {f['function_id']: f for f in json.loads((DATA_DIR / 'function_proposals.json').read_text(encoding='utf-8'))}
+    proposals = {f['function_id']: f for f in simulation.function_proposals()}
     skills: dict[str, dict] = {}
     samples: dict[str, dict[str, dict[str, Sample]]] = {sid: {} for sid in accepted}
     fids = set()
@@ -295,7 +348,9 @@ def prepare_profile() -> ReplayProfile:
     }
     vendor, contents = igate_data.vendor_data()
     igate, approval['igate_digest'] = _igate_catalog(vendor)
-    return ReplayProfile(actions, diagnostics, samples, registries, approval, igate, contents)
+    incidents, approval['incident_checks_digest'] = _incident_catalog(design, proposals)
+    return ReplayProfile(actions, diagnostics, samples, registries, approval,
+                         igate=igate, igate_vendor=contents, incidents=incidents)
 
 
 def approved_profile(approval: dict) -> ReplayProfile:

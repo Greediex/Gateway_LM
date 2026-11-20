@@ -1,0 +1,106 @@
+{
+  "format": "gateway-lm.replay-sim-incident-checks/v1",
+  "note": "Kiểm tra sự cố mô phỏng GP01..GP07: không thuộc 120 Skill, không tính simulation_verified.",
+  "batch": "GAP",
+  "skills": {
+    "GP01": {
+      "name": "Lỗi DNS khi IP vẫn thông",
+      "phrases": [
+        "khong vao duoc web",
+        "khong tim thay trang",
+        "web khong mo duoc",
+        "loi dns khi ip van thong"
+      ],
+      "claim_text": {
+        "gp01_dns_all_resolvers_down_v1": "Kết nối IP tới upstream thông nhưng không DNS resolver nào đạt kiểm tra.",
+        "gp01_dns_resolver_healthy_v1": "Kết nối IP thông và có ít nhất một DNS resolver đạt kiểm tra."
+      }
+    },
+    "GP02": {
+      "name": "Lỗi MTU/MSS trên PPPoE",
+      "phrases": [
+        "web khong tai xong",
+        "trang web khong tai xong",
+        "mot so trang web khong tai xong",
+        "treo giua chung",
+        "mtu pppoe",
+        "kep mss",
+        "loi mtu"
+      ],
+      "claim_text": {
+        "gp02_pppoe_mss_not_clamped_v1": "PPPoE có MTU dưới 1500 byte và chưa bật kẹp MSS.",
+        "gp02_pppoe_mss_clamped_v1": "PPPoE có MTU dưới 1500 byte và đã bật kẹp MSS.",
+        "gp02_standard_mtu_v1": "MTU của WAN từ 1500 byte trở lên."
+      }
+    },
+    "GP03": {
+      "name": "IPv6 có địa chỉ nhưng không có route",
+      "phrases": [
+        "ipv6 hong",
+        "ipv6 khong co route",
+        "ipv6 co dia chi",
+        "mo web lan dau rat lau"
+      ],
+      "claim_text": {
+        "gp03_ipv6_address_without_route_v1": "Có địa chỉ IPv6 global nhưng không có route IPv6 mặc định.",
+        "gp03_ipv6_route_unreachable_v1": "Có địa chỉ và route IPv6 nhưng đích IPv6 kiểm tra không tới được.",
+        "gp03_ipv6_working_v1": "IPv6 có địa chỉ, có route và tới được đích kiểm tra.",
+        "gp03_ipv6_not_offered_v1": "Mạng không cấp IPv6 (không có RA, prefix hay địa chỉ); đây không phải lỗi."
+      }
+    },
+    "GP04": {
+      "name": "Router quá tải",
+      "phrases": [
+        "toi dong nguoi",
+        "nhieu thiet bi thi cham",
+        "router qua tai"
+      ],
+      "claim_text": {
+        "gp04_router_overloaded_v1": "CPU router từ 85% trở lên cùng với từ 25 thiết bị online.",
+        "gp04_router_load_normal_v1": "CPU router dưới 85% và RAM dưới 90%."
+      }
+    },
+    "GP05": {
+      "name": "NAT hai lớp/CGNAT",
+      "phrases": [
+        "double nat",
+        "nat hai lop",
+        "upnp khong hoat dong",
+        "game bao nat",
+        "lap them router"
+      ],
+      "claim_text": {
+        "gp05_double_nat_v1": "Địa chỉ WAN là địa chỉ riêng và thiết bị phía trước là router: có hai lớp NAT.",
+        "gp05_carrier_grade_nat_v1": "Địa chỉ WAN thuộc dải CGNAT 100.64.0.0/10 của nhà mạng.",
+        "gp05_single_nat_public_v1": "Địa chỉ WAN là địa chỉ công cộng, chỉ một lớp NAT."
+      }
+    },
+    "GP06": {
+      "name": "Radar DFS",
+      "phrases": [
+        "5g tu mat",
+        "radar dfs",
+        "kenh dfs",
+        "gan san bay"
+      ],
+      "claim_text": {
+        "gp06_dfs_radar_detected_v1": "Radio 5 GHz phát hiện radar DFS và đã đổi kênh trong cửa sổ quan sát.",
+        "gp06_no_radar_in_window_v1": "Không có radar DFS trong cửa sổ quan sát từ 1 giờ."
+      }
+    },
+    "GP07": {
+      "name": "Thiết bị bám điểm phát xa",
+      "phrases": [
+        "bam diem phat",
+        "bam ap xa",
+        "bat diem phat xa",
+        "bat diem phat duoi nha"
+      ],
+      "claim_text": {
+        "gp07_sticky_to_weak_ap_v1": "Tín hiệu AP hiện tại yếu, có AP khác mạnh hơn từ 12 dB và thiết bị không chuyển AP.",
+        "gp07_ap_choice_acceptable_v1": "Không có AP nào mạnh hơn AP hiện tại từ 12 dB.",
+        "gp07_signal_adequate_v1": "Tín hiệu AP hiện tại đủ (từ -75 dBm)."
+      }
+    }
+  }
+}

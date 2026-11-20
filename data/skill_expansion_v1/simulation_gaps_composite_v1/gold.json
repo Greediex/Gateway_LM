@@ -1,0 +1,28 @@
+{
+  "format": "gateway-lm.composite-gold/v1",
+  "version": "1.0.0",
+  "scenarios_version": "1.0.0",
+  "expected": {
+    "GP01-normal": "HEALTHY",
+    "GP01-fault": "FAULT",
+    "GP01-missing": "UNKNOWN",
+    "GP02-normal": "HEALTHY",
+    "GP02-fault": "FAULT",
+    "GP02-missing": "UNKNOWN",
+    "GP03-normal": "HEALTHY",
+    "GP03-fault": "FAULT",
+    "GP03-missing": "UNKNOWN",
+    "GP04-normal": "HEALTHY",
+    "GP04-fault": "FAULT",
+    "GP04-missing": "UNKNOWN",
+    "GP05-normal": "HEALTHY",
+    "GP05-fault": "FAULT",
+    "GP05-missing": "UNKNOWN",
+    "GP06-normal": "HEALTHY",
+    "GP06-fault": "FAULT",
+    "GP06-missing": "UNKNOWN",
+    "GP07-normal": "HEALTHY",
+    "GP07-fault": "FAULT",
+    "GP07-missing": "UNKNOWN"
+  }
+}

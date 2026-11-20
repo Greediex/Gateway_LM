@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b02",
+  "version": "1.0.0",
+  "name": "Sự kiện radar DFS",
+  "description": "Design proposal only (INCIDENT-GAPS overlay): Sự kiện radar DFS",
+  "requires": {},
+  "produces": {
+    "expansion.radio_events": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.radio_events": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.radio_events": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

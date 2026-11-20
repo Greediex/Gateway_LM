@@ -1,0 +1,404 @@
+{
+  "format": "gateway-lm.composite-simulation/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "scenarios": [
+    {
+      "id": "GP01-normal",
+      "skill_id": "GP01",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "dns": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "resolver_count": 2,
+            "healthy_count": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "GP01-fault",
+      "skill_id": "GP01",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "dns": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "resolver_count": 2,
+            "healthy_count": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "GP01-missing",
+      "skill_id": "GP01",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "dns": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP02-normal",
+      "skill_id": "GP02",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "mss": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "proto": "pppoe",
+            "mtu_bytes": 1492,
+            "mss_clamping": true
+          }
+        }
+      }
+    },
+    {
+      "id": "GP02-fault",
+      "skill_id": "GP02",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "mss": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "proto": "pppoe",
+            "mtu_bytes": 1492,
+            "mss_clamping": false
+          }
+        }
+      }
+    },
+    {
+      "id": "GP02-missing",
+      "skill_id": "GP02",
+      "sources": {
+        "upstream": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "reachable": true,
+            "loss_pct": 0.0
+          }
+        },
+        "mss": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP03-normal",
+      "skill_id": "GP03",
+      "sources": {
+        "ra": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "router_advertisements": true,
+            "prefix_count": 1
+          }
+        },
+        "v6": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "global_address": true,
+            "default_route": true,
+            "reachable": true
+          }
+        }
+      }
+    },
+    {
+      "id": "GP03-fault",
+      "skill_id": "GP03",
+      "sources": {
+        "ra": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "router_advertisements": true,
+            "prefix_count": 1
+          }
+        },
+        "v6": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "global_address": true,
+            "default_route": false,
+            "reachable": false
+          }
+        }
+      }
+    },
+    {
+      "id": "GP03-missing",
+      "skill_id": "GP03",
+      "sources": {
+        "ra": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "router_advertisements": true,
+            "prefix_count": 1
+          }
+        },
+        "v6": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP04-normal",
+      "skill_id": "GP04",
+      "sources": {
+        "load": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "cpu_pct": 23.0,
+            "load1": 0.6,
+            "mem_pct": 41.0,
+            "clients_count": 12
+          }
+        }
+      }
+    },
+    {
+      "id": "GP04-fault",
+      "skill_id": "GP04",
+      "sources": {
+        "load": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "cpu_pct": 96.0,
+            "load1": 4.2,
+            "mem_pct": 88.0,
+            "clients_count": 38
+          }
+        }
+      }
+    },
+    {
+      "id": "GP04-missing",
+      "skill_id": "GP04",
+      "sources": {
+        "load": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP05-normal",
+      "skill_id": "GP05",
+      "sources": {
+        "nat": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "nat_enabled": true,
+            "cgnat_suspected": false
+          }
+        },
+        "addr": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "wan_ip_class": "public",
+            "upstream_is_router": false
+          }
+        }
+      }
+    },
+    {
+      "id": "GP05-fault",
+      "skill_id": "GP05",
+      "sources": {
+        "nat": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "nat_enabled": true,
+            "cgnat_suspected": false
+          }
+        },
+        "addr": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "wan_ip_class": "private",
+            "upstream_is_router": true
+          }
+        }
+      }
+    },
+    {
+      "id": "GP05-missing",
+      "skill_id": "GP05",
+      "sources": {
+        "nat": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "nat_enabled": true,
+            "cgnat_suspected": false
+          }
+        },
+        "addr": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP06-normal",
+      "skill_id": "GP06",
+      "sources": {
+        "radio": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "radio_up": true,
+            "channel": 100,
+            "band": "5GHz"
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "radar_detected_count": 0,
+            "channel_changes": 0,
+            "on_dfs_channel": true,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "GP06-fault",
+      "skill_id": "GP06",
+      "sources": {
+        "radio": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "radio_up": true,
+            "channel": 100,
+            "band": "5GHz"
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "radar_detected_count": 2,
+            "channel_changes": 2,
+            "on_dfs_channel": true,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "GP06-missing",
+      "skill_id": "GP06",
+      "sources": {
+        "radio": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "radio_up": true,
+            "channel": 100,
+            "band": "5GHz"
+          }
+        },
+        "events": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    },
+    {
+      "id": "GP07-normal",
+      "skill_id": "GP07",
+      "sources": {
+        "assoc": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "ap-livingroom-01"
+          }
+        },
+        "sig": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "current_rssi_dbm": -58.0,
+            "rssi_gap_db": 3.0,
+            "roam_count": 0,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "GP07-fault",
+      "skill_id": "GP07",
+      "sources": {
+        "assoc": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "ap-livingroom-01"
+          }
+        },
+        "sig": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "current_rssi_dbm": -82.0,
+            "rssi_gap_db": 19.0,
+            "roam_count": 0,
+            "observation_window_s": 3600
+          }
+        }
+      }
+    },
+    {
+      "id": "GP07-missing",
+      "skill_id": "GP07",
+      "sources": {
+        "assoc": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": {
+            "associated": true,
+            "access_point_id": "ap-livingroom-01"
+          }
+        },
+        "sig": {
+          "simulated_at": "2026-11-20T08:00:00Z",
+          "values": null
+        }
+      }
+    }
+  ]
+}

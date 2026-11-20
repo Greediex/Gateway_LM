@@ -13,7 +13,8 @@ from ..skill_expansion.runtime_bridge import SkillNotReady
 
 def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, deadline: float | None) -> dict:
     profile = replay.profile
-    catalog = profile.igate if skill_id in profile.igate.actions else profile
+    catalog = (profile.igate if skill_id in profile.igate.actions
+               else profile.incidents if skill_id in profile.incidents.actions else profile)
     if skill_id not in catalog.actions:
         return {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
                 'skill_id': skill_id, 'status': 'UNAVAILABLE', 'verdict': 'UNKNOWN',

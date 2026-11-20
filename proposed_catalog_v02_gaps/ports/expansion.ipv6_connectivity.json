@@ -1,0 +1,32 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.ipv6_connectivity",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "global_address": {
+        "type": "boolean",
+        "description": "Giao diện WAN/LAN có địa chỉ IPv6 global (không tính link-local fe80::)."
+      },
+      "default_route": {
+        "type": "boolean",
+        "description": "Bảng định tuyến IPv6 có route mặc định (::/0)."
+      },
+      "reachable": {
+        "type": "boolean",
+        "description": "Adapter thật ping/TCP tới một đích IPv6 công cộng cố định qua route mặc định và báo kết quả."
+      }
+    },
+    "required": [
+      "global_address",
+      "default_route",
+      "reachable"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.wan_addressing",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "wan_ip_class": {
+        "type": "string",
+        "description": "Dẫn xuất từ iGate wan.ip: public | private (RFC 1918) | cgnat (100.64.0.0/10, RFC 6598)."
+      },
+      "upstream_is_router": {
+        "type": "boolean",
+        "description": "Dẫn xuất: wan.gw là thiết bị định tuyến/NAT riêng (modem-router nhà mạng) chứ không phải hạ tầng nhà mạng. Chưa có trong snapshot iGate; adapter thật cần dò (OUI, giao diện quản trị, TTL hop 1)."
+      }
+    },
+    "required": [
+      "wan_ip_class",
+      "upstream_is_router"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

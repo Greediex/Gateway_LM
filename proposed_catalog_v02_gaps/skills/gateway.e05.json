@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e05",
+  "version": "1.0.0",
+  "name": "Phân loại địa chỉ WAN và NAT lớp trên",
+  "description": "Design proposal only (INCIDENT-GAPS overlay): Phân loại địa chỉ WAN và NAT lớp trên",
+  "requires": {},
+  "produces": {
+    "expansion.wan_addressing": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wan_addressing": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wan_addressing": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

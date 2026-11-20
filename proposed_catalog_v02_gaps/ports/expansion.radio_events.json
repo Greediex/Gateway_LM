@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.radio_events",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "radar_detected_count": {
+        "type": "integer",
+        "description": "Số lần phát hiện radar DFS trong cửa sổ (log hostapd/driver DFS-RADAR-DETECTED)."
+      },
+      "channel_changes": {
+        "type": "integer",
+        "description": "Số lần router đổi kênh trong cửa sổ."
+      },
+      "on_dfs_channel": {
+        "type": "boolean",
+        "description": "Radio 5 GHz đang ở kênh DFS (52-144)."
+      },
+      "observation_window_s": {
+        "type": "integer",
+        "description": "Độ dài cửa sổ quan sát, giây."
+      }
+    },
+    "required": [
+      "radar_detected_count",
+      "channel_changes",
+      "on_dfs_channel",
+      "observation_window_s"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

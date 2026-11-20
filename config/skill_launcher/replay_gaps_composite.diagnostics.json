@@ -1,0 +1,1037 @@
+{
+  "format": "gateway-lm.composite-diagnostics/v1",
+  "version": "1.0.0",
+  "synthetic_only": true,
+  "workflows": {
+    "GP01": {
+      "workflow_id": "REPLAY-GP01-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "if": {
+              "properties": {
+                "reachable": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "loss_pct": {
+                  "maximum": 5
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "loss_pct": {
+                  "const": 100
+                }
+              }
+            }
+          }
+        },
+        "dns": {
+          "function_id": "expansion.dns_resolvers",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "resolver_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32
+              },
+              "healthy_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 32
+              }
+            },
+            "required": [
+              "resolver_count",
+              "healthy_count"
+            ]
+          },
+          "field_maximums": {
+            "healthy_count": "resolver_count"
+          }
+        }
+      },
+      "claims": [
+        "gp01_dns_all_resolvers_down_v1",
+        "gp01_dns_resolver_healthy_v1"
+      ],
+      "limitation": "Reports whether the gateway upstream is reachable by IP while none of its configured DNS resolvers pass the check. A partly failing resolver set still counts as healthy. Gateway-side evidence cannot show a single client's DNS cache, split-horizon override or browser setting, and a failing upstream probe is not a DNS finding."
+    },
+    "GP02": {
+      "workflow_id": "REPLAY-GP02-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "upstream": {
+          "function_id": "expansion.upstream_probe",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "reachable": {
+                "type": "boolean"
+              },
+              "loss_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              }
+            },
+            "required": [
+              "reachable",
+              "loss_pct"
+            ],
+            "if": {
+              "properties": {
+                "reachable": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "loss_pct": {
+                  "maximum": 5
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "loss_pct": {
+                  "const": 100
+                }
+              }
+            }
+          }
+        },
+        "mss": {
+          "function_id": "expansion.wan_mss",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "proto": {
+                "type": "string",
+                "enum": [
+                  "pppoe",
+                  "dhcp",
+                  "static"
+                ]
+              },
+              "mtu_bytes": {
+                "type": "integer",
+                "minimum": 576,
+                "maximum": 9216
+              },
+              "mss_clamping": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "proto",
+              "mtu_bytes",
+              "mss_clamping"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp02_pppoe_mss_not_clamped_v1",
+        "gp02_pppoe_mss_clamped_v1",
+        "gp02_standard_mtu_v1"
+      ],
+      "limitation": "Reports a WAN MTU below 1500 on PPPoE without MSS clamping, the configuration that can silently drop large TCP packets. It does not show that ICMP fragmentation-needed is blocked, which sites fail, or measured throughput."
+    },
+    "GP03": {
+      "workflow_id": "REPLAY-GP03-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "ra": {
+          "function_id": "expansion.ipv6_ra",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "router_advertisements": {
+                "type": "boolean"
+              },
+              "prefix_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 64
+              }
+            },
+            "required": [
+              "router_advertisements",
+              "prefix_count"
+            ]
+          }
+        },
+        "v6": {
+          "function_id": "expansion.ipv6_connectivity",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "global_address": {
+                "type": "boolean"
+              },
+              "default_route": {
+                "type": "boolean"
+              },
+              "reachable": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "global_address",
+              "default_route",
+              "reachable"
+            ],
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "global_address": {
+                      "const": false
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "reachable": {
+                      "const": false
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "default_route": {
+                      "const": false
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "reachable": {
+                      "const": false
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp03_ipv6_address_without_route_v1",
+        "gp03_ipv6_route_unreachable_v1",
+        "gp03_ipv6_working_v1",
+        "gp03_ipv6_not_offered_v1"
+      ],
+      "limitation": "Separates broken IPv6 (a global address without a working route or path) from a network that offers no IPv6, which is not a fault. It does not locate the cause (RA, prefix delegation or ICMPv6 filtering) or show per-client addressing."
+    },
+    "GP04": {
+      "workflow_id": "REPLAY-GP04-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "load": {
+          "function_id": "expansion.system_load",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "cpu_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "load1": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "mem_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "clients_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 4096
+              }
+            },
+            "required": [
+              "cpu_pct",
+              "load1",
+              "mem_pct",
+              "clients_count"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp04_router_overloaded_v1",
+        "gp04_router_load_normal_v1"
+      ],
+      "limitation": "Reports router CPU at or above 85 percent together with at least 25 online devices as overload. High CPU with few devices, or memory pressure alone, has no verdict. Thresholds are uncalibrated simulation heuristics, load1 is not normalized by core count, and the sample does not identify which device or flow causes the load."
+    },
+    "GP05": {
+      "workflow_id": "REPLAY-GP05-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "nat": {
+          "function_id": "expansion.nat_state",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "nat_enabled": {
+                "type": "boolean"
+              },
+              "cgnat_suspected": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "nat_enabled",
+              "cgnat_suspected"
+            ]
+          }
+        },
+        "addr": {
+          "function_id": "expansion.wan_addressing",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "wan_ip_class": {
+                "type": "string",
+                "enum": [
+                  "public",
+                  "private",
+                  "cgnat"
+                ]
+              },
+              "upstream_is_router": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "wan_ip_class",
+              "upstream_is_router"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp05_double_nat_v1",
+        "gp05_carrier_grade_nat_v1",
+        "gp05_single_nat_public_v1"
+      ],
+      "limitation": "Distinguishes a private WAN address behind an upstream router (double NAT) from a carrier-grade NAT address (100.64.0.0/10). Neither shows which device or camera is unreachable, whether UPnP or port forwarding is configured, or that remote access is blocked."
+    },
+    "GP06": {
+      "workflow_id": "REPLAY-GP06-COMPOSITE-V1",
+      "target_scope": "gateway",
+      "require_same_sample_time": true,
+      "sources": {
+        "radio": {
+          "function_id": "expansion.radio_health",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "radio_up": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 233
+              },
+              "band": {
+                "type": "string",
+                "const": "5GHz"
+              }
+            },
+            "required": [
+              "radio_up",
+              "channel",
+              "band"
+            ]
+          }
+        },
+        "events": {
+          "function_id": "expansion.radio_events",
+          "scope": "gateway",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "radar_detected_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "channel_changes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "on_dfs_channel": {
+                "type": "boolean"
+              },
+              "observation_window_s": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
+              }
+            },
+            "required": [
+              "radar_detected_count",
+              "channel_changes",
+              "on_dfs_channel",
+              "observation_window_s"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp06_dfs_radar_detected_v1",
+        "gp06_no_radar_in_window_v1"
+      ],
+      "limitation": "Reports radar detections on the 5 GHz radio with a matching channel change inside the observation window. It does not list the affected clients, the new channel, or how long the outage lasted."
+    },
+    "GP07": {
+      "workflow_id": "REPLAY-GP07-COMPOSITE-V1",
+      "target_scope": "client",
+      "require_same_sample_time": true,
+      "sources": {
+        "assoc": {
+          "function_id": "expansion.client_association",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "associated": {
+                "type": "boolean"
+              },
+              "access_point_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              }
+            },
+            "required": [
+              "associated",
+              "access_point_id"
+            ]
+          }
+        },
+        "sig": {
+          "function_id": "expansion.client_ap_signal",
+          "scope": "client",
+          "target": "synthetic-test-target",
+          "value_schema": {
+            "type": "object",
+            "properties": {
+              "current_rssi_dbm": {
+                "type": "number",
+                "minimum": -120,
+                "maximum": 0
+              },
+              "rssi_gap_db": {
+                "type": "number",
+                "minimum": -120,
+                "maximum": 120
+              },
+              "roam_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "observation_window_s": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
+              }
+            },
+            "required": [
+              "current_rssi_dbm",
+              "rssi_gap_db",
+              "roam_count",
+              "observation_window_s"
+            ]
+          }
+        }
+      },
+      "claims": [
+        "gp07_sticky_to_weak_ap_v1",
+        "gp07_ap_choice_acceptable_v1",
+        "gp07_signal_adequate_v1"
+      ],
+      "limitation": "Reports a weak RSSI (below -75 dBm) on the current AP while another AP is at least 12 dB stronger and the client did not roam for at least 10 minutes. The 12 dB margin follows Apple roaming guidance; both thresholds are uncalibrated simulation heuristics. It does not show why the client stays (missing 802.11k/v/r, driver policy) and differs from excessive roaming."
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "gp01_dns_all_resolvers_down_v1",
+      "diagnosis": "gp01_dns_all_resolvers_down_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "dns",
+          "field": "healthy_count",
+          "op": "eq",
+          "value": 0
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp01_dns_all_resolvers_down_v1",
+      "workflow": "REPLAY-GP01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp01_dns_resolver_healthy_v1",
+      "diagnosis": "gp01_dns_resolver_healthy_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "dns",
+          "field": "healthy_count",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp01_dns_resolver_healthy_v1",
+      "workflow": "REPLAY-GP01-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp02_pppoe_mss_not_clamped_v1",
+      "diagnosis": "gp02_pppoe_mss_not_clamped_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "mss",
+          "field": "proto",
+          "op": "eq",
+          "value": "pppoe"
+        },
+        {
+          "port": "mss",
+          "field": "mtu_bytes",
+          "op": "lt",
+          "value": 1500
+        },
+        {
+          "port": "mss",
+          "field": "mss_clamping",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp02_pppoe_mss_not_clamped_v1",
+      "workflow": "REPLAY-GP02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp02_pppoe_mss_clamped_v1",
+      "diagnosis": "gp02_pppoe_mss_clamped_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "mss",
+          "field": "proto",
+          "op": "eq",
+          "value": "pppoe"
+        },
+        {
+          "port": "mss",
+          "field": "mtu_bytes",
+          "op": "lt",
+          "value": 1500
+        },
+        {
+          "port": "mss",
+          "field": "mss_clamping",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp02_pppoe_mss_clamped_v1",
+      "workflow": "REPLAY-GP02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp02_standard_mtu_v1",
+      "diagnosis": "gp02_standard_mtu_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "upstream",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "mss",
+          "field": "mtu_bytes",
+          "op": "ge",
+          "value": 1500
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp02_standard_mtu_v1",
+      "workflow": "REPLAY-GP02-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp03_ipv6_address_without_route_v1",
+      "diagnosis": "gp03_ipv6_address_without_route_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "v6",
+          "field": "global_address",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "v6",
+          "field": "default_route",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp03_ipv6_address_without_route_v1",
+      "workflow": "REPLAY-GP03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp03_ipv6_route_unreachable_v1",
+      "diagnosis": "gp03_ipv6_route_unreachable_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "v6",
+          "field": "global_address",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "v6",
+          "field": "default_route",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "v6",
+          "field": "reachable",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp03_ipv6_route_unreachable_v1",
+      "workflow": "REPLAY-GP03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp03_ipv6_working_v1",
+      "diagnosis": "gp03_ipv6_working_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "v6",
+          "field": "global_address",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "v6",
+          "field": "default_route",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "v6",
+          "field": "reachable",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp03_ipv6_working_v1",
+      "workflow": "REPLAY-GP03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp03_ipv6_not_offered_v1",
+      "diagnosis": "gp03_ipv6_not_offered_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "ra",
+          "field": "router_advertisements",
+          "op": "eq",
+          "value": false
+        },
+        {
+          "port": "ra",
+          "field": "prefix_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "v6",
+          "field": "global_address",
+          "op": "eq",
+          "value": false
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp03_ipv6_not_offered_v1",
+      "workflow": "REPLAY-GP03-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp04_router_overloaded_v1",
+      "diagnosis": "gp04_router_overloaded_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "load",
+          "field": "cpu_pct",
+          "op": "ge",
+          "value": 85
+        },
+        {
+          "port": "load",
+          "field": "clients_count",
+          "op": "ge",
+          "value": 25
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp04_router_overloaded_v1",
+      "workflow": "REPLAY-GP04-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp04_router_load_normal_v1",
+      "diagnosis": "gp04_router_load_normal_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "load",
+          "field": "cpu_pct",
+          "op": "lt",
+          "value": 85
+        },
+        {
+          "port": "load",
+          "field": "mem_pct",
+          "op": "lt",
+          "value": 90
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp04_router_load_normal_v1",
+      "workflow": "REPLAY-GP04-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp05_double_nat_v1",
+      "diagnosis": "gp05_double_nat_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "nat",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "addr",
+          "field": "wan_ip_class",
+          "op": "eq",
+          "value": "private"
+        },
+        {
+          "port": "addr",
+          "field": "upstream_is_router",
+          "op": "eq",
+          "value": true
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp05_double_nat_v1",
+      "workflow": "REPLAY-GP05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp05_carrier_grade_nat_v1",
+      "diagnosis": "gp05_carrier_grade_nat_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "nat",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "addr",
+          "field": "wan_ip_class",
+          "op": "eq",
+          "value": "cgnat"
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp05_carrier_grade_nat_v1",
+      "workflow": "REPLAY-GP05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp05_single_nat_public_v1",
+      "diagnosis": "gp05_single_nat_public_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "nat",
+          "field": "nat_enabled",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "addr",
+          "field": "wan_ip_class",
+          "op": "eq",
+          "value": "public"
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp05_single_nat_public_v1",
+      "workflow": "REPLAY-GP05-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp06_dfs_radar_detected_v1",
+      "diagnosis": "gp06_dfs_radar_detected_v1",
+      "scope": "gateway",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "radio",
+          "field": "band",
+          "op": "eq",
+          "value": "5GHz"
+        },
+        {
+          "port": "events",
+          "field": "radar_detected_count",
+          "op": "ge",
+          "value": 1
+        },
+        {
+          "port": "events",
+          "field": "channel_changes",
+          "op": "ge",
+          "value": 1
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp06_dfs_radar_detected_v1",
+      "workflow": "REPLAY-GP06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp06_no_radar_in_window_v1",
+      "diagnosis": "gp06_no_radar_in_window_v1",
+      "scope": "gateway",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "radio",
+          "field": "band",
+          "op": "eq",
+          "value": "5GHz"
+        },
+        {
+          "port": "events",
+          "field": "radar_detected_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "events",
+          "field": "observation_window_s",
+          "op": "ge",
+          "value": 3600
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp06_no_radar_in_window_v1",
+      "workflow": "REPLAY-GP06-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp07_sticky_to_weak_ap_v1",
+      "diagnosis": "gp07_sticky_to_weak_ap_v1",
+      "scope": "client",
+      "severity": "FAULT",
+      "requires": [
+        {
+          "port": "assoc",
+          "field": "associated",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "sig",
+          "field": "current_rssi_dbm",
+          "op": "lt",
+          "value": -75
+        },
+        {
+          "port": "sig",
+          "field": "rssi_gap_db",
+          "op": "ge",
+          "value": 12
+        },
+        {
+          "port": "sig",
+          "field": "roam_count",
+          "op": "eq",
+          "value": 0
+        },
+        {
+          "port": "sig",
+          "field": "observation_window_s",
+          "op": "ge",
+          "value": 600
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp07_sticky_to_weak_ap_v1",
+      "workflow": "REPLAY-GP07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp07_ap_choice_acceptable_v1",
+      "diagnosis": "gp07_ap_choice_acceptable_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "assoc",
+          "field": "associated",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "sig",
+          "field": "rssi_gap_db",
+          "op": "lt",
+          "value": 12
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp07_ap_choice_acceptable_v1",
+      "workflow": "REPLAY-GP07-COMPOSITE-V1"
+    },
+    {
+      "claim_id": "gp07_signal_adequate_v1",
+      "diagnosis": "gp07_signal_adequate_v1",
+      "scope": "client",
+      "severity": "HEALTHY",
+      "requires": [
+        {
+          "port": "assoc",
+          "field": "associated",
+          "op": "eq",
+          "value": true
+        },
+        {
+          "port": "sig",
+          "field": "current_rssi_dbm",
+          "op": "ge",
+          "value": -75
+        }
+      ],
+      "excludes": [],
+      "message_key": "gp07_signal_adequate_v1",
+      "workflow": "REPLAY-GP07-COMPOSITE-V1"
+    }
+  ]
+}

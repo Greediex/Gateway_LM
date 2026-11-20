@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.system_load",
+  "version": "1.0.0",
+  "scope": "gateway",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "cpu_pct": {
+        "type": "number",
+        "description": "iGate sys.cpu_pct, 0-100."
+      },
+      "load1": {
+        "type": "number",
+        "description": "iGate sys.load1 (load average 1 phút, chưa chuẩn hóa theo số nhân)."
+      },
+      "mem_pct": {
+        "type": "number",
+        "description": "iGate sys.mem_pct, 0-100."
+      },
+      "clients_count": {
+        "type": "integer",
+        "description": "iGate clients_count: số thiết bị đang online."
+      }
+    },
+    "required": [
+      "cpu_pct",
+      "load1",
+      "mem_pct",
+      "clients_count"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

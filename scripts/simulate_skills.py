@@ -7,12 +7,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from gateway_pilot.graph_v3.claims import ClaimBook
 from gateway_pilot.graph_v3.state import CaseState
 from gateway_pilot.skill_expansion.catalog import DATA_DIR
-from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES, DIRECT_BATCHES
+from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES, DIRECT_BATCHES, INCIDENT_BATCHES
 from gateway_pilot.skill_expansion.runtime_bridge import SkillNotReady
 from gateway_pilot.skill_expansion.simulation import (
     SIM_DIR, Scenario, SimulationError, load_gold, load_scenarios,
@@ -91,6 +92,14 @@ def evaluate_all() -> dict:
             'rows': [row for r in reports for row in r['rows']]}
 
 
+def evaluate_incident_checks() -> dict:
+    """GP01..GP07 are scored apart: they are not Skills and never enter acceptance.json."""
+    from scripts.simulate_composites import evaluate as evaluate_composites
+    reports = [evaluate_composites(batch) for batch in INCIDENT_BATCHES]
+    return {'synthetic_only': True, 'total': sum(r['total'] for r in reports),
+            'passed': sum(r['passed'] for r in reports), 'rows': [row for r in reports for row in r['rows']]}
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-acceptance', action='store_true',
@@ -102,4 +111,6 @@ if __name__ == '__main__':
         from gateway_pilot.skill_expansion.coverage import ACCEPTANCE, build_acceptance
         ACCEPTANCE.write_text(json.dumps(build_acceptance(report['rows']), indent=2) + '\n',
                               encoding='utf-8')
-    raise SystemExit(0 if report['passed'] == report['total'] else 1)
+    incidents = evaluate_incident_checks()
+    print(f"incident checks (not Skills): {incidents['passed']}/{incidents['total']} passed", file=sys.stderr)
+    raise SystemExit(0 if report['passed'] == report['total'] and incidents['passed'] == incidents['total'] else 1)

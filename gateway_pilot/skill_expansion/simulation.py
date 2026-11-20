@@ -17,6 +17,8 @@ from .catalog import DATA_DIR
 
 SIM_DIR = DATA_DIR / "simulation_v1"
 PORTS_DIR = DATA_DIR.parents[1] / "proposed_catalog_v02" / "ports"
+# INCIDENT-GAPS overlay: new READ ports/functions kept apart from the reviewed 72-Function catalog.
+GAPS_DIR = DATA_DIR.parents[1] / "proposed_catalog_v02_gaps"
 STATES = frozenset({"normal", "fault", "missing"})
 _SCENARIO_FIELDS = {"id", "skill_id", "state", "simulated_at", "function_id", "values"}
 _GOLD_WORDS = ("gold", "expected", "label", "ground_truth", "verdict")
@@ -24,6 +26,25 @@ _GOLD_WORDS = ("gold", "expected", "label", "ground_truth", "verdict")
 
 class SimulationError(ValueError):
     pass
+
+
+def port_path(function_id: str) -> Path:
+    gap = GAPS_DIR / "ports" / f"{function_id}.json"
+    return gap if gap.is_file() else PORTS_DIR / f"{function_id}.json"
+
+
+def skill_path(skill_id: str, function_id: str) -> Path:
+    """Owner Skill document for a Function: overlay Functions use the overlay Skill record."""
+    gap = GAPS_DIR / "skills" / f"{skill_id}.json"
+    return gap if (GAPS_DIR / "ports" / f"{function_id}.json").is_file() else PORTS_DIR.parent / "skills" / f"{skill_id}.json"
+
+
+def gap_functions() -> list[dict]:
+    return _read(GAPS_DIR / "functions.json")
+
+
+def function_proposals() -> list[dict]:
+    return _read(DATA_DIR / "function_proposals.json") + gap_functions()
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.b07",
+  "version": "1.0.0",
+  "name": "Tín hiệu client so với AP tốt nhất khác",
+  "description": "Design proposal only (INCIDENT-GAPS overlay): Tín hiệu client so với AP tốt nhất khác",
+  "requires": {},
+  "produces": {
+    "expansion.client_ap_signal": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.client_ap_signal": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.client_ap_signal": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

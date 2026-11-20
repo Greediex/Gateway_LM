@@ -41,7 +41,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.output:
                 args.output.parent.mkdir(parents=True,exist_ok=True)
                 args.output.write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-            output={**report['summary'], 'igate_simulated': report['igate_simulated']}
+            output={**report['summary'], 'igate_simulated': report['igate_simulated'],
+                    'incident_checks_simulated': report['incident_checks_simulated']}
         elif args.cmd == 'search':
             hits=SkillRetriever(catalog).search(args.query,limit=args.top,
                 include_proposed=args.include_proposed,graph_weight=args.graph_weight)

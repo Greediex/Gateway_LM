@@ -9,7 +9,7 @@ from gateway_pilot.core import PlanError
 from gateway_pilot.skill_expansion.composite import (
     VerifiedSource, assess, batch_paths, contracts, load_scenarios,
 )
-from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES
+from gateway_pilot.skill_expansion.coverage import COMPOSITE_BATCHES, INCIDENT_BATCHES
 from gateway_pilot.skill_expansion.replay_backend import ReplayFixtureError
 from gateway_pilot.skill_expansion.runtime_bridge import SkillNotReady
 from gateway_pilot.skill_expansion.simulation import SimulationError
@@ -59,7 +59,7 @@ def evaluate(batch: str = 'A') -> dict:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--batch', choices=COMPOSITE_BATCHES, default='A')
+    parser.add_argument('--batch', choices=[*COMPOSITE_BATCHES, *INCIDENT_BATCHES], default='A')
     report = evaluate(parser.parse_args().batch)
     print(json.dumps(report, indent=2, ensure_ascii=False))
     raise SystemExit(report['total'] != report['passed'])

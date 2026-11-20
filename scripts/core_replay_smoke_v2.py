@@ -30,7 +30,8 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
     from gateway_pilot.skill_expansion.runtime_bridge import RuntimeSkillBridge
     from gateway_pilot.skill_expansion.catalog import SkillCatalog
 
-    functions=json.loads((ROOT/'data/skill_expansion_v1/function_proposals.json').read_text(encoding='utf-8'))
+    from gateway_pilot.skill_expansion.simulation import function_proposals, port_path, skill_path
+    functions=function_proposals()
     fixture=json.loads((ROOT/'data/skill_expansion_v1/replay_fixtures_v2.json').read_text(encoding='utf-8'))
     function=next((f for f in functions if f['function_id']==fid),None)
     if function is None:raise ValueError('unknown/synthetic-only Function ID')
@@ -46,9 +47,9 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
         temporary_f['lifecycle']='IMPLEMENTED'  # only inside disposable synthetic test catalog
         docs=[(catalog_root/'functions'/function['domain']/(fid+'.json'),temporary_f),
               (catalog_root/'ports'/(port_id+'.json'),
-               json.loads((original/'ports'/(port_id+'.json')).read_text(encoding='utf-8'))),
+               json.loads(port_path(port_id).read_text(encoding='utf-8'))),
               (catalog_root/'skills'/(sid+'.json'),
-               json.loads((original/'skills'/(sid+'.json')).read_text(encoding='utf-8')))]
+               json.loads(skill_path(sid, fid).read_text(encoding='utf-8')))]
         fixtures = {} if omit else {fid: {port_id: copy.deepcopy(values)} if values is not None else fixture[fid]}
         if function['scope'] == 'client':
             # Client evidence requires a Core-verified identity. Supply a

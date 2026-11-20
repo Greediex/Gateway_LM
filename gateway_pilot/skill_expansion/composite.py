@@ -17,15 +17,15 @@ from ..graph_v3.claims import ClaimBook
 from ..graph_v3.contracts import validate
 from ..graph_v3.state import CaseState
 from .catalog import DATA_DIR
-from .coverage import COMPOSITE_BATCHES
-from .simulation import PORTS_DIR, SimulationError, _no_gold
+from .coverage import COMPOSITE_BATCHES, INCIDENT_BATCHES
+from .simulation import SimulationError, _no_gold, port_path
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def batch_paths(batch: str) -> tuple[Path, Path]:
     try:
-        directory, diagnostics = COMPOSITE_BATCHES[batch]
+        directory, diagnostics = {**COMPOSITE_BATCHES, **INCIDENT_BATCHES}[batch]
     except KeyError as exc:
         raise SimulationError(f'unknown composite batch: {batch}') from exc
     return DATA_DIR / directory, ROOT / 'config/skill_launcher' / f'{diagnostics}.diagnostics.json'
@@ -37,8 +37,7 @@ SIM_DIR, DIAGNOSTICS = batch_paths('A')
 def _source_fields(spec: dict) -> frozenset[str]:
     # Use the existing port contract, never fixture or diagnostics keys, as
     # the allowlist for measurements such as expected_routes.
-    port = PORTS_DIR / f"{spec['function_id']}.json"
-    schema = json.loads(port.read_text(encoding='utf-8'))['schema']
+    schema = json.loads(port_path(spec['function_id']).read_text(encoding='utf-8'))['schema']
     return frozenset(schema.get('properties', {}))
 
 

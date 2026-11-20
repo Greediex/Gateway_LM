@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.h02",
+  "version": "1.0.0",
+  "name": "Tải tài nguyên router",
+  "description": "Design proposal only (INCIDENT-GAPS overlay): Tải tài nguyên router",
+  "requires": {},
+  "produces": {
+    "expansion.system_load": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.system_load": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.system_load": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

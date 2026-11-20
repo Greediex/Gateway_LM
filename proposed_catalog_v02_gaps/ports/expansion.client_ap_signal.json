@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "port",
+  "port_id": "expansion.client_ap_signal",
+  "version": "1.0.0",
+  "scope": "client",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "current_rssi_dbm": {
+        "type": "number",
+        "description": "iGate clients.rssi_dbm của AP đang gắn."
+      },
+      "rssi_gap_db": {
+        "type": "number",
+        "description": "Dẫn xuất: RSSI của AP tốt nhất khác (từ báo cáo beacon/11k) trừ current_rssi_dbm; âm nếu AP hiện tại là tốt nhất."
+      },
+      "roam_count": {
+        "type": "integer",
+        "description": "Số lần chuyển AP trong cửa sổ."
+      },
+      "observation_window_s": {
+        "type": "integer",
+        "description": "Độ dài cửa sổ quan sát, giây."
+      }
+    },
+    "required": [
+      "current_rssi_dbm",
+      "rssi_gap_db",
+      "roam_count",
+      "observation_window_s"
+    ],
+    "additionalProperties": false
+  },
+  "provenance": "synthetic_replay/",
+  "untrusted_text": false
+}

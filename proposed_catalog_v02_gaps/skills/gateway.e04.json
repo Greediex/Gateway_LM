@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.2.0",
+  "kind": "skill",
+  "skill_id": "gateway.e04",
+  "version": "1.0.0",
+  "name": "Phát hiện MTU/MSS WAN",
+  "description": "Design proposal only (INCIDENT-GAPS overlay): Phát hiện MTU/MSS WAN",
+  "requires": {},
+  "produces": {
+    "expansion.wan_mss": "1.0.0"
+  },
+  "completion_ports": {
+    "expansion.wan_mss": "1.0.0"
+  },
+  "function_refs": {
+    "expansion.wan_mss": "1.0.0"
+  },
+  "tags": [
+    "proposal",
+    "replay"
+  ]
+}

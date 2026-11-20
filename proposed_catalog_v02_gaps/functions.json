@@ -1,0 +1,284 @@
+[
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.wan_mss",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Phát hiện MTU/MSS WAN. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.e04",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.wan_mss": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.wan_mss",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  },
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.ipv6_connectivity",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Kiểm tra IPv6 end-to-end. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.d06",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.ipv6_connectivity": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.ipv6_connectivity",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  },
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.system_load",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Tải tài nguyên router. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.h02",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.system_load": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.system_load",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  },
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.wan_addressing",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Phân loại địa chỉ WAN và NAT lớp trên. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.e05",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.wan_addressing": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.wan_addressing",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  },
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.radio_events",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Sự kiện radar DFS. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.b02",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.radio_events": "1.0.0"
+    },
+    "scope": "gateway",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.radio_events",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  },
+  {
+    "schema_version": "0.2.0",
+    "kind": "function",
+    "function_id": "expansion.client_ap_signal",
+    "version": "1.0.0",
+    "description": "Synthetic READ observation: Tín hiệu client so với AP tốt nhất khác. INCIDENT-GAPS; not a live router function.",
+    "domain": "skill_expansion",
+    "skill_refs": [
+      {
+        "skill_id": "gateway.b07",
+        "version": "1.0.0"
+      }
+    ],
+    "lifecycle": "PROPOSED",
+    "inputs": {},
+    "outputs": {
+      "expansion.client_ap_signal": "1.0.0"
+    },
+    "scope": "client",
+    "risk": "READ_ONLY",
+    "permission": "network.read",
+    "arguments_schema": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": false,
+      "required": []
+    },
+    "argument_sources": {},
+    "preconditions": [],
+    "order_after": [],
+    "effects": [],
+    "timeout_ms": 2000,
+    "retry": {
+      "max_attempts": 1
+    },
+    "ttl_seconds": 30,
+    "cost": 1.0,
+    "latency_ms": 0.0,
+    "capability_probe": "probe.expansion.client_ap_signal",
+    "verifier": "schema_scope_provenance_freshness/v3",
+    "on_unknown": "BLOCK_AND_REQUEST_EVIDENCE",
+    "tags": [
+      "synthetic_replay",
+      "proposal",
+      "incident_gaps"
+    ]
+  }
+]
