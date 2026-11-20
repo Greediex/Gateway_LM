@@ -1,0 +1,503 @@
+{
+  "format": "gateway-lm.symptom-taxonomy/v1",
+  "note_vi": "Bản seed từ mẫu sự cố và câu định tuyến của incidents_v1. Các thẻ gợi ý phép kiểm tra trên dữ liệu mô phỏng.",
+  "groups": [
+    {
+      "id": "INC-DHCP-EXHAUST",
+      "label_vi": "Hết địa chỉ DHCP",
+      "user_says": [
+        "điện thoại mới không vào được mạng",
+        "Wi-Fi có nhưng không có Internet trên máy mới",
+        "khách đến nhà không kết nối được"
+      ],
+      "cards": [
+        {
+          "skill_id": "D02",
+          "plain_vi": "Xem còn địa chỉ mạng để cấp không",
+          "why_vi": "Thiết bị mới có thể kết nối Wi-Fi nhưng không nhận được địa chỉ khi vùng cấp phát đã đầy."
+        },
+        {
+          "skill_id": "D03",
+          "plain_vi": "Xem thời hạn địa chỉ đã cấp",
+          "why_vi": "Xem các thiết bị đang giữ địa chỉ và địa chỉ nào đã hết hạn."
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Đếm thiết bị trong mạng",
+          "why_vi": "Kiểm tra số thiết bị đang xuất hiện trong danh sách mạng."
+        },
+        {
+          "skill_id": "O01",
+          "plain_vi": "Kiểm tra vì sao máy có Wi-Fi nhưng mất mạng",
+          "why_vi": "Đối chiếu các phép kiểm tra kết nối từ thiết bị đến Internet."
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/",
+        "https://networkengineering.stackexchange.com/questions/18882/options-when-facing-dhcp-exhaustion",
+        "https://www.reddit.com/r/Ubiquiti/comments/syyz24/dhcp_pool_exhausted_with_multiple_access_points/"
+      ]
+    },
+    {
+      "id": "INC-DNS-FAIL",
+      "label_vi": "DNS không phân giải được",
+      "user_says": [
+        "có Wi-Fi mà không vào được web",
+        "web không mở được nhưng Zalo vẫn chạy",
+        "báo không tìm thấy trang"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP01",
+          "plain_vi": "Kiểm tra tra cứu tên trang web",
+          "why_vi": "So sánh việc truy cập bằng địa chỉ IP với việc tìm địa chỉ theo tên trang."
+        },
+        {
+          "skill_id": "F02",
+          "plain_vi": "Thử các máy chủ tra cứu tên trang",
+          "why_vi": "Xem các máy chủ DNS có trả lời được truy vấn hay không."
+        },
+        {
+          "skill_id": "F03",
+          "plain_vi": "Kiểm tra bộ nhớ tra cứu tên trang",
+          "why_vi": "Xem bộ nhớ đệm DNS đang trả kết quả ra sao."
+        },
+        {
+          "skill_id": "E08",
+          "plain_vi": "Thử đường từ router ra Internet",
+          "why_vi": "Kiểm tra router có liên lạc được với điểm kiểm tra phía ngoài hay không."
+        },
+        {
+          "skill_id": "O01",
+          "plain_vi": "Kiểm tra vì sao máy có Wi-Fi nhưng mất mạng",
+          "why_vi": "Đối chiếu các phép kiểm tra kết nối từ thiết bị đến Internet."
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-WAN-DOWN",
+      "label_vi": "Mất kết nối WAN / sự cố nhà mạng",
+      "user_says": [
+        "cả nhà mất mạng",
+        "tất cả thiết bị đều không vào được Internet"
+      ],
+      "cards": [
+        {
+          "skill_id": "O07",
+          "plain_vi": "Kiểm tra đường Internet của cả nhà",
+          "why_vi": "Đối chiếu đường mặc định và kết nối từ router tới mạng phía ngoài."
+        },
+        {
+          "skill_id": "SK04",
+          "plain_vi": "Kiểm tra kết nối với nhà mạng",
+          "why_vi": "Xem trạng thái đường Internet tại router."
+        },
+        {
+          "skill_id": "E02",
+          "plain_vi": "Xem cổng nối với nhà mạng",
+          "why_vi": "Kiểm tra đường vật lý ở cổng Internet của router."
+        },
+        {
+          "skill_id": "E03",
+          "plain_vi": "Kiểm tra đường đi mặc định ra Internet",
+          "why_vi": "Xem router có tuyến để chuyển lưu lượng ra Internet hay không."
+        },
+        {
+          "skill_id": "E08",
+          "plain_vi": "Thử đường từ router ra Internet",
+          "why_vi": "Kiểm tra router có liên lạc được với điểm kiểm tra phía ngoài hay không."
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-24G-COCHANNEL",
+      "label_vi": "Nghẽn kênh 2.4 GHz do hàng xóm",
+      "user_says": [
+        "Wi-Fi chậm buổi tối",
+        "ở chung cư mạng rất chậm",
+        "tốc độ lúc được lúc không"
+      ],
+      "cards": [
+        {
+          "skill_id": "B06",
+          "plain_vi": "Kiểm tra Wi-Fi có trùng kênh không",
+          "why_vi": "Xem có nhiều điểm phát dùng chung kênh với Wi-Fi đang kiểm tra hay không."
+        },
+        {
+          "skill_id": "B05",
+          "plain_vi": "Kiểm tra mức độ bận của kênh Wi-Fi",
+          "why_vi": "Xem kênh đang được dùng nhiều đến mức nào."
+        },
+        {
+          "skill_id": "B02",
+          "plain_vi": "Xem băng tần và tên mạng Wi-Fi",
+          "why_vi": "Kiểm tra trạng thái phát sóng của router."
+        },
+        {
+          "skill_id": "O02",
+          "plain_vi": "Kiểm tra tình trạng Wi-Fi chậm",
+          "why_vi": "Đối chiếu các tín hiệu để tìm điểm bất thường trong kết nối Wi-Fi."
+        }
+      ],
+      "sources": [
+        "https://www.ekahau.com/blog/channel-planning-best-practices-for-better-wi-fi/",
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-WEAK-SIGNAL",
+      "label_vi": "Sóng yếu do vị trí router",
+      "user_says": [
+        "phòng ngủ sóng yếu",
+        "đi xa router là chậm",
+        "tivi hay bị mất mạng"
+      ],
+      "cards": [
+        {
+          "skill_id": "B04",
+          "plain_vi": "Đo độ mạnh và độ nhiễu của sóng",
+          "why_vi": "Xem sóng tới thiết bị có yếu hoặc bị nhiễu nhiều không."
+        },
+        {
+          "skill_id": "SK02",
+          "plain_vi": "Kiểm tra kết nối Wi-Fi",
+          "why_vi": "Xem các số đo kết nối Wi-Fi có dấu hiệu bất thường không."
+        },
+        {
+          "skill_id": "A08",
+          "plain_vi": "Xem thiết bị đang nối điểm phát nào",
+          "why_vi": "Xác nhận thiết bị có đang gắn với điểm phát dự kiến hay không."
+        },
+        {
+          "skill_id": "O02",
+          "plain_vi": "Kiểm tra tình trạng Wi-Fi chậm",
+          "why_vi": "Đối chiếu các tín hiệu để tìm điểm bất thường trong kết nối Wi-Fi."
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-BUFFERBLOAT",
+      "label_vi": "Bufferbloat: trễ tăng vọt khi có người tải",
+      "user_says": [
+        "đang chơi game thì lag khi có người tải phim",
+        "gọi video bị giật khi ai đó xem YouTube",
+        "ping bình thường mà vẫn lag"
+      ],
+      "cards": [
+        {
+          "skill_id": "G06",
+          "plain_vi": "Đo độ trễ khi mạng có tải",
+          "why_vi": "Xem dữ liệu có phải chờ lâu trong hàng đợi khi đường truyền bận không."
+        },
+        {
+          "skill_id": "G07",
+          "plain_vi": "Kiểm tra cách router ưu tiên lưu lượng",
+          "why_vi": "Xem cấu hình quản lý hàng đợi và ưu tiên lưu lượng."
+        },
+        {
+          "skill_id": "G01",
+          "plain_vi": "Đo độ trễ và lượng gói bị mất",
+          "why_vi": "Kiểm tra phản hồi của đường truyền trong kịch bản."
+        },
+        {
+          "skill_id": "O06",
+          "plain_vi": "Kiểm tra nguyên nhân gọi video bị giật",
+          "why_vi": "Đối chiếu các số đo ảnh hưởng đến cuộc gọi qua mạng."
+        }
+      ],
+      "sources": [
+        "https://www.bufferbloat.net/projects/bloat/wiki/Bufferbloat_FAQs/",
+        "https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm",
+        "https://docs.opnsense.org/manual/how-tos/shaper_bufferbloat.html"
+      ]
+    },
+    {
+      "id": "INC-PPPOE-MTU",
+      "label_vi": "Lỗi MTU/MSS trên PPPoE",
+      "user_says": [
+        "một số trang web không tải xong",
+        "web mở được nhưng treo giữa chừng",
+        "ngân hàng điện tử không vào được"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP02",
+          "plain_vi": "Thử kích cỡ gói tin trên đường Internet",
+          "why_vi": "Đối chiếu giới hạn kích thước gói tin trên đường PPPoE."
+        },
+        {
+          "skill_id": "C08",
+          "plain_vi": "Kiểm tra giới hạn kích cỡ gói tin",
+          "why_vi": "Xem số đo có dấu hiệu gói quá lớn đối với đường truyền hay không."
+        },
+        {
+          "skill_id": "E04",
+          "plain_vi": "Kiểm tra phiên kết nối nhà mạng",
+          "why_vi": "Xem trạng thái PPPoE hoặc cấp địa chỉ từ nhà mạng."
+        },
+        {
+          "skill_id": "E02",
+          "plain_vi": "Xem cổng nối với nhà mạng",
+          "why_vi": "Kiểm tra đường vật lý ở cổng Internet của router."
+        }
+      ],
+      "sources": [
+        "https://digitize.au/library/networking/understanding-and-fixing-mtu-mss/",
+        "https://networkingtoolbox.net/reference/mtu-mss",
+        "https://bufferspeed.com/blog/mtu-black-hole-fix"
+      ]
+    },
+    {
+      "id": "INC-CGNAT",
+      "label_vi": "Bị CGNAT: không mở được port / truy cập từ xa",
+      "user_says": [
+        "mở port mà camera vẫn không xem từ xa được",
+        "không truy cập NAS từ ngoài được",
+        "game báo NAT strict"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP05",
+          "plain_vi": "Kiểm tra các lớp chuyển tiếp địa chỉ",
+          "why_vi": "Đối chiếu địa chỉ và đường đi để tìm dấu hiệu NAT hai lớp hoặc CGNAT."
+        },
+        {
+          "skill_id": "E05",
+          "plain_vi": "Xem địa chỉ Internet của router",
+          "why_vi": "Kiểm tra địa chỉ phía ngoài có dấu hiệu nằm sau lớp NAT của nhà mạng không."
+        },
+        {
+          "skill_id": "J08",
+          "plain_vi": "Kiểm tra truy cập thiết bị từ xa",
+          "why_vi": "Xem các điều kiện kết nối từ bên ngoài vào."
+        }
+      ],
+      "sources": [
+        "https://www.ip-trackers.com/blog/cgnat-ip-address-range",
+        "https://getastatic.com/port-forwarding-not-working"
+      ]
+    },
+    {
+      "id": "INC-DOUBLE-NAT",
+      "label_vi": "NAT hai lớp (modem nhà mạng + router riêng)",
+      "user_says": [
+        "lắp thêm router thì game báo NAT",
+        "UPnP không hoạt động"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP05",
+          "plain_vi": "Kiểm tra các lớp chuyển tiếp địa chỉ",
+          "why_vi": "Đối chiếu địa chỉ và đường đi để tìm dấu hiệu NAT hai lớp hoặc CGNAT."
+        },
+        {
+          "skill_id": "E05",
+          "plain_vi": "Xem địa chỉ Internet của router",
+          "why_vi": "Kiểm tra địa chỉ phía ngoài có dấu hiệu nằm sau lớp NAT của nhà mạng không."
+        },
+        {
+          "skill_id": "L03",
+          "plain_vi": "Xem router nối lên thiết bị nào",
+          "why_vi": "Đối chiếu đường nối từ router tới gateway phía trên."
+        }
+      ],
+      "sources": [
+        "https://getastatic.com/port-forwarding-not-working"
+      ]
+    },
+    {
+      "id": "INC-IPV6-BROKEN",
+      "label_vi": "IPv6 hỏng làm web tải chậm",
+      "user_says": [
+        "mở web lần đầu rất lâu rồi mới vào",
+        "có trang lúc vào được lúc không"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP03",
+          "plain_vi": "Kiểm tra đường đi IPv6",
+          "why_vi": "Xem thiết bị đã có địa chỉ IPv6 và có tuyến để dùng địa chỉ đó hay chưa."
+        },
+        {
+          "skill_id": "D06",
+          "plain_vi": "Xem thiết bị có tự nhận IPv6 không",
+          "why_vi": "Kiểm tra thông báo IPv6 từ router và quá trình tự đặt địa chỉ."
+        },
+        {
+          "skill_id": "D07",
+          "plain_vi": "Kiểm tra cấp địa chỉ DHCPv6",
+          "why_vi": "Xem quá trình cấp thông tin IPv6 qua DHCPv6 có hoạt động không."
+        },
+        {
+          "skill_id": "J06",
+          "plain_vi": "Kiểm tra IPv6 qua VPN",
+          "why_vi": "Xem đường VPN có mang lưu lượng IPv6 như dự kiến hay không."
+        }
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/info/rfc6555/",
+        "https://labs.ripe.net/author/emileaben/hampering-eyeballs-observations-on-two-happy-eyeballs-implementations/",
+        "https://oneuptime.com/blog/post/2026-03-20-ipv6-happy-eyeballs-issues/view"
+      ]
+    },
+    {
+      "id": "INC-DFS-RADAR",
+      "label_vi": "Wi-Fi 5 GHz rớt do radar (kênh DFS)",
+      "user_says": [
+        "Wi-Fi 5G tự mất khoảng một phút rồi có lại",
+        "gần sân bay hay mất sóng 5G"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP06",
+          "plain_vi": "Kiểm tra Wi-Fi 5 GHz có phải đổi kênh",
+          "why_vi": "Xem sự kiện radar và trạng thái kênh DFS khi Wi-Fi bị gián đoạn."
+        },
+        {
+          "skill_id": "B02",
+          "plain_vi": "Xem băng tần và tên mạng Wi-Fi",
+          "why_vi": "Kiểm tra trạng thái phát sóng của router."
+        },
+        {
+          "skill_id": "B06",
+          "plain_vi": "Kiểm tra Wi-Fi có trùng kênh không",
+          "why_vi": "Xem có nhiều điểm phát dùng chung kênh với Wi-Fi đang kiểm tra hay không."
+        },
+        {
+          "skill_id": "H04",
+          "plain_vi": "Xem lỗi đã ghi trong nhật ký hệ thống",
+          "why_vi": "Tìm sự kiện được ghi nhận cùng thời điểm có dấu hiệu gián đoạn."
+        }
+      ],
+      "sources": [
+        "https://blog.iptel.com.au/wifi-and-the-problem-with-radar",
+        "https://www.purple.ai/en-us/guides/dfs-channels-what-they-are-and-when-to-avoid-them",
+        "https://forums.raspberrypi.com/viewtopic.php?t=212107"
+      ]
+    },
+    {
+      "id": "INC-STICKY-CLIENT",
+      "label_vi": "Thiết bị bám điểm phát xa (sticky client)",
+      "user_says": [
+        "nhà có mesh mà điện thoại vẫn chậm",
+        "lên tầng mà vẫn bắt điểm phát dưới nhà"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP07",
+          "plain_vi": "Kiểm tra thiết bị có bám điểm phát xa không",
+          "why_vi": "Đối chiếu tín hiệu với thông tin điểm phát mà thiết bị đang dùng."
+        },
+        {
+          "skill_id": "B07",
+          "plain_vi": "Kiểm tra việc chuyển điểm phát Wi-Fi",
+          "why_vi": "Xem có dấu hiệu chuyển điểm phát chậm hoặc thất bại không."
+        },
+        {
+          "skill_id": "B08",
+          "plain_vi": "Kiểm tra đường nối giữa các bộ mesh",
+          "why_vi": "Xem các điểm mesh kết nối với nhau có ổn định không."
+        },
+        {
+          "skill_id": "A08",
+          "plain_vi": "Xem thiết bị đang nối điểm phát nào",
+          "why_vi": "Xác nhận thiết bị có đang gắn với điểm phát dự kiến hay không."
+        },
+        {
+          "skill_id": "L02",
+          "plain_vi": "Xem đường kết nối từ thiết bị tới router",
+          "why_vi": "Xác định thiết bị đang đi qua điểm phát nào."
+        }
+      ],
+      "sources": [
+        "https://openwrt.org/docs/guide-user/network/wifi/roaming",
+        "https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/221671-understand-802-11r-11k-11v-fast-roams-on.html",
+        "https://support.apple.com/guide/deployment/wi-fi-roaming-support-dep98f116c0f/web"
+      ]
+    },
+    {
+      "id": "INC-OVERHEAT-REBOOT",
+      "label_vi": "Router quá nhiệt, tự khởi động lại",
+      "user_says": [
+        "router hay tự khởi động lại",
+        "mạng mất vài phút mỗi ngày",
+        "router nóng ran"
+      ],
+      "cards": [
+        {
+          "skill_id": "H05",
+          "plain_vi": "Kiểm tra router có quá nóng không",
+          "why_vi": "Đối chiếu nhiệt độ và số lần khởi động lại trong kịch bản sự cố."
+        },
+        {
+          "skill_id": "H07",
+          "plain_vi": "Xem router có từng khởi động lại hay treo",
+          "why_vi": "Kiểm tra bộ đếm và sự kiện khởi động lại."
+        },
+        {
+          "skill_id": "SK08",
+          "plain_vi": "Kiểm tra tài nguyên của router",
+          "why_vi": "Xem CPU, bộ nhớ và các dấu hiệu tải hệ thống."
+        },
+        {
+          "skill_id": "H08",
+          "plain_vi": "Kiểm tra dung lượng dành cho cập nhật",
+          "why_vi": "Xem router còn đủ tài nguyên theo điều kiện kiểm tra cập nhật không."
+        }
+      ],
+      "sources": [
+        "https://www.glofiber.com/en/blog/how-to-tell-if-your-router-is-bad",
+        "https://www.engadget.com/2306359/how-to-keep-router-from-overheating/"
+      ]
+    },
+    {
+      "id": "INC-CAPACITY",
+      "label_vi": "Router cũ quá tải giờ cao điểm",
+      "user_says": [
+        "tối đông người dùng là chậm",
+        "nhà nhiều thiết bị thì mạng yếu",
+        "tối đông người là mạng chậm",
+        "buổi tối nhiều người dùng thì mạng chậm"
+      ],
+      "cards": [
+        {
+          "skill_id": "GP04",
+          "plain_vi": "Kiểm tra router có quá tải không",
+          "why_vi": "Đối chiếu tải hệ thống và số thiết bị khi nhiều người dùng mạng."
+        },
+        {
+          "skill_id": "SK08",
+          "plain_vi": "Kiểm tra tài nguyên của router",
+          "why_vi": "Xem CPU, bộ nhớ và các dấu hiệu tải hệ thống."
+        },
+        {
+          "skill_id": "G05",
+          "plain_vi": "Tìm nơi đang dùng nhiều băng thông",
+          "why_vi": "Xem nơi nào đang chiếm phần lớn lưu lượng được đo."
+        },
+        {
+          "skill_id": "A02",
+          "plain_vi": "Đếm thiết bị trong mạng",
+          "why_vi": "Kiểm tra số thiết bị đang xuất hiện trong danh sách mạng."
+        },
+        {
+          "skill_id": "G04",
+          "plain_vi": "Xem lượng dữ liệu qua từng cổng",
+          "why_vi": "So sánh lưu lượng giữa các cổng hoặc giao diện mạng."
+        }
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    }
+  ]
+}

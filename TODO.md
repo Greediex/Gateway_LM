@@ -30,6 +30,8 @@ Tiến độ IGATE-PARITY-1 (20/11/2026, `v2`) — Năm Skill IG01–IG05 có 15
 
 Tiến độ IGATE-INCIDENTS (20/11/2026, `v2`) — Replay 14/14 sự cố, 36/36 câu tiếng Việt chọn đúng Skill và trả `FAULT` đúng Claim qua Core với approval giả lập. Web thêm 14 lựa chọn tiếng Việt và khuyến nghị kèm nguồn. Ma trận 1.582 lượt giữ coverage 101/120. Pin `incident_scenarios_digest` chờ chủ dự án duyệt. [Báo cáo replay sự cố](docs/reports/IGATE_INCIDENTS_REPLAY_V1.md)
 
+Tiến độ TRIAGE-01 (20/11/2026, `v2`) — Web Replay thêm luồng đóng vai khách hàng với seed 14 nhóm, đề xuất tối đa 6 thẻ và chỉ chạy các Skill đã chọn qua Core trong phiên hiện tại. 14/14 kịch bản sự cố trả `FAULT` có bằng chứng khi chạy ba thẻ mặc định. Unittest 1.149 tổng, 1.144 pass, 0 fail, 5 skip Windows (472,534 s). `check_project`, hai kiểm tra Node và Chromium desktop/mobile PASS. Scorer đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. Cả 10 giá trị pin replay khớp approval hiện hành. Commit local, chưa có CI riêng. [CI của commit nền](https://github.com/Greediex/Gateway_LM/actions/runs/44690676549)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

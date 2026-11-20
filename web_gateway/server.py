@@ -546,7 +546,10 @@ class Handler(BaseHTTPRequestHandler):
         if not self._local_request():
             return
         endpoint = urlparse(self.path).path
-        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network", "/api/skills/session", "/api/skills/run", "/api/skills/close", "/api/skills/resume"):
+        triage_fields = {"/api/skills/triage": {"message"},
+                         "/api/skills/run_selected": {"session_id", "skill_ids"}}
+        if endpoint not in ("/api/chat", "/api/goals", "/api/rca", "/api/network", "/api/skills/session",
+                            "/api/skills/run", "/api/skills/close", "/api/skills/resume", *triage_fields):
             return self._json({"error": "Không tìm thấy"}, HTTPStatus.NOT_FOUND)
         if self.headers.get("Content-Type", "").split(";")[0].strip() != "application/json":
             return self._json({"error": "Content-Type phải là application/json"}, HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -558,7 +561,27 @@ class Handler(BaseHTTPRequestHandler):
             return self._json({"error": "Request JSON quá lớn hoặc rỗng"}, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
         data = None
         try:
-            data = json.loads(self.rfile.read(length))
+            raw = self.rfile.read(length)
+            if endpoint in triage_fields:
+                from gateway_pilot.application.skill_chat import CHAT
+                from gateway_pilot.command_catalog.loader import _parse
+
+                data = _parse(raw)
+                fields = triage_fields[endpoint]
+                optional = {"scenario", "session_id"} if endpoint.endswith("/triage") else {"scenario"}
+                if type(data) is not dict or not fields <= data.keys() <= fields | optional:
+                    raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
+                if "session_id" in data and (type(data["session_id"]) is not str or not data["session_id"]):
+                    raise ValueError("session_id không hợp lệ")
+                if "scenario" in data and type(data["scenario"]) is not str:
+                    raise ValueError("Kịch bản phải là chuỗi")
+                if endpoint.endswith("/triage"):
+                    return self._json(CHAT.triage(data["message"], data.get("session_id"),
+                                                  scenario=data.get("scenario"),
+                                                  allow_model=os.environ.get("GATEWAY_LM_TRIAGE_MODEL") == "1"))
+                return self._json(CHAT.run_selected(data["session_id"], data["skill_ids"],
+                                                    scenario=data.get("scenario")))
+            data = json.loads(raw)
             if endpoint.startswith("/api/skills/"):
                 from gateway_pilot.application.skill_launcher import LAUNCHER, SkillSessionError
                 fields = {"/api/skills/session": {"mode"},
@@ -600,8 +623,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(result)
         except ValueError as exc:
             from gateway_pilot.application.skill_launcher import SkillSessionError
-            replay_sim = isinstance(data, dict) and (data.get("source_mode") == "replay_sim"
-                                                   or data.get("mode") == "replay_sim")
+            replay_sim = endpoint in triage_fields or (isinstance(data, dict) and (
+                data.get("source_mode") == "replay_sim" or data.get("mode") == "replay_sim"))
             if replay_sim and (error := _replay_sim_approval_error(exc)):
                 return self._json(error, HTTPStatus.FORBIDDEN)
             code = (HTTPStatus.GONE if isinstance(exc, SkillSessionError) and str(exc) == "session_expired" else

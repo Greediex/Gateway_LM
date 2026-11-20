@@ -5,10 +5,11 @@ const vm = require('node:vm');
 const path = require('node:path');
 class Element {
   constructor(tag, cls = '', text = '') {
-    Object.assign(this, {tag, className:cls, textContent:text, children:[], style:{}, open:false});
+    Object.assign(this, {tag, className:cls, textContent:text, children:[], style:{}, open:false, listeners:{}});
   }
   appendChild(child) { this.children.push(child); return child; }
   replaceChildren() { this.children = []; }
+  addEventListener(type, callback) { this.listeners[type] = callback; }
 }
 const messages = new Element('div');
 const sandbox = {
@@ -106,4 +107,54 @@ for (const [verdict, ids, visible] of [['FAULT',['proof'],true], ['FAULT',[],fal
   assert(card.children.filter(node=>node.tag==='a').every(node=>node.rel==='noopener noreferrer'));
   assert(!card.children.some(node=>node.tag==='button' || node.tag==='form'));
 }
-console.log('Chat presentation: PASS (details, caveats, RPC count, 4 replay badges, 14 incident options, 3 advisory cases)');
+const proposal = sandbox.message('assistant', 'Dữ liệu mô phỏng');
+const cards = ['symptom:INC-CAPACITY', 'incident', 'phrase', 'search'].map((source, i) => ({
+  skill_id:`X0${i}`, name:`Tên Skill ${i}`, plain_vi:`Phép kiểm tra ${i}`, why_vi:`Lý do ${i}`, source
+}));
+let submitted = null;
+const triageOptions = sandbox.renderTriageCards(proposal, cards, ids => { submitted = Array.from(ids); });
+const form = proposal.children.find(el => el.tag === 'form');
+assert.equal(form.children[0], triageOptions);
+assert.equal(triageOptions.children[0].tag, 'legend');
+const chips = triageOptions.children.filter(el => el.tag === 'label');
+const checks = chips.map(chip => chip.children[0]);
+const button = triageOptions.children.find(el => el.tag === 'button');
+assert(chips.every(chip => chip.children[0].type === 'checkbox'));
+assert.deepEqual(checks.map(check => check.checked), [true, true, true, false]);
+assert.deepEqual(chips.map(chip => chip.children[1].children.at(-1).textContent),
+  ['Theo triệu chứng', 'Theo mẫu sự cố', 'Theo cụm từ', 'Tìm gần']);
+assert.deepEqual(chips[0].children[1].children.slice(0,3).map(el => el.textContent),
+  ['Phép kiểm tra 0', 'X00 · Tên Skill 0', 'Lý do 0']);
+assert.equal(button.type, 'submit');
+assert.equal(button.textContent, 'Chạy chẩn đoán (3)');
+checks[1].checked = false;
+triageOptions.listeners.change();
+assert.equal(button.textContent, 'Chạy chẩn đoán (2)');
+let prevented = false;
+const event = {preventDefault() { prevented = true; }};
+form.listeners.submit(event);
+assert(prevented);
+assert.deepEqual(submitted, ['X00', 'X02']);
+triageOptions.disabled = true;
+submitted = null;
+form.listeners.submit(event);
+assert.equal(submitted, null);
+triageOptions.disabled = false;
+for (const check of checks) check.checked = false;
+triageOptions.listeners.change();
+assert.equal(button.textContent, 'Chạy chẩn đoán (0)');
+assert(button.disabled);
+form.listeners.submit(event);
+assert.equal(submitted, null);
+assert(index.includes('id="replayTriage" checked'));
+assert(index.includes('Hỏi trực tiếp'));
+
+const summary = sandbox.message('assistant', 'Dữ liệu mô phỏng');
+const triageResults = ['FAULT', 'HEALTHY', 'UNKNOWN'].map((verdict, i) => ({
+  skill_id:cards[i].skill_id, name:cards[i].name, verdict
+}));
+sandbox.enrichMessage(summary, {mode:'replay_sim', triage_results:triageResults});
+const verdicts = summary.children.find(el => el.className === 'triage-results');
+assert.deepEqual(verdicts.children.map(el => el.children[1].textContent),
+  ['Phát hiện bất thường', 'Bình thường', 'Chưa đủ bằng chứng']);
+console.log('Chat presentation: PASS (details, caveats, replay badges, incident options, guidance, triage cards and verdicts)');

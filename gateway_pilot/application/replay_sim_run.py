@@ -98,12 +98,19 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
                 session._validate()
                 snapshots[alias] = VerifiedSnapshot.from_state(
                     session.state, session.runtime.registry.ports,
-                    context_valid=session._context_valid, allow_replay=True).export()
+                    context_valid=session._context_valid, allow_replay=True).export(include_monotonic_clock=True)
             except PlanError as exc:
                 errors[alias] = str(exc)
-    evidence = [{'id': fact['evidence_id'], 'port': port, 'status': 'OK', 'sample': alias,
-                 'simulated_at': samples[alias].simulated_at, **fact}
-                for alias, snapshot in snapshots.items() for port, fact in snapshot['facts'].items()]
+    checked_at = replay.clock()
+    evidence = []
+    for alias, snapshot in snapshots.items():
+        elapsed = checked_at - snapshot['checked_at_monotonic']
+        snapshot['facts'] = {port: {**fact, 'expires_in_s': fact['expires_in_s'] - elapsed}
+                             for port, fact in snapshot['facts'].items()
+                             if elapsed < fact['expires_in_s'] and checked_at < limit}
+        evidence.extend({'id': fact['evidence_id'], 'port': port, 'status': 'OK', 'sample': alias,
+                         'simulated_at': samples[alias].simulated_at, **fact}
+                        for port, fact in snapshot['facts'].items())
     missing = [alias for alias, sample in samples.items()
                if sample.function_id not in snapshots.get(alias, {}).get('facts', {})]
     proof_ids = {row['id'] for row in evidence}
@@ -142,5 +149,6 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
             'calls_this_run': replay.calls - before, 'calls_total': replay.calls, 'reused_ports': [],
             'missing_ports': sorted({samples[alias].function_id for alias in missing}), 'missing_sources': missing,
             'source_errors': errors, 'evidence': evidence, 'evidence_ids': proof,
+            'evidence_checked_at_monotonic': checked_at,
             'plans': plans, 'timeline': timeline,
             **({'incident_guidance': guidance} if guidance else {})}

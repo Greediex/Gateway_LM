@@ -1,7 +1,7 @@
 'use strict';
 const $ = (id) => document.getElementById(id);
 const state = { connected: false, busy: false, method: 'bm25', fixtures: [], tab: 'timeline', result: null, planIndex: null,
-                sessionId: null, turns: 0, chatGeneration: 0, livePlatform: 'Windows', linuxLiveAvailable: false, networkRequest: 0 };
+                sessionId: null, turns: 0, chatGeneration: 0, triageOptions: null, livePlatform: 'Windows', linuxLiveAvailable: false, networkRequest: 0 };
 const normalize = (s) => String(s ?? '');
 const n = (tag, cls, content) => { const el = document.createElement(tag); if(cls)el.className=cls;if(content!==undefined)el.textContent=normalize(content);return el;};
 const fmt = obj => JSON.stringify(obj, null, 2);
@@ -32,7 +32,26 @@ function setInspector(open) {
     $('inspectorContent').replaceChildren();
   }
 }
-function releaseChatSession(){if(state.sessionId && state.result?.catalog_total){fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:state.sessionId})}).catch(()=>{});}state.sessionId=null;}
+function closeChatSession(id) {
+  fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:id})}).catch(()=>{});
+}
+function retireTriage() {
+  if (state.triageOptions) state.triageOptions.disabled = true;
+  state.triageOptions = null;
+}
+function releaseChatSession() {
+  retireTriage();
+  if (state.sessionId && (state.sourceMode === 'replay_sim' || state.result?.catalog_total)) {
+    closeChatSession(state.sessionId);
+  }
+  state.sessionId = null;
+}
+function triageFlow() { return $('sourceSelect').value === 'replay_sim' && $('replayTriage').checked; }
+function updateChatFlow() {
+  $('userInput').placeholder = triageFlow()
+    ? 'Ví dụ: Tối đông người là mạng chậm (Enter để gửi)'
+    : 'Hỏi Gateway LM... (Enter để gửi, Shift+Enter xuống dòng)';
+}
 function clearChat() {
   state.chatGeneration++;
   releaseChatSession();
@@ -61,7 +80,8 @@ function updateSource() {
   dns.dataset.query = `Kiểm tra DNS từ máy ${platform} này.`;
   dns.querySelector('small').textContent = `Thử phân giải example.com từ ${platform}`;
   $('fixtureField').hidden = live || replaySim;
-  $('scenarioField').hidden = !replaySim;
+  $('replayChatControls').hidden = !replaySim;
+  updateChatFlow();
   $('inferenceSettings').hidden = replaySim;
   $('liveNote').hidden = !live;
   $('suggestions').hidden = live || replaySim;
@@ -265,10 +285,64 @@ function renderIncidentGuidance(bubble, guidance) {
   });
   bubble.appendChild(card);
 }
+function renderTriageCards(bubble, cards, onRun) {
+  const form = n('form', 'triage-form');
+  const options = n('fieldset', 'triage-options');
+  options.appendChild(n('legend', '', 'Chọn phép kiểm tra phù hợp'));
+  const checks = cards.map((card, index) => {
+    const chip = n('label', 'triage-chip');
+    const check = n('input');
+    check.type = 'checkbox';
+    check.value = card.skill_id;
+    check.checked = index < 3;
+    const description = n('span', 'triage-description');
+    description.appendChild(n('b', '', card.plain_vi));
+    description.appendChild(n('small', '', `${card.skill_id} · ${card.name}`));
+    description.appendChild(n('span', 'triage-why', card.why_vi));
+    const source = card.source.startsWith('symptom:') ? 'Theo triệu chứng'
+      : ({incident:'Theo mẫu sự cố', phrase:'Theo cụm từ', search:'Tìm gần'})[card.source];
+    description.appendChild(n('span', 'meta-chip', source));
+    chip.appendChild(check);
+    chip.appendChild(description);
+    options.appendChild(chip);
+    return check;
+  });
+  const button = n('button', 'triage-run');
+  button.type = 'submit';
+  const selected = () => checks.filter(check => check.checked).map(check => check.value);
+  const update = () => {
+    const count = selected().length;
+    button.textContent = `Chạy chẩn đoán (${count})`;
+    button.disabled = count === 0;
+  };
+  options.addEventListener('change', update);
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const ids = selected();
+    if (!options.disabled && ids.length) onRun(ids);
+  });
+  update();
+  options.appendChild(button);
+  form.appendChild(options);
+  bubble.appendChild(form);
+  return options;
+}
+function renderTriageResults(bubble, results) {
+  const list = n('ul', 'triage-results');
+  for (const row of results) {
+    const verdict = {FAULT:'Phát hiện bất thường', HEALTHY:'Bình thường', UNKNOWN:'Chưa đủ bằng chứng'}[row.verdict];
+    const item = n('li');
+    item.appendChild(n('span', '', `${row.skill_id} · ${row.name}`));
+    item.appendChild(n('span', `triage-verdict ${row.verdict.toLowerCase()}`, verdict));
+    list.appendChild(item);
+  }
+  bubble.appendChild(list);
+}
 function enrichMessage(bubble,result){const details=n('details','answer-details');details.appendChild(n('summary','','Chi tiết phép đo'));let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',String(result.method||'core').toUpperCase()],['LLM',(result.model_calls>0||result.llm_advisor_used)?`${result.model_calls ?? ((result.advice||[]).length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection))} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}details.appendChild(meta);bubble.appendChild(details);
 if (result.mode === 'replay_sim') {
   const badge = {instant:'Tức thì',evidence:'Có bằng chứng',proposal:'Đề xuất lệnh',knowledge:'Kiến thức'}[result.answer_kind];
   if (badge) bubble.children[0].appendChild(n('span','answer-status answer-kind',badge));
+  if (result.triage_results?.length) renderTriageResults(bubble, result.triage_results);
   if (result.verdict === 'FAULT' && result.evidence_ids?.length && result.incident_guidance) {
     renderIncidentGuidance(bubble, result.incident_guidance);
   }
@@ -298,42 +372,70 @@ async function send(override) {
   const input=override??$('userInput').value.trim();
   if(!input)return;
   if(!state.connected){toast('Backend chưa kết nối. Hãy chạy web_gateway.server trong thư mục Gateway_LM.');return;}
-  const generation=state.chatGeneration;
   const sourceMode=$('sourceSelect').value;
-  showIntro(false);$('userInput').value='';updateInput();message('user',input);setBusy(true);
-  try {
-    const common={message:input,session_id:state.sessionId||undefined,source_mode:sourceMode};
-    const payload=sourceMode==='replay_sim'?{...common,scenario:$('scenarioSelect').value}:{...common,
-      fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,
+  retireTriage();
+  showIntro(false);$('userInput').value='';updateInput();message('user',input);
+  const common={message:input,session_id:state.sessionId||undefined};
+  if (triageFlow()) {
+    return submitChat('/api/skills/triage', {...common,scenario:$('scenarioSelect').value}, sourceMode);
+  }
+  const payload=sourceMode==='replay_sim'?{...common,source_mode:sourceMode,scenario:$('scenarioSelect').value}
+    : {...common,source_mode:sourceMode,fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,
       with_skill_context:!$('skillToggle').disabled&&$('skillToggle').checked,
       with_guide:!$('guideToggle').disabled&&$('guideToggle').checked,
       with_llm:true,model:$('modelName').value.trim()||'qwen3:4b'};
-    let response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  return submitChat('/api/chat', payload, sourceMode);
+}
+async function runTriage(skillIds) {
+  if (state.busy || !state.triageOptions || !state.sessionId || !triageFlow()) return;
+  const options = state.triageOptions;
+  options.disabled = true;
+  const ok = await submitChat('/api/skills/run_selected', {
+    session_id:state.sessionId, skill_ids:skillIds, scenario:$('scenarioSelect').value
+  }, 'replay_sim');
+  if (options !== state.triageOptions) return;
+  if (ok || !state.sessionId) retireTriage();
+  else options.disabled = false;
+}
+async function submitChat(endpoint, payload, sourceMode) {
+  const generation=state.chatGeneration;
+  setBusy(true);
+  try {
+    let response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     let data=await response.json();
     if(response.status===410 && payload.session_id && payload.with_llm && payload.source_mode==='live'){
       const resumed=await fetch('/api/skills/resume',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:payload.session_id})});
-      if(resumed.ok){response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});data=await response.json();}
+      if(resumed.ok){response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});data=await response.json();}
     }
     if(generation!==state.chatGeneration){
-      if(data.catalog_total && data.session_id) fetch('/api/skills/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:data.session_id})}).catch(()=>{});
-      return;
+      if(data.session_id && data.session_id !== payload.session_id && (data.catalog_total || data.mode === 'replay_sim')) closeChatSession(data.session_id);
+      return false;
     }
     if(response.status===410) state.sessionId=null;
     if(sourceMode==='replay_sim' && data.reason==='skill_deployment_not_approved'){
       message('assistant',data.error,'REPLAY MÔ PHỎNG','BLOCKED');
-      return;
+      return false;
     }
     if(!response.ok)throw Error(data.error+(response.status===410?' · Phiên cũ đã hết hạn; gửi lại câu hỏi để tạo phiên mới.':data.hint?'\n'+data.hint:''));
-    state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
     state.sessionId=data.session_id||null;state.turns++;
+    if (endpoint === '/api/skills/triage') {
+      const text = data.answer || (data.cards.length
+        ? data.notice : `${data.notice}\nChưa tìm thấy phép kiểm tra phù hợp. Hãy mô tả thêm tình trạng mạng.`);
+      const bubble = message('assistant',text,'REPLAY MÔ PHỎNG',data.case_status);
+      if (data.cards.length && triageFlow()) state.triageOptions = renderTriageCards(bubble,data.cards,runTriage);
+      return true;
+    }
+    state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
     const chatStatus=['MEASURED','PARTIAL'].includes(data.case_status)&&data.diagnostic_status==='INCONCLUSIVE'?'INCONCLUSIVE':data.case_status;
     const bubble=message('assistant',data.answer||'Không có câu trả lời',data.catalog_total?'GATEWAY LM':'GATEWAY LM · '+data.fixture,chatStatus);
     enrichMessage(bubble,data);renderInspector();updateStats(data);
+    return true;
   } catch(err) {
     if(generation===state.chatGeneration){
       const problem=sourceMode==='replay_sim'?err.message:'Không chạy được bộ chẩn đoán: '+err.message;
       message('assistant',problem,sourceMode==='replay_sim'?'REPLAY MÔ PHỎNG':'LỖI BACKEND','BLOCKED');toast(err.message);
     }
+    return false;
   } finally {setBusy(false);scrollBottom();}
 }
 function updateStats(r){$('statCalls').textContent=String(r.calls??'—');$('statEvidence').textContent=String(r.evidence?.length??0);$('statRepairs').textContent=String(r.repairs??0);$('statSkills').textContent=String(r.skill_runs?.length??r.stages?.length??0);}
@@ -1150,6 +1252,7 @@ function updateInput(){let ta=$('userInput');$('charCount').textContent=ta.value
 $('sendBtn').addEventListener('click',()=>send());$('userInput').addEventListener('input',updateInput);$('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('clearBtn').addEventListener('click',clearChat);
 $('sourceSelect').addEventListener('change',updateSource);
 $('scenarioSelect').addEventListener('change',clearChat);
+$('replayChatFlow').addEventListener('change',() => { retireTriage(); updateChatFlow(); });
 $('fixtureSelect').addEventListener('change',()=>{releaseChatSession();fixtureNote();});$('llmToggle').addEventListener('change',e=>{ $('modelField').hidden=!e.target.checked; });document.querySelectorAll('.seg').forEach(b=>b.addEventListener('click',()=>setMethod(b.dataset.method)));
 document.querySelectorAll('.trace-tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',()=>{releaseChatSession();setFixture(b.dataset.fixture);send(b.dataset.query);}));

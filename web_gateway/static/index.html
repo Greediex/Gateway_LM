@@ -27,11 +27,6 @@
             <div class="select-wrap"><select id="fixtureSelect" aria-label="Chọn tình huống mạng"><option value="GLM-21-1">Đang tải dữ liệu...</option></select></div>
             <div class="fixture-note" id="fixtureNote">Tình huống mạng mô phỏng.</div>
           </div>
-          <div id="scenarioField" hidden>
-            <label class="field-label" for="scenarioSelect">Kịch bản mô phỏng</label>
-            <div class="select-wrap"><select id="scenarioSelect"><option value="normal">Bình thường (normal)</option><option value="fault">Có lỗi (fault)</option><option value="missing">Thiếu dữ liệu (missing)</option><optgroup id="incidentOptions" label="Sự cố router mô phỏng"></optgroup></select></div>
-            <p class="fixture-note">Đổi kịch bản sẽ bắt đầu phiên mới.</p>
-          </div>
           <div class="fixture-note" id="liveNote" hidden>Đo từ máy đang dùng gateway mặc định.</div>
         </div>
         <div class="divider"></div>
@@ -117,6 +112,17 @@
         </div>
       </div>
       <div class="composer-outer">
+        <div class="replay-chat-controls" id="replayChatControls" hidden>
+          <fieldset id="replayChatFlow" class="replay-chat-flow">
+            <legend class="sr-only">Cách hỏi trong Replay mô phỏng</legend>
+            <label><input type="radio" name="replayChatFlow" value="triage" id="replayTriage" checked> Đóng vai khách hàng</label>
+            <label><input type="radio" name="replayChatFlow" value="direct"> Hỏi trực tiếp</label>
+          </fieldset>
+          <div class="replay-scenario">
+            <label for="scenarioSelect">Kịch bản mô phỏng</label>
+            <div class="select-wrap"><select id="scenarioSelect" title="Đổi kịch bản sẽ bắt đầu phiên mới."><option value="normal">Bình thường (normal)</option><option value="fault">Có lỗi (fault)</option><option value="missing">Thiếu dữ liệu (missing)</option><optgroup id="incidentOptions" label="Sự cố router mô phỏng"></optgroup></select></div>
+          </div>
+        </div>
         <div class="composer"><textarea id="userInput" rows="1" maxlength="2000" placeholder="Hỏi Gateway LM... (Enter để gửi, Shift+Enter xuống dòng)" aria-label="Câu hỏi của bạn"></textarea><button id="sendBtn" class="send-btn" type="button" aria-label="Gửi câu hỏi" disabled><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="m5 12 14-8-4 16-3.5-6L5 12Zm6.5 2L19 4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg></button></div>
         <div class="composer-hint"><span><span class="hint-circle">i</span> <span id="composerSource">Đang dùng dữ liệu mô phỏng.</span></span><span id="charCount">0/2000</span></div>
       </div>

@@ -42,7 +42,7 @@ class VerifiedSnapshot:
                    "ports": list(ports), "facts": facts}
         return cls(canonical_bytes(payload), state.clock, context_valid)
 
-    def export(self) -> dict:
+    def export(self, *, include_monotonic_clock: bool = False) -> dict:
         payload = json.loads(self._payload)
         try:
             valid = self._context_valid() is True
@@ -61,4 +61,4 @@ class VerifiedSnapshot:
         return {"generated_at": payload["generated_at"], "facts": facts,
                 "expires_at": (datetime.now(UTC)+timedelta(seconds=ttl)).isoformat(), "missing_ports": missing,
                 "expires_in_s": ttl,
-                "context_valid": valid}
+                "context_valid": valid, **({"checked_at_monotonic": now} if include_monotonic_clock else {})}

@@ -148,6 +148,37 @@ def _phrase(text, phrase):
     return re.search(r'(?<!\w)'+re.escape(phrase)+r'(?!\w)',text) is not None
 
 
+def _replay_scopes(text: str) -> set[str]:
+    names = {'client': r'client|laptop|may tinh|dien thoai|phone|tablet|pc', 'gateway': r'gateway|router|modem'}
+    device = '(?:' + '|'.join(names.values()) + ')'
+    mentioned = re.findall(r'\b(?:cua|tren|tu|for|on|from) (' + device
+                           + r'(?: (?:va|and|cung nhu) ' + device + r')*)\b', text)
+    return {scope for scope, terms in names.items()
+            if any(re.search(r'\b(?:' + terms + r')\b', clause) for clause in mentioned)}
+
+
+def _replay_refusal(request: str, text: str, rows: dict, routing: dict,
+                    symptom: str | None) -> tuple[str, str, str] | None:
+    # A reviewed, exact READ title or symptom can mention a past reboot.
+    title = re.sub(r'^(?:hay |vui long )?(?:kiem tra )?', '', text).removesuffix(' giup toi')
+    named_read = any(title == normalize(row['name']) for row in rows.values())
+    # "Hay tự khởi động lại" describes a recurring symptom. Keep every other
+    # clause in the intent check, including any separately requested reboot.
+    intent = re.sub(r'\b(?:router|modem|gateway)\s+(?:hay|đã|da|cứ|cu)\s+(?:tự|tu)\s+'
+                    r'(?:khởi\s+động\s+lại|khoi\s+dong\s+lai)\b', ' ', request, flags=re.I)
+    # Accent stripping also maps the imperative "hãy" to the habitual "hay".
+    imperative_reboot = re.search(r'\bhãy\s+(?:tự\s+)?khởi\s+động\s+lại\b', request, re.I)
+    if imperative_reboot or (not (named_read or symptom)
+                            and TaskDecomposer(SimpleNamespace(ports={})).is_write_intent(intent)):
+        return ('write_intent_requires_approval', 'BLOCKED',
+                'Phiên chỉ hỗ trợ thao tác đọc trong mô phỏng.')
+    if (any(_phrase(text, phrase) for phrase in routing['nonlocal_scope_phrases'])
+            or re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-f]{0,4}:){2,}[0-9a-f]{0,4}', request, re.I)):
+        return ('custom_target_not_supported', 'NEEDS_INPUT',
+                'Phiên dùng client và gateway cố định trong kịch bản mô phỏng.')
+    return None
+
+
 def _laptop_topics(text: str) -> dict[str, str]:
     # A compound public-IP topic must not imply an IPv4 address lookup on Wi-Fi.
     address_text = re.sub(r'\b(?:dia chi )?ip (?:cong cong|internet|wan)\b', '', text)
@@ -286,6 +317,87 @@ class SkillChat:
                             for phrases in entry['runtime'].registry.required_skill_phrases.values()
                             for phrase in phrases)]
 
+    def _chat_lock(self, entry):
+        with self.launcher._lock:
+            lock = entry.setdefault('chat_lock', threading.Lock())
+        if not lock.acquire(blocking=False):
+            raise SkillSessionError('session_busy')
+        return lock
+
+    def _triage_session(self, session_id: str, scenario: str | None) -> dict:
+        entry = self.launcher._get(session_id)
+        if entry['mode'] != REPLAY_SIM:
+            raise ValueError('triage_requires_replay_sim_session')
+        if scenario is not None and scenario != entry['session'].scenario:
+            raise ValueError('chat_scenario_requires_new_session')
+        return entry
+
+    def triage(self, request: str, session_id: str | None = None, *,
+               scenario: str | None = None, allow_model: bool = False) -> dict:
+        from .skill_triage import propose
+
+        if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
+            raise ValueError('invalid_chat_request')
+        if scenario is not None and type(scenario) is not str:
+            raise ValueError('invalid_chat_scenario')
+        if type(allow_model) is not bool:
+            raise ValueError('invalid_chat_model_flag')
+        started = self.clock()
+        created = session_id is None
+        if created:
+            session_id = self.launcher.create_session(REPLAY_SIM, scenario=scenario)['session_id']
+        try:
+            entry = self._triage_session(session_id, scenario)
+            response = propose(self, request.strip(), session_id, entry, started, allow_model=allow_model)
+            replay = entry['session']
+            if replay.closed or replay.clock() >= replay.expires_at:
+                raise SkillSessionError('session_expired')
+            return response
+        except Exception:
+            if created:
+                try:
+                    self.launcher.close(session_id)
+                except SkillSessionError:
+                    pass
+            raise
+
+    def run_selected(self, session_id: str, skill_ids: list[str], *, scenario: str | None = None) -> dict:
+        from .skill_triage import MAX_CARDS, aggregate, replay_rows
+
+        started = self.clock()
+        if scenario is not None and type(scenario) is not str:
+            raise ValueError('invalid_chat_scenario')
+        if (type(skill_ids) is not list or not 1 <= len(skill_ids) <= MAX_CARDS
+                or any(type(sid) is not str for sid in skill_ids) or len(set(skill_ids)) != len(skill_ids)):
+            raise ValueError('triage_skill_ids_must_be_1_to_6_unique')
+        entry = self._triage_session(session_id, scenario)
+        catalog = self.launcher.catalog(REPLAY_SIM, entry=entry)
+        rows = replay_rows(catalog)
+        if not set(skill_ids) <= rows.keys():
+            raise ValueError('triage_skill_not_approved')
+        lock = self._chat_lock(entry)
+        try:
+            with entry['lock']:
+                replay = entry['session']
+                if replay.closed or replay.clock() >= replay.expires_at:
+                    raise SkillSessionError('session_expired')
+                remaining = started + self.max_elapsed_s - self.clock()
+                deadline = min(replay.expires_at, replay.clock() + remaining)
+                runs = []
+                for skill_id in skill_ids:
+                    result = None
+                    if replay.clock() < replay.expires_at:
+                        try:
+                            result = self.launcher.run(session_id, skill_id, deadline=deadline)
+                        except SkillSessionError as exc:
+                            if str(exc) != 'session_expired':
+                                raise
+                    runs.append((skill_id, result))
+                return aggregate(session_id, replay, rows, runs, catalog['design_total'],
+                                 elapsed_s=self.clock() - started)
+        finally:
+            lock.release()
+
     def chat(self, request: str, *, session_id=None, mode='live', scenario=None, allow_model=True):
         if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
             raise ValueError('invalid_chat_request')
@@ -307,8 +419,7 @@ class SkillChat:
         if mode != REPLAY_SIM and not hasattr(entry['runtime'].registry,'question_intents'):
             if created:self.launcher.close(session_id)
             raise ValueError('chat_diagnostics_not_approved')
-        with self.launcher._lock:lock=entry.setdefault('chat_lock',threading.Lock())
-        if not lock.acquire(blocking=False):raise SkillSessionError('session_busy')
+        lock = self._chat_lock(entry)
         model_slot = False
         try:
             if mode == REPLAY_SIM:
@@ -350,21 +461,10 @@ class SkillChat:
         incidents = replay.profile.incidents.diagnostics
         text = normalize(request)
         advice, calls, method, result = [], 0, 'none', None
-        requested_scopes = {
-            scope for scope, names in {
-                'client': r'client|laptop|may tinh|dien thoai|phone|tablet|pc',
-                'gateway': r'gateway|router|modem',
-            }.items() if re.search(r'\b(?:cua|tren|tu|for|on|from) (?:' + names + r')\b', text)}
-        # A reviewed, exact READ title or symptom can mention a past reboot.
-        title = re.sub(r'^(?:hay |vui long )?(?:kiem tra )?', '', text).removesuffix(' giup toi')
-        named_read = any(title == normalize(r['name']) for r in rows.values())
-        if not (named_read or symptom) and TaskDecomposer(SimpleNamespace(ports={})).is_write_intent(request):
-            reason, status = 'write_intent_requires_approval', 'BLOCKED'
-            message = 'Phiên chỉ hỗ trợ thao tác đọc trong mô phỏng.'
-        elif (any(_phrase(text, p) for p in routing['nonlocal_scope_phrases'])
-              or re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-f]{0,4}:){2,}[0-9a-f]{0,4}', request, re.I)):
-            reason, status = 'custom_target_not_supported', 'NEEDS_INPUT'
-            message = 'Phiên dùng client và gateway cố định trong kịch bản mô phỏng.'
+        requested_scopes = _replay_scopes(text)
+        refusal = _replay_refusal(request, text, rows, routing, symptom)
+        if refusal:
+            reason, status, message = refusal
         else:
             hits = [sid for sid, phrases in incidents['routing'].items()
                     if any(_phrase(text, p) for p in (*phrases, normalize(rows[sid]['name']), sid.lower()))]
