@@ -44,11 +44,15 @@ function clearChat() {
   renderInspector();
 }
 function updateSource() {
-  state.chatGeneration++; releaseChatSession();
-  const live = $('sourceSelect').value === 'live';
+  const mode = $('sourceSelect').value;
+  const live = mode === 'live';
+  const replaySim = mode === 'replay_sim';
+  if (mode !== state.sourceMode && (replaySim || state.sourceMode === 'replay_sim')) clearChat();
+  else {state.chatGeneration++; releaseChatSession();}
+  state.sourceMode = mode;
   const platform = state.livePlatform;
   const linuxLive = live && state.linuxLiveAvailable && platform === 'Linux';
-  const source = live ? `Đo thật từ ${platform}` : 'Replay mô phỏng';
+  const source = live ? `Đo thật từ ${platform}` : replaySim ? $('replaySimOption').textContent : 'Replay mô phỏng';
   resetNetwork();
   $('networkOverview').hidden = !linuxLive;
   $('liveWifiSuggestion').hidden = !linuxLive;
@@ -56,9 +60,11 @@ function updateSource() {
   const dns = $('liveDnsSuggestion');
   dns.dataset.query = `Kiểm tra DNS từ máy ${platform} này.`;
   dns.querySelector('small').textContent = `Thử phân giải example.com từ ${platform}`;
-  $('fixtureField').hidden = live;
+  $('fixtureField').hidden = live || replaySim;
+  $('scenarioField').hidden = !replaySim;
+  $('inferenceSettings').hidden = replaySim;
   $('liveNote').hidden = !live;
-  $('suggestions').hidden = live;
+  $('suggestions').hidden = live || replaySim;
   $('liveSuggestions').hidden = !live;
   $('sourcePill').textContent = source.toUpperCase();
   $('sourceFooter').textContent = live ? `Phép đo lấy từ máy ${platform}.` : 'Dữ liệu replay mô phỏng.';
@@ -95,7 +101,7 @@ function updateSource() {
   state.sessionId = null;
 }
 function sourceLabel(mode) {
-  return mode === 'linux_live' ? 'Đo thật từ Linux' : mode === 'windows_live' ? 'Đo thật từ Windows' : 'Replay mô phỏng';
+  return mode === 'linux_live' ? 'Đo thật từ Linux' : mode === 'windows_live' ? 'Đo thật từ Windows' : mode === 'replay_sim' ? 'Replay mô phỏng Skill' : 'Replay mô phỏng';
 }
 function resetNetwork(message = 'Chưa đo. Bấm Làm mới để thu bằng chứng.') {
   state.networkRequest++;
@@ -222,6 +228,7 @@ state.livePlatform = health.live_platform === 'Linux' || state.linuxLiveAvailabl
 const liveAvailable = !!(health.live_available ?? (health.windows_live_available || health.linux_live_available));
 source.querySelector('option[value=live]').disabled = !liveAvailable;
 source.querySelector('option[value=live]').textContent = `Đo thật từ ${state.livePlatform}`;
+if (Number.isInteger(config.replay_sim_skill_count)) $('replaySimOption').textContent = `Replay mô phỏng (${config.replay_sim_skill_count} Skill)`;
 source.value = config.default_source === 'live' && liveAvailable ? 'live' : 'replay';
 updateSource();}catch(e){state.connected=false;$('healthText').textContent='Backend chưa kết nối';$('healthText').parentElement.classList.add('offline');toast('Cần chạy python -m web_gateway.server trong Gateway_LM để gửi câu hỏi thật.');}}
 function renderFixtures(){let el=$('fixtureSelect');el.replaceChildren();let current='';for(let f of state.fixtures){if(f.group!==current){current=f.group;let g=n('optgroup');g.label=current;el.appendChild(g);}let option=n('option','',f.label);option.value=f.id;el.appendChild(option);}if(!state.fixtures.length){let op=n('option','','Cần khởi động backend');op.value='GLM-21-1';el.appendChild(op);return;}setFixture(state.fixtures.some(x=>x.id==='GLM-21-1')?'GLM-21-1':state.fixtures[0].id);}
@@ -243,9 +250,11 @@ async function send(override) {
   if(!input)return;
   if(!state.connected){toast('Backend chưa kết nối. Hãy chạy web_gateway.server trong thư mục Gateway_LM.');return;}
   const generation=state.chatGeneration;
+  const sourceMode=$('sourceSelect').value;
   showIntro(false);$('userInput').value='';updateInput();message('user',input);setBusy(true);
   try {
-    const payload={message:input,session_id:state.sessionId||undefined,source_mode:$('sourceSelect').value,
+    const common={message:input,session_id:state.sessionId||undefined,source_mode:sourceMode};
+    const payload=sourceMode==='replay_sim'?{...common,scenario:$('scenarioSelect').value}:{...common,
       fixture_id:$('fixtureSelect').value,method:state.method,policy:$('policySelect').value,
       with_skill_context:!$('skillToggle').disabled&&$('skillToggle').checked,
       with_guide:!$('guideToggle').disabled&&$('guideToggle').checked,
@@ -261,6 +270,10 @@ async function send(override) {
       return;
     }
     if(response.status===410) state.sessionId=null;
+    if(sourceMode==='replay_sim' && data.reason==='skill_deployment_not_approved'){
+      message('assistant',data.error,'REPLAY MÔ PHỎNG','BLOCKED');
+      return;
+    }
     if(!response.ok)throw Error(data.error+(response.status===410?' · Phiên cũ đã hết hạn; gửi lại câu hỏi để tạo phiên mới.':data.hint?'\n'+data.hint:''));
     state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
     state.sessionId=data.session_id||null;state.turns++;
@@ -268,7 +281,10 @@ async function send(override) {
     const bubble=message('assistant',data.answer||'Không có câu trả lời',data.catalog_total?'GATEWAY LM':'GATEWAY LM · '+data.fixture,chatStatus);
     enrichMessage(bubble,data);renderInspector();updateStats(data);
   } catch(err) {
-    if(generation===state.chatGeneration){message('assistant','Không chạy được bộ chẩn đoán: '+err.message,'LỖI BACKEND','BLOCKED');toast(err.message);}
+    if(generation===state.chatGeneration){
+      const problem=sourceMode==='replay_sim'?err.message:'Không chạy được bộ chẩn đoán: '+err.message;
+      message('assistant',problem,sourceMode==='replay_sim'?'REPLAY MÔ PHỎNG':'LỖI BACKEND','BLOCKED');toast(err.message);
+    }
   } finally {setBusy(false);scrollBottom();}
 }
 function updateStats(r){$('statCalls').textContent=String(r.calls??'—');$('statEvidence').textContent=String(r.evidence?.length??0);$('statRepairs').textContent=String(r.repairs??0);$('statSkills').textContent=String(r.skill_runs?.length??r.stages?.length??0);}
@@ -277,7 +293,7 @@ function renderInspector() {
   const content = $('inspectorContent');
   const result = state.result;
   if (state.tab === 'graph') {
-    renderGraph(content, result);
+    renderGraph(content, result, $('sourceSelect').value === 'replay_sim' ? 'replay_sim' : result?.mode);
     return;
   }
   removeGraphPanel();
@@ -431,15 +447,19 @@ if (check) {
 let nodes=Object.keys(plan.nodes||{});if(!nodes.length){content.appendChild(n('p','inspector-note','Kế hoạch không cần gọi function.'));return;}let deps=plan.edges||[];let levels={};for(let id of nodes)levels[id]=0;for(let j=0;j<nodes.length;j++){let changed=false;for(let edge of deps){if(levels[edge.source]!==undefined&&levels[edge.target]!==undefined&&levels[edge.target]<levels[edge.source]+1){levels[edge.target]=levels[edge.source]+1;changed=true;}}if(!changed)break;}let groups={};for(let id of nodes)(groups[levels[id]]??=[]).push(id);const maxL=Math.max(...Object.keys(groups).map(Number)),maxR=Math.max(...Object.values(groups).map(v=>v.length)),W=660,H=Math.max(210,(maxL+1)*93+30);let svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','Đồ thị thực thi: '+nodes.join(', '));let pos={};Object.entries(groups).forEach(([lev,ids])=>{ids.sort();ids.forEach((id,i)=>{pos[id]={x:(W-(ids.length-1)*175)/2+i*175,y:35+Number(lev)*93};});});function addSVG(tag,attrs,txt){let a=document.createElementNS('http://www.w3.org/2000/svg',tag);for(let [k,v] of Object.entries(attrs))a.setAttribute(k,v);if(txt!==undefined)a.textContent=txt;svg.appendChild(a);return a;}for(let e of deps){let a=pos[e.source],b=pos[e.target];if(!a||!b)continue;addSVG('path',{d:`M ${a.x} ${a.y+29} C ${a.x} ${a.y+57}, ${b.x} ${b.y-28}, ${b.x} ${b.y-16}`,stroke:e.kind==='ORDER'?'#b8a5db':'#4e8f9c','stroke-width':'2',fill:'none'});addSVG('path',{d:`M ${b.x-4} ${b.y-22} L ${b.x} ${b.y-14} L ${b.x+4} ${b.y-22}`,stroke:'#6bb4bd','stroke-width':'1.5',fill:'none'});}for(let id of nodes){let p=pos[id], node=plan.nodes[id];let status=normalize(node?.state);let fill=status==='SUCCEEDED'?'#214a49':status==='FAILED'?'#5a3035':'#1b3147';let stroke=status==='SUCCEEDED'?'#64cfbd':status==='FAILED'?'#e2a7a5':'#51758e';addSVG('rect',{x:p.x-80,y:p.y-13,width:160,height:45,rx:9,fill,stroke,'stroke-width':1});addSVG('text',{x:p.x,y:p.y+5,'text-anchor':'middle','font-size':12,fill:'#e3f4f4','font-family':'ui-monospace,Consolas,monospace'},id.length>21?id.slice(0,20)+'…':id);addSVG('text',{x:p.x,y:p.y+21,'text-anchor':'middle','font-size':8,fill:status==='SUCCEEDED'?'#9bf4ce':'#8baec4'},status||'PENDING');}
 let wrap=n('div','dag-canvas');wrap.appendChild(svg);content.appendChild(wrap);content.appendChild(n('p','dag-caption','Mũi tên biểu thị DATA, STATE hoặc ORDER dependency. DAG là kế hoạch thực thi được tạo bởi Graph Compiler. Mỗi lượt hỏi có thể tạo plan khác nhau.'));content.appendChild(n('div','trace-section-label','DEPENDENCY EDGES'));if(!deps.length)content.appendChild(n('p','inspector-note','Các node không có dependency với nhau.'));for(let e of deps){content.appendChild(n('span','tag',e.source+' → '+e.target+' · '+e.kind));}}
 // Skill network projects the catalog and the most recent chat trace.
-let graphData;
-function loadGraph() {
-  return graphData ??= fetch('/api/graph').then(async response => {
-    if (!response.ok) throw Error('Skill graph unavailable');
-    return response.json();
-  }).catch(error => {
-    graphData = undefined;
-    throw error;
-  });
+const graphData = new Map();
+function loadGraph(mode) {
+  const url = mode === 'replay_sim' ? '/api/graph?mode=replay_sim' : '/api/graph';
+  if (!graphData.has(url)) {
+    graphData.set(url, fetch(url).then(response => {
+      if (!response.ok) throw Error('Skill graph unavailable');
+      return response.json();
+    }).catch(error => {
+      graphData.delete(url);
+      throw error;
+    }));
+  }
+  return graphData.get(url);
 }
 
 function planCalls(plan) {
@@ -458,6 +478,11 @@ function planCalls(plan) {
 }
 
 function orderSkillFunctions(result) {
+  if (result.mode === 'replay_sim') {
+    const functions = (result.timeline || []).map(row => ({id: row.function_id, kind: 'function',
+      status: row.node_state}));
+    return {functions, ordered: functions.length === result.calls};
+  }
   const attempts = (result.plans || []).flatMap(planCalls);
   const audited = (result.function_retrievals || []).filter(row => row.selected_ready);
   if (!attempts.length && !result.calls) return {functions: [], ordered: true};
@@ -684,16 +709,17 @@ function removeGraphPanel() {
   graphPanel = undefined;
 }
 
-function renderGraph(content, result) {
+function renderGraph(content, result, mode) {
   const panel = graphPanel ??= createGraphPanel(content);
-  if (panel.result === result) return;
+  if (panel.result === result && panel.mode === mode) return;
   panel.result = result;
-  loadGraph().then(graph => {
-    if (panel !== graphPanel || panel.result !== result) return;
+  panel.mode = mode;
+  loadGraph(mode).then(graph => {
+    if (panel !== graphPanel || panel.result !== result || panel.mode !== mode) return;
     panel.dispose?.();
     panel.dispose = drawGraph(panel, graph, result);
   }).catch(() => {
-    if (panel !== graphPanel || panel.result !== result) return;
+    if (panel !== graphPanel || panel.result !== result || panel.mode !== mode) return;
     panel.holder.replaceChildren(n('p', 'inspector-note', 'Không tải được mạng Skill. Mở lại tab để thử lại.'));
   });
 }
@@ -1074,6 +1100,7 @@ function drawGraph({holder, expand}, graph, result) {
 function updateInput(){let ta=$('userInput');$('charCount').textContent=ta.value.length+'/2000';ta.style.height='auto';ta.style.height=Math.min(135,Math.max(34,ta.scrollHeight))+'px';$('sendBtn').disabled=state.busy||!ta.value.trim();}
 $('sendBtn').addEventListener('click',()=>send());$('userInput').addEventListener('input',updateInput);$('userInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});$('clearBtn').addEventListener('click',clearChat);
 $('sourceSelect').addEventListener('change',updateSource);
+$('scenarioSelect').addEventListener('change',clearChat);
 $('fixtureSelect').addEventListener('change',()=>{releaseChatSession();fixtureNote();});$('llmToggle').addEventListener('change',e=>{ $('modelField').hidden=!e.target.checked; });document.querySelectorAll('.seg').forEach(b=>b.addEventListener('click',()=>setMethod(b.dataset.method)));
 document.querySelectorAll('.trace-tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 document.querySelectorAll('.suggestion').forEach(b=>b.addEventListener('click',()=>{releaseChatSession();setFixture(b.dataset.fixture);send(b.dataset.query);}));

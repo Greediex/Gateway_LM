@@ -116,13 +116,16 @@ class _ClaimView:
 
 
 def assess(skill_id: str, sources: dict[str, VerifiedSource], *, batch: str = 'A') -> dict:
+    return assess_workflow(skill_id, sources, contracts(batch))
+
+
+def assess_workflow(skill_id: str, sources: dict[str, VerifiedSource], doc: dict) -> dict:
     """Recheck every source before ClaimBook; any missing source fails closed.
 
     History requires independent samples with distinct proofs, increasing times,
     matching environment/target and live TTL checks on each Core state.
     Simulated time never extends an evidence lease.
     """
-    doc = contracts(batch)
     workflow = doc['workflows'][skill_id]
     rows = [copy.deepcopy(c) for c in doc['claims'] if c['workflow'] == workflow['workflow_id']]
     unknown = {'verdict': 'UNKNOWN', 'claims': {

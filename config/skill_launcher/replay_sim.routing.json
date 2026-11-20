@@ -1,0 +1,21 @@
+{
+  "format": "gateway-lm.replay-sim-routing/v1",
+  "phrases": {
+    "SK04": ["wan", "internet", "nha mang"],
+    "E02": ["link wan", "lien ket wan", "cong wan"],
+    "E03": ["default route", "tuyen mac dinh wan"],
+    "F02": ["dns", "dns resolver", "chat luong dns"],
+    "SK05": ["phan giai ten mien", "phan giai dns"],
+    "F03": ["dns cache", "bo dem dns"],
+    "SK02": ["wifi", "wi fi", "wi-fi", "song wifi", "tin hieu wifi"],
+    "B02": ["radio", "ssid", "radio wifi"],
+    "B04": ["rssi", "snr"],
+    "J01": ["vpn", "tunnel vpn", "ham vpn"],
+    "H05": ["nhiet do", "nong bao nhieu", "router nong", "temperature"]
+  },
+  "nonlocal_scope_phrases": [
+    "mang that", "router that", "thiet bi that", "router nay", "modem nay",
+    "laptop nay", "may nay", "router khac", "gateway khac", "thiet bi khac",
+    "client khac", "ap khac", "router nha toi", "router cua toi", "wifi nha toi"
+  ]
+}

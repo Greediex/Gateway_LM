@@ -7,6 +7,7 @@ import threading
 import time
 import math
 from functools import lru_cache
+from types import SimpleNamespace
 
 from ..core import PlanError
 from ..graph_v3.ollama_goal_model import OllamaGoalModel
@@ -14,6 +15,7 @@ from ..graph_v3.task_runtime import TaskRuntime
 from ..graph_v3.llm_goals import BoundedGoalProposer
 from ..graph_v3.task_decomposer import TaskDecomposer
 from ..observability.snapshot import VerifiedSnapshot
+from ..skill_expansion.replay_sim import MODE as REPLAY_SIM, NOTICE as SIM_NOTICE, STATES as SIM_STATES
 from ..workflow import normalize
 from .skill_launcher import LAUNCHER, SkillSessionError
 from .grounded_answer import compose_answer, diagnostic_request, produce_grounded_answer, assessment_summary
@@ -153,6 +155,61 @@ def _laptop_topics(text: str) -> dict[str, str]:
             if any(_phrase(address_text if port == 'client.ipv4' else text, term) for term in terms)}
 
 
+def _replay_candidates(request: str, phrases: dict[str, list[str]]) -> tuple[str, list[str]]:
+    from ..skill_expansion.retrieval import tokens
+
+    text = normalize(re.sub(r'[,;]', ' va ', request))
+    retriever = _retriever()
+    design = retriever.catalog.skills
+    explicit = [sid for sid in sorted(design) if _phrase(text, sid.lower())]
+    if explicit:
+        return 'phrase', explicit if len(explicit) == 1 else []
+    conjunction = r'\b(?:va|and|cung nhu)\b'
+    exact = [sid for sid, skill in design.items() if _phrase(text, normalize(skill.name_vi))]
+    if len(exact) == 1 and not re.search(conjunction, text.replace(normalize(design[exact[0]].name_vi), '', 1)):
+        return 'phrase', exact
+    if len([part for part in re.split(conjunction, text) if part.strip()]) != 1:
+        return 'compound', []
+    generic = frozenset(
+        'trang thai thiet bi cau hinh giam sat kiem theo doi bao cao chan doan danh gia router gateway '
+        'phat hien thong tin suc khoe ket noi'.split())
+    query = set(tokens(request)) - generic
+    rank = {}
+    for sid, skill in design.items():
+        name = set(tokens(skill.name_vi)) - generic
+        phrase = max((len(p.split()) for p in phrases.get(sid, ()) if _phrase(text, p)), default=0)
+        overlap = len(query & name)
+        if not phrase and not (overlap >= 2 or (overlap and overlap == len(name))):
+            continue
+        rank[sid] = (max(2 * phrase + 1 if phrase else 0, 2 * overlap), overlap / max(1, len(name)))
+    if not rank:
+        return 'graph', []
+    best = max(rank.values())
+    candidates = {sid for sid, score in rank.items() if score == best}
+    hits = retriever.search(request, limit=len(design), include_proposed=True)
+    order = {hit.skill_id: index for index, hit in enumerate(hits)}
+    return 'phrase' if best[0] % 2 else 'graph', sorted(candidates, key=lambda s: (order.get(s, len(design)), s))[:6]
+
+
+def _simulation_finding(row: dict) -> str:
+    port, v = row['port'], row['value']
+    if port == 'expansion.upstream_probe':
+        return f"Mất gói tới upstream {v['loss_pct']:g}%."
+    if port == 'expansion.dns_resolvers':
+        return f"{v['healthy_count']}/{v['resolver_count']} DNS resolver đạt kiểm tra."
+    if port == 'expansion.wireless_signal':
+        return f"RSSI {v['rssi_dbm']:g} dBm, SNR {v['snr_db']:g} dB."
+    if port == 'expansion.vpn_tunnel':
+        return 'Tunnel VPN đang hoạt động.' if v['tunnel_up'] else 'Tunnel VPN đang ngắt.'
+    if port == 'expansion.temperature':
+        return f"Nhiệt độ {v['celsius']:g} °C."
+    if port == 'expansion.wan_link':
+        return 'Link WAN đang lên.' if v['link_up'] else 'Link WAN đang ngắt.'
+    if port in {'expansion.radio_health', 'expansion.ssid_config', 'expansion.airtime_usage'}:
+        return findings({'facts': {port: row}})[port]['text']
+    return ''
+
+
 class SkillChat:
     def __init__(self, launcher=LAUNCHER, *, model_factory=local_model, max_rounds=4,
                  max_elapsed_s=120, clock=time.monotonic, fast=False):
@@ -199,17 +256,25 @@ class SkillChat:
                             for phrases in entry['runtime'].registry.required_skill_phrases.values()
                             for phrase in phrases)]
 
-    def chat(self, request: str, *, session_id=None, mode='live'):
+    def chat(self, request: str, *, session_id=None, mode='live', scenario=None, allow_model=True):
         if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
             raise ValueError('invalid_chat_request')
-        if type(mode) is not str or mode not in _MODE:
+        if type(mode) is not str or (mode not in _MODE and mode != REPLAY_SIM):
             raise ValueError('invalid_chat_mode')
+        if scenario is not None and (mode != REPLAY_SIM or type(scenario) is not str or scenario not in SIM_STATES):
+            raise ValueError('invalid_chat_scenario')
+        if type(allow_model) is not bool:
+            raise ValueError('invalid_chat_model_flag')
         started=self.clock()
         created=session_id is None
-        if created:session_id=self.launcher.create_session(mode)['session_id']
+        if created:
+            options = {'scenario': scenario} if mode == REPLAY_SIM else {}
+            session_id = self.launcher.create_session(mode, **options)['session_id']
         entry=self.launcher._get(session_id)
         if entry['mode']!=mode:raise ValueError(f'chat_requires_{mode}_session')
-        if not hasattr(entry['runtime'].registry,'question_intents'):
+        if mode == REPLAY_SIM and scenario is not None and scenario != entry['session'].scenario:
+            raise ValueError('chat_scenario_requires_new_session')
+        if mode != REPLAY_SIM and not hasattr(entry['runtime'].registry,'question_intents'):
             if created:self.launcher.close(session_id)
             raise ValueError('chat_diagnostics_not_approved')
         with self.launcher._lock:lock=entry.setdefault('chat_lock',threading.Lock())
@@ -219,6 +284,8 @@ class SkillChat:
             if created:self.launcher.close(session_id)
             raise SkillSessionError('model_busy')
         try:
+            if mode == REPLAY_SIM:
+                return self._replay_sim_turn(request.strip(), session_id, entry, started, allow_model=allow_model)
             result=self._turn(request.strip(),session_id,entry,started)
             saved=self.launcher.checkpoint(session_id)
             result['persistence']={'enabled':self.launcher.storage is not None,'checkpoint_facts':saved,'restored_facts':entry.get('restored_facts',0)}
@@ -230,6 +297,112 @@ class SkillChat:
             raise
         finally:
             _MODEL_SLOT.release();lock.release()
+
+    def _replay_sim_turn(self, request: str, sid: str, entry: dict, started: float, *, allow_model: bool) -> dict:
+        replay = entry['session']
+        deadline = started + self.max_elapsed_s
+        catalog = self.launcher.catalog(REPLAY_SIM, entry=entry)
+        rows = {row['skill_id']: row for row in catalog['rows']}
+        routing = replay.profile.diagnostics['routing']
+        text = normalize(request)
+        advice, calls, method, result = [], 0, 'none', None
+        requested_scopes = {
+            scope for scope, names in {
+                'client': r'client|laptop|may tinh|dien thoai|phone|tablet|pc',
+                'gateway': r'gateway|router|modem',
+            }.items() if re.search(r'\b(?:cua|tren|tu|for|on|from) (?:' + names + r')\b', text)}
+        # An exact READ catalog title can mention an operation being observed
+        # (e.g. reboot history). Preserve the write guard on the rest of the turn.
+        title = re.sub(r'^(?:hay |vui long )?(?:kiem tra )?', '', text).removesuffix(' giup toi')
+        named_read = any(title == normalize(r['name']) for r in rows.values())
+        if not named_read and TaskDecomposer(SimpleNamespace(ports={})).is_write_intent(request):
+            reason, status = 'write_intent_requires_approval', 'BLOCKED'
+            message = 'Phiên chỉ hỗ trợ thao tác đọc trong mô phỏng.'
+        elif (any(_phrase(text, p) for p in routing['nonlocal_scope_phrases'])
+              or re.search(r'\b(?:\d{1,3}\.){3}\d{1,3}\b|(?:[0-9a-f]{0,4}:){2,}[0-9a-f]{0,4}', request, re.I)):
+            reason, status = 'custom_target_not_supported', 'NEEDS_INPUT'
+            message = 'Phiên dùng client và gateway cố định trong kịch bản mô phỏng.'
+        else:
+            method, candidates = _replay_candidates(request, routing['phrases'])
+            reason, status = 'skill_not_supported', 'UNAVAILABLE'
+            message = 'Chủ đề này chưa được hỗ trợ trong danh mục Replay mô phỏng.'
+            if method == 'compound':
+                reason, status = 'needs_clarification', 'NEEDS_INPUT'
+                message = 'Hãy gửi từng phép kiểm tra mô phỏng trong một câu hỏi.'
+            elif candidates and set(candidates) <= rows.keys():
+                candidates = [key for key in candidates if not requested_scopes
+                              or requested_scopes == {rows[key]['runtime_scope']}]
+                selected = candidates[0] if len(candidates) == 1 else None
+                remaining = min(deadline - self.clock(), replay.expires_at - replay.clock())
+                if len(candidates) > 1 and allow_model and remaining > 1:
+                    eligible = {key: rows[key] for key in candidates}
+                    docs = [[r['skill_id'], r['name'], r['availability'], r['runtime_scope']]
+                            for r in eligible.values()]
+                    try:
+                        model = (self.model_factory(timeout=remaining - 1) if self.model_factory is local_model
+                                 else self.model_factory())
+                        if getattr(model, 'local_only', None) is not True:
+                            raise ValueError('local_skill_model_required')
+                        calls += 1
+                        raw = model.choose_skills(request, docs, {
+                            'scope': 'Approved READ Skills on a fixed synthetic scenario only.',
+                            'simulation_only': True, 'inference_timeout_s': remaining - 1,
+                            'last_round': False, 'runnable_outputs': {
+                                key: list(entry['actions'][key]['required_ports']) for key in eligible}})
+                        choice = validate_choice(raw, eligible, {}, ())
+                        if len(choice['skill_ids']) == 1:
+                            selected = choice['skill_ids'][0]
+                            advice.append({'model': getattr(model, 'model', 'local-test'), 'accepted': True,
+                                           'selected': selected, 'decision': 'measure',
+                                           'catalog_retrieval': getattr(model, 'last_catalog', None)})
+                            method = 'model'
+                    except (AttributeError, OSError, TypeError, ValueError, RuntimeError):
+                        pass
+                remaining = min(deadline - self.clock(), replay.expires_at - replay.clock())
+                if not candidates:
+                    reason, status = 'scope_not_supported', 'NEEDS_INPUT'
+                    message = 'Skill phù hợp với chủ đề này dùng phạm vi khác với thiết bị được hỏi.'
+                elif remaining <= 0:
+                    reason, status, message = 'turn_deadline_exhausted', 'UNAVAILABLE', 'Đã hết thời gian xử lý.'
+                elif selected is not None:
+                    result = self.launcher.run(sid, selected, deadline=replay.clock() + remaining)
+                    reason = 'simulation_data_missing' if result['missing_ports'] else 'simulation_assessed'
+                    status = result['status']
+                    verdict = {'HEALTHY': 'Bình thường trong phạm vi đã kiểm tra.',
+                               'FAULT': 'Có dấu hiệu bất thường trong phép kiểm tra.',
+                               'UNKNOWN': 'Chưa đủ bằng chứng để kết luận.'}[result['verdict']]
+                    message = f"{rows[selected]['name']} · {verdict}"
+                else:
+                    reason, status = 'needs_clarification', 'NEEDS_INPUT'
+                    message = 'Hãy nêu cụ thể phép kiểm tra cần chạy trong danh mục mô phỏng.'
+
+        result = result or {}
+        evidence = result.get('evidence', [])
+        measurements = [row for row in evidence if row['port'] != 'client.identity']
+        summary = ' '.join(dict.fromkeys(line for row in measurements
+                                         if (line := _simulation_finding(row))))
+        scope = rows[result['skill_id']]['runtime_scope'] if result else None
+        return {'answer': '\n'.join(filter(None, (SIM_NOTICE, message, summary))), 'request': request,
+                'mode': REPLAY_SIM, 'synthetic_only': True, 'scenario': replay.scenario,
+                'fixture': f'Replay mô phỏng · {replay.scenario}', 'fixture_id': replay.scenario,
+                'session_id': sid, 'catalog_total': catalog['design_total'], 'workflow': 'REPLAY-SIM-SKILL-CHAT',
+                'action': 'REPORT', 'case_status': status, 'stop_reason': reason, 'policy': 'core', 'method': 'core',
+                'diagnosis': None, 'verdict': result.get('verdict', 'UNKNOWN'),
+                'assessment': result.get('assessment', {}), 'evidence': evidence,
+                'evidence_ids': result.get('evidence_ids', []), 'status_ok_evidence_ids': [r['id'] for r in evidence],
+                'calls': result.get('calls_this_run', 0), 'calls_total': replay.calls, 'repairs': 0,
+                'timeline': result.get('timeline', []), 'plans': result.get('plans', []),
+                'skill_runs': [{k: result[k] for k in ('skill_id', 'status', 'calls_this_run', 'reused_ports',
+                                                      'missing_ports')}] if result else [],
+                'source_errors': result.get('source_errors', {}),
+                'measurement_details': [f"{r['sample']} · {r['port']} · {r['value']}" for r in measurements],
+                'claim_details': [result['assessment']['limitation']]
+                if 'limitation' in result.get('assessment', {}) else [],
+                'target': {'scope': scope, 'selector': {'gateway': 'Gateway mô phỏng',
+                                                       'client': 'Client mô phỏng'}.get(scope)},
+                'notice': SIM_NOTICE, 'model_calls': calls, 'advice': advice, 'llm_advisor_used': bool(advice),
+                'routing': {'method': method, 'plan': [result['skill_id']] if result else []},
+                'user_input_required': status == 'NEEDS_INPUT'}
 
     def _turn(self, request, sid, entry, started):
         runtime,session=entry['runtime'],entry['session']

@@ -50,17 +50,18 @@ def _publish(output: Path, content: bytes) -> None:
 
 
 def build_registry(catalog: dict, selection: dict, policy: dict,
-                   output: str | Path) -> dict:
-    """Publish a validated metadata snapshot. Success never grants execution."""
-    output = Path(output)
-    require(not output.is_symlink(), "artifact_symlink_output")
-    try:
-        resolved = output.resolve()
-    except (OSError, RuntimeError) as exc:
-        raise PlanError("catalog_v02:artifact_output_path") from exc
-    require(not any(resolved.is_relative_to(ROOT / folder) for folder in ("data", "benchmarks")),
-            "protected_baseline_output")
-    require(not resolved.is_relative_to(Path(catalog["source_root"])), "output_inside_source_catalog")
+                   output: str | Path | None = None) -> dict:
+    """Build a validated metadata snapshot, optionally publishing it to disk."""
+    if output is not None:
+        output = Path(output)
+        require(not output.is_symlink(), "artifact_symlink_output")
+        try:
+            resolved = output.resolve()
+        except (OSError, RuntimeError) as exc:
+            raise PlanError("catalog_v02:artifact_output_path") from exc
+        require(not any(resolved.is_relative_to(ROOT / folder) for folder in ("data", "benchmarks")),
+                "protected_baseline_output")
+        require(not resolved.is_relative_to(Path(catalog["source_root"])), "output_inside_source_catalog")
     indexed = validate_catalog(catalog, policy)
     require(_record_digests(catalog) == catalog["record_digests"], "source_records_changed_after_load")
     selected = copy.deepcopy(select_catalog(selection, indexed))
@@ -82,7 +83,8 @@ def build_registry(catalog: dict, selection: dict, policy: dict,
     }
     artifact["content_digest"] = digest(artifact)
     verify_registry(artifact, policy)
-    _publish(output, canonical_bytes(artifact))
+    if output is not None:
+        _publish(output, canonical_bytes(artifact))
     return artifact
 
 

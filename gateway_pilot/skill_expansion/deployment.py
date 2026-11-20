@@ -17,8 +17,19 @@ from .replay_backend import StrictSkillReplayBackend
 from .runtime_bridge import RuntimeSkillBridge
 
 
-@functools.lru_cache(maxsize=3)
 def deployment(mode: str):
+    if mode == 'replay_sim':
+        from .replay_sim import approved_profile
+
+        approvals = read_json(ROOT / 'config/skill_launcher/approvals.json')
+        require(approvals['format'] == 'gateway-lm.skill-launcher-approval/v1', 'skill_approval_format')
+        require(mode in approvals, 'skill_deployment_not_approved')
+        return approved_profile(approvals[mode])
+    return _legacy_deployment(mode)
+
+
+@functools.lru_cache(maxsize=3)
+def _legacy_deployment(mode: str):
     folders = {'live': 'laptop_v1', 'replay': 'wifi_replay_v1', 'replay_client': 'client_replay_v1'}
     require(mode in folders, 'skill_mode')
     folder = folders[mode]
@@ -55,7 +66,17 @@ def deployment(mode: str):
     return artifact,policy,approved,actions
 
 
-def composition(mode: str, *, backend=None, clock=time.monotonic):
+deployment.cache_clear = _legacy_deployment.cache_clear
+
+
+def composition(mode: str, *, backend=None, clock=time.monotonic, scenario='normal'):
+    if mode == 'replay_sim':
+        from .replay_sim import ReplaySession, STATES
+
+        require(type(scenario) is str and scenario in STATES, 'skill_sim_scenario')
+        require(backend is None, 'skill_sim_backend_is_fixed')
+        profile = deployment(mode)
+        return {'session': ReplaySession(profile, scenario, clock), 'actions': profile.actions}
     artifact,policy,approved,actions=deployment(mode)
     if mode=='live':
         backend=LaptopSkillBackend() if backend is None else backend

@@ -136,12 +136,19 @@ def accepted_skills(path: Path = ACCEPTANCE, data_dir: Path = DATA_DIR) -> set[s
     """Skills with passing normal/fault/missing runs; normal/fault must reach Core."""
     if not path.exists():
         return set()
-    doc = _load(path)
-    if doc.get("format") != "gateway-lm.skill-acceptance/v1" or doc.get("version") != "1.0.0":
-        raise CoverageError("invalid acceptance format")
+    doc, skills = acceptance_snapshot(path)
     if doc.get("inputs_digest") != inputs_digest(data_dir):
         raise CoverageError("stale acceptance: rerun simulate_skills --write-acceptance")
-    return {sid for sid, states in doc["skills"].items()
+    return skills
+
+
+def acceptance_snapshot(path: Path = ACCEPTANCE) -> tuple[dict, set[str]]:
+    """Read recorded membership without opening scorer inputs such as gold."""
+    doc = _load(path)
+    if (doc.get("format") != "gateway-lm.skill-acceptance/v1" or doc.get("version") != "1.0.0"
+            or doc.get("synthetic_only") is not True):
+        raise CoverageError("invalid acceptance format")
+    return doc, {sid for sid, states in doc["skills"].items()
             if set(states) == set(ACCEPTANCE_STATES)
             and all(states[s]["pass"] is True for s in ACCEPTANCE_STATES)
             and all(states[s]["core_calls"] > 0 for s in ("normal", "fault"))}
@@ -158,6 +165,12 @@ def build_coverage(
     actions_for: Callable[[str], Mapping] = _default_actions,
     acceptance_path: Path = ACCEPTANCE,
 ) -> list[SkillCoverage]:
+    return _coverage_rows(data_dir, registry_path, actions_for,
+                          lambda: accepted_skills(acceptance_path, data_dir))
+
+
+def _coverage_rows(data_dir: Path, registry_path: Path, actions_for: Callable[[str], Mapping],
+                   accepted_for: Callable[[], set[str]]) -> list[SkillCoverage]:
     catalog = SkillCatalog.load(data_dir)
     mappings = {m["skill_id"]: m for m in _load(data_dir / "skill_function_mapping_120.json")}
     stubs = {s["skill_id"]: s for s in _load(data_dir / "skill_contract_stubs_120.json")}
@@ -174,7 +187,7 @@ def build_coverage(
         return {k for k, v in actions_for(mode).items() if v.get("kind") == "design"}
 
     replay, live = design_ids("replay"), design_ids("live")
-    accepted = accepted_skills(acceptance_path, data_dir)
+    accepted = accepted_for()
     unknown = (replay | live | accepted) - set(ids)
     if unknown:
         raise CoverageError(f"deployment references unknown skills: {sorted(unknown)}")
@@ -246,13 +259,14 @@ def _graph_actions(config: Path, mode: str) -> Mapping:
     return {action["skill_id"]: action for action in actions["actions"]}
 
 
-def skill_graph(data_dir: Path = DATA_DIR) -> dict:
+def skill_graph(data_dir: Path = DATA_DIR, *, replay_sim: bool = False) -> dict:
     """Project catalog links and coverage metadata for display."""
     config = data_dir.parents[1] / "config" / "skill_launcher"
-    rows = build_coverage(
-        data_dir, actions_for=lambda mode: _graph_actions(config, mode),
-        acceptance_path=data_dir / "simulation_v1" / "acceptance.json",
-    )
+    path = data_dir / "simulation_v1" / "acceptance.json"
+    def accepted_for():
+        return acceptance_snapshot(path)[1] if replay_sim else accepted_skills(path, data_dir)
+
+    rows = _coverage_rows(data_dir, REGISTRY_V01, lambda mode: _graph_actions(config, mode), accepted_for)
     catalog = SkillCatalog.load(data_dir)
     groups = {s.domain: s.domain_name for s in catalog.skills.values()}
     edges = {
@@ -267,6 +281,14 @@ def skill_graph(data_dir: Path = DATA_DIR) -> dict:
             for skill_id, workflow in doc["workflows"].items()
             for source in workflow["sources"].values()
         )
+    if replay_sim:
+        from .replay_sim import CLIENT_IDENTITY
+
+        accepted = {row.skill_id for row in rows if row.simulation_verified}
+        client_functions = {f["function_id"] for f in _load(data_dir / "function_proposals.json")
+                            if f["scope"] == "client"}
+        edges.update({(sid, CLIENT_IDENTITY) for sid, fid in edges
+                      if sid in accepted and fid in client_functions})
     functions = {function_id for _, function_id in edges}
     if (any(skill_id not in catalog.skills for skill_id, _ in edges)
             or any(not isinstance(fid, str) or not fid or fid in catalog.skills for fid in functions)):

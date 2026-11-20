@@ -52,6 +52,14 @@ WORKFLOW_LABELS = {
     "WF-039": "Hệ thống", "WF-INTERNET": "Wi-Fi / Internet", "WF-WRITE": "An toàn",
 }
 DEFAULT_FIXTURE = "GLM-21-1"
+REPLAY_SIM_APPROVAL = "Cần duyệt digest cho Replay mô phỏng. Chạy .venv-graph/bin/python -m scripts.prepare_replay_sim_approval"
+
+
+def _replay_sim_approval_error(exc):
+    if str(exc) == "binding_v02:skill_deployment_not_approved":
+        return {"error": "Dữ liệu mô phỏng, không phải mạng thật. " + REPLAY_SIM_APPROVAL,
+                "reason": "skill_deployment_not_approved", "synthetic_only": True}
+    return None
 from gateway_pilot.adapters import ReplayAdapter  # noqa: E402  (needs REPO on sys.path)
 from gateway_pilot.session import SessionStore  # noqa: E402
 
@@ -159,6 +167,12 @@ def analyze(payload: dict):
     if method not in ("bm25", "gos"):
         raise ValueError("Method chỉ hỗ trợ bm25 hoặc gos")
     source_mode = payload.get("source_mode", "replay")
+    if source_mode == "replay_sim":
+        if set(payload) - {"message", "source_mode", "session_id", "scenario", "method", "with_llm"}:
+            raise ValueError("Replay mô phỏng chỉ nhận câu hỏi, phiên và kịch bản")
+        from gateway_pilot.application.skill_chat import CHAT
+        return CHAT.chat(message.strip(), session_id=payload.get("session_id"), mode=source_mode,
+                         scenario=payload.get("scenario"), allow_model=payload.get("with_llm", True))
     if source_mode not in ("replay", "live"):
         raise ValueError("Nguồn dữ liệu chỉ hỗ trợ live hoặc replay")
     live = source_mode == "live"
@@ -456,15 +470,19 @@ class Handler(BaseHTTPRequestHandler):
                 from gateway_pilot.application.skill_launcher import LAUNCHER
                 query = parse_qs(urlparse(self.path).query, keep_blank_values=True)
                 if set(query) - {"mode"} or len(query.get("mode", ["live"])) != 1:
-                    raise ValueError("Chỉ nhận một mode live hoặc replay")
+                    raise ValueError("Chỉ nhận một mode live, replay hoặc replay_sim")
                 return self._json(LAUNCHER.catalog(query.get("mode", ["live"])[0]))
             except ValueError as exc:
+                if query.get("mode") == ["replay_sim"] and (error := _replay_sim_approval_error(exc)):
+                    return self._json(error, HTTPStatus.FORBIDDEN)
                 return self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
             except (RuntimeError, ImportError, OSError, KeyError):
                 return self._json({"error": "Skill deployment unavailable"}, HTTPStatus.SERVICE_UNAVAILABLE)
         if path == "/api/graph":
             from gateway_pilot.skill_expansion.coverage import skill_graph
             try:
+                if urlparse(self.path).query == "mode=replay_sim":
+                    return self._json(skill_graph(replay_sim=True))
                 return self._json(skill_graph())
             except (OSError, ValueError, KeyError, TypeError, AttributeError):
                 return self._json({"error": "Skill graph unavailable"}, HTTPStatus.SERVICE_UNAVAILABLE)
@@ -475,11 +493,18 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(status)
         if path == "/api/config":
             try:
+                from gateway_pilot.skill_expansion.coverage import acceptance_snapshot
+
                 status = _status()
                 default_source = getattr(self.server, "default_source", "replay")
                 if default_source == "live":
                     status["mode"] = "windows_live" if os.name == "nt" else "linux_live"
+                try:
+                    replay_sim_count = len(acceptance_snapshot()[1])
+                except (OSError, ValueError, KeyError, TypeError):
+                    replay_sim_count = None
                 return self._json({"status": status, "fixtures": fixture_summaries(),
+                                   "replay_sim_skill_count": replay_sim_count,
                                    "default_fixture_id": DEFAULT_FIXTURE,
                                    "default_source": default_source,
                                    "default_method": "gos" if status["gos_available"] else "bm25",
@@ -525,6 +550,7 @@ class Handler(BaseHTTPRequestHandler):
             length = 0
         if not 0 < length <= 16000:
             return self._json({"error": "Request JSON quá lớn hoặc rỗng"}, HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
+        data = None
         try:
             data = json.loads(self.rfile.read(length))
             if endpoint.startswith("/api/skills/"):
@@ -533,11 +559,15 @@ class Handler(BaseHTTPRequestHandler):
                           "/api/skills/run": {"session_id", "skill_id"},
                           "/api/skills/close": {"session_id"},
                           "/api/skills/resume": {"session_id"}}[endpoint]
+                if (endpoint.endswith("/session") and type(data) is dict
+                        and data.get("mode") == "replay_sim" and "scenario" in data):
+                    fields = fields | {"scenario"}
                 if type(data) is not dict or set(data) != fields:
                     raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
                 try:
                     if endpoint.endswith("/session"):
-                        result = LAUNCHER.create_session(data["mode"])
+                        scenario = {"scenario": data["scenario"]} if "scenario" in data else {}
+                        result = LAUNCHER.create_session(data["mode"], **scenario)
                     elif endpoint.endswith("/resume"):
                         result = LAUNCHER.resume(data["session_id"])
                     elif endpoint.endswith("/close"):
@@ -564,13 +594,20 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(result)
         except ValueError as exc:
             from gateway_pilot.application.skill_launcher import SkillSessionError
+            replay_sim = isinstance(data, dict) and (data.get("source_mode") == "replay_sim"
+                                                   or data.get("mode") == "replay_sim")
+            if replay_sim and (error := _replay_sim_approval_error(exc)):
+                return self._json(error, HTTPStatus.FORBIDDEN)
             code = (HTTPStatus.GONE if isinstance(exc, SkillSessionError) and str(exc) == "session_expired" else
                     HTTPStatus.TOO_MANY_REQUESTS if isinstance(exc, SkillSessionError) and str(exc) in {"session_capacity_limit", "model_busy"} else
                     HTTPStatus.CONFLICT if isinstance(exc, SkillSessionError) and str(exc) == "session_busy" else
                     HTTPStatus.BAD_REQUEST)
             messages={"model_busy":"LLM đang xử lý một lượt khác; hãy thử lại sau.",
                       "session_busy":"Phiên này đang xử lý câu hỏi trước; hãy chờ hoặc đóng phiên."}
-            return self._json({"error": messages.get(str(exc),str(exc)),"reason":str(exc)}, code)
+            body = {"error": messages.get(str(exc),str(exc)), "reason": str(exc)}
+            if replay_sim:
+                body.update(error="Dữ liệu mô phỏng, không phải mạng thật. " + body["error"], synthetic_only=True)
+            return self._json(body, code)
         except (RuntimeError, ImportError, OSError, KeyError) as exc:
             return self._json({"error": f"Không chạy được backend ({type(exc).__name__}).",
                                "hint": "Kiểm tra dữ liệu replay và các dependency của chế độ đang chọn."},

@@ -19,6 +19,7 @@ Lần cập nhật này **chỉ lập kế hoạch**, không đánh dấu triể
 - Qwen4B tối đa 240s/RPC; live turn 240s còn chịu hạn phiên và TTL thật. Không tăng TTL hay bỏ kiểm tra scope để làm kết quả đẹp.
 - Baseline local: 855 tests, 850 pass, 5 Windows-only skips; [CI baseline đã đạt](https://github.com/Greediex/Gateway_LM/actions/runs/44217840366). Đây là kiểm chứng baseline, không phải nghiệm thu kế hoạch mới.
 - Tiến độ CHAT-CONCISE — Chat laptop ở fast mode ưu tiên phép đo theo chủ đề. Câu WAN nêu phạm vi quyền đọc và các giới hạn nằm trong chi tiết phép đo.
+- Tiến độ REPLAY-SIM — Chat Web dùng 101 Skill lấy từ acceptance với các kịch bản normal/fault/missing, qua Core và Claim Engine. Đã đối chiếu 303/303 verdict mô phỏng bằng approval trong bộ nhớ. Unittest local 1096 pass, 0 fail, 5 skip Windows. Deployment chờ chủ dự án duyệt digest từ `.venv-graph/bin/python -m scripts.prepare_replay_sim_approval`.
 
 ## “Đủ 120” được tính thế nào
 

@@ -21,16 +21,21 @@
       <div class="side-scroll">
         <div class="side-section">
           <div class="side-heading">NGUỒN DỮ LIỆU</div>
-          <div class="select-wrap"><select id="sourceSelect" aria-label="Nguồn dữ liệu"><option value="live" disabled>Đo thật từ máy này</option><option value="replay" selected>Replay mô phỏng</option></select></div>
+          <div class="select-wrap"><select id="sourceSelect" aria-label="Nguồn dữ liệu"><option value="live" disabled>Đo thật từ máy này</option><option value="replay" selected>Replay mô phỏng</option><option value="replay_sim" id="replaySimOption">Replay mô phỏng Skill</option></select></div>
           <div id="fixtureField">
             <div class="field-label">Tình huống mạng</div>
             <div class="select-wrap"><select id="fixtureSelect" aria-label="Chọn tình huống mạng"><option value="GLM-21-1">Đang tải dữ liệu...</option></select></div>
             <div class="fixture-note" id="fixtureNote">Tình huống mạng mô phỏng.</div>
           </div>
+          <div id="scenarioField" hidden>
+            <label class="field-label" for="scenarioSelect">Kịch bản mô phỏng</label>
+            <div class="select-wrap"><select id="scenarioSelect"><option value="normal">Bình thường (normal)</option><option value="fault">Có lỗi (fault)</option><option value="missing">Thiếu dữ liệu (missing)</option></select></div>
+            <p class="fixture-note">Đổi kịch bản sẽ bắt đầu phiên mới.</p>
+          </div>
           <div class="fixture-note" id="liveNote" hidden>Đo từ máy đang dùng gateway mặc định.</div>
         </div>
         <div class="divider"></div>
-        <div class="side-section">
+        <div class="side-section" id="inferenceSettings">
           <div class="side-heading">CẤU HÌNH SUY LUẬN</div>
           <label class="field-label" for="policySelect">Chế độ chẩn đoán</label>
           <div class="select-wrap"><select id="policySelect"><option value="react" disabled>LangGraph ReAct</option><option value="dynamic" selected>Dynamic Agent</option><option value="core">Core đối chứng</option></select></div>

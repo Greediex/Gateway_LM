@@ -31,7 +31,7 @@ class SkillLauncher:
 
     @staticmethod
     def _mode(mode):
-        if type(mode) is not str or mode not in {'live','replay'}:
+        if type(mode) is not str or mode not in {'live','replay','replay_sim'}:
             raise SkillSessionError('invalid_mode')
         return mode
 
@@ -46,6 +46,16 @@ class SkillLauncher:
 
     def catalog(self, mode='live', *, entry=None):
         mode=self._mode(mode)
+        if mode == 'replay_sim':
+            actions = entry['actions'] if entry is not None else deployment(mode).actions
+            rows = [{k: action[k] for k in ('skill_id', 'name', 'domain', 'kind')}
+                    | {'availability': 'READY' if entry else 'UNVERIFIED',
+                       'reason': 'SCENARIO_AVAILABLE' if entry else 'INITIALIZE_SESSION',
+                       'runtime_scope': action['scope'], 'mode': mode}
+                    for _, action in sorted(actions.items())]
+            return {'mode': mode, 'design_total': len(rows), 'native_total': 0, 'rows': rows,
+                    'counts': dict(Counter(r['availability'] for r in rows)),
+                    'requires_session': entry is None, 'synthetic_only': True}
         _,_,_,actions=deployment(mode)
         rows=[]
         for skill in self._design.skills.values():
@@ -82,18 +92,27 @@ class SkillLauncher:
                 try:e['session'].close();del self._sessions[sid]
                 finally:e['lock'].release()
 
-    def create_session(self, mode='live'):
+    def create_session(self, mode='live', *, scenario=None):
         mode=self._mode(mode)
+        if scenario is not None and mode != 'replay_sim':
+            raise SkillSessionError('scenario_requires_replay_sim')
         with self._lock:
             self._cleanup()
             if len(self._sessions)>=self._max_sessions:raise SkillSessionError('session_capacity_limit')
-            entry=self._factory(mode)
-            self._configure(entry,mode)
-            entry.update(mode=mode,capabilities=entry['runtime'].probe(),lock=threading.RLock())
+            if mode == 'replay_sim':
+                entry = self._factory(mode, scenario='normal' if scenario is None else scenario)
+            else:
+                entry = self._factory(mode)
+                self._configure(entry, mode)
+                entry['capabilities'] = entry['runtime'].probe()
+            entry.update(mode=mode, lock=threading.RLock())
             sid=uuid4().hex;self._sessions[sid]=entry
             if self.storage is not None and mode=='live':self.storage.bind(entry['session'],sid)
-            return {'session_id':sid,'mode':mode,'expires_in_s':max(0,entry['session'].expires_at-self._clock()),
-                    'catalog':self.catalog(mode,entry=entry)}
+            result = {'session_id':sid,'mode':mode,'expires_in_s':max(0,entry['session'].expires_at-self._clock()),
+                      'catalog':self.catalog(mode,entry=entry)}
+            if mode == 'replay_sim':
+                result.update(scenario=entry['session'].scenario, synthetic_only=True)
+            return result
 
     def _configure(self, entry, mode):
         if mode=='live' and self.context_factory is not None:
@@ -129,6 +148,8 @@ class SkillLauncher:
             self._cleanup()
             if sid in self._sessions:
                 entry=self._sessions[sid]
+                if entry['mode'] == 'replay_sim':
+                    raise SkillSessionError('session_restore_unavailable')
                 return {'session_id':sid,'restored_facts':0,'reused_session':True,
                         'expires_in_s':max(0,entry['session'].expires_at-self._clock())}
             if len(self._sessions)>=self._max_sessions:raise SkillSessionError('session_capacity_limit')
@@ -172,6 +193,13 @@ class SkillLauncher:
         entry=self._get(session_id)
         if type(skill_id) is not str or len(skill_id)>100:raise SkillSessionError('invalid_skill_id')
         mode,session=entry['mode'],entry['session']
+        if mode == 'replay_sim':
+            from .replay_sim_run import run_replay_skill
+
+            with entry['lock'], self._measure_lock:
+                if session.closed or session.clock() >= session.expires_at:
+                    raise SkillSessionError('session_expired')
+                return run_replay_skill(session, session_id, skill_id, deadline=deadline)
         if skill_id not in entry['actions']:
             if skill_id not in self._design.skills:raise SkillSessionError('unknown_skill')
             return {'session_id':session_id,'skill_id':skill_id,'mode':mode,'synthetic_only':mode=='replay',

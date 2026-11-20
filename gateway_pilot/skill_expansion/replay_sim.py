@@ -1,0 +1,245 @@
+"""Operator-pinned Simulation replay inputs and scoped Core READ composition."""
+from __future__ import annotations
+
+import copy
+import json
+import time
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+
+from jsonschema import Draft202012Validator
+
+from ..adapters.bindings import BindingSelection, TargetContext, binding_digest, declare_binding, require
+from ..command_catalog.builder import build_registry
+from ..command_catalog.loader import digest, read_json
+from ..command_catalog.runtime import ReadRuntime
+from ..core import ROOT
+from ..graph_v3.claims import ClaimBook
+from . import composite, simulation
+from .catalog import DATA_DIR, SkillCatalog
+from .coverage import ACCEPTANCE_STATES, COMPOSITE_BATCHES, DIRECT_BATCHES, acceptance_snapshot
+from .replay_backend import StrictSkillReplayBackend
+from .runtime_bridge import RuntimeSkillBridge
+
+MODE = 'replay_sim'
+STATES = ACCEPTANCE_STATES
+CLIENT_IDENTITY = 'expansion.synthetic_client_identity'
+TARGET = 'synthetic-test-target'
+NOTICE = 'Dữ liệu mô phỏng, không phải mạng thật.'
+CONFIG = ROOT / 'config/skill_launcher'
+CLIENT_CATALOG = ROOT / 'examples/skill_deployments/client_replay_v1'
+
+
+class SimulationReplayBackend(StrictSkillReplayBackend):
+    source = 'synthetic_replay/replay_sim_v1'
+
+    def __init__(self, functions: list[dict], ports: list[dict], fixture: dict, context: TargetContext):
+        super().__init__(functions, ports, fixture)
+        self._context = context
+
+    def supports(self, function_id: str, context: TargetContext) -> bool:
+        return context == self._context and super().supports(function_id, context)
+
+
+@dataclass(frozen=True)
+class Sample:
+    function_id: str
+    scope: str
+    target: str
+    simulated_at: str
+    values: dict | None
+
+
+@dataclass(frozen=True)
+class ReplayProfile:
+    actions: dict
+    diagnostics: dict
+    samples: dict[str, dict[str, dict[str, Sample]]]
+    registries: dict
+    approval: dict[str, str]
+
+    def open_sample(self, sample: Sample, *, environment: str, clock: Callable[[], float],
+                    max_calls: int, ttl_s: float, cost_budget: float = 100):
+        artifact, policy, owner = self.registries[sample.function_id]
+        fixture = {} if sample.values is None else {sample.function_id: {sample.function_id: sample.values}}
+        if sample.scope == 'client':
+            fixture[CLIENT_IDENTITY] = {'client.identity': {'client_id': sample.target}}
+        context = TargetContext(sample.scope, sample.target, environment)
+        backend = SimulationReplayBackend(artifact['functions'], artifact['ports'], fixture, context)
+        frozen_fixture = digest(fixture)
+        bindings = [declare_binding(artifact, f['function_id'], 'launcher.' + f['function_id'],
+                                    self.approval['backend_id'], backend, context)
+                    for f in artifact['functions']]
+        selection = BindingSelection(
+            artifact, policy, bindings, approved_digests=frozenset(map(binding_digest, bindings)),
+            backends={self.approval['backend_id']: backend}, context=context)
+        permissions = frozenset(f['permission'] for f in artifact['functions'])
+        require(permissions <= {'network.read', 'system.read'}, 'skill_sim_read_permissions')
+        runtime = ReadRuntime(
+            artifact, policy, approved_digest=artifact['content_digest'], selection=selection, context=context,
+            permissions=permissions,
+            policy_context_id=digest({'principal': 'localhost-skill-operator', 'mode': MODE,
+                                      'permissions': sorted(permissions), 'revision': 1}),
+            clock=clock)
+        session = runtime.open_session(max_calls=max_calls, ttl_s=ttl_s, max_plans=1, cost_budget=cost_budget,
+                                       context_valid=lambda: digest(backend._fixture) == frozen_fixture)
+        return session, RuntimeSkillBridge(runtime), owner
+
+
+def _registry(function: dict) -> tuple[dict, dict, str]:
+    """Compile the selected READ Function and its required synthetic identity."""
+    function = copy.deepcopy(function)
+    fid = function['function_id']
+    require(function['risk'] == 'READ_ONLY' and function['lifecycle'] == 'PROPOSED'
+            and function['permission'] in {'network.read', 'system.read'}
+            and not function['inputs'] and not function['order_after'] and len(function['skill_refs']) == 1
+            and set(function['outputs']) == {fid}, 'skill_sim_function_contract')
+    function['lifecycle'] = 'IMPLEMENTED'
+    ref = function['skill_refs'][0]
+    owner = read_json(simulation.PORTS_DIR.parent / 'skills' / f"{ref['skill_id']}.json")
+    functions = [function]
+    ports = [read_json(simulation.PORTS_DIR / f'{fid}.json')]
+    if function['scope'] == 'client':
+        identity = read_json(CLIENT_CATALOG / 'functions/skill_expansion' / f'{CLIENT_IDENTITY}.json')
+        identity['skill_refs'] = [ref]
+        functions.append(identity)
+        ports.append(read_json(CLIENT_CATALOG / 'ports/client.identity.json'))
+        function['inputs'].update(identity['outputs'])
+        owner['function_refs'][CLIENT_IDENTITY] = identity['version']
+        owner['produces'].update(identity['outputs'])
+    policy = {'schema_version': '0.2.0', 'allowed_probe_ids': [f['capability_probe'] for f in functions]}
+    selection = {'schema_version': '0.2.0', 'kind': 'selection',
+                 'functions': {f['function_id']: f['version'] for f in functions},
+                 'ports': {p['port_id']: p['version'] for p in ports}}
+    catalog = {'functions': functions, 'ports': ports, 'skills': [owner],
+               'source_digests': {}, 'record_digests': {}}
+    for group in ('functions', 'ports', 'skills'):
+        for row in catalog[group]:
+            kind = row['kind']
+            key = row[kind + '_id']
+            path = f"{group}/{row['domain']}/{key}.json" if kind == 'function' else f'{group}/{key}.json'
+            catalog['source_digests'][path] = catalog['record_digests'][f"{kind}:{key}@{row['version']}"] = digest(row)
+    return build_registry(catalog, selection, policy), policy, ref['skill_id'].split('.')[-1].upper()
+
+
+def prepare_profile() -> ReplayProfile:
+    """Build deterministic approval inputs from accepted contracts and scenarios."""
+    acceptance, accepted = acceptance_snapshot()
+    design = SkillCatalog.load().skills
+    require(bool(accepted) and accepted <= design.keys() and 'SK13' not in accepted, 'skill_sim_membership')
+    proposals = {f['function_id']: f for f in json.loads((DATA_DIR / 'function_proposals.json').read_text(encoding='utf-8'))}
+    skills: dict[str, dict] = {}
+    samples: dict[str, dict[str, dict[str, Sample]]] = {sid: {} for sid in accepted}
+    fids = set()
+    routing = read_json(CONFIG / 'replay_sim.routing.json')
+    require(set(routing) == {'format', 'phrases', 'nonlocal_scope_phrases'}
+            and routing['format'] == 'gateway-lm.replay-sim-routing/v1'
+            and routing['phrases'].keys() <= design.keys(), 'skill_sim_routing')
+
+    def add(sid: str, state: str, sources: dict[str, Sample]):
+        require(state in STATES and state not in samples[sid], 'skill_sim_duplicate_scenario')
+        for sample in sources.values():
+            require(sample.function_id in proposals and sample.scope == proposals[sample.function_id]['scope']
+                    and sample.target == TARGET, 'skill_sim_source_scope_or_target')
+            composite.timestamp(sample.simulated_at)
+            fids.add(sample.function_id)
+        samples[sid][state] = sources
+
+    for directory, filename in DIRECT_BATCHES.values():
+        doc = read_json(CONFIG / f'{filename}.diagnostics.json')
+        require(doc['format'] == 'gateway-lm.laptop-diagnostics/v1', 'skill_sim_diagnostics_format')
+        for sc in simulation.load_scenarios(DATA_DIR / directory):
+            sid, fid = sc.skill_id, sc.function_id
+            if sid not in accepted:
+                continue
+            scope = proposals[fid]['scope']
+            workflows = {wid: doc['workflows'][wid] for wid in doc['skill_workflows'][sid]}
+            diagnostic = {'kind': 'direct', 'scope': scope, 'workflows': workflows,
+                          'claims': [c for c in doc['claims'] if c['workflow'] in workflows]}
+            require(not sid in skills or skills[sid] == diagnostic, 'skill_sim_diagnostics_membership')
+            skills[sid] = diagnostic
+            add(sid, sc.state, {fid: Sample(fid, scope, TARGET, sc.simulated_at, sc.values)})
+
+    for batch in COMPOSITE_BATCHES:
+        doc = composite.contracts(batch)
+        for row in composite.load_scenarios(batch):
+            sid = row['skill_id']
+            if sid not in accepted:
+                continue
+            workflow = doc['workflows'][sid]
+            diagnostic = {'kind': 'composite', 'scope': workflow['target_scope'],
+                          'workflows': {sid: workflow}, 'claims': [
+                              c for c in doc['claims'] if c['workflow'] == workflow['workflow_id']]}
+            require(not sid in skills or skills[sid] == diagnostic, 'skill_sim_diagnostics_membership')
+            skills[sid] = diagnostic
+            add(sid, row['id'].rsplit('-', 1)[-1], {
+                alias: Sample(spec['function_id'], spec['scope'], spec['target'],
+                              row['sources'][alias]['simulated_at'], row['sources'][alias]['values'])
+                for alias, spec in workflow['sources'].items()})
+
+    require(skills.keys() == accepted and all(set(v) == set(STATES) for v in samples.values()),
+            'skill_sim_scenario_membership')
+    registries = {fid: _registry(proposals[fid]) for fid in sorted(fids)}
+    validators = {fid: Draft202012Validator(next(p['schema'] for p in a['ports'] if p['port_id'] == fid))
+                  for fid, (a, _, _) in registries.items()}
+    for states in samples.values():
+        for sources in states.values():
+            for sample in sources.values():
+                require(sample.values is None or validators[sample.function_id].is_valid(sample.values),
+                        'skill_sim_fixture_schema')
+    # Include aliases and sampling order: a JSON object digest alone ignores insertion order.
+    fixture_inputs = {sid: {state: [[alias, asdict(sample)] for alias, sample in sources.items()]
+                            for state, sources in states.items()} for sid, states in samples.items()}
+    actions = {}
+    for sid, diagnostic in skills.items():
+        ports = {s.function_id: proposals[s.function_id]['outputs'][s.function_id]
+                 for s in samples[sid]['normal'].values()}
+        if diagnostic['kind'] == 'direct':
+            require(all({s.function_id for s in sources.values()} == ports.keys()
+                        for sources in samples[sid].values()), 'skill_sim_direct_function')
+            fid = next(iter(ports))
+            artifact, _, owner = registries[fid]
+            require(owner == sid, 'skill_sim_direct_owner')
+            ClaimBook(diagnostic['claims'], {p['port_id']: p for p in artifact['ports']}, diagnostic['workflows'])
+        actions[sid] = {'skill_id': sid, 'name': design[sid].name_vi, 'domain': design[sid].domain,
+                        'kind': 'design', 'scope': diagnostic['scope'], 'required_ports': ports,
+                        'optional_ports': {}}
+    diagnostics = {'routing': routing, 'skills': skills}
+    approval = {
+        'registry_digest': digest({fid: a['content_digest'] for fid, (a, _, _) in registries.items()}),
+        'actions_digest': digest(actions), 'diagnostics_digest': digest(diagnostics),
+        'fixtures_digest': digest({'acceptance': digest(acceptance), 'samples': fixture_inputs,
+                                   'client_identity_target': TARGET}),
+        'backend_id': 'expansion.simulation_replay', 'backend_revision': SimulationReplayBackend.revision,
+        'source': SimulationReplayBackend.source,
+    }
+    return ReplayProfile(actions, diagnostics, samples, registries, approval)
+
+
+def approved_profile(approval: dict) -> ReplayProfile:
+    profile = prepare_profile()
+    for key, value in profile.approval.items():
+        require(approval.get(key) == value, 'skill_sim_' + key + '_pin')
+    return profile
+
+
+@dataclass
+class ReplaySession:
+    """One fixed scenario and cumulative budget across scoped READ sessions."""
+    profile: ReplayProfile
+    scenario: str
+    clock: Callable[[], float] = time.monotonic
+    calls: int = 0
+    max_calls: int = 24
+    plans: int = 0
+    max_plans: int = 64
+    spent: float = 0
+    cost_budget: float = 100
+    closed: bool = False
+
+    def __post_init__(self):
+        self.expires_at = self.clock() + 300
+        self.environment = digest({'approval': self.profile.approval, 'scenario': self.scenario})
+
+    def close(self):
+        self.closed = True
