@@ -28,6 +28,8 @@ Lần cập nhật này **chỉ lập kế hoạch**, không đánh dấu triể
 
 Tiến độ IGATE-PARITY-1 (20/11/2026, `v2`) — Năm Skill IG01–IG05 có 15/15 kịch bản khớp gold qua Core. Coverage riêng `igate_simulated` có 5 Skill. HTTP localhost với approval giả lập đo 30 lượt hỏi nhanh, trung vị 49,064 ms và tối đa 173,020 ms. Đã kiểm tra 11 đề xuất lệnh chỉ hiển thị. Unittest 1.116 tổng, 1.111 pass, 0 fail, 5 skip Windows, 337,548 s. Hai kiểm tra Node và script in pin PASS. Pin `igate_digest` chờ duyệt là `9883919316a93befe57fad38aae54472594faf112abf6071cd48242bfbb5557b`. `check_project` báo 51 lỗi do quy tắc cấm theo dõi file dưới `third_party/` bao gồm gói vendor iGate. Chưa có run CI và chưa nghiệm thu phần cứng.
 
+Tiến độ IGATE-INCIDENTS (20/11/2026, `v2`) — Replay 14/14 sự cố, 36/36 câu tiếng Việt chọn đúng Skill và trả `FAULT` đúng Claim qua Core với approval giả lập. Web thêm 14 lựa chọn tiếng Việt và khuyến nghị kèm nguồn. Ma trận 1.582 lượt giữ coverage 101/120. Pin `incident_scenarios_digest` chờ chủ dự án duyệt. [Báo cáo replay sự cố](docs/reports/IGATE_INCIDENTS_REPLAY_V1.md)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

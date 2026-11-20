@@ -228,6 +228,7 @@ state.livePlatform = health.live_platform === 'Linux' || state.linuxLiveAvailabl
 const liveAvailable = !!(health.live_available ?? (health.windows_live_available || health.linux_live_available));
 source.querySelector('option[value=live]').disabled = !liveAvailable;
 source.querySelector('option[value=live]').textContent = `Đo thật từ ${state.livePlatform}`;
+renderIncidentOptions($('incidentOptions'), config.replay_sim_incidents || []);
 if (Number.isInteger(config.replay_sim_skill_count)) {
   const igate = Number.isInteger(config.igate_simulated) ? ` + ${config.igate_simulated} iGate` : '';
   $('replaySimOption').textContent = `Replay mô phỏng (${config.replay_sim_skill_count} Skill${igate})`;
@@ -238,10 +239,39 @@ source.value = Number.isInteger(config.replay_sim_skill_count) ? 'replay_sim'
 updateSource();}catch(e){state.connected=false;$('healthText').textContent='Backend chưa kết nối';$('healthText').parentElement.classList.add('offline');toast('Cần chạy python -m web_gateway.server trong Gateway_LM để gửi câu hỏi thật.');}}
 function renderFixtures(){let el=$('fixtureSelect');el.replaceChildren();let current='';for(let f of state.fixtures){if(f.group!==current){current=f.group;let g=n('optgroup');g.label=current;el.appendChild(g);}let option=n('option','',f.label);option.value=f.id;el.appendChild(option);}if(!state.fixtures.length){let op=n('option','','Cần khởi động backend');op.value='GLM-21-1';el.appendChild(op);return;}setFixture(state.fixtures.some(x=>x.id==='GLM-21-1')?'GLM-21-1':state.fixtures[0].id);}
 function message(kind,text,label,status){const item=n('div','message '+kind);let avatar=n('div','message-avatar '+(kind==='user'?'user-avatar':''),kind==='user'?'U':'✳');let bubble=n('div','bubble');let lbl=n('div','message-label',label|| (kind==='user'?'BẠN':'GATEWAY LM'));if(status){let st=n('span','answer-status '+(status==='PARTIAL'||status==='INCONCLUSIVE'?'partial':['BLOCKED','NEEDS_INPUT','UNAVAILABLE'].includes(status)?'blocked':''),({MEASURED:'Đã có số đo',INCONCLUSIVE:'Chưa đủ chẩn đoán',PARTIAL:'Còn thiếu dữ liệu',NEEDS_INPUT:'Cần làm rõ',BLOCKED:'Chỉ đọc',UNAVAILABLE:'Chưa có dữ liệu'})[status]||status);st.title=status==='MEASURED'?'Phép đo hoàn tất, không phải kết luận sức khỏe hoặc đã khắc phục.':status;lbl.appendChild(st);}bubble.appendChild(lbl);bubble.appendChild(n('div','bubble-body',text));if(kind==='assistant')item.appendChild(avatar);item.appendChild(bubble);if(kind==='user')item.appendChild(avatar);$('messages').appendChild(item);scrollBottom();return bubble;}
+function renderIncidentOptions(group, incidents) {
+  group.replaceChildren();
+  for (const incident of incidents) {
+    const option = n('option', '', incident.title);
+    option.value = incident.id;
+    group.appendChild(option);
+  }
+}
+function renderIncidentGuidance(bubble, guidance) {
+  const card = n('section', 'runbook-card');
+  card.appendChild(n('b', '', 'Cách xử lý'));
+  card.appendChild(n('div', '', guidance.label));
+  const steps = n('ul', 'answer-notes');
+  for (const step of guidance.steps) steps.appendChild(n('li', '', step));
+  card.appendChild(steps);
+  guidance.sources.forEach((url, index) => {
+    if (!url.startsWith('https://')) return;
+    if (index > 0) card.appendChild(n('span', '', ' · '));
+    const link = n('a', '', `Nguồn ${index + 1}`);
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    card.appendChild(link);
+  });
+  bubble.appendChild(card);
+}
 function enrichMessage(bubble,result){const details=n('details','answer-details');details.appendChild(n('summary','','Chi tiết phép đo'));let meta=n('div','answer-meta');const fields=[['Workflow',result.workflow||'Chưa rõ'],['Functions',result.calls],['Repairs',result.repairs],['Policy',result.mode === 'linux_live' ? (result.catalog_total ? 'LLM + Skill session' : 'Core READ v0.2') : ({react:'LangGraph ReAct',dynamic:'Dynamic',core:'Core'})[result.policy]],['Method',String(result.method||'core').toUpperCase()],['LLM',(result.model_calls>0||result.llm_advisor_used)?`${result.model_calls ?? ((result.advice||[]).length + Number(result.intake?.source === 'llm' && !result.intake?.shared_with_selection))} lượt`:result.llm_advisor_ready?'Chưa cần hỏi':result.llm_advisor_requested?'Chưa kết nối':'Tắt']];for(let [name,value] of fields){meta.appendChild(n('span','meta-chip',name+': '+value));}details.appendChild(meta);bubble.appendChild(details);
 if (result.mode === 'replay_sim') {
   const badge = {instant:'Tức thì',evidence:'Có bằng chứng',proposal:'Đề xuất lệnh',knowledge:'Kiến thức'}[result.answer_kind];
   if (badge) bubble.children[0].appendChild(n('span','answer-status answer-kind',badge));
+  if (result.verdict === 'FAULT' && result.evidence_ids?.length && result.incident_guidance) {
+    renderIncidentGuidance(bubble, result.incident_guidance);
+  }
   if (Number.isFinite(result.timings_ms?.total)) {
     meta.appendChild(n('span','meta-chip',`Thời gian: ${result.timings_ms.total} ms`));
   }

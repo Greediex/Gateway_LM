@@ -497,6 +497,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 from gateway_pilot.skill_expansion.coverage import acceptance_snapshot
                 from gateway_pilot.skill_expansion.igate_data import catalog as igate_catalog
+                from gateway_pilot.skill_expansion.incident_replay import scenario_options
 
                 status = _status()
                 default_source = getattr(self.server, "default_source", "replay")
@@ -508,6 +509,7 @@ class Handler(BaseHTTPRequestHandler):
                     replay_sim_count = None
                 return self._json({"status": status, "fixtures": fixture_summaries(),
                                    "replay_sim_skill_count": replay_sim_count,
+                                   "replay_sim_incidents": scenario_options(),
                                    "igate_simulated": len(igate_catalog()),
                                    "default_fixture_id": DEFAULT_FIXTURE,
                                    "default_source": default_source,

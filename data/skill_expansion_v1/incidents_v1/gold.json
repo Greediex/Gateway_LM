@@ -1,0 +1,180 @@
+{
+  "format": "gateway-lm.incident-replay-gold/v1",
+  "expected": {
+    "INC-DHCP-EXHAUST": {
+      "skill_id": "D02",
+      "fault_claims": [
+        "pool_exhausted_v1"
+      ],
+      "root_cause": "Mọi địa chỉ trong pool đã được cho thuê, thường do lease dài và nhiều thiết bị đến rồi đi; máy mới không nhận được IP.",
+      "related_verdicts": {
+        "D02": "FAULT"
+      }
+    },
+    "INC-DNS-FAIL": {
+      "skill_id": "GP01",
+      "fault_claims": [
+        "gp01_dns_all_resolvers_down_v1"
+      ],
+      "root_cause": "Máy chủ DNS (thường của nhà mạng) không trả lời; kết nối IP vẫn tốt nên ứng dụng dùng IP cố định vẫn chạy.",
+      "related_verdicts": {
+        "F02": "FAULT",
+        "GP01": "FAULT"
+      }
+    },
+    "INC-WAN-DOWN": {
+      "skill_id": "O07",
+      "fault_claims": [
+        "o07_default_route_absent_v1",
+        "o07_upstream_unreachable_v1"
+      ],
+      "root_cause": "Đường truyền từ router ra nhà mạng bị đứt: cáp modem–router lỏng, modem treo, hoặc nhà mạng gặp sự cố khu vực.",
+      "related_verdicts": {
+        "E03": "FAULT",
+        "E08": "FAULT",
+        "IG03": "FAULT",
+        "K07": "FAULT",
+        "M05": "FAULT",
+        "O01": "FAULT",
+        "O07": "FAULT",
+        "GP01": "UNKNOWN",
+        "GP02": "UNKNOWN",
+        "K06": "UNKNOWN",
+        "L07": "UNKNOWN",
+        "M06": "UNKNOWN",
+        "SK04": "UNKNOWN"
+      }
+    },
+    "INC-24G-COCHANNEL": {
+      "skill_id": "B06",
+      "fault_claims": [
+        "channel_crowded_v1"
+      ],
+      "root_cause": "2.4 GHz chỉ có 3 kênh không chồng lấn (1, 6, 11); nhiều router lân cận dùng cùng hoặc chồng kênh nên phải chia sóng.",
+      "related_verdicts": {
+        "B05": "FAULT",
+        "B06": "FAULT",
+        "O02": "UNKNOWN"
+      }
+    },
+    "INC-WEAK-SIGNAL": {
+      "skill_id": "B04",
+      "fault_claims": [
+        "rssi_weak_v1",
+        "snr_low_v1"
+      ],
+      "root_cause": "Router đặt sau tủ, sát sàn hoặc góc nhà; tường bê tông làm suy hao mạnh; 5 GHz đi xa kém hơn 2.4 GHz.",
+      "related_verdicts": {
+        "B04": "FAULT",
+        "SK02": "FAULT",
+        "O02": "UNKNOWN"
+      }
+    },
+    "INC-BUFFERBLOAT": {
+      "skill_id": "G06",
+      "fault_claims": [
+        "bufferbloat_v1"
+      ],
+      "root_cause": "Router/modem đệm quá nhiều gói khi đường truyền đầy, làm trễ tăng mạnh cho lưu lượng tương tác.",
+      "related_verdicts": {
+        "G01": "FAULT",
+        "G02": "FAULT",
+        "G06": "FAULT",
+        "G07": "FAULT",
+        "G08": "FAULT",
+        "O06": "UNKNOWN"
+      }
+    },
+    "INC-PPPOE-MTU": {
+      "skill_id": "GP02",
+      "fault_claims": [
+        "gp02_pppoe_mss_not_clamped_v1"
+      ],
+      "root_cause": "PPPoE làm MTU nhỏ hơn 1500; nếu không kẹp MSS và ICMP 'cần phân mảnh' bị chặn, gói lớn bị rơi âm thầm (MTU black hole).",
+      "related_verdicts": {
+        "C08": "FAULT",
+        "GP02": "FAULT"
+      }
+    },
+    "INC-CGNAT": {
+      "skill_id": "GP05",
+      "fault_claims": [
+        "gp05_carrier_grade_nat_v1"
+      ],
+      "root_cause": "Nhà mạng dùng NAT cấp nhà mạng (RFC 6598); kết nối từ ngoài dừng ở NAT của nhà mạng, không tới router nhà.",
+      "related_verdicts": {
+        "E05": "FAULT",
+        "GP05": "FAULT",
+        "J08": "UNKNOWN"
+      }
+    },
+    "INC-DOUBLE-NAT": {
+      "skill_id": "GP05",
+      "fault_claims": [
+        "gp05_double_nat_v1"
+      ],
+      "root_cause": "Modem của nhà mạng vẫn làm router nên có hai lớp NAT.",
+      "related_verdicts": {
+        "GP05": "FAULT",
+        "L03": "UNKNOWN"
+      }
+    },
+    "INC-IPV6-BROKEN": {
+      "skill_id": "GP03",
+      "fault_claims": [
+        "gp03_ipv6_address_without_route_v1"
+      ],
+      "root_cause": "Thiết bị có địa chỉ IPv6 nhưng đường IPv6 không hoạt động (RA/prefix delegation lỗi, ICMPv6 bị chặn); kết nối phải chờ hết thời gian mới quay về IPv4.",
+      "related_verdicts": {
+        "GP03": "FAULT"
+      }
+    },
+    "INC-DFS-RADAR": {
+      "skill_id": "GP06",
+      "fault_claims": [
+        "gp06_dfs_radar_detected_v1"
+      ],
+      "root_cause": "Kênh DFS phải nhường cho radar; khi phát hiện radar, router rời kênh, ngắt client và chờ kiểm tra kênh mới.",
+      "related_verdicts": {
+        "GP06": "FAULT",
+        "H04": "UNKNOWN"
+      }
+    },
+    "INC-STICKY-CLIENT": {
+      "skill_id": "GP07",
+      "fault_claims": [
+        "gp07_sticky_to_weak_ap_v1"
+      ],
+      "root_cause": "Thiết bị tự quyết định khi nào chuyển điểm phát và thường bám điểm cũ; mesh thiếu 802.11k/v/r hoặc ngưỡng RSSI tối thiểu.",
+      "related_verdicts": {
+        "B04": "FAULT",
+        "GP07": "FAULT",
+        "SK02": "FAULT",
+        "O02": "UNKNOWN"
+      }
+    },
+    "INC-OVERHEAT-REBOOT": {
+      "skill_id": "H05",
+      "fault_claims": [
+        "replay_hot_with_reboots_v1"
+      ],
+      "root_cause": "Thiếu thông gió, nguồn yếu, firmware lỗi hoặc phần cứng già làm router quá nhiệt hoặc treo.",
+      "related_verdicts": {
+        "H05": "FAULT",
+        "H07": "FAULT",
+        "SK08": "UNKNOWN"
+      }
+    },
+    "INC-CAPACITY": {
+      "skill_id": "GP04",
+      "fault_claims": [
+        "gp04_router_overloaded_v1"
+      ],
+      "root_cause": "Router đời cũ không được thiết kế cho nhiều kết nối đồng thời.",
+      "related_verdicts": {
+        "A07": "FAULT",
+        "GP04": "FAULT"
+      }
+    }
+  }
+}

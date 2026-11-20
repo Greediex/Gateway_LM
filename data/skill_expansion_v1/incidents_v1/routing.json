@@ -1,0 +1,67 @@
+{
+  "format": "gateway-lm.incident-symptom-routing/v1",
+  "phrases": {
+    "D02": [
+      "điện thoại mới không vào được mạng",
+      "Wi-Fi có nhưng không có Internet trên máy mới",
+      "khách đến nhà không kết nối được"
+    ],
+    "GP01": [
+      "có Wi-Fi mà không vào được web",
+      "web không mở được nhưng Zalo vẫn chạy",
+      "báo không tìm thấy trang"
+    ],
+    "O07": [
+      "cả nhà mất mạng",
+      "tất cả thiết bị đều không vào được Internet"
+    ],
+    "B06": [
+      "Wi-Fi chậm buổi tối",
+      "ở chung cư mạng rất chậm",
+      "tốc độ lúc được lúc không"
+    ],
+    "B04": [
+      "phòng ngủ sóng yếu",
+      "đi xa router là chậm",
+      "tivi hay bị mất mạng"
+    ],
+    "G06": [
+      "đang chơi game thì lag khi có người tải phim",
+      "gọi video bị giật khi ai đó xem YouTube",
+      "ping bình thường mà vẫn lag"
+    ],
+    "GP02": [
+      "một số trang web không tải xong",
+      "web mở được nhưng treo giữa chừng",
+      "ngân hàng điện tử không vào được"
+    ],
+    "GP05": [
+      "mở port mà camera vẫn không xem từ xa được",
+      "không truy cập NAS từ ngoài được",
+      "game báo NAT strict",
+      "lắp thêm router thì game báo NAT",
+      "UPnP không hoạt động"
+    ],
+    "GP03": [
+      "mở web lần đầu rất lâu rồi mới vào",
+      "có trang lúc vào được lúc không"
+    ],
+    "GP06": [
+      "Wi-Fi 5G tự mất khoảng một phút rồi có lại",
+      "gần sân bay hay mất sóng 5G"
+    ],
+    "GP07": [
+      "nhà có mesh mà điện thoại vẫn chậm",
+      "lên tầng mà vẫn bắt điểm phát dưới nhà"
+    ],
+    "H05": [
+      "router hay tự khởi động lại",
+      "mạng mất vài phút mỗi ngày",
+      "router nóng ran"
+    ],
+    "GP04": [
+      "tối đông người dùng là chậm",
+      "nhà nhiều thiết bị thì mạng yếu"
+    ]
+  }
+}

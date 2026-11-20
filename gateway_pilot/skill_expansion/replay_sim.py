@@ -16,7 +16,7 @@ from ..command_catalog.loader import canonical_bytes, digest, read_json
 from ..command_catalog.runtime import ReadRuntime
 from ..core import ROOT
 from ..graph_v3.claims import ClaimBook
-from . import composite, igate_data, simulation
+from . import composite, igate_data, incident_replay, simulation
 from .catalog import DATA_DIR, Skill, SkillCatalog
 from .coverage import ACCEPTANCE_STATES, COMPOSITE_BATCHES, DIRECT_BATCHES, acceptance_snapshot
 from .replay_backend import StrictSkillReplayBackend
@@ -65,6 +65,7 @@ class ReplayProfile(ReplayCatalog):
     igate: ReplayCatalog
     igate_vendor: dict[str, bytes]
     incidents: ReplayCatalog  # GP01..GP07: not among the 120 Skills, never counted as verified
+    incident_replay: incident_replay.IncidentReplay
 
     def open_sample(self, sample: Sample, *, environment: str, clock: Callable[[], float],
                     max_calls: int, ttl_s: float, cost_budget: float = 100):
@@ -349,8 +350,10 @@ def prepare_profile() -> ReplayProfile:
     vendor, contents = igate_data.vendor_data()
     igate, approval['igate_digest'] = _igate_catalog(vendor)
     incidents, approval['incident_checks_digest'] = _incident_catalog(design, proposals)
+    base = ReplayCatalog(actions, diagnostics, samples, registries)
+    worlds, approval['incident_scenarios_digest'] = incident_replay.load_incident_replay(base, igate, incidents)
     return ReplayProfile(actions, diagnostics, samples, registries, approval,
-                         igate=igate, igate_vendor=contents, incidents=incidents)
+                         igate=igate, igate_vendor=contents, incidents=incidents, incident_replay=worlds)
 
 
 def approved_profile(approval: dict) -> ReplayProfile:
@@ -375,6 +378,9 @@ class ReplaySession:
     closed: bool = False
 
     def __post_init__(self):
+        require(type(self.scenario) is str and
+                (self.scenario in STATES or self.scenario in self.profile.incident_replay.measurements),
+                'skill_sim_scenario')
         self.expires_at = self.clock() + 300
         self.environment = digest({'approval': self.profile.approval, 'scenario': self.scenario})
 

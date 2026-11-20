@@ -7,7 +7,7 @@ from ..core import PlanError
 from ..graph_v3.claims import ClaimBook
 from ..observability.snapshot import VerifiedSnapshot
 from ..skill_expansion.composite import VerifiedSource, assess_workflow
-from ..skill_expansion.replay_sim import MODE, NOTICE, ReplaySession
+from ..skill_expansion.replay_sim import MODE, NOTICE, STATES, ReplaySession
 from ..skill_expansion.runtime_bridge import SkillNotReady
 
 
@@ -26,8 +26,12 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
     limit = replay.expires_at if deadline is None else min(replay.expires_at, deadline)
     before = replay.calls
     sessions, plans, attempts, errors = {}, [], [], {}
-    samples = catalog.samples[skill_id][replay.scenario]
+    world = profile.incident_replay if replay.scenario not in STATES else None
+    samples = catalog.samples[skill_id]['normal' if world else replay.scenario]
     diagnostic = catalog.diagnostics['skills'][skill_id]
+    if world:
+        samples, diagnostic = world.joint_checks.get(skill_id, (samples, diagnostic))
+        samples = world.samples_for(replay.scenario, samples)
 
     for alias, sample in samples.items():
         time_left = limit - replay.clock()
@@ -129,6 +133,7 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
                          'reason': node.reason, 'sample': alias})
 
     proof = list(dict.fromkeys(eid for claim in active for eid in claim['evidence'])) if verdict != 'UNKNOWN' else []
+    guidance = world.recommendation(replay.scenario, proof, evidence) if world and verdict == 'FAULT' else None
     status = 'MEASURED' if not missing else 'PARTIAL' if any(
         row['port'] != 'client.identity' for row in evidence) else 'UNAVAILABLE'
     return {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
@@ -137,4 +142,5 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
             'calls_this_run': replay.calls - before, 'calls_total': replay.calls, 'reused_ports': [],
             'missing_ports': sorted({samples[alias].function_id for alias in missing}), 'missing_sources': missing,
             'source_errors': errors, 'evidence': evidence, 'evidence_ids': proof,
-            'plans': plans, 'timeline': timeline}
+            'plans': plans, 'timeline': timeline,
+            **({'incident_guidance': guidance} if guidance else {})}

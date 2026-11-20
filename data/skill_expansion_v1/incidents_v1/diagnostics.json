@@ -1,0 +1,30 @@
+{
+  "format": "gateway-lm.incident-replay-diagnostics/v1",
+  "claim_text": {
+    "pool_exhausted_v1": "Pool DHCP đã hết địa chỉ để cấp cho thiết bị mới.",
+    "o07_default_route_absent_v1": "Gateway không có tuyến mặc định ra Internet.",
+    "o07_upstream_unreachable_v1": "Không tới được upstream từ gateway.",
+    "channel_crowded_v1": "Nhiều điểm phát lân cận cùng dùng kênh đang kiểm tra.",
+    "rssi_weak_v1": "RSSI tại client thấp hơn ngưỡng mô phỏng.",
+    "snr_low_v1": "SNR tại client thấp hơn ngưỡng mô phỏng.",
+    "bufferbloat_v1": "Độ trễ trong hàng đợi vượt ngưỡng mô phỏng, phù hợp với bufferbloat.",
+    "replay_hot_with_reboots_v1": "Gateway quá nhiệt và ghi nhận nhiều lần khởi động, có sự kiện crash."
+  },
+  "joint_checks": {
+    "H05": {
+      "sources": {"temperature": "expansion.temperature", "reboots": "expansion.reboot_events"},
+      "limitation": "Số đo nhiệt và bộ đếm sự kiện cho thấy hai dấu hiệu cùng xuất hiện. Chưa có chuỗi thời gian để xác định nhiệt độ gây reboot hay phân biệt thông gió, nguồn và firmware.",
+      "claims": [
+        {"claim_id": "replay_hot_with_reboots_v1", "severity": "FAULT", "requires": [
+          {"port": "temperature", "field": "celsius", "op": "ge", "value": 85},
+          {"port": "reboots", "field": "boot_count", "op": "ge", "value": 2},
+          {"port": "reboots", "field": "crash_count", "op": "gt", "value": 0}
+        ]},
+        {"claim_id": "replay_temperature_and_boot_normal_v1", "severity": "HEALTHY", "requires": [
+          {"port": "temperature", "field": "celsius", "op": "lt", "value": 85},
+          {"port": "reboots", "field": "crash_count", "op": "eq", "value": 0}
+        ]}
+      ]
+    }
+  }
+}

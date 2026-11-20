@@ -16,7 +16,8 @@ def main() -> int:
     print(json.dumps({'mode': MODE, 'proposed_approval': profile.approval,
                       'skill_count': len(accepted), 'skills': sorted(accepted),
                       'igate_simulated': sorted(profile.igate.actions),
-                      'incident_checks_simulated': sorted(profile.incidents.actions)}, indent=2))
+                      'incident_checks_simulated': sorted(profile.incidents.actions),
+                      'incident_scenarios': sorted(profile.incident_replay.measurements)}, indent=2))
     return 0
 
 

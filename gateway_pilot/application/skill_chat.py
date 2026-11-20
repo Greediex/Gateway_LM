@@ -15,7 +15,7 @@ from ..graph_v3.task_runtime import TaskRuntime
 from ..graph_v3.llm_goals import BoundedGoalProposer
 from ..graph_v3.task_decomposer import TaskDecomposer
 from ..observability.snapshot import VerifiedSnapshot
-from ..skill_expansion.replay_sim import MODE as REPLAY_SIM, NOTICE as SIM_NOTICE, STATES as SIM_STATES
+from ..skill_expansion.replay_sim import MODE as REPLAY_SIM, NOTICE as SIM_NOTICE
 from ..workflow import normalize
 from .skill_launcher import LAUNCHER, SkillSessionError
 from .grounded_answer import compose_answer, diagnostic_request, produce_grounded_answer, assessment_summary
@@ -205,6 +205,14 @@ def _simulation_finding(row: dict) -> str:
         return 'Tunnel VPN đang hoạt động.' if v['tunnel_up'] else 'Tunnel VPN đang ngắt.'
     if port == 'expansion.temperature':
         return f"Nhiệt độ {v['celsius']:g} °C."
+    if port == 'expansion.dhcp_pool':
+        return f"Đã cấp {v['used_addresses']}/{v['used_addresses'] + v['free_addresses']} địa chỉ DHCP."
+    if port == 'expansion.rf_environment':
+        return f"Kênh {v['channel']}, {v['neighbor_bss_count']} BSS lân cận."
+    if port == 'expansion.queue_delay':
+        return f"Độ trễ hàng đợi {v['queue_delay_ms']:g} ms."
+    if port == 'expansion.reboot_events':
+        return f"Ghi nhận {v['boot_count']} lần khởi động và {v['crash_count']} sự kiện crash."
     if port == 'expansion.wan_link':
         return 'Link WAN đang lên.' if v['link_up'] else 'Link WAN đang ngắt.'
     if port == 'expansion.wan_mss':
@@ -283,7 +291,7 @@ class SkillChat:
             raise ValueError('invalid_chat_request')
         if type(mode) is not str or (mode not in _MODE and mode != REPLAY_SIM):
             raise ValueError('invalid_chat_mode')
-        if scenario is not None and (mode != REPLAY_SIM or type(scenario) is not str or scenario not in SIM_STATES):
+        if scenario is not None and (mode != REPLAY_SIM or type(scenario) is not str):
             raise ValueError('invalid_chat_scenario')
         if type(allow_model) is not bool:
             raise ValueError('invalid_chat_model_flag')
@@ -306,7 +314,9 @@ class SkillChat:
             if mode == REPLAY_SIM:
                 from .igate_chat import answer, route
 
-                routed = route(request.strip(), entry['session'].profile.igate_vendor)
+                profile = entry['session'].profile
+                symptom = profile.incident_replay.symptom_routes.get(normalize(request))
+                routed = route(request.strip(), profile.igate_vendor) if symptom is None else None
                 if routed is not None:
                     return answer(routed, self.launcher, session_id, entry, started=started,
                                   clock=self.clock, max_elapsed_s=self.max_elapsed_s)
@@ -314,7 +324,8 @@ class SkillChat:
             if not model_slot:
                 raise SkillSessionError('model_busy')
             if mode == REPLAY_SIM:
-                return self._replay_sim_turn(request.strip(), session_id, entry, started, allow_model=allow_model)
+                return self._replay_sim_turn(request.strip(), session_id, entry, started, allow_model=allow_model,
+                                             symptom=symptom)
             result=self._turn(request.strip(),session_id,entry,started)
             saved=self.launcher.checkpoint(session_id)
             result['persistence']={'enabled':self.launcher.storage is not None,'checkpoint_facts':saved,'restored_facts':entry.get('restored_facts',0)}
@@ -329,7 +340,8 @@ class SkillChat:
                 _MODEL_SLOT.release()
             lock.release()
 
-    def _replay_sim_turn(self, request: str, sid: str, entry: dict, started: float, *, allow_model: bool) -> dict:
+    def _replay_sim_turn(self, request: str, sid: str, entry: dict, started: float, *,
+                         allow_model: bool, symptom: str | None) -> dict:
         replay = entry['session']
         deadline = started + self.max_elapsed_s
         catalog = self.launcher.catalog(REPLAY_SIM, entry=entry)
@@ -343,11 +355,10 @@ class SkillChat:
                 'client': r'client|laptop|may tinh|dien thoai|phone|tablet|pc',
                 'gateway': r'gateway|router|modem',
             }.items() if re.search(r'\b(?:cua|tren|tu|for|on|from) (?:' + names + r')\b', text)}
-        # An exact READ catalog title can mention an operation being observed
-        # (e.g. reboot history). Preserve the write guard on the rest of the turn.
+        # A reviewed, exact READ title or symptom can mention a past reboot.
         title = re.sub(r'^(?:hay |vui long )?(?:kiem tra )?', '', text).removesuffix(' giup toi')
         named_read = any(title == normalize(r['name']) for r in rows.values())
-        if not named_read and TaskDecomposer(SimpleNamespace(ports={})).is_write_intent(request):
+        if not (named_read or symptom) and TaskDecomposer(SimpleNamespace(ports={})).is_write_intent(request):
             reason, status = 'write_intent_requires_approval', 'BLOCKED'
             message = 'Phiên chỉ hỗ trợ thao tác đọc trong mô phỏng.'
         elif (any(_phrase(text, p) for p in routing['nonlocal_scope_phrases'])
@@ -357,7 +368,8 @@ class SkillChat:
         else:
             hits = [sid for sid, phrases in incidents['routing'].items()
                     if any(_phrase(text, p) for p in (*phrases, normalize(rows[sid]['name']), sid.lower()))]
-            method, candidates = (('phrase', hits) if len(hits) == 1
+            method, candidates = (('symptom', [symptom]) if symptom
+                                  else ('phrase', hits) if len(hits) == 1
                                   else _replay_candidates(request, routing['phrases']))
             reason, status = 'skill_not_supported', 'UNAVAILABLE'
             message = 'Chủ đề này chưa được hỗ trợ trong danh mục Replay mô phỏng.'
@@ -420,8 +432,9 @@ class SkillChat:
         summary = ' '.join(dict.fromkeys(line for row in measurements
                                          if (line := _simulation_finding(row))))
         if result.get('verdict') in {'HEALTHY', 'FAULT'}:  # only what a TRUE, evidenced Claim states
+            claim_text = {**incidents['claim_text'], **replay.profile.incident_replay.claim_text}
             summary = ' '.join(filter(None, (summary, *(
-                incidents['claim_text'].get(cid, '') for cid, claim in result['assessment']['claims'].items()
+                claim_text.get(cid, '') for cid, claim in result['assessment']['claims'].items()
                 if claim['value'] == 'TRUE' and claim['evidence']))))
         scope = rows[result['skill_id']]['runtime_scope'] if result else None
         return {'answer': '\n'.join(filter(None, (SIM_NOTICE, message, summary))), 'request': request,
@@ -445,6 +458,7 @@ class SkillChat:
                 'notice': SIM_NOTICE, 'model_calls': calls, 'advice': advice, 'llm_advisor_used': bool(advice),
                 'routing': {'method': method, 'plan': [result['skill_id']] if result else []},
                 'answer_kind': 'evidence' if measurements else None,
+                **({'incident_guidance': result['incident_guidance']} if 'incident_guidance' in result else {}),
                 'timings_ms': {'total': round((self.clock() - started) * 1000, 3)},
                 'user_input_required': status == 'NEEDS_INPUT'}
 

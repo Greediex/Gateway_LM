@@ -71,9 +71,9 @@ deployment.cache_clear = _legacy_deployment.cache_clear
 
 def composition(mode: str, *, backend=None, clock=time.monotonic, scenario='normal'):
     if mode == 'replay_sim':
-        from .replay_sim import ReplaySession, STATES
+        from .replay_sim import ReplaySession
 
-        require(type(scenario) is str and scenario in STATES, 'skill_sim_scenario')
+        require(type(scenario) is str, 'skill_sim_scenario')
         require(backend is None, 'skill_sim_backend_is_fixed')
         profile = deployment(mode)
         return {'session': ReplaySession(profile, scenario, clock), 'actions': profile.actions}

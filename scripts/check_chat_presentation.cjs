@@ -8,6 +8,7 @@ class Element {
     Object.assign(this, {tag, className:cls, textContent:text, children:[], style:{}, open:false});
   }
   appendChild(child) { this.children.push(child); return child; }
+  replaceChildren() { this.children = []; }
 }
 const messages = new Element('div');
 const sandbox = {
@@ -76,4 +77,33 @@ for (const [kind, label] of Object.entries({
     assert(!details.children.some(node=>node.tag==='button'), 'Proposal is display-only');
   }
 }
-console.log('Chat presentation: PASS (details, caveats, RPC count, four replay badges, display-only proposal)');
+const incidents = require('../data/skill_expansion_v1/incidents_v1/router_incidents_v1.json').incidents;
+const options = new Element('optgroup');
+const rows = incidents.map(row=>({id:row.id, title:row.title_vi}));
+sandbox.renderIncidentOptions(options, rows);
+sandbox.renderIncidentOptions(options, rows);
+assert.equal(options.children.length, 14);
+assert.deepEqual(options.children.map(node=>[node.value,node.textContent]),
+  incidents.map(row=>[row.id,row.title_vi]));
+const index = fs.readFileSync(path.join(__dirname,'../web_gateway/static/index.html'),'utf8');
+for (const id of ['normal', 'fault', 'missing']) assert(index.includes(`<option value="${id}">`));
+assert(index.includes('<optgroup id="incidentOptions"'));
+const incident = incidents[0];
+const guidance = {
+  label:'khuyến nghị — chưa thực hiện, áp dụng trên router của bạn',
+  steps:incident.fix_vi, sources:incident.sources,
+};
+for (const [verdict, ids, visible] of [['FAULT',['proof'],true], ['FAULT',[],false], ['UNKNOWN',[],false]]) {
+  const answer = sandbox.message('assistant', 'Pool DHCP hết địa chỉ.');
+  sandbox.enrichMessage(answer, {mode:'replay_sim', verdict, evidence_ids:ids, incident_guidance:guidance});
+  const card = answer.children.find(node=>node.className==='runbook-card');
+  assert.equal(!!card, visible);
+  if (!visible) continue;
+  assert.equal(card.children[0].textContent, 'Cách xử lý');
+  assert.equal(card.children[1].textContent, guidance.label);
+  assert.deepEqual(card.children.find(node=>node.tag==='ul').children.map(node=>node.textContent), guidance.steps);
+  assert.deepEqual(card.children.filter(node=>node.tag==='a').map(node=>node.href), guidance.sources);
+  assert(card.children.filter(node=>node.tag==='a').every(node=>node.rel==='noopener noreferrer'));
+  assert(!card.children.some(node=>node.tag==='button' || node.tag==='form'));
+}
+console.log('Chat presentation: PASS (details, caveats, RPC count, 4 replay badges, 14 incident options, 3 advisory cases)');

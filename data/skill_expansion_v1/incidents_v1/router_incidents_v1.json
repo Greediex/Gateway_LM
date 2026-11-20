@@ -1,0 +1,399 @@
+{
+  "format": "gateway-lm.router-incidents/v1",
+  "note": "Real-world router incident patterns summarised (own words) from public troubleshooting sources. Signals are typical observable values for building SIMULATED replay scenarios; thresholds are not calibrated. Fix steps are advisory: Gateway LM never applies them (L3).",
+  "incidents": [
+    {
+      "id": "INC-DHCP-EXHAUST",
+      "title_vi": "Hết địa chỉ DHCP",
+      "user_says": [
+        "điện thoại mới không vào được mạng",
+        "Wi-Fi có nhưng không có Internet trên máy mới",
+        "khách đến nhà không kết nối được"
+      ],
+      "signals": {
+        "dhcp_used": "= dhcp_total (ví dụ 150/150)",
+        "new_client_ipv4": "không có hoặc 169.254.x.x",
+        "existing_clients": "vẫn hoạt động",
+        "wan": "bình thường"
+      },
+      "fix_vi": [
+        "Xem danh sách lease, xóa lease của thiết bị không còn dùng",
+        "Rút ngắn thời gian lease (ví dụ 1–4 giờ ở nơi nhiều khách)",
+        "Mở rộng dải DHCP hoặc subnet nếu số thiết bị thật sự lớn"
+      ],
+      "skills": [
+        "D02",
+        "D03",
+        "A02",
+        "O01"
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/",
+        "https://networkengineering.stackexchange.com/questions/18882/options-when-facing-dhcp-exhaustion",
+        "https://www.reddit.com/r/Ubiquiti/comments/syyz24/dhcp_pool_exhausted_with_multiple_access_points/"
+      ]
+    },
+    {
+      "id": "INC-DNS-FAIL",
+      "title_vi": "DNS không phân giải được",
+      "user_says": [
+        "có Wi-Fi mà không vào được web",
+        "web không mở được nhưng Zalo vẫn chạy",
+        "báo không tìm thấy trang"
+      ],
+      "signals": {
+        "ping_ip": "thành công (ví dụ 1.1.1.1 0% mất gói)",
+        "dns_query": "timeout hoặc SERVFAIL",
+        "dns_resolvers_healthy": "0/N",
+        "wan": "lên"
+      },
+      "fix_vi": [
+        "Đổi DNS trên router sang resolver công cộng (1.1.1.1, 8.8.8.8) hoặc thêm resolver dự phòng",
+        "Báo nhà mạng nếu DNS của họ lỗi kéo dài"
+      ],
+      "skills": [
+        "F02",
+        "F03",
+        "E08",
+        "O01"
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-WAN-DOWN",
+      "title_vi": "Mất kết nối WAN / sự cố nhà mạng",
+      "user_says": [
+        "cả nhà mất mạng",
+        "tất cả thiết bị đều không vào được Internet"
+      ],
+      "signals": {
+        "wan_link": "down hoặc lên nhưng không có default route",
+        "upstream_loss_pct": "100",
+        "all_clients": "mất Internet",
+        "lan_wifi": "bình thường"
+      },
+      "fix_vi": [
+        "Kiểm tra cáp giữa modem và router, thử cáp khác",
+        "Khởi động lại modem trước, đợi đèn ổn định rồi mới khởi động router",
+        "Kiểm tra trang trạng thái/ứng dụng của nhà mạng; nếu có sự cố khu vực thì chờ"
+      ],
+      "skills": [
+        "SK04",
+        "E02",
+        "E03",
+        "E08",
+        "O07"
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-24G-COCHANNEL",
+      "title_vi": "Nghẽn kênh 2.4 GHz do hàng xóm",
+      "user_says": [
+        "Wi-Fi chậm buổi tối",
+        "ở chung cư mạng rất chậm",
+        "tốc độ lúc được lúc không"
+      ],
+      "signals": {
+        "band": "2.4 GHz",
+        "channel_utilization_pct": "cao (> 70)",
+        "neighbor_bss_same_channel": "nhiều (> 5)",
+        "channel": "không thuộc 1/6/11 hoặc độ rộng 40 MHz"
+      },
+      "fix_vi": [
+        "Đặt kênh 1, 6 hoặc 11 với độ rộng 20 MHz, hoặc bật tự chọn kênh",
+        "Chuyển thiết bị hỗ trợ sang 5 GHz"
+      ],
+      "skills": [
+        "B05",
+        "B06",
+        "B02",
+        "O02"
+      ],
+      "sources": [
+        "https://www.ekahau.com/blog/channel-planning-best-practices-for-better-wi-fi/",
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-WEAK-SIGNAL",
+      "title_vi": "Sóng yếu do vị trí router",
+      "user_says": [
+        "phòng ngủ sóng yếu",
+        "đi xa router là chậm",
+        "tivi hay bị mất mạng"
+      ],
+      "signals": {
+        "rssi_dbm": "< -75",
+        "snr_db": "< 20",
+        "link_mbps": "thấp",
+        "other_rooms": "bình thường"
+      },
+      "fix_vi": [
+        "Đặt router ở giữa nhà, trên cao, thoáng",
+        "Thêm điểm phát mesh/AP cho vùng xa",
+        "Cân nhắc 2.4 GHz cho thiết bị xa nếu 5 GHz quá yếu"
+      ],
+      "skills": [
+        "B04",
+        "SK02",
+        "A08",
+        "O02"
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    },
+    {
+      "id": "INC-BUFFERBLOAT",
+      "title_vi": "Bufferbloat: trễ tăng vọt khi có người tải",
+      "user_says": [
+        "đang chơi game thì lag khi có người tải phim",
+        "gọi video bị giật khi ai đó xem YouTube",
+        "ping bình thường mà vẫn lag"
+      ],
+      "signals": {
+        "latency_idle_ms": "thấp (ví dụ 15)",
+        "latency_under_load_ms": "cao (ví dụ > 100)",
+        "loss": "thấp",
+        "qos_sqm": "tắt"
+      },
+      "fix_vi": [
+        "Bật SQM (cake hoặc fq_codel) và đặt băng thông khoảng 85–95% tốc độ thực",
+        "Đo lại trễ khi tải để chỉnh"
+      ],
+      "skills": [
+        "G06",
+        "G07",
+        "G01",
+        "O06"
+      ],
+      "sources": [
+        "https://www.bufferbloat.net/projects/bloat/wiki/Bufferbloat_FAQs/",
+        "https://openwrt.org/docs/guide-user/network/traffic-shaping/sqm",
+        "https://docs.opnsense.org/manual/how-tos/shaper_bufferbloat.html"
+      ]
+    },
+    {
+      "id": "INC-PPPOE-MTU",
+      "title_vi": "Lỗi MTU/MSS trên PPPoE",
+      "user_says": [
+        "một số trang web không tải xong",
+        "web mở được nhưng treo giữa chừng",
+        "ngân hàng điện tử không vào được"
+      ],
+      "signals": {
+        "wan_proto": "pppoe",
+        "wan_mtu": "1492",
+        "mss_clamping": "tắt",
+        "large_packets": "bị rơi",
+        "small_ping": "bình thường"
+      },
+      "fix_vi": [
+        "Bật MSS clamping trên WAN PPPoE",
+        "Đặt MTU WAN 1492 (hoặc theo nhà mạng)",
+        "Không chặn ICMP fragmentation-needed"
+      ],
+      "skills": [
+        "C08",
+        "E04",
+        "E02"
+      ],
+      "sources": [
+        "https://digitize.au/library/networking/understanding-and-fixing-mtu-mss/",
+        "https://networkingtoolbox.net/reference/mtu-mss",
+        "https://bufferspeed.com/blog/mtu-black-hole-fix"
+      ]
+    },
+    {
+      "id": "INC-CGNAT",
+      "title_vi": "Bị CGNAT: không mở được port / truy cập từ xa",
+      "user_says": [
+        "mở port mà camera vẫn không xem từ xa được",
+        "không truy cập NAS từ ngoài được",
+        "game báo NAT strict"
+      ],
+      "signals": {
+        "wan_ip": "trong 100.64.0.0/10 (hoặc IP riêng)",
+        "public_ip": "khác wan_ip",
+        "port_forward": "đã cấu hình nhưng không vào được"
+      },
+      "fix_vi": [
+        "Yêu cầu nhà mạng cấp IP public (có thể tính phí)",
+        "Dùng IPv6 nếu có",
+        "Dùng dịch vụ tunnel/VPN thay cho mở port"
+      ],
+      "skills": [
+        "E05",
+        "J08"
+      ],
+      "sources": [
+        "https://www.ip-trackers.com/blog/cgnat-ip-address-range",
+        "https://getastatic.com/port-forwarding-not-working"
+      ]
+    },
+    {
+      "id": "INC-DOUBLE-NAT",
+      "title_vi": "NAT hai lớp (modem nhà mạng + router riêng)",
+      "user_says": [
+        "lắp thêm router thì game báo NAT",
+        "UPnP không hoạt động"
+      ],
+      "signals": {
+        "wan_ip": "IP riêng 192.168.x.x/10.x.x.x",
+        "upstream_gateway": "modem nhà mạng đang chạy chế độ router"
+      },
+      "fix_vi": [
+        "Chuyển modem nhà mạng sang chế độ bridge, hoặc đặt router riêng vào DMZ của modem"
+      ],
+      "skills": [
+        "E05",
+        "L03"
+      ],
+      "sources": [
+        "https://getastatic.com/port-forwarding-not-working"
+      ]
+    },
+    {
+      "id": "INC-IPV6-BROKEN",
+      "title_vi": "IPv6 hỏng làm web tải chậm",
+      "user_says": [
+        "mở web lần đầu rất lâu rồi mới vào",
+        "có trang lúc vào được lúc không"
+      ],
+      "signals": {
+        "client_ipv6_global": "có",
+        "ipv6_default_route": "thiếu hoặc không ra được",
+        "ipv4": "bình thường"
+      },
+      "fix_vi": [
+        "Sửa IPv6 trên router (RA/DHCPv6-PD, cho phép ICMPv6)",
+        "Tạm tắt IPv6 nếu nhà mạng không hỗ trợ đúng"
+      ],
+      "skills": [
+        "D06",
+        "D07",
+        "J06"
+      ],
+      "sources": [
+        "https://www.rfc-editor.org/info/rfc6555/",
+        "https://labs.ripe.net/author/emileaben/hampering-eyeballs-observations-on-two-happy-eyeballs-implementations/",
+        "https://oneuptime.com/blog/post/2026-03-20-ipv6-happy-eyeballs-issues/view"
+      ]
+    },
+    {
+      "id": "INC-DFS-RADAR",
+      "title_vi": "Wi-Fi 5 GHz rớt do radar (kênh DFS)",
+      "user_says": [
+        "Wi-Fi 5G tự mất khoảng một phút rồi có lại",
+        "gần sân bay hay mất sóng 5G"
+      ],
+      "signals": {
+        "channel": "kênh DFS 52–144",
+        "system_log": "DFS-RADAR-DETECTED, đổi kênh",
+        "radio_downtime_s": "khoảng 60"
+      },
+      "fix_vi": [
+        "Dùng kênh không DFS (36–48 hoặc 149–165) cho thiết bị cần ổn định"
+      ],
+      "skills": [
+        "B02",
+        "B06",
+        "H04"
+      ],
+      "sources": [
+        "https://blog.iptel.com.au/wifi-and-the-problem-with-radar",
+        "https://www.purple.ai/en-us/guides/dfs-channels-what-they-are-and-when-to-avoid-them",
+        "https://forums.raspberrypi.com/viewtopic.php?t=212107"
+      ]
+    },
+    {
+      "id": "INC-STICKY-CLIENT",
+      "title_vi": "Thiết bị bám điểm phát xa (sticky client)",
+      "user_says": [
+        "nhà có mesh mà điện thoại vẫn chậm",
+        "lên tầng mà vẫn bắt điểm phát dưới nhà"
+      ],
+      "signals": {
+        "client_rssi_dbm": "< -75 trên AP đang kết nối",
+        "nearer_ap_rssi_dbm": "mạnh hơn rõ rệt",
+        "roam_count": "0"
+      },
+      "fix_vi": [
+        "Bật 802.11k/v/r trên hệ thống mesh",
+        "Đặt ngưỡng RSSI tối thiểu nếu thiết bị hỗ trợ"
+      ],
+      "skills": [
+        "B07",
+        "B08",
+        "A08",
+        "L02"
+      ],
+      "sources": [
+        "https://openwrt.org/docs/guide-user/network/wifi/roaming",
+        "https://www.cisco.com/c/en/us/support/docs/wireless/catalyst-9800-series-wireless-controllers/221671-understand-802-11r-11k-11v-fast-roams-on.html",
+        "https://support.apple.com/guide/deployment/wi-fi-roaming-support-dep98f116c0f/web"
+      ]
+    },
+    {
+      "id": "INC-OVERHEAT-REBOOT",
+      "title_vi": "Router quá nhiệt, tự khởi động lại",
+      "user_says": [
+        "router hay tự khởi động lại",
+        "mạng mất vài phút mỗi ngày",
+        "router nóng ran"
+      ],
+      "signals": {
+        "temp_c": "cao (> 85)",
+        "uptime_s": "bị đặt lại nhiều lần",
+        "reboot_events": "nhiều trong 24 giờ"
+      },
+      "fix_vi": [
+        "Đặt router nơi thoáng, không chồng lên thiết bị nóng",
+        "Cập nhật firmware",
+        "Thay router nếu vẫn tự khởi động lại nhiều lần mỗi ngày"
+      ],
+      "skills": [
+        "H05",
+        "H07",
+        "SK08",
+        "H08"
+      ],
+      "sources": [
+        "https://www.glofiber.com/en/blog/how-to-tell-if-your-router-is-bad",
+        "https://www.engadget.com/2306359/how-to-keep-router-from-overheating/"
+      ]
+    },
+    {
+      "id": "INC-CAPACITY",
+      "title_vi": "Router cũ quá tải giờ cao điểm",
+      "user_says": [
+        "tối đông người dùng là chậm",
+        "nhà nhiều thiết bị thì mạng yếu"
+      ],
+      "signals": {
+        "clients_count": "nhiều (> 15)",
+        "cpu_pct": "cao giờ cao điểm",
+        "router_age": "> 5 năm"
+      },
+      "fix_vi": [
+        "Xem ai dùng nhiều băng thông giờ cao điểm",
+        "Cân nhắc nâng cấp router hoặc hệ thống mesh"
+      ],
+      "skills": [
+        "SK08",
+        "G05",
+        "A02",
+        "G04"
+      ],
+      "sources": [
+        "https://www.tp-link.com/us/blog/2527/wi-fi-not-working-how-to-diagnose-and-fix-it-fast/"
+      ]
+    }
+  ],
+  "note_vi": "Tín hiệu mẫu dùng cho Replay mô phỏng, ngưỡng chưa hiệu chỉnh. Hướng dẫn chỉ là khuyến nghị."
+}
