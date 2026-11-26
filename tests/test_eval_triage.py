@@ -11,8 +11,9 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from gateway_pilot.application.skill_triage import load_taxonomy
-from gateway_pilot.skill_expansion.replay_sim import ReplayProfile, SimulationReplayBackend
+from gateway_pilot.skill_expansion.replay_sim import ReplayProfile, SimulationReplayBackend, prepare_profile
 from scripts import eval_triage as ev, suggest_phrases
+from tests.test_incident_replay import synthetic_approval
 
 LOCKED_TEST_SHA256 = 'ca02bf8a29b1e1500d663118cd4e4c35a6f98ea44689f70c4596fffb3cb2bf40'
 
@@ -25,7 +26,8 @@ def scored(cards=(), groups=(), wanted=(), acceptable=(), must_refuse=False, ref
 class TriageEvalTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.profile = ev.deployment(ev.MODE)
+        with synthetic_approval(prepare_profile()):
+            cls.profile = ev.deployment(ev.MODE)
         cls.skill_ids = cls.profile.actions.keys() | cls.profile.incidents.actions.keys() | cls.profile.igate.actions.keys()
         cls.taxonomy = ev.read_json(ev.TAXONOMY)['groups']
         cls.groups = {group['id'] for group in cls.taxonomy}

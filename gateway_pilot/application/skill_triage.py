@@ -12,7 +12,8 @@ from ..skill_expansion.replay_sim import MODE, NOTICE, ReplaySession
 from ..workflow import normalize
 from .claim_guidance import (
     GENERIC_WARNING, build_next_steps, evidenced_claims,
-    incident_recommendation, load_claim_guidance, missing_sources, next_steps_text,
+    incident_recommendation, load_claim_guidance, load_claim_relations, missing_sources,
+    next_steps_text, relation_depths,
 )
 from .replay_sim_run import current_replay_result
 from .skill_chat import (
@@ -174,8 +175,8 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
     messages = claim_guidance['text']
     evidence, plans, timeline, skill_runs, per_skill = {}, [], [], [], []
     source_errors, claim_details = {}, []
-    faults, healthy, unknown, guidance = [], [], [], []
-    fault_ids, missing, incident_from = [], [], ''
+    fault_ids, healthy, unknown, missing = [], [], [], []
+    guidance = {}
     now = replay.clock()
     for sid, result in runs:
         run = current_replay_result(replay, result or {}, now)
@@ -192,20 +193,17 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
 
         assessment = run.get('assessment', {})
         claims = evidenced_claims(run, fresh)
-        fault_ids.extend((sid, cid) for cid, claim in claims.items() if claim['severity'] == 'FAULT')
         name = rows[sid]['name']
         verdict = run.get('verdict', 'UNKNOWN')
         verdict_claims = [cid for cid, claim in claims.items() if claim['severity'] == verdict]
         if not verdict_claims:
             verdict = 'UNKNOWN'
         if verdict == 'FAULT':
-            finding = ' '.join(dict.fromkeys(messages[cid] for cid in verdict_claims))
-            faults.append(f'Phát hiện: {name} — {finding}')
+            fault_ids.extend((sid, cid) for cid in verdict_claims)
             if item := incident_recommendation(replay, run, claims, fresh):
-                guidance.append(item)
-                incident_from = incident_from or f'{replay.scenario} · {sid}'
+                guidance[sid] = item
         elif verdict == 'HEALTHY':
-            healthy.append(name)
+            healthy.append(f"{name} ({' '.join(dict.fromkeys(messages[cid] for cid in verdict_claims))})")
         else:
             unknown.append(name)
             missing.extend(f'{sid} · {source}' for source in missing_sources(run))
@@ -224,17 +222,30 @@ def aggregate(session_id: str, replay: ReplaySession, rows: dict[str, dict],
         if limitation := assessment.get('limitation'):
             claim_details.append(limitation)
 
-    verdict = 'FAULT' if faults else 'UNKNOWN' if unknown else 'HEALTHY'
-    answer = [NOTICE, *faults]
+    depths = {}
+    if fault_ids and replay.scenario in replay.profile.incident_replay.measurements:
+        depths = relation_depths(load_claim_relations(replay.profile), {cid for _, cid in fault_ids})
+    fault_ids.sort(key=lambda finding: depths.get(finding[1], len(depths)))
+    findings = {}
+    for sid, cid in fault_ids:
+        depth = depths.get(cid)
+        findings.setdefault((depth, sid), []).append(messages[cid])
+    headings = {None: 'Phát hiện: ', 0: 'Nguyên nhân chính: ưu tiên kiểm tra theo mô phỏng · '}
+    verdict = 'FAULT' if fault_ids else 'UNKNOWN' if unknown else 'HEALTHY'
+    answer = [NOTICE, *(f"{headings.get(depth, 'Hệ quả/liên quan: ')}{rows[sid]['name']} — "
+                         + ' '.join(dict.fromkeys(texts)) for (depth, sid), texts in findings.items())]
     if healthy:
         answer.append(f"Bình thường: {', '.join(healthy)}.")
     if unknown:
         answer.append(f"Chưa đủ bằng chứng: {', '.join(unknown)}.")
     incident_guidance = {'label': ADVISORY, **{
-        key: list(dict.fromkeys(value for item in guidance for value in item[key]))
+        key: list(dict.fromkeys(value for item in guidance.values() for value in item[key]))
         for key in ('steps', 'sources')}} if guidance else None
+    primary = [(sid, cid) for sid, cid in fault_ids if depths.get(cid) == 0]
+    guide_sid = next((sid for sid, _ in fault_ids if sid in guidance), '')
     next_steps = build_next_steps(claim_guidance, verdict, faults=fault_ids, incident=incident_guidance,
-                                  incident_from=incident_from, missing=missing)
+                                  incident_from=f'{replay.scenario} · {guide_sid}', missing=missing,
+                                  primary_faults=primary)
     answer.append(next_steps_text(next_steps))
     statuses = {row['status'] for row in per_skill}
     status = statuses.pop() if len(statuses) == 1 else 'PARTIAL'

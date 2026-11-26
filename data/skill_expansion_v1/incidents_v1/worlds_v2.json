@@ -1,0 +1,42 @@
+{
+  "format": "gateway-lm.incident-worlds/v2",
+  "current": {
+    "expansion.client_association": {"associated": true, "access_point_id": "ap-livingroom-01"},
+    "expansion.config_snapshot": {"snapshot_available": true, "configuration_revision": "sim-rev-7"},
+    "expansion.device_inventory": {"devices_count": 3, "segment": "synthetic-lan"},
+    "expansion.dns_resolvers": {"resolver_count": 3, "healthy_count": 3},
+    "expansion.evidence_history": {"samples": 3, "window_seconds": 30},
+    "expansion.firewall_audit": {"rules_count": 18, "invalid_rules": 0},
+    "expansion.gateway_links": {"known_gateways": 1, "reachable_gateways": 1},
+    "expansion.incident_events": {"incident_events": 0, "open_incidents": 0},
+    "expansion.latency_loss": {"latency_ms": 18, "packet_loss_pct": 0},
+    "expansion.neighbor_table": {"neighbor_count": 12, "failed_entries": 0},
+    "expansion.radio_health": {"radio_up": true, "channel": 36, "band": "5GHz"},
+    "expansion.radio_events": {"radar_detected_count": 0, "channel_changes": 0, "on_dfs_channel": false, "observation_window_s": 3600},
+    "expansion.roaming_events": {"roam_count": 0, "last_ap_id": "ap-livingroom-01"},
+    "expansion.services_health": {"running_services": 8, "failed_services": 0},
+    "expansion.storage_health": {"used_pct": 48, "wear_pct": 12},
+    "expansion.system_load": {"cpu_pct": 17, "load1": 0.6, "mem_pct": 62, "clients_count": 3},
+    "expansion.temperature": {"celsius": 54.5},
+    "expansion.topology_inventory": {"node_count": 5, "edge_count": 4},
+    "expansion.upstream_probe": {"reachable": true, "loss_pct": 0},
+    "expansion.vpn_peers": {"peers_reachable": 1, "peers_unreachable": 0},
+    "expansion.vpn_routes": {"expected_routes": 3, "missing_routes": 0},
+    "expansion.vpn_tunnel": {"tunnel_up": true, "peer_count": 1},
+    "expansion.wan_events": {"disconnect_events": 0, "observation_window_s": 3600},
+    "expansion.wan_link": {"link_up": true, "uptime_seconds": 3600}
+  },
+  "history_offsets_seconds": {
+    "K02": {"baseline": -5},
+    "K07": {"before": -20}
+  },
+  "scenarios": {
+    "INC-24G-COCHANNEL": {
+      "expansion.radio_health": {"radio_up": true, "channel": 6, "band": "2.4GHz"}
+    },
+    "INC-CAPACITY": {
+      "igate.ig02": {"complete": false, "truncated": true},
+      "igate.ig04": {"qos_available": true, "sessions_complete": false, "sessions": []}
+    }
+  }
+}

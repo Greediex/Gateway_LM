@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, replace
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 from urllib.parse import urlsplit
 
@@ -70,16 +70,17 @@ class IncidentReplay:
     symptom_routes: dict[str, str]
     claim_text: dict[str, str]
     joint_checks: dict[str, tuple[dict[str, Sample], dict]]
+    current_defaults: dict[str, dict]
+    history_offsets: dict[str, dict[str, int]]
 
-    def samples_for(self, scenario: str, baseline: dict[str, Sample]) -> dict[str, Sample]:
-        values = self.measurements[scenario]
-        times = {alias: timestamp(sample.simulated_at) for alias, sample in baseline.items()}
-        latest = max(times.values())
+    def samples_for(self, scenario: str, skill_id: str, baseline: dict[str, Sample]) -> dict[str, Sample]:
+        values = self.current_defaults | self.measurements[scenario]
+        offsets = _sample_offsets(baseline) | self.history_offsets.get(skill_id, {})
         return {
             alias: replace(sample,
-                           simulated_at=(self.current_time + (times[alias] - latest)).isoformat(),
+                           simulated_at=(self.current_time + timedelta(seconds=offsets[alias])).isoformat(),
                            values=values.get(sample.function_id, sample.values)
-                           if times[alias] == latest else sample.values)
+                           if offsets[alias] == 0 else sample.values)
             for alias, sample in baseline.items()
         }
 
@@ -90,6 +91,32 @@ class IncidentReplay:
                and timestamp(row['simulated_at']) == self.current_time for row in evidence):
             return self.guidance[scenario]
         return None
+
+
+def _sample_offsets(samples: dict[str, Sample]) -> dict[str, float]:
+    times = {alias: timestamp(sample.simulated_at) for alias, sample in samples.items()}
+    latest = max(times.values())
+    return {alias: (when - latest).total_seconds() for alias, when in times.items()}
+
+
+def _validate_world(world: IncidentReplay, readers: dict[str, dict[str, Sample]]) -> None:
+    current_ports = set()
+    require(world.history_offsets.keys() <= readers.keys(), 'skill_sim_incident_history_reader')
+    for sid, samples in readers.items():
+        offsets = _sample_offsets(samples)
+        current_ports.update(samples[alias].function_id for alias, offset in offsets.items() if offset == 0)
+        edits = world.history_offsets.get(sid, {})
+        require(type(edits) is dict and all(alias in offsets and offsets[alias] < 0
+                and type(offset) is int and -86400 <= offset < 0 for alias, offset in edits.items()),
+                'skill_sim_incident_history_offset')
+    require(world.current_defaults.keys() <= current_ports and all(
+        values.keys() <= current_ports for values in world.measurements.values()), 'skill_sim_incident_current_reader')
+    for scenario in world.measurements:
+        shared = {}
+        for sid, samples in readers.items():
+            for sample in world.samples_for(scenario, sid, samples).values():
+                key = (sample.function_id, sample.scope, sample.target, sample.simulated_at)
+                require(shared.setdefault(key, sample.values) == sample.values, 'skill_sim_incident_conflicting_samples')
 
 
 def _joint_check(sid: str, config: dict, current: dict, ports: dict) -> tuple[dict, dict]:
@@ -121,12 +148,17 @@ def _joint_check(sid: str, config: dict, current: dict, ports: dict) -> tuple[di
 def load_incident_replay(base: ReplayCatalog, igate: ReplayCatalog, checks: ReplayCatalog) -> tuple[IncidentReplay, str]:
     reference, rows = _references()
     scenarios = read_json(DIRECTORY / 'scenarios.json')
+    worlds = read_json(DIRECTORY / 'worlds_v2.json')
     routing = read_json(DIRECTORY / 'routing.json')
     diagnostic = read_json(DIRECTORY / 'diagnostics.json')
     require(set(scenarios) == {'format', 'simulated_at', 'scenarios'}
             and scenarios['format'] == 'gateway-lm.incident-replay/v1'
             and type(scenarios['scenarios']) is dict and scenarios['scenarios'].keys() == rows.keys(),
             'skill_sim_incident_scenarios')
+    require(set(worlds) == {'format', 'current', 'history_offsets_seconds', 'scenarios'}
+            and worlds['format'] == 'gateway-lm.incident-worlds/v2'
+            and all(type(worlds[key]) is dict for key in ('current', 'history_offsets_seconds', 'scenarios'))
+            and worlds['scenarios'].keys() <= rows.keys(), 'skill_sim_incident_worlds')
     require(set(routing) == {'format', 'phrases'} and routing['format'] == 'gateway-lm.incident-symptom-routing/v1'
             and type(routing['phrases']) is dict and routing['phrases'].keys() <= (base.actions.keys() | checks.actions.keys()),
             'skill_sim_incident_routing')
@@ -137,7 +169,7 @@ def load_incident_replay(base: ReplayCatalog, igate: ReplayCatalog, checks: Repl
     ports = {fid: next(p for p in artifact['ports'] if p['port_id'] == fid)
              for catalog in (base, igate, checks) for fid, (artifact, _, _) in catalog.registries.items()}
     validators = {fid: Draft202012Validator(port['schema']) for fid, port in ports.items()}
-    for measurements in scenarios['scenarios'].values():
+    for measurements in (*scenarios['scenarios'].values(), worlds['current'], *worlds['scenarios'].values()):
         require(type(measurements) is dict and bool(measurements)
                 and all(fid in validators and type(value) is dict and validators[fid].is_valid(value)
                         for fid, value in measurements.items()), 'skill_sim_incident_fixture_schema')
@@ -170,8 +202,13 @@ def load_incident_replay(base: ReplayCatalog, igate: ReplayCatalog, checks: Repl
             'skill_sim_incident_claim_text')
     guidance = {key: {'label': ADVISORY, 'steps': row['fix_vi'], 'sources': row['sources']}
                 for key, row in rows.items()}
-    profile = IncidentReplay(now, scenarios['scenarios'], guidance, routes, diagnostic['claim_text'], joint)
+    measurements = {key: values | worlds['scenarios'].get(key, {}) for key, values in scenarios['scenarios'].items()}
+    profile = IncidentReplay(now, measurements, guidance, routes, diagnostic['claim_text'], joint,
+                             worlds['current'], worlds['history_offsets_seconds'])
+    readers = {sid: states['normal'] for catalog in (base, igate, checks) for sid, states in catalog.samples.items()}
+    readers.update({sid: samples for sid, (samples, _) in joint.items()})
+    _validate_world(profile, readers)
     # Source order affects which READs can run under a partial call budget.
-    return profile, digest({'scenarios': scenarios, 'references': reference, 'routing': routing,
+    return profile, digest({'scenarios': scenarios, 'worlds': worlds, 'references': reference, 'routing': routing,
                             'diagnostics': diagnostic, 'advisory': ADVISORY,
                             'joint_source_order': {sid: list(samples) for sid, (samples, _) in joint.items()}})

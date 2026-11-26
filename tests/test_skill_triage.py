@@ -12,7 +12,7 @@ from unittest.mock import Mock, patch
 
 from gateway_pilot.adapters.results import ToolResult
 from gateway_pilot.application import skill_chat
-from gateway_pilot.application.claim_guidance import GUIDANCE, load_claim_guidance
+from gateway_pilot.application.claim_guidance import GUIDANCE, load_claim_guidance, load_claim_relations
 from gateway_pilot.application.skill_launcher import SkillLauncher
 from gateway_pilot.application.skill_triage import TAXONOMY, load_taxonomy
 from gateway_pilot.command_catalog.loader import read_json
@@ -21,7 +21,7 @@ from gateway_pilot.core import PlanError
 from gateway_pilot.observability.snapshot import VerifiedSnapshot
 from gateway_pilot.skill_expansion import deployment, replay_sim
 from gateway_pilot.skill_expansion.incident_replay import ADVISORY
-from tests.test_incident_replay import request
+from tests.test_incident_replay import request, synthetic_approval
 
 
 class SkillTriageTests(unittest.TestCase):
@@ -35,6 +35,7 @@ class SkillTriageTests(unittest.TestCase):
         self.launcher = SkillLauncher(clock=self.clock, factory=self.compose)
         self.model = SimpleNamespace(local_only=True, choose_skills=Mock())
         self.chat = skill_chat.SkillChat(self.launcher, clock=self.clock, model_factory=lambda: self.model)
+        self.enterContext(synthetic_approval(self.profile))
         self.enterContext(patch.object(replay_sim, 'prepare_profile', return_value=self.profile))
         self.enterContext(patch.object(skill_chat, 'CHAT', self.chat))
 
@@ -197,6 +198,65 @@ class SkillTriageTests(unittest.TestCase):
         self.assertLessEqual(len(texts), 6)
         self.assertTrue(any(step['from'] == 'F02 · no_healthy_resolver_v1' for step in next_steps['steps']))
         self.model.choose_skills.assert_not_called()
+
+    def test_related_faults_and_advice_put_the_cause_first(self):
+        for selected in (['G01', 'G06'], ['G06', 'G01']):
+            with self.subTest(selected=selected):
+                status, result = request('/api/skills/run_selected', {
+                    'session_id': self.session('INC-BUFFERBLOAT'), 'skill_ids': selected,
+                })
+                self.assertEqual(status, HTTPStatus.OK, result)
+                self.assertEqual(result['routing']['plan'], selected)
+                rows = {r['skill_id']: r for r in result['triage_results']}
+                self.assertEqual({r['verdict'] for r in rows.values()}, {'FAULT'})
+                self.assertTrue(all(r['evidence_ids'] for r in rows.values()))
+                root, effect = result['answer'].splitlines()[1:3]
+                self.assertTrue(root.startswith('Nguyên nhân chính: ưu tiên kiểm tra theo mô phỏng'))
+                self.assertTrue(effect.startswith('Hệ quả/liên quan: '))
+                self.assertIn(rows['G06']['claims'][0], root)
+                self.assertIn(rows['G01']['claims'][0], effect)
+                steps = result['next_steps']['steps']
+                self.assertEqual({step['from'] for step in steps[:2]}, {'G06 · bufferbloat_v1'})
+                self.assertIn('G01 · latency_high_v1', {step['from'] for step in steps[2:]})
+
+    def test_wan_route_fixes_precede_generic_incident_steps(self):
+        result = self.chat.run_selected(self.session('INC-WAN-DOWN'), ['O07'])
+        steps = result['next_steps']['steps']
+        self.assertIn('Nguyên nhân chính:', result['answer'])
+        self.assertEqual({step['from'] for step in steps[:2]}, {'O07 · o07_default_route_absent_v1'})
+        self.assertIn('tuyến IPv4 mặc định', steps[0]['text'])
+
+    def test_healthy_claim_states_its_measured_quantity(self):
+        result = self.chat.run_selected(self.session('INC-CAPACITY'), ['GP04', 'IG03', 'SK08'])
+        self.assertEqual([row['verdict'] for row in result['triage_results']], ['FAULT', 'HEALTHY', 'HEALTHY'])
+        healthy = next(line for line in result['answer'].splitlines() if line.startswith('Bình thường: '))
+        self.assertIn('iGate báo router có kết nối Internet.', healthy)
+        self.assertNotIn('CPU', healthy)
+
+    def test_relation_cannot_add_a_missing_or_expired_finding(self):
+        sid = self.session('INC-BUFFERBLOAT')
+        run = self.launcher.run
+
+        def expire_root(session_id, skill_id, *, deadline):
+            result = run(session_id, skill_id, deadline=deadline)
+            if skill_id == 'G06':
+                self.assertEqual(result['verdict'], 'FAULT')
+                for row in result['evidence']:
+                    row['expires_in_s'] = 0
+            return result
+
+        with patch.object(self.launcher, 'run', side_effect=expire_root):
+            expired = self.chat.run_selected(sid, ['G01', 'G06'])
+        absent = self.chat.run_selected(sid, ['G01'])
+        cause_text = load_claim_guidance(self.profile)['text']['bufferbloat_v1']
+        for result in (expired, absent):
+            self.assertEqual(result['verdict'], 'FAULT')
+            self.assertIn('Phát hiện:', result['answer'])
+            self.assertNotIn(cause_text, result['answer'])
+            self.assertNotIn('Nguyên nhân chính:', result['answer'])
+            self.assertNotIn('Hệ quả/liên quan:', result['answer'])
+            self.assertTrue(all('G06' not in s['from'] for s in result['next_steps']['steps']))
+        self.assertEqual(expired['triage_results'][1]['evidence_ids'], [])
 
     def test_healthy_and_mixed_verdicts_respect_shared_call_budget(self):
         for scenario, keys, budget, verdict, statuses in [
@@ -363,8 +423,10 @@ class SkillTriageTests(unittest.TestCase):
         self.assertEqual(set(metadata['text']), set(claims))
         self.assertTrue(all(text.strip() for text in metadata['text'].values()))
         self.assertTrue(all(metadata['text'][cid] == text for cid, text in existing.items()))
-        self.assertEqual(set(metadata['fix']), {cid for cid, severity in claims.items()
-                                                if severity == 'FAULT' and cid not in existing})
+        remediation = {'bufferbloat_v1', 'channel_crowded_v1', 'gp07_sticky_to_weak_ap_v1',
+                       'o07_default_route_absent_v1', 'o07_upstream_unreachable_v1'}
+        self.assertEqual(set(metadata['fix']), remediation | {cid for cid, severity in claims.items()
+                                                              if severity == 'FAULT' and cid not in existing})
 
     def test_claim_guidance_rejects_invalid_metadata(self):
         seed = json.loads(GUIDANCE.read_text(encoding='utf-8'))
@@ -403,6 +465,25 @@ class SkillTriageTests(unittest.TestCase):
             path.write_text(duplicate, encoding='utf-8')
             with self.assertRaisesRegex(PlanError, 'duplicate_json_key$'):
                 load_claim_guidance(self.profile, path)
+
+    def test_claim_relations_reject_unknown_ids_non_faults_and_cycles(self):
+        cause, effect = 'bufferbloat_v1', 'latency_high_v1'
+        self.assertIn(effect, load_claim_relations(self.profile)[cause])
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / 'relations.json'
+            for entries, reason in [
+                ({'unknown_claim_v1': [effect]}, 'unknown_id'),
+                ({cause: ['unknown_claim_v1']}, 'unknown_id'),
+                ({cause: ['queue_delay_ok_v1']}, 'non_fault'),
+                ({cause: [effect, effect]}, 'effects'),
+                ({cause: effect}, 'effects'),
+                ({cause: [cause]}, 'cycle'),
+                ({cause: [effect], effect: [cause]}, 'cycle'),
+            ]:
+                with self.subTest(entries=entries):
+                    path.write_text(json.dumps(entries), encoding='utf-8')
+                    with self.assertRaisesRegex(PlanError, f'claim_relations_{reason}$'):
+                        load_claim_relations(self.profile, path)
 
     def test_healthy_offered_cards_are_returned_but_not_executed(self):
         sid = self.session()

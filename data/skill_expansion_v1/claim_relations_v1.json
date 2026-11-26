@@ -1,0 +1,9 @@
+{
+  "bufferbloat_v1": ["latency_high_v1", "jitter_high_v1"],
+  "channel_crowded_v1": ["airtime_congested_v1"],
+  "gp07_sticky_to_weak_ap_v1": ["rssi_weak_v1", "sk02_rssi_below_floor_v1"],
+  "no_default_route_v1": ["upstream_unreachable_v1", "o07_upstream_unreachable_v1", "o01_upstream_unreachable_v1"],
+  "o07_default_route_absent_v1": ["upstream_unreachable_v1", "o07_upstream_unreachable_v1", "o01_upstream_unreachable_v1"],
+  "upstream_unreachable_v1": ["igate_internet_unreachable_v1"],
+  "o07_upstream_unreachable_v1": ["igate_internet_unreachable_v1"]
+}

@@ -68,7 +68,7 @@ def run_replay_skill(replay: ReplaySession, session_id: str, skill_id: str, *, d
     diagnostic = catalog.diagnostics['skills'][skill_id]
     if world:
         samples, diagnostic = world.joint_checks.get(skill_id, (samples, diagnostic))
-        samples = world.samples_for(replay.scenario, samples)
+        samples = world.samples_for(replay.scenario, skill_id, samples)
 
     for alias, sample in samples.items():
         time_left = limit - replay.clock()

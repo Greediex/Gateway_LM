@@ -2,6 +2,36 @@
   "format": "gateway-lm.claim-guidance/v1",
   "note_vi": "Nội dung hiển thị và khuyến nghị cho Replay mô phỏng, không phải bằng chứng hoặc thao tác đã thực hiện.",
   "claims": {
+    "bufferbloat_v1": {
+      "fix_vi": [
+        "Đo lại độ trễ khi nghỉ và khi tải lên hoặc tải xuống gần hết tốc độ đường truyền.",
+        "Nếu độ trễ chỉ tăng mạnh lúc tải, nhờ người quản trị kiểm tra SQM và đo lại sau khi chỉnh tốc độ."
+      ]
+    },
+    "channel_crowded_v1": {
+      "fix_vi": [
+        "Đo lại mức sử dụng và số điểm phát trên các kênh lân cận khi Wi-Fi chậm.",
+        "Thử kênh 2.4 GHz ít bận hơn và so lại độ trễ ở cùng vị trí."
+      ]
+    },
+    "gp07_sticky_to_weak_ap_v1": {
+      "fix_vi": [
+        "Đo tín hiệu của AP hiện tại và AP gần hơn tại cùng vị trí.",
+        "Ngắt rồi kết nối lại Wi-Fi gần AP mạnh hơn và kiểm tra thiết bị đã chuyển AP chưa."
+      ]
+    },
+    "o07_default_route_absent_v1": {
+      "fix_vi": [
+        "Kiểm tra mục tuyến IPv4 mặc định trong bảng định tuyến của router.",
+        "Đối chiếu địa chỉ gateway WAN và trạng thái phiên WAN trước khi thử lại."
+      ]
+    },
+    "o07_upstream_unreachable_v1": {
+      "fix_vi": [
+        "Kiểm tra trạng thái WAN và thử tới một đích IP bên ngoài từ router.",
+        "Nếu nhiều đích IP cùng lỗi, ghi thời điểm và kết quả để đối chiếu với nhà mạng."
+      ]
+    },
     "a03_consistent_v1": {
       "text_vi": "Có ít nhất 1 thiết bị trong danh sách; IP và MAC khớp nhau, tên thiết bị không xung đột."
     },
