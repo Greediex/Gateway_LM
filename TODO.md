@@ -38,6 +38,19 @@ Tiến độ EVAL-01 (26/11/2026, `v2`) — Bộ đánh giá có 250 mô tả ti
 Tiến độ TRIAGE-02 (26/11/2026, `v2`) — Đã revert: dev top-3 tăng 27/132 → 126/132 nhưng test khóa giảm 13/80 → 10/80 và từ chối nhầm trên test tăng 1 → 41 (overfit: tổ hợp từ khóa lấy từ câu dev, luật "không khớp tín hiệu thì từ chối"). LLM cục bộ trả lựa chọn hợp lệ 1/23 lần. Lần sau cần nhãn người duyệt, câu tự nhiên hơn và tập test mới.
 Tiến độ WORLD-01 (26/11/2026, `v2`) — Đồng bộ snapshot INC theo port/phạm vi/thời điểm và xếp Claim FAULT có bằng chứng theo quan hệ mô phỏng. Ma trận 1.582 lượt, 2.408 READ, 33 FAULT có bằng chứng, 0 mâu thuẫn trong 9 nhóm. EVAL-01 dev trước/sau đều 7/45 FAULT có bằng chứng và 0/45 FAULT ở đối chứng. Unittest 1.170 tổng, 1.165 pass, 0 fail, 5 skip Windows (516,086 s). `check_project` và hai kiểm tra Node PASS. Scorer đạt 303/303 ca Skill và 21/21 ca kiểm tra sự cố. Coverage 101/120 mô phỏng, 0/120 router verified. Pin `incident_scenarios_digest` chờ duyệt là `3d52f59586cb170bff1ae421c5dad1cf87e6508943e53d2b97aad1245bb2cece`. Chưa có CI cho commit local. [Ma trận](docs/reports/INCIDENT_WORLD_CONSISTENCY_V1.md) · [Báo cáo dev](docs/reports/WORLD_ROOTCAUSE_V1.md) · [CI nền](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
 
+## Đợt TRIAGE (26/11)
+
+Mục tiêu: hiểu mô tả tự nhiên của khách để chọn đúng Skill. Baseline EVAL-01 (tắt LLM): dev top-3 27/132, test 13/80, đúng nhóm 0/136, sự cố có FAULT kèm bằng chứng 7/45. Brief đầy đủ cho từng việc nằm ở `../codex_tasks/` (prompt dán cho Codex, không phải kế hoạch song song). Claude review trước khi đánh dấu.
+
+- [ ] **WORLD-01** — đã commit `bdf3c11`, chờ Claude review và chủ dự án duyệt pin `incident_scenarios_digest`. Gate: 0 xung đột Claim, FAULT sai trên `normal` 0/45, dev top-k không đổi.
+- [ ] **REVIEW-01 (chủ dự án)** — duyệt nhãn dev EVAL-01; tự viết 80–100 câu test v2, agent không thấy; ghi pin.
+- [ ] **EVAL-02** — `triage_eval_v2`: dev đã duyệt, test v2 chỉ commit SHA, `eval_triage --dataset v2` chỉ in số tổng, thêm chỉ số từ chối nhầm.
+- [ ] **TRIAGE-03** — xếp hạng 50 nhóm taxonomy bằng truy hồi (BM25 + n-gram ký tự sau `normalize`) thay cho khớp nguyên văn; không từ khóa lấy từ eval, không luật từ chối mới. Gate: dev top-3 ≥ 50%, test v1 top-3 > 13/80, từ chối nhầm ≤ 1.
+- [ ] **LLM-01** — đếm lý do LLM hỏng (1/23 hợp lệ) rồi sửa bằng JSON schema enum hoặc rút prompt; không tăng TTL. Gate: ≥ 90% lượt hợp lệ, top-1 không giảm.
+- [ ] **FINAL-TEST (Claude + chủ dự án)** — chạy test v2 một lần; không đạt thì revert như TRIAGE-02.
+
+Thứ tự: WORLD-01 → (REVIEW-01 ‖ EVAL-02) → TRIAGE-03 → LLM-01 → FINAL-TEST. COV còn lại (101/120) và router thật (M3) đợi sau đợt này.
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

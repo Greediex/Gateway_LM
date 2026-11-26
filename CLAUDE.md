@@ -44,7 +44,9 @@ Khối này được khóa bằng SHA-256 trong `scripts/check_project.py` (`LOC
 
 ## Cách làm việc khuyến nghị
 
-- Đọc `TODO.md` để biết task đang mở (P0: COV-01…04, DATA-01/02, FINALIZE-02, CHAT-01, UI-01) trước khi bắt đầu.
+- Đọc `TODO.md` để biết task đang mở trước khi bắt đầu. Trọng tâm hiện tại (26/11/2026): mục **“Đợt TRIAGE (26/11)”**, tức hiểu mô tả tự nhiên của khách để chọn đúng Skill. Phần chẩn đoán khi đã chọn đúng Skill đã đạt 14/14 sự cố mô phỏng. (Danh sách P0 cũ COV-01…04, DATA-01/02, FINALIZE-02, CHAT-01, UI-01 vẫn nằm trong TODO.md.)
+- Python dùng `.venv-graph/bin/python`. Nếu là Codex: làm theo mục “Codex task workflow” và “Evaluation discipline” trong `AGENTS.md`.
+- Vai trò: Claude điều phối và review, Codex làm từng brief trong `../codex_tasks/`, chủ dự án duyệt nhãn, approval pin và lần chạy test cuối.
 - Mở rộng qua registry/interface hiện có (`gateway_pilot/skill_expansion`, `gateway_pilot/graph_v3`, `gateway_pilot/application`), tái dùng ReadSession/GraphRunner/Verifier.
 - Commit nhỏ lên `v2`; message mô tả rõ thay đổi và giới hạn còn lại.
 - Khi không chắc một tuyên bố có được chứng minh không: ghi là *chưa xác minh*.

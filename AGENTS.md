@@ -7,7 +7,22 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 - For any plan, backlog, checklist or progress update, follow **[TODO.md — Quy tắc cập nhật](TODO.md#quy-tắc-cập-nhật)**. Update that root file in place, including when a skill suggests a separate plan artifact; create another tracking file only when the user explicitly requests it.
 
 ## Scope and honesty
-- Target branch for cleanup work: `refactor/gateway-lm-composite-adapter-pr01`. Never edit/merge `main` without explicit approval.
+- Working branch is `v2`. Codex tasks branch from it as `codex/<task-id>` in their own worktree. Never edit/merge `main` without explicit approval. (The old `refactor/gateway-lm-composite-adapter-pr01` branch is historical.)
+
+## Codex task workflow
+
+- Each task comes as a brief (`codex_tasks/<ID>.md` next to the repo, listed in [TODO.md](TODO.md)). Do only what the brief says; anything else goes in the report as a proposal.
+- Start: `git worktree add ../wt-<id> -b codex/<id> v2`. Do not work in the main `Gateway_LM_v2` checkout; it may hold someone else's staged changes.
+- Python is `.venv-graph/bin/python` (the bare `python` in the commands below means this interpreter).
+- Finish: one commit `feat(<ID>): ...` on `codex/<id>`, no push, one progress line in TODO.md (checkbox unchanged), report at `../codex_<id>_report.md` with real numbers and commands run.
+- Blocked or a gate fails: stop, commit nothing that weakens a check, and write the report saying what failed.
+
+## Evaluation discipline (triage / LLM work)
+
+- Tune only on `dev`. A locked `test` split is run **once per task, at the end**, aggregate numbers only; never print, read or copy per-case test text or labels.
+- Never copy wording from any eval split into taxonomy, phrases, prompts or rules. Routing vocabulary must come from catalog text or the cited `sources` of a taxonomy group.
+- Do not add refusal rules to raise precision; false refusals on test must not rise above baseline.
+- A change that improves dev but not test is overfit: report it, do not ship it (see the TRIAGE-02 revert, `6d61d52`).
 - Treat this as an evidence-driven **pilot**. Do not claim firmware/NPU deployment or arbitrary-task ability without actual measurements.
 - Keep v1/v2 experiments, Graph v3/v4 protocols, frozen fixtures and historical reports intact; mark historical results as historical.
 
