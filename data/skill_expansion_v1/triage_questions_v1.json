@@ -1,0 +1,45 @@
+{
+  "format": "gateway-lm.triage-questions/v1",
+  "questions": [
+    {
+      "id": "coverage-or-web",
+      "question_vi": "Bạn muốn kiểm tra sóng ở vị trí đang dùng hay việc mở trang khi đã có kết nối?",
+      "options": [
+        {"label_vi": "Sóng yếu ở chỗ đang dùng", "group_id": "SYM-05-song-yeu"},
+        {"label_vi": "Có kết nối nhưng trang không mở", "group_id": "SYM-02-dns-hong"}
+      ]
+    },
+    {
+      "id": "coverage-or-band",
+      "question_vi": "Sóng yếu theo vị trí hay riêng tên Wi-Fi 5 GHz biến mất?",
+      "options": [
+        {"label_vi": "Sóng yếu theo vị trí", "group_id": "SYM-05-song-yeu"},
+        {"label_vi": "Tên Wi-Fi 5 GHz biến mất", "group_id": "SYM-11-dfs-5g-rot"}
+      ]
+    },
+    {
+      "id": "camera-local-or-remote",
+      "question_vi": "Camera mất kết nối ngay tại nhà hay chỉ gặp lỗi khi xem từ bên ngoài?",
+      "options": [
+        {"label_vi": "Camera mất kết nối tại nhà", "group_id": "SYM-26-camera-offline"},
+        {"label_vi": "Chỉ lỗi khi xem từ xa", "group_id": "SYM-27-camera-tu-xa"}
+      ]
+    },
+    {
+      "id": "camera-local-or-forwarded",
+      "question_vi": "Camera đã mất kết nối tại nhà hay còn xem tại nhà và chỉ lỗi sau khi mở cổng?",
+      "options": [
+        {"label_vi": "Camera mất kết nối tại nhà", "group_id": "SYM-26-camera-offline"},
+        {"label_vi": "Xem từ xa qua cổng đã mở", "group_id": "SYM-08-cgnat-camera"}
+      ]
+    },
+    {
+      "id": "camera-local-check",
+      "question_vi": "Khi điện thoại dùng chung Wi-Fi với camera, bạn còn xem được hình không?",
+      "options": [
+        {"label_vi": "Cùng Wi-Fi vẫn mất hình", "group_id": "SYM-26-camera-offline"},
+        {"label_vi": "Cùng Wi-Fi vẫn xem được", "group_id": "SYM-27-camera-tu-xa"}
+      ]
+    }
+  ]
+}

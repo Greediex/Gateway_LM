@@ -568,7 +568,8 @@ class Handler(BaseHTTPRequestHandler):
 
                 data = _parse(raw)
                 fields = triage_fields[endpoint]
-                optional = {"scenario", "session_id"} if endpoint.endswith("/triage") else {"scenario", "offered_ids"}
+                optional = ({"scenario", "session_id", "group_id"} if endpoint.endswith("/triage")
+                            else {"scenario", "offered_ids"})
                 if type(data) is not dict or not fields <= data.keys() <= fields | optional:
                     raise ValueError("Skill API chỉ nhận các trường đã định nghĩa")
                 if "session_id" in data and (type(data["session_id"]) is not str or not data["session_id"]):
@@ -577,9 +578,12 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("Kịch bản phải là chuỗi")
                 if "offered_ids" in data and type(data["offered_ids"]) is not list:
                     raise ValueError("offered_ids phải là danh sách")
+                if "group_id" in data and (type(data["group_id"]) is not str or not data["group_id"]):
+                    raise ValueError("group_id không hợp lệ")
                 if endpoint.endswith("/triage"):
                     return self._json(CHAT.triage(data["message"], data.get("session_id"),
                                                   scenario=data.get("scenario"),
+                                                  group_id=data.get("group_id"),
                                                   allow_model=os.environ.get("GATEWAY_LM_TRIAGE_MODEL") == "1"))
                 return self._json(CHAT.run_selected(data["session_id"], data["skill_ids"],
                                                     scenario=data.get("scenario"), offered_ids=data.get("offered_ids")))

@@ -36,6 +36,8 @@ Tiến độ ADVICE-01 (20/11/2026, `v2`) — Replay có mục “Cần làm gì
 
 Tiến độ EVAL-01 (26/11/2026, `v2`) — Bộ đánh giá có 250 mô tả tiếng Việt (151 dev, 99 test khóa SHA-256), nhãn AI chờ duyệt. Baseline tắt LLM đạt top-3 27/132 dev và 13/80 test. Replay dev có 7/45 `FAULT` kèm bằng chứng và 0/45 `FAULT` trên đối chứng `normal`. Unittest 1.164 tổng, 1.159 pass, 0 fail, 5 skip Windows (425,997 s). `check_project` và hai kiểm tra Node PASS. Scorer mô phỏng đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. 10/10 pin khớp approval. Commit local, chưa có CI riêng. [Báo cáo v1](docs/reports/TRIAGE_EVAL_V1.md) · [CI của `v2` tại `a7f97d8`](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
 
+Tiến độ TRIAGE-02 (26/11/2026, `v2`) — Role-play chuẩn hóa tiếng Việt, xen kẽ thẻ READ theo nhóm và hỏi lại bằng chip trong cùng phiên. Top-3 tất định tăng từ 27/132 lên 126/132 trên dev và giảm từ 13/80 xuống 10/80 trên test khóa, với 41 từ chối sai trên test. Hệ thống chấp nhận đề xuất từ Qwen3:4b ở 1/23 lượt gọi và top-3 dev giữ ở 126/132. Unittest 1.169 tổng, 1.164 pass, 0 fail, 5 skip Windows. Hai kiểm tra Node và `check_project` PASS. Scorer đạt 303/303 kịch bản Skill và 21/21 kiểm tra sự cố. 10/10 pin replay khớp approval. Commit local, chưa có CI riêng. [Báo cáo V2](docs/reports/TRIAGE_EVAL_V2.md) · [CI nền](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

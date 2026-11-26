@@ -14,7 +14,7 @@ from gateway_pilot.adapters.results import ToolResult
 from gateway_pilot.application import skill_chat
 from gateway_pilot.application.claim_guidance import GUIDANCE, load_claim_guidance
 from gateway_pilot.application.skill_launcher import SkillLauncher
-from gateway_pilot.application.skill_triage import TAXONOMY, load_taxonomy
+from gateway_pilot.application.skill_triage import TAXONOMY, load_taxonomy, normalize_triage
 from gateway_pilot.command_catalog.loader import read_json
 from gateway_pilot.command_catalog.runtime import ReadRuntime
 from gateway_pilot.core import PlanError
@@ -122,6 +122,104 @@ class SkillTriageTests(unittest.TestCase):
             self.assertEqual({r[0] for r in self.model.choose_skills.call_args.args[1]}, offered)
             self.model.choose_skills.side_effect = TimeoutError
             self.assertEqual(self.chat.triage(query, sid, allow_model=True)['cards'], expected)
+            run.assert_not_called()
+
+    def test_normalization_and_scope_boundaries(self):
+        for raw, expected in [
+                ('ĐT e ko bắt đc Wi-Fi, trc đó bth.', 'dien thoai em khong bat duoc wifi truoc do binh thuong'),
+                ('Wiffi 5 ghi gahéc ở iGaet.', 'wifi 5 gigahertz o igate'),
+                ('B04 SK08 8.8.8.8', 'b04 sk08 8 8 8 8')]:
+            with self.subTest(raw=raw):
+                self.assertEqual(normalize_triage(raw), expected)
+        sid = self.session()
+        with patch.object(self.launcher, 'run') as run:
+            result = self.chat.triage('DT moi cu obtaining dia chi, may cu van vao dc', sid)
+            self.assertEqual(result['symptom_groups'][0]['id'], 'SYM-01-dhcp-het-ip')
+            self.assertEqual(result['cards'][0]['skill_id'], 'D02')
+            for query, reason in [
+                ('Đọc truyện cổ tích cho bé.', 'unsupported_topic'),
+                ('Vui lòng tắt điểm phát khách.', 'write_intent_requires_approval'),
+                ('Wiffi nhà tôi, đo 8.8.4.4.', 'custom_target_not_supported'),
+            ]:
+                with self.subTest(query=query):
+                    stopped = self.chat.triage(query, sid, allow_model=True)
+                    self.assertEqual(stopped['stop_reason'], reason)
+                    self.assertEqual(stopped['cards'], [])
+            run.assert_not_called()
+        self.model.choose_skills.assert_not_called()
+
+    def test_independent_symptom_cards_are_interleaved(self):
+        sid = self.session()
+        result = self.chat.triage('Camera báo offline. Xem camera 4G không được.', sid)
+        ids = [group['id'] for group in result['symptom_groups']]
+        self.assertEqual(set(ids), {'SYM-26-camera-offline', 'SYM-27-camera-tu-xa'})
+        self.assertEqual([card['source'] for card in result['cards'][:4]],
+                         [f'symptom:{gid}' for gid in ids * 2])
+        self.assertNotIn('clarify', result)
+        self.assertEqual(self.launcher._get(sid)['session'].calls, 0)
+
+    def test_server_clarification_is_bound_to_original_message_and_session(self):
+        endpoint = '/api/skills/triage'
+        payload = {'message': 'Camera báo offline khi ở ngoài nhà xem không được.', 'session_id': self.session()}
+        with patch.object(self.launcher, 'run') as run:
+            status, result = request(endpoint, payload)
+            self.assertEqual(status, HTTPStatus.OK, result)
+            question = result['clarify']
+            self.assertEqual(set(question), {'question_vi', 'options'})
+            group = 'SYM-27-camera-tu-xa'
+            self.assertEqual({option['group_id'] for option in question['options']},
+                             {'SYM-26-camera-offline', group})
+            for overrides in [
+                {'group_id': 'SYM-05-song-yeu'}, {'group_id': None}, {'group_id': ['injected']},
+                {'group_id': group, 'message': 'Kiểm tra DNS'},
+                {'group_id': group, 'scenario': 'fault'},
+                {'group_id': group, 'session_id': self.session()},
+            ]:
+                with self.subTest(overrides=overrides):
+                    self.assertEqual(request(endpoint, {**payload, **overrides})[0], HTTPStatus.BAD_REQUEST)
+            picked = {**payload, 'group_id': group}
+            status, result = request(endpoint, picked)
+            self.assertEqual(status, HTTPStatus.OK, result)
+            self.assertEqual(result['session_id'], payload['session_id'])
+            self.assertNotIn('clarify', result)
+            self.assertEqual([g['id'] for g in result['symptom_groups']], [group])
+            self.assertEqual([card['skill_id'] for card in result['cards']], ['E05', 'J08', 'I02'])
+            self.assertEqual(request(endpoint, picked)[0], HTTPStatus.BAD_REQUEST)
+            run.assert_not_called()
+
+    def test_model_group_card_and_question_choices_are_only_offered_ids(self):
+        query = 'Camera báo offline khi ở ngoài nhà xem không được.'
+        sid = self.session()
+        baseline = self.chat.triage(query, sid)
+        proposal = dict(group_ids=['SYM-27-camera-tu-xa'], card_ids=['E05'],
+                        question_ids=['camera-local-check'])
+        self.model.choose_triage = Mock(return_value=proposal)
+        with patch.object(self.launcher, 'run') as run:
+            recommended = self.chat.triage(query, sid, allow_model=True)
+            self.assertEqual(recommended['triage_model'], 'accepted')
+            self.assertEqual(recommended['symptom_groups'][0]['id'], proposal['group_ids'][0])
+            self.assertEqual(recommended['cards'][0]['skill_id'], proposal['card_ids'][0])
+            offered_questions = self.model.choose_triage.call_args.args[3]
+            self.assertEqual(recommended['clarify'], offered_questions['camera-local-check'])
+            self.assertNotEqual(recommended['clarify']['question_vi'], baseline['clarify']['question_vi'])
+            for changes in [
+                {'group_ids': ['injected']}, {'group_ids': [proposal['group_ids'][0]] * 2},
+                {'card_ids': ['SK13']}, {'card_ids': [None]}, {'question_ids': ['coverage-or-band']},
+                {'question_vi': 'injected question'}, {'question_ids': [{'label_vi': 'injected'}]},
+            ]:
+                with self.subTest(changes=changes):
+                    self.model.choose_triage.return_value = {**proposal, **changes}
+                    actual = self.chat.triage(query, sid, allow_model=True)
+                    self.assertEqual(actual.pop('triage_model'), 'fallback')
+                    self.assertEqual(actual, baseline)
+            self.model.choose_triage.side_effect = TimeoutError
+            actual = self.chat.triage(query, sid, allow_model=True)
+            self.assertEqual(actual.pop('triage_model'), 'fallback')
+            self.assertEqual(actual, baseline)
+            self.model.choose_triage.reset_mock()
+            self.model.local_only = False
+            self.assertEqual(self.chat.triage(query, sid, allow_model=True)['triage_model'], 'fallback')
+            self.model.choose_triage.assert_not_called()
             run.assert_not_called()
 
     @staticmethod

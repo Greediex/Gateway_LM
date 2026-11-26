@@ -1,6 +1,8 @@
 """Suggest approved replay Skills and summarize their verified READ results."""
 from __future__ import annotations
 
+import re
+from itertools import zip_longest
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -26,6 +28,40 @@ if TYPE_CHECKING:
 MAX_CARDS = 6
 OWN_HOME_PHRASES = frozenset({'router nha toi', 'router cua toi', 'wifi nha toi'})
 TAXONOMY = DATA_DIR / 'symptom_taxonomy_v1.json'
+SIGNALS = DATA_DIR / 'symptom_signals_v1.json'
+QUESTIONS = DATA_DIR / 'triage_questions_v1.json'
+# Expand complete tokens only. In particular, leave net addresses and Skill IDs
+# to the existing checks on the original request.
+SPELLINGS = {
+    'dt': 'dien thoai', 'ko': 'khong', 'k': 'khong', 'kh': 'khong', 'hong': 'khong',
+    'dc': 'duoc', 'dk': 'duoc', 'bth': 'binh thuong', 'bt': 'binh thuong',
+    'trc': 'truoc', 'r': 'roi', 'mn': 'moi nguoi', 'xai': 'dung', 'e': 'em',
+    'igaet': 'igate', 'wiffi': 'wifi', 'wfi': 'wifi',
+    'gigahec': 'gigahertz', 'gahec': 'gigahertz',
+    'wiff': 'wifi', 'vifi': 'wifi', 'ruter': 'router', 'moderm': 'modem',
+}
+NETWORK_TERMS = re.compile(
+    r'\b(?:wifi|wi fi|internet|router|gateway|modem|igate|ethernet|lan|wan|dns|dhcp|ipv[46]|'
+    r'pppoe|ssid|rssi|snr|nat|vpn|mtu|dfs|upnp|ping|toc do mang|ket noi mang|diem phat|'
+    r'mang cham|mang yeu|mat mang|duong truyen|ten mien|cap quang|tinh hieu wifi|'
+    r'port forwarding|ket noi|truy cap|do tre|trinh duyet|bo phat|hop phat|'
+    r'mang noi bo|chuyen tiep|toc do lien ket|diem goc|chia cong|tai len)\b'
+)
+WRITE_REQUEST = re.compile(
+    r'(?:^|\b(?:hay|vui long|lam on|giup toi|nho ban) +)'
+    r'(?:tat|bat|mo|luu|cai|cap|thu hoi|chuyen|chan|cho phep) +'
+    r'(?:.{0,50} )?(?:wifi|diem phat|dai tan|che do|cau hinh|ten phat|quyen|cong|'
+    r'modem|gateway|router|thiet bi|firmware|mat khau)\b'
+)
+CLAUSE_BREAK = re.compile(r'[.,;!?]+|\b(?:và|va|đồng thời|dong thoi|riêng|rieng|còn|con|nhưng|nhung|and|also)\b', re.I)
+
+
+def normalize_triage(request: str) -> str:
+    text = normalize(request)
+    text = re.sub(r'\bwi fi\b', 'wifi', text)
+    text = ' '.join(SPELLINGS.get(token, token) for token in text.split())
+    return re.sub(r'\b(?:ghi|gi|gi ga) (?:ga )?(?:hec|gigahertz)\b', 'gigahertz', text)
+
 
 
 def load_taxonomy(approved_ids: set[str], path: Path = TAXONOMY) -> list[dict]:
@@ -60,7 +96,19 @@ def load_taxonomy(approved_ids: set[str], path: Path = TAXONOMY) -> list[dict]:
             require(skill_id in approved_ids, 'skill_triage_taxonomy_unknown_skill')
             require(skill_id not in skill_ids, 'skill_triage_taxonomy_duplicate_skill')
             skill_ids.add(skill_id)
-        groups.append({**group, 'user_says': phrases})
+        groups.append({**group, 'user_says': list(map(normalize_triage, phrases))})
+    signals = read_json(SIGNALS)
+    require(set(signals) == {'format', 'groups'} and signals['format'] == 'gateway-lm.symptom-signals/v1'
+            and type(signals['groups']) is dict and signals['groups'].keys() <= group_ids,
+            'skill_triage_signals_format')
+    for group in groups:
+        variants = signals['groups'].get(group['id'], [])
+        require(type(variants) is list and all(_texts(cues) for cues in variants),
+                'skill_triage_taxonomy_signals')
+        cues = [tuple(map(normalize_triage, signal)) for signal in variants]
+        require(all(all(signal) and len(set(signal)) == len(signal) for signal in cues)
+                and len(set(cues)) == len(cues), 'skill_triage_taxonomy_signals')
+        group['signals'] = cues
     return groups
 
 
@@ -69,14 +117,140 @@ def replay_rows(catalog: dict) -> dict[str, dict]:
             if row['availability'] == 'READY'}
 
 
+def public_group(group: dict) -> dict:
+    return {key: group[key] for key in ('id', 'label_vi', 'gap_vi') if key in group}
+
+
+def group_scores(text: str, groups: list[dict]) -> dict[str, int]:
+    words = f' {text} '
+    scores = {}
+    for group in groups:
+        exact = max((len(phrase.split()) + 2 for phrase in group['user_says']
+                     if f' {phrase} ' in words), default=0)
+        cues = max((sum(len(term.split()) for term in signal) for signal in group['signals']
+                    if all(f' {term} ' in words for term in signal)), default=0)
+        if score := max(exact, cues):
+            scores[group['id']] = score
+    return scores
+
+
+def clarification(request: str, matched: list[dict], scores: dict[str, int],
+                  eligible_ids: set[str]) -> dict[str, dict]:
+    if len(matched) < 2:
+        return {}
+    first, second = matched[:2]
+    pair = {first['id'], second['id']}
+    if scores[first['id']] - scores[second['id']] > 2:
+        return {}
+    skill_sets = [{card['skill_id'] for card in group['cards']} & eligible_ids for group in (first, second)]
+    if not all(skill_sets) or set.intersection(*skill_sets):
+        return {}
+    clause_matches = [set(group_scores(normalize_triage(clause), [first, second]))
+                      for clause in CLAUSE_BREAK.split(request) if clause.strip()]
+    if all({group_id} in clause_matches for group_id in pair):
+        return {}  # Two independently described symptoms can both be investigated.
+    questions = read_json(QUESTIONS)
+    require(set(questions) == {'format', 'questions'} and questions['format'] == 'gateway-lm.triage-questions/v1'
+            and type(questions['questions']) is list, 'skill_triage_questions_format')
+    offered = {}
+    for item in questions['questions']:
+        require(type(item) is dict and set(item) == {'id', 'question_vi', 'options'}
+                and _text(item['id']) and _text(item['question_vi'])
+                and type(item['options']) is list and len(item['options']) == 2
+                and all(type(option) is dict and set(option) == {'label_vi', 'group_id'}
+                        and all(map(_text, option.values())) for option in item['options']),
+                'skill_triage_question_fields')
+        if {option['group_id'] for option in item['options']} == pair:
+            require(item['id'] not in offered, 'skill_triage_duplicate_question')
+            offered[item['id']] = {'question_vi': item['question_vi'], 'options': item['options']}
+    return offered
+
+
+def validate_triage_choice(choice: object, group_ids: set[str], card_ids: set[str],
+                           question_ids: set[str]) -> dict:
+    allowed = {'group_ids': group_ids, 'card_ids': card_ids, 'question_ids': question_ids}
+    if type(choice) is not dict or set(choice) != set(allowed):
+        raise ValueError('invalid_triage_model_fields')
+    for key, ids in allowed.items():
+        selected = choice[key]
+        limit = 1 if key == 'question_ids' else 3
+        if (type(selected) is not list or len(selected) > limit
+                or any(type(item) is not str or item not in ids for item in selected)
+                or len(set(selected)) != len(selected)):
+            raise ValueError('invalid_triage_model_ids')
+    return choice
+
+
+def model_choice(chat: SkillChat, request: str, started: float, replay: ReplaySession,
+                 groups: list[dict], cards: dict[str, dict], questions: dict[str, dict],
+                 eligible: dict[str, dict]) -> tuple[dict, str]:
+    remaining = min(15, started + chat.max_elapsed_s - chat.clock(), replay.expires_at - replay.clock())
+    if remaining <= 1 or not _MODEL_SLOT.acquire(blocking=False):
+        return {}, 'fallback'
+    deadline = chat.clock() + remaining
+    try:
+        model = (chat.model_factory(timeout=remaining - 1) if chat.model_factory is local_model
+                 else chat.model_factory())
+        if getattr(model, 'local_only', None) is not True:
+            raise ValueError('local_skill_model_required')
+        if hasattr(model, 'choose_triage'):
+            available = {group['id'] for group in groups}
+            choice = model.choose_triage(request, [public_group(group) for group in groups],
+                                         list(cards.values()), questions,
+                                         timeout=deadline - chat.clock())
+            choice = validate_triage_choice(choice, available, set(cards), set(questions))
+        else:
+            shortlist = {sid: eligible[sid] for sid in cards}
+            docs = [[sid, row['name'], row['availability'], row['runtime_scope']] for sid, row in shortlist.items()]
+            proposal = model.choose_skills(request, docs, {
+                'scope': 'Prioritize suggested READ Skills for a fixed synthetic scenario.',
+                'simulation_only': True, 'inference_timeout_s': remaining - 1, 'last_round': False,
+            })
+            choice = {'card_ids': validate_choice(proposal, shortlist, {}, ())['skill_ids']}
+        if not replay.closed and chat.clock() < deadline and replay.clock() < replay.expires_at:
+            return choice, 'accepted'
+    except (AttributeError, OSError, TypeError, ValueError, RuntimeError):
+        pass  # Optional advice failed; preserve the deterministic proposal.
+    finally:
+        _MODEL_SLOT.release()
+    return {}, 'fallback'
+
+
+def interleaved_cards(groups: list[dict], eligible: dict[str, dict],
+                      preferred_ids: list[str] | tuple[str, ...] = ()) -> list[tuple[dict, dict]]:
+    rank = {sid: index for index, sid in enumerate(preferred_ids)}
+    decks = [sorted(((group, card) for card in group['cards'] if card['skill_id'] in eligible),
+                    key=lambda item: rank.get(item[1]['skill_id'], len(rank))) for group in groups]
+    ordered = {}
+    represented = set()
+    for layer in zip_longest(*decks):
+        for item in layer:
+            if item is None:
+                continue
+            group, card = item
+            sid = card['skill_id']
+            if sid in ordered:
+                represented.add(group['id'])  # A shared card can serve both groups.
+            elif group['id'] not in represented:
+                represented.add(group['id'])
+                ordered[sid] = item
+    # The first pass ensures representation before any group takes a second slot.
+    for layer in zip_longest(*decks):
+        for item in layer:
+            if item is not None:
+                ordered.setdefault(item[1]['skill_id'], item)
+    return list(ordered.values())
+
+
 def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started: float, *,
-            allow_model: bool) -> dict:
+            allow_model: bool, selected_group: str | None = None) -> dict:
     replay = entry['session']
     profile = replay.profile
     rows = replay_rows(chat.launcher.catalog(MODE, entry=entry))
     routing = profile.diagnostics['routing']
     incident_phrases = profile.incident_replay.symptom_routes
-    text = normalize(request)
+    original = normalize(request)
+    text = normalize_triage(request)
     response = {'session_id': session_id, 'mode': MODE, 'scenario': replay.scenario, 'synthetic_only': True,
                 'cards': [], 'symptom_groups': [], 'notice': NOTICE}
     if warning := GENERIC_WARNING.get(replay.scenario):
@@ -84,12 +258,14 @@ def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started
     # Role-play speaks as the owner of the simulated home; other real-device phrases stay refused.
     role_play = {**routing, 'nonlocal_scope_phrases': [
         p for p in routing['nonlocal_scope_phrases'] if p not in OWN_HOME_PHRASES]}
-    refusal = _replay_refusal(request, text, rows, role_play, incident_phrases.get(text))
+    refusal = _replay_refusal(request, original, rows, role_play, incident_phrases.get(original))
+    if not refusal and WRITE_REQUEST.search(text):
+        refusal = ('write_intent_requires_approval', 'BLOCKED', 'Phiên chỉ hỗ trợ thao tác đọc trong mô phỏng.')
     if refusal:
         reason, status, message = refusal
         return dict(response, stop_reason=reason, case_status=status, answer=f'{NOTICE}\n{message}')
 
-    scopes = _replay_scopes(text)
+    scopes = _replay_scopes(original)
     eligible = {sid: row for sid, row in rows.items() if not scopes or row['runtime_scope'] in scopes}
     cards: dict[str, dict] = {}
 
@@ -104,65 +280,81 @@ def propose(chat: SkillChat, request: str, session_id: str, entry: dict, started
                           'search': 'Danh mục có nội dung gần với mô tả của bạn.',
                       }[source], 'source': source}
 
-    matches = []
-    for group in load_taxonomy(set(rows)):
-        length = max((len(p.split()) for p in group['user_says'] if _phrase(text, p)), default=0)
-        if length:
-            matches.append((length, group))
-    for _, group in sorted(matches, key=lambda match: -match[0]):
-        response['symptom_groups'].append({key: group[key] for key in ('id', 'label_vi', 'gap_vi') if key in group})
-        for card in group['cards']:
-            add(card['skill_id'], f"symptom:{group['id']}", plain_vi=card['plain_vi'], why_vi=card['why_vi'])
+    groups = load_taxonomy(set(rows))
+    scores = group_scores(text, groups)
+    matched = sorted((group for group in groups if group['id'] in scores),
+                     key=lambda group: -scores[group['id']])
+    if selected_group is not None:
+        matched = [group for group in matched if group['id'] == selected_group]
+        if not matched:
+            raise ValueError('triage_group_not_offered')
+    response['symptom_groups'] = list(map(public_group, matched))
+    for group, card in interleaved_cards(matched, eligible):
+        add(card['skill_id'], f"symptom:{group['id']}", plain_vi=card['plain_vi'], why_vi=card['why_vi'])
+    if selected_group is not None:
+        return dict(response, cards=list(cards.values()))
 
+    if matched and all(not group['cards'] for group in matched):
+        return dict(response, stop_reason='unsupported_topic', case_status='NEEDS_INPUT',
+                    answer=f"{NOTICE}\n" + ' '.join(group['gap_vi'] for group in matched))
     for phrase, sid in incident_phrases.items():
-        if _phrase(text, phrase):
+        if _phrase(original, phrase) or _phrase(text, normalize_triage(phrase)):
             add(sid, 'incident')
     incident_routing = profile.incidents.diagnostics['routing']
     for sid, phrases in incident_routing.items():
-        if any(_phrase(text, phrase) for phrase in (*phrases, normalize(rows[sid]['name']), sid.lower())):
+        if any(_phrase(original, phrase) for phrase in (*phrases, normalize(rows[sid]['name']), sid.lower())):
             add(sid, 'incident')
     for sid, row in eligible.items():
-        if _phrase(text, sid.lower()) or _phrase(text, normalize(row['name'])):
+        if _phrase(original, sid.lower()) or _phrase(original, normalize(row['name'])):
             add(sid, 'phrase')
     phrase_routes = sorted(routing['phrases'].items(), key=lambda item: -max(
-        (len(p.split()) for p in item[1] if _phrase(text, p)), default=0))
+        (len(p.split()) for p in item[1] if _phrase(original, p)), default=0))
     for sid, phrases in phrase_routes:
-        if any(_phrase(text, p) for p in phrases):
+        if any(_phrase(original, p) for p in phrases):
             add(sid, 'phrase')
+    if not (cards or matched or NETWORK_TERMS.search(text)):
+        return dict(response, stop_reason='unsupported_topic', case_status='NEEDS_INPUT',
+                    answer=f'{NOTICE}\nPhiên chỉ hỗ trợ kiểm tra mạng mô phỏng. Bạn có thể mô tả vấn đề Wi-Fi, thiết bị kết nối hoặc đường Internet.')
     if len(cards) < MAX_CARDS:
-        method, candidates = _replay_candidates(request, routing['phrases'])
+        method, candidates = _replay_candidates(text, routing['phrases'])
         for sid in candidates:
             add(sid, 'phrase' if method == 'phrase' else 'search')
     if len(cards) < MAX_CARDS:
         retriever = _retriever()
-        for hit in retriever.search(request, limit=len(retriever.catalog.skills), include_proposed=True):
+        for hit in retriever.search(text, limit=len(retriever.catalog.skills), include_proposed=True):
             add(hit.skill_id, 'search')
             if len(cards) == MAX_CARDS:
                 break
 
     ordered = list(cards)
-    remaining = min(started + chat.max_elapsed_s - chat.clock(), replay.expires_at - replay.clock())
-    if allow_model and len(cards) > 1 and remaining > 1 and _MODEL_SLOT.acquire(blocking=False):
-        try:
-            model = (chat.model_factory(timeout=remaining - 1) if chat.model_factory is local_model
-                     else chat.model_factory())
-            if getattr(model, 'local_only', None) is not True:
-                raise ValueError('local_skill_model_required')
-            shortlisted = {sid: eligible[sid] for sid in cards}
-            docs = [[r['skill_id'], r['name'], r['availability'], r['runtime_scope']]
-                    for r in shortlisted.values()]
-            proposal = model.choose_skills(request, docs, {
-                'scope': 'Prioritize the most helpful suggested READ Skills for a fixed synthetic scenario.',
-                'simulation_only': True, 'inference_timeout_s': remaining - 1, 'last_round': False,
-            })
-            choice = validate_choice(proposal, shortlisted, {}, ())
-            if choice['decision'] == 'measure' and not replay.closed and (
-                    chat.clock() < started + chat.max_elapsed_s and replay.clock() < replay.expires_at):
-                ordered = list(dict.fromkeys(choice['skill_ids'] + ordered))
-        except (AttributeError, OSError, TypeError, ValueError, RuntimeError):
-            pass  # Optional advice failed; preserve the deterministic cards.
-        finally:
-            _MODEL_SLOT.release()
+    questions = clarification(request, matched, scores, set(eligible))
+    chosen_question = next(iter(questions), None)
+    # Ask for help when the wording supplied weak cues or a curated ambiguity.
+    if allow_model and cards and (questions or not matched or scores[matched[0]['id']] < 4):
+        # Offer matched groups and a bounded shortlist grounded in the current cards.
+        priority = {sid: rank for rank, sid in enumerate(ordered)}
+        related = sorted((group for group in groups if group['id'] not in scores
+                          and any(card['skill_id'] in cards for card in group['cards'])),
+                         key=lambda group: min(priority.get(card['skill_id'], MAX_CARDS)
+                                               for card in group['cards']))
+        offered = matched + related[:max(0, 8 - len(matched))]
+        choice, response['triage_model'] = model_choice(chat, request, started, replay, offered,
+                                                        cards, questions, eligible)
+        group_ids = choice.get('group_ids', [])
+        preferred = choice.get('card_ids', [])
+        selected = [group for group_id in group_ids for group in offered if group['id'] == group_id]
+        ranked = selected + [group for group in matched if group['id'] not in group_ids]
+        response['symptom_groups'] = list(map(public_group, ranked))
+        if ranked and (group_ids or preferred):
+            visible = {sid: eligible[sid] for sid in cards}
+            grouped = [card['skill_id'] for _, card in interleaved_cards(ranked, visible, preferred)]
+            ordered = list(dict.fromkeys(grouped + preferred + ordered))
+        else:
+            ordered = list(dict.fromkeys(preferred + ordered))
+        if choice.get('question_ids'):
+            chosen_question = choice['question_ids'][0]
+    if chosen_question is not None:
+        response['clarify'] = questions[chosen_question]
     response['cards'] = [cards[sid] for sid in ordered]
     return response
 

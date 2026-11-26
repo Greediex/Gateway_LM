@@ -335,7 +335,7 @@ class SkillChat:
         return entry
 
     def triage(self, request: str, session_id: str | None = None, *,
-               scenario: str | None = None, allow_model: bool = False) -> dict:
+               scenario: str | None = None, allow_model: bool = False, group_id: str | None = None) -> dict:
         from .skill_triage import propose
 
         if type(request) is not str or not 1 <= len(request.strip()) <= 2000:
@@ -344,17 +344,33 @@ class SkillChat:
             raise ValueError('invalid_chat_scenario')
         if type(allow_model) is not bool:
             raise ValueError('invalid_chat_model_flag')
+        if group_id is not None and (type(group_id) is not str or not group_id or session_id is None):
+            raise ValueError('invalid_triage_group_selection')
+        request = request.strip()
         started = self.clock()
         created = session_id is None
         if created:
             session_id = self.launcher.create_session(REPLAY_SIM, scenario=scenario)['session_id']
         try:
             entry = self._triage_session(session_id, scenario)
-            response = propose(self, request.strip(), session_id, entry, started, allow_model=allow_model)
-            replay = entry['session']
-            if replay.closed or replay.clock() >= replay.expires_at:
-                raise SkillSessionError('session_expired')
-            return response
+            lock = self._chat_lock(entry)
+            try:
+                if group_id is not None:
+                    question = entry.get('triage_question')
+                    if question is None or question[0] != request or group_id not in question[1]:
+                        raise ValueError('triage_group_not_offered')
+                response = propose(self, request, session_id, entry, started,
+                                   allow_model=allow_model, selected_group=group_id)
+                replay = entry['session']
+                if replay.closed or replay.clock() >= replay.expires_at:
+                    raise SkillSessionError('session_expired')
+                if clarify := response.get('clarify'):
+                    entry['triage_question'] = (request, {option['group_id'] for option in clarify['options']})
+                else:
+                    entry.pop('triage_question', None)
+                return response
+            finally:
+                lock.release()
         except Exception:
             if created:
                 try:

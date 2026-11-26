@@ -70,6 +70,22 @@ class TriageEvalTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'SHA-256 mismatch'):
                 ev.load_cases('test', folder=folder)
 
+    def test_no_full_dev_or_test_request_is_in_the_taxonomy(self):
+        for split in ('dev', 'test'):
+            with self.subTest(split=split):
+                _, cases = ev.load_cases(split)
+                for path in (ev.TAXONOMY, ev.SIGNALS):
+                    ev.validate_taxonomy_leaks(cases, ev.read_json(path))
+        example = {'text': 'Đường mạng chậm gần cửa sổ.'}
+        for taxonomy in [
+            {'groups': [{'user_says': ['Đường mạng']}]},
+            {'groups': {'some-group': [['chậm', 'cửa sổ']]}},
+        ]:
+            ev.validate_taxonomy_leaks([example], taxonomy)
+        with self.assertRaisesRegex(ValueError, 'verbatim eval request'):
+            ev.validate_taxonomy_leaks([example], {'groups': {'some-group': [
+                ['Ví dụ: DUONG MANG CHAM GAN CUA SO!']]}})
+
     def test_scorer_uses_eligible_denominators_and_counts_explicit_refusals(self):
         stats = ev.score([
             scored(['A01', 'B02'], ['other', 'g'], ['g'], ['B02'], ms=1),

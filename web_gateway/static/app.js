@@ -326,10 +326,23 @@ function renderIncidentGuidance(bubble, guidance, unrunCards = [], onRun) {
   bubble.appendChild(card);
   return options;
 }
-function renderTriageCards(bubble, cards, onRun) {
+function renderTriageCards(bubble, cards, onRun, clarify, onClarify) {
   const form = n('form', 'triage-form');
   const options = n('fieldset', 'triage-options');
   options.appendChild(n('legend', '', 'Chọn phép kiểm tra phù hợp'));
+  if (clarify && onClarify) {
+    const choices = n('div', 'triage-clarification');
+    choices.appendChild(n('p', '', clarify.question_vi));
+    for (const item of clarify.options) {
+      const chip = n('button', 'triage-run', item.label_vi);
+      chip.type = 'button';
+      chip.addEventListener('click', () => {
+        if (!options.disabled) onClarify(item);
+      });
+      choices.appendChild(chip);
+    }
+    options.appendChild(choices);
+  }
   const checks = cards.map((card, index) => {
     const chip = n('label', 'triage-chip');
     const check = n('input');
@@ -442,6 +455,18 @@ async function runTriage(skillIds, offeredIds) {
   if (ok || !state.sessionId) retireTriage();
   else options.disabled = false;
 }
+async function clarifyTriage(request, option) {
+  if (state.busy || !state.triageOptions || !state.sessionId || !triageFlow()) return;
+  const options = state.triageOptions;
+  options.disabled = true;
+  message('user',option.label_vi);
+  const ok = await submitChat('/api/skills/triage', {
+    message:request, group_id:option.group_id, session_id:state.sessionId, scenario:$('scenarioSelect').value
+  }, 'replay_sim');
+  if (options !== state.triageOptions) return;
+  if (ok || !state.sessionId) retireTriage();
+  else options.disabled = false;
+}
 async function submitChat(endpoint, payload, sourceMode) {
   const generation=state.chatGeneration;
   setBusy(true);
@@ -468,7 +493,10 @@ async function submitChat(endpoint, payload, sourceMode) {
         ? data.notice : `${data.notice}\nChưa tìm thấy phép kiểm tra phù hợp. Hãy mô tả thêm tình trạng mạng.`);
       const bubble = message('assistant',text,'REPLAY MÔ PHỎNG',data.case_status);
       if (data.warning) bubble.appendChild(n('div', 'warnings', data.warning));
-      if (data.cards.length && triageFlow()) state.triageOptions = renderTriageCards(bubble,data.cards,runTriage);
+      if (data.cards.length && triageFlow()) {
+        state.triageOptions = renderTriageCards(bubble,data.cards,runTriage,data.clarify,
+          option => clarifyTriage(payload.message, option));
+      }
       return true;
     }
     state.result=data;$('traceSource').textContent=sourceLabel(data.mode);state.planIndex=null;
