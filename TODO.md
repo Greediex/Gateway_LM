@@ -34,6 +34,8 @@ Tiến độ TRIAGE-01 (20/11/2026, `v2`) — Web Replay thêm luồng đóng va
 
 Tiến độ ADVICE-01 (20/11/2026, `v2`) — Replay có mục “Cần làm gì” cho FAULT, HEALTHY và UNKNOWN. Có diễn giải tiếng Việt cho 271/271 Claim, gồm 244 mục mới và 27 mục có sẵn. Role-play hiển thị 15 kịch bản nhất quán và nút chạy các thẻ còn lại khi kết quả bình thường. Unittest 1.156 tổng, 1.151 pass, 0 fail, 5 skip Windows (461,923 s). `check_project`, hai kiểm tra Node và Chromium desktop/mobile PASS. Scorer đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. 10/10 pin khớp approval hiện hành. Commit local, chưa có CI riêng. [CI của commit nền `a7f97d8`](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
 
+Tiến độ EVAL-01 (26/11/2026, `v2`) — Bộ đánh giá có 250 mô tả tiếng Việt (151 dev, 99 test khóa SHA-256), nhãn AI chờ duyệt. Baseline tắt LLM đạt top-3 27/132 dev và 13/80 test. Replay dev có 7/45 `FAULT` kèm bằng chứng và 0/45 `FAULT` trên đối chứng `normal`. Unittest 1.164 tổng, 1.159 pass, 0 fail, 5 skip Windows (425,997 s). `check_project` và hai kiểm tra Node PASS. Scorer mô phỏng đạt 303/303 kịch bản Skill và 21/21 kịch bản kiểm tra sự cố. 10/10 pin khớp approval. Commit local, chưa có CI riêng. [Báo cáo v1](docs/reports/TRIAGE_EVAL_V1.md) · [CI của `v2` tại `a7f97d8`](https://github.com/Greediex/Gateway_LM/actions/runs/44705437165)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

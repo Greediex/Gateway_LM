@@ -1,0 +1,15 @@
+{
+  "format": "gateway-lm.triage-eval-split/v1",
+  "method": "uint256(sha256(utf8(id))) % 100 < 60: dev; otherwise: test; preserve cases.jsonl order",
+  "locked_split": "test",
+  "splits": {
+    "dev": {
+      "cases": 151,
+      "sha256": "78e27c627a80d6447b2e705328d7d7cd903d5dfcfc587ffebf06536dc41f6076"
+    },
+    "test": {
+      "cases": 99,
+      "sha256": "ca02bf8a29b1e1500d663118cd4e4c35a6f98ea44689f70c4596fffb3cb2bf40"
+    }
+  }
+}
