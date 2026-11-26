@@ -193,9 +193,6 @@
   border: 0;
 }
 .triage-options legend { margin-bottom: 8px; padding: 0; font-size: 12px; font-weight: 650; }
-.triage-clarification { display: flex; flex-wrap: wrap; gap: 8px; }
-.triage-clarification p { flex-basis: 100%; margin: 0; font-size: 13px; }
-.triage-clarification .triage-run { border-radius: 999px; }
 .triage-chip {
   display: flex;
   align-items: start;

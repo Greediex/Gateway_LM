@@ -1556,7 +1556,7 @@
         "https://voz.vn/t/mang-fpt-thuong-xuyen-bi-chap-chon.1003128/",
         "https://www.facebook.com/groups/364541018636214/posts/1669189298171373/"
       ],
-      "gap_vi": "Phiên mô phỏng chưa có nguồn dữ liệu về lịch bảo trì, sự cố khu vực hoặc tình trạng hợp đồng của nhà mạng."
+      "gap_vi": "Cần Skill đối chiếu thông báo sự cố/bảo trì của nhà mạng và tình trạng hợp đồng; hiện không có nguồn dữ liệu đó. Có thể dùng E08 để chứng minh lỗi nằm phía nhà mạng."
     },
     {
       "id": "SYM-47-thiet-bi-hong",
@@ -1571,7 +1571,7 @@
         "https://support.apple.com/vi-vn/111786",
         "https://vietteltelecom.vn/tin-tuc/chi-tiet/cach-khac-phuc-triet-de-wifi-da-ket-noi-nhung-khong-co-internet/15806368"
       ],
-      "gap_vi": "Phiên mô phỏng chưa hỗ trợ kiểm tra phần cứng hoặc driver bên trong thiết bị khách."
+      "gap_vi": "Cần hướng dẫn kiểm tra phía thiết bị khách (driver, đặt lại mạng, bật tắt chế độ máy bay) vì router không thấy được trạng thái bên trong máy khách."
     },
     {
       "id": "SYM-48-ket-qua-speedtest-thap",

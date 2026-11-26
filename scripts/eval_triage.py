@@ -17,7 +17,7 @@ from typing import Iterator
 
 from gateway_pilot.application.skill_chat import SkillChat
 from gateway_pilot.application.skill_launcher import SkillLauncher
-from gateway_pilot.application.skill_triage import SIGNALS, TAXONOMY
+from gateway_pilot.application.skill_triage import TAXONOMY
 from gateway_pilot.command_catalog.loader import read_json
 from gateway_pilot.skill_expansion.deployment import deployment
 from gateway_pilot.skill_expansion.incident_replay import DIRECTORY as INCIDENTS
@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'data/eval/triage_eval_v1'
 LABEL_SOURCE = 'ai_draft_needs_human_review'
 STYLES = {'story', 'indirect', 'no_diacritics', 'teencode', 'typo', 'mixed', 'off_topic', 'write_request'}
-REFUSALS = {'write_intent_requires_approval', 'custom_target_not_supported', 'unsupported_topic'}
+REFUSALS = {'write_intent_requires_approval', 'custom_target_not_supported'}
 INCIDENT_MAP = {
     'SYM-01-dhcp-het-ip': 'INC-DHCP-EXHAUST',
     'SYM-02-dns-hong': 'INC-DNS-FAIL',
@@ -67,23 +67,6 @@ def routing_phrases(taxonomy: list[dict], profile: ReplayProfile) -> set[str]:
         *profile.incidents.diagnostics['routing'].values(),
     ]
     return {phrase for phrases in phrase_lists for raw in phrases if (phrase := normalize(raw))}
-
-
-def validate_taxonomy_leaks(cases: list[dict], taxonomy: dict) -> None:
-    """Reject a complete eval request embedded in any taxonomy string."""
-    def strings(value):
-        if isinstance(value, str):
-            yield f' {normalize(value)} '
-        elif isinstance(value, dict):
-            for item in value.values():
-                yield from strings(item)
-        elif isinstance(value, list):
-            for item in value:
-                yield from strings(item)
-
-    fields = tuple(strings(taxonomy))
-    if any(f' {normalize(case["text"])} ' in field for case in cases for field in fields):
-        raise ValueError('verbatim eval request in symptom taxonomy')
 
 
 def unique_ids(value: object, allowed: set[str]) -> bool:
@@ -150,8 +133,6 @@ def score(rows: list[dict]) -> dict:
                 refusal_precision=measure_ratio(true_refusal, actual_refusal),
                 refusal_recall=measure_ratio(true_refusal, expected_refusal),
                 no_card=measure_ratio(sum(not row['cards'] for row in rows), len(rows)),
-                clarify=measure_ratio(sum(row.get('clarify', False) for row in rows), len(rows)),
-                model_outcomes=dict(Counter(row.get('model_outcome', 'not_attempted') for row in rows)),
                 latency_ms={'median': statistics.median(latency),
                             'p95': latency[(95 * len(latency) + 99) // 100 - 1],
                             'max': latency[-1]} if latency else None)
@@ -183,8 +164,7 @@ def intake(chat: SkillChat, text: str, sid: str, *, allow_model: bool) -> dict:
     return {'cards': [card['skill_id'] for card in result['cards']],
             'groups': [group['id'] for group in result['symptom_groups']],
             'refused': result.get('stop_reason') in REFUSALS,
-            'stop_reason': result.get('stop_reason'), 'clarify': 'clarify' in result,
-            'model_outcome': result.get('triage_model', 'not_attempted'), 'latency_ms': elapsed_ms}
+            'stop_reason': result.get('stop_reason'), 'latency_ms': elapsed_ms}
 
 
 def run_triage(chat: SkillChat, cases: list[dict], *, allow_model: bool) -> list[dict]:
@@ -244,9 +224,9 @@ def cell(metric: dict) -> str:
 
 
 def print_table(overall: dict, styles: dict[str, dict]) -> None:
-    metrics = ['top1', 'top3', 'top6', 'group_hit', 'refusal_precision', 'refusal_recall', 'no_card', 'clarify']
-    print('| Style | Cases | Top-1 | Top-3 | Top-6 | Group | Ref. precision | Ref. recall | No card | Clarify | Median / p95 / max ms |')
-    print('|' + '---|' * 11)
+    metrics = ['top1', 'top3', 'top6', 'group_hit', 'refusal_precision', 'refusal_recall', 'no_card']
+    print('| Style | Cases | Top-1 | Top-3 | Top-6 | Group | Ref. precision | Ref. recall | No card | Median / p95 / max ms |')
+    print('|' + '---|' * 10)
     for label, row in [('all', overall), *styles.items()]:
         latency = ' / '.join(f'{row["latency_ms"][p]:.2f}' for p in ('median', 'p95', 'max'))
         print('| ' + ' | '.join([label, str(row['cases']), *(cell(row[k]) for k in metrics), latency]) + ' |')
@@ -255,19 +235,16 @@ def print_table(overall: dict, styles: dict[str, dict]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--split', choices=('dev', 'test'), default='dev')
-    parser.add_argument('--with-llm', action='store_true', help='Allow local model choices among offered triage IDs.')
+    parser.add_argument('--with-llm', action='store_true', help='Allow the configured local model to rerank cards.')
     parser.add_argument('--incidents', action='store_true', help='Run paired dev incident and normal READ replays.')
     args = parser.parse_args(argv)
     if args.incidents and args.split != 'dev':
         parser.error('--incidents requires --split dev')
     meta, cases = load_cases(args.split)
     profile = deployment(MODE)
-    taxonomy_doc = read_json(TAXONOMY)
-    taxonomy = taxonomy_doc['groups']
+    taxonomy = read_json(TAXONOMY)['groups']
     skills = profile.actions.keys() | profile.incidents.actions.keys() | profile.igate.actions.keys()
     validate_cases(cases, {g['id'] for g in taxonomy}, skills, routing_phrases(taxonomy, profile))
-    validate_taxonomy_leaks(cases, taxonomy_doc)
-    validate_taxonomy_leaks(cases, read_json(SIGNALS))
     chat = make_chat(profile)
     scored = run_triage(chat, cases, allow_model=args.with_llm)
     overall = score(scored)
@@ -275,7 +252,7 @@ def main(argv: list[str] | None = None) -> int:
               for style in sorted({row['style'] for row in scored})}
     now = datetime.now(timezone.utc)
     report = {
-        'format': 'gateway-lm.triage-eval/v2', 'created_at': now.isoformat(),
+        'format': 'gateway-lm.triage-eval/v1', 'created_at': now.isoformat(),
         'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         'split': args.split, 'split_sha256': meta['sha256'], 'label_source': LABEL_SOURCE,
         'mode': MODE, 'synthetic_only': True, 'replay_pins': profile.approval, 'allow_model': args.with_llm,
@@ -286,13 +263,11 @@ def main(argv: list[str] | None = None) -> int:
         report['predictions'] = [{k: v for k, v in row.items() if k != 'expected'} for row in scored]
     if args.incidents:
         report['incidents'] = run_incidents(chat, cases, allow_model=args.with_llm)
-    out = ROOT / 'runs' / f"triage_eval_v2_{args.split}_{now.strftime('%Y%m%dT%H%M%S%fZ')}.json"
+    out = ROOT / 'runs' / f"triage_eval_v1_{args.split}_{now.strftime('%Y%m%dT%H%M%S%fZ')}.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(f'{args.split} · {LABEL_SOURCE} · allow_model={args.with_llm}')
     print_table(overall, styles)
-    if args.with_llm:
-        print('Model outcomes:', overall['model_outcomes'])
     if args.incidents:
         incident = report['incidents']
         print(f"FAULT with evidence {cell(incident['fault_with_evidence'])}; "

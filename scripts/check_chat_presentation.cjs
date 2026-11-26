@@ -225,44 +225,4 @@ for (const kind of ['fault', 'healthy', 'unknown']) {
   followUp.listeners.click();
   assert.equal(submitted, null);
 }
-const clarification = {
-  question_vi: 'Camera mất kết nối tại nhà hay chỉ khi xem từ xa?',
-  options: [{label_vi:'Tại nhà',group_id:'local'}, {label_vi:'Từ xa',group_id:'remote'}],
-};
-const clarificationBubble = sandbox.message('assistant', 'Dữ liệu mô phỏng');
-const requests = [];
-const clarifySource = source.slice(source.indexOf('async function clarifyTriage('),
-  source.indexOf('async function submitChat('));
-assert(clarifySource.startsWith('async function clarifyTriage('));
-Object.assign(sandbox, {
-  state:{busy:false,sessionId:'replay-session'}, triageFlow:()=>true,
-  submitChat:(...args)=>{requests.push(args);return Promise.resolve(true);},
-  retireTriage:()=>{sandbox.state.triageOptions = null;},
-  $:id=>id==='scenarioSelect' ? {value:'normal'} : messages,
-});
-vm.runInContext(clarifySource,sandbox);
-const originalRequest = 'Camera có vấn đề khi tôi xem hình.';
-let clarified;
-const choiceSet = sandbox.renderTriageCards(clarificationBubble, cards,
-  ()=>assert.fail('A clarification chip must never run a Skill'), clarification,
-  option=>{clarified = sandbox.clarifyTriage(originalRequest, option);});
-sandbox.state.triageOptions = choiceSet;
-const choices = choiceSet.children.find(el=>el.className==='triage-clarification');
-assert.equal(choices.children[0].textContent, clarification.question_vi);
-assert.deepEqual(choices.children.slice(1).map(el=>[el.type,el.textContent]),
-  [['button','Tại nhà'], ['button','Từ xa']]);
-choices.children[2].listeners.click();
-choices.children[1].listeners.click();
-assert.equal(choiceSet.disabled, true);
-assert.deepEqual(JSON.parse(JSON.stringify(requests)), [[
-  '/api/skills/triage',
-  {message:originalRequest,group_id:'remote',session_id:'replay-session',scenario:'normal'},
-  'replay_sim',
-]]);
-clarified.then(() => {
-  assert.equal(sandbox.state.triageOptions, null);
-  console.log('Chat presentation: PASS (details, caveats, replay badges, role-play scenarios, guidance, follow-up and clarification chips)');
-}).catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+console.log('Chat presentation: PASS (details, caveats, replay badges, role-play scenarios, guidance and follow-up chips)');
