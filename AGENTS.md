@@ -14,7 +14,7 @@ Applies to this repository. These are engineering rules, **not credentials or mo
 - Each task comes as a brief (`codex_tasks/<ID>.md` next to the repo, listed in [TODO.md](TODO.md)). Do only what the brief says; anything else goes in the report as a proposal.
 - Start: `git worktree add ../wt-<id> -b codex/<id> v2`. Do not work in the main `Gateway_LM_v2` checkout; it may hold someone else's staged changes.
 - Python is `.venv-graph/bin/python` (the bare `python` in the commands below means this interpreter).
-- Finish: one commit `feat(<ID>): ...` on `codex/<id>`, no push, one progress line in TODO.md (checkbox unchanged), report at `../codex_<id>_report.md` with real numbers and commands run.
+- Finish: one commit `feat(<ID>): ...` on `codex/<id>`, no push, one progress line in TODO.md (checkbox unchanged), report at `../codex_tasks/reports/codex_<id>_report.md` with real numbers and commands run.
 - Blocked or a gate fails: stop, commit nothing that weakens a check, and write the report saying what failed.
 
 ## Evaluation discipline (triage / LLM work)
