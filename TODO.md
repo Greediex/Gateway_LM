@@ -51,6 +51,8 @@ Mục tiêu: hiểu mô tả tự nhiên của khách để chọn đúng Skill.
 
 Thứ tự: WORLD-01 → (REVIEW-01 ‖ EVAL-02) → TRIAGE-03 → LLM-01 → FINAL-TEST. COV còn lại (101/120) và router thật (M3) đợi sau đợt này.
 
+Tiến độ LAB-01 (26/11/2026, `v2`) — E02, E03, H08 đọc router OpenWrt lab (QEMU, `../openwrt_lab`) qua ubus chỉ đọc, đi qua cùng Core và Claim. Rút WAN: E02/E03 FAULT, H08 HEALTHY; nối lại sau 60 s: cả ba HEALTHY. Chỉ là giả lập, không phải router verified. DNS/trễ/mất gói chưa nối vì ACL đọc không có phép ping/resolve. [Báo cáo](docs/reports/LAB_OPENWRT_V1.md)
+
 ## “Đủ 120” được tính thế nào
 
 | Mức | Điều kiện | Có được tính là Skill đã chạy? |

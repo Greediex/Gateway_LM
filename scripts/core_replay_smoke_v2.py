@@ -15,11 +15,13 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
           assess: Callable[[CaseState], dict] | None = None,
-          require_fact: bool = True):
+          require_fact: bool = True, lab_transport=None):
     """``values`` replaces the fixture; ``omit`` drops it (missing data).
 
     ``require_fact=False`` lets negative-path assessors inspect rejected Core
     results. It never changes admission; the default smoke still requires proof.
+    ``lab_transport`` (LAB-01) reads the OpenWrt lab router over ubus instead of
+    the fixture; evidence is labelled ``openwrt_lab/``, never synthetic or board.
     """
     from gateway_pilot.command_catalog.loader import load_catalog
     from gateway_pilot.command_catalog.validator import validate_catalog
@@ -70,6 +72,11 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
                            schema={'type':'object','properties':{'client_id':{'type':'string','minLength':1,'maxLength':128}},
                                    'required':['client_id'],'additionalProperties':False}))]
             fixtures[identity_id] = {'client.identity':{'client_id':'synthetic-test-target'}}
+        if lab_transport is not None:
+            from gateway_pilot.skill_expansion import lab_backend
+            # Disposable catalog only: the port declares where its evidence comes from,
+            # so a lab read can never pass as synthetic replay (binding provenance check).
+            docs[1][1]['provenance'] = lab_backend.PROVENANCE
         for path,row in docs:
             path.parent.mkdir(parents=True,exist_ok=True)
             path.write_text(json.dumps(row,ensure_ascii=False)+'\n',encoding='utf-8')
@@ -80,16 +87,22 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
                    'functions':{f['function_id']:f['version'] for f in catalog['functions']},
                    'ports':{p['port_id']:p['version'] for p in catalog['ports']}}
         artifact=build_registry(catalog,selection,policy,Path(tmp)/'artifact.json')
-        env=hashlib.sha256(b'gateway-v2-synthetic-replay-only').hexdigest()
-        target=TargetContext(function['scope'],'synthetic-test-target',env)
-        backend=StrictSkillReplayBackend(catalog['functions'],catalog['ports'],fixtures)
+        if lab_transport is None:
+            env=hashlib.sha256(b'gateway-v2-synthetic-replay-only').hexdigest()
+            target=TargetContext(function['scope'],'synthetic-test-target',env)
+            backend=StrictSkillReplayBackend(catalog['functions'],catalog['ports'],fixtures)
+            backend_id='test.fixture_replay'
+        else:
+            target=TargetContext(function['scope'],lab_backend.TARGET_ID,lab_backend.ENVIRONMENT_ID)
+            backend=lab_backend.OpenWrtLabBackend(catalog['functions'],catalog['ports'],lab_transport)
+            backend_id='lab.openwrt_ubus'
         bindings=[declare_binding(artifact,f['function_id'],'test.replay_'+f['function_id'].replace('.','_'),
-                                  'test.fixture_replay',backend,target) for f in catalog['functions']]
-        # Ephemeral TEST approval only (synthetic target/context + fixture source).
+                                  backend_id,backend,target) for f in catalog['functions']]
+        # Ephemeral TEST approval only (synthetic or lab target/context).
         # This is NOT a production approved digest / binding review.
         bind=BindingSelection(artifact,policy,bindings,
              approved_digests=frozenset(binding_digest(b) for b in bindings),
-             backends={'test.fixture_replay':backend},context=target)
+             backends={backend_id:backend},context=target)
         permissions=frozenset({function['permission']})
         runtime=ReadRuntime(artifact,policy,approved_digest=artifact['content_digest'],
                             selection=bind,context=target,permissions=permissions,
@@ -101,7 +114,8 @@ def smoke(fid: str, *, values: dict | None = None, omit: bool = False,
         if fact is None and require_fact:
             raise AssertionError('shared Core did not admit verified synthetic fact')
         assessment = assess(runner.state) if assess is not None else None
-        return {**({'assessment': assessment} if assess is not None else {}), 'synthetic_only':True,'function':fid,'skill':slug,
+        return {**({'assessment': assessment} if assess is not None else {}),
+                'synthetic_only':lab_transport is None,'source':backend.source,'function':fid,'skill':slug,
                 'ports':list(function['outputs']),'verified_fact_present':fact is not None,
                 'fact_value':copy.deepcopy(fact['value']) if fact else None,
                 'evidence_id':fact['id'] if fact else None,
